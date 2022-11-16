@@ -38,7 +38,7 @@ namespace CloudDemo.MvcCore.Controllers
                 { "K_SERVICE", "Cloud Run" }
             };
 
-        public static async Task<string> DetermineRuntime()
+        public static async Task<string?> DetermineRuntime()
         {
             // Check for environment variables that indicate a specific runtime.
             foreach (var indicator in environmentIndicators)

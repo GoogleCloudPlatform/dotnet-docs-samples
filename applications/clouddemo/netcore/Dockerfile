@@ -19,7 +19,7 @@
 # under the License.
 #
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1
+FROM mcr.microsoft.com/dotnet/aspnet:6.0
 EXPOSE 8080
 
 #------------------------------------------------------------------------------
@@ -27,7 +27,7 @@ EXPOSE 8080
 #------------------------------------------------------------------------------
 
 WORKDIR /app
-COPY CloudDemo.MvcCore/bin/Release/netcoreapp3.1/publish/ /app/
+COPY CloudDemo.MvcCore/bin/Release/net6.0/publish/ /app/
 
 ENV ASPNETCORE_URLS=http://0.0.0.0:8080
 
