@@ -23,4 +23,4 @@
 CloudDemo.MvcCore/*
 
 # ...except for the publishing folder.
-!CloudDemo.MvcCore/bin/Release/netcoreapp3.1/publish/*
+!CloudDemo.MvcCore/bin/Release/net6.0/publish/*
