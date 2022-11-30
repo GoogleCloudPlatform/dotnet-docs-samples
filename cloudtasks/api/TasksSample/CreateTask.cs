@@ -21,7 +21,8 @@ using System;
 
 class CreateAppEngineTask
 {
-    public string CreateTask(
+    static string CreateTask(
+        // TODO<developer>: replace these values
         string projectId = "YOUR-PROJECT-ID",
         string location = "us-central1",
         string queue = "my-queue",
@@ -49,6 +50,11 @@ class CreateAppEngineTask
 
         Console.WriteLine($"Created Task {response.Name}");
         return response.Name;
+    }
+
+    public static void Main(string[] args)
+    {
+        CreateTask();
     }
 }
 // [END cloud_tasks_appengine_create_task]
