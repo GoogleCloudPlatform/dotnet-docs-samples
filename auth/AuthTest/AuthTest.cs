@@ -60,7 +60,7 @@ namespace GoogleCloudSamples
             Assert.False(string.IsNullOrWhiteSpace(output.Stdout));
         }
 
-        [Theory]
+        [Theory(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1998")]
         [InlineData("hand")]
         [InlineData("cloud")]
         [InlineData("api")]
