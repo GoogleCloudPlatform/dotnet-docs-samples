@@ -25,33 +25,33 @@ namespace Stitcher.Samples.Tests
         private StitcherFixture _fixture;
         private readonly CreateCdnKeySample _createSample;
 
-        private string _akamaiCdnKeyId;
         private string _cloudCdnKeyId;
+        private string _mediaCdnKeyId;
 
         public CreateCdnKeyTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateCdnKeySample();
-            _akamaiCdnKeyId = $"{_fixture.AkamaiCdnKeyIdPrefix}-{_fixture.TimestampId()}";
             _cloudCdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.TimestampId()}";
+            _mediaCdnKeyId = $"{_fixture.MediaCdnKeyIdPrefix}-{_fixture.TimestampId()}";
         }
 
         public void Dispose()
         {
-            _fixture.DeleteCdnKey(_akamaiCdnKeyId);
             _fixture.DeleteCdnKey(_cloudCdnKeyId);
+            _fixture.DeleteCdnKey(_mediaCdnKeyId);
         }
 
         [Fact]
-        public void CreatesCdnKey_Akamai()
+        public void CreatesCdnKey_MediaCdn()
         {
-            // Run the sample code and create an Akamai CDN key.
-            _fixture.CdnKeyIds.Add(_akamaiCdnKeyId);
+            // Run the sample code and create a Media CDN key.
+            _fixture.CdnKeyIds.Add(_mediaCdnKeyId);
             var result = _createSample.CreateCdnKey(
                 _fixture.ProjectId, _fixture.LocationId,
-                _akamaiCdnKeyId, _fixture.Hostname, null, null, _fixture.AkamaiTokenKey);
+                _mediaCdnKeyId, _fixture.Hostname, _fixture.KeyName, _fixture.MediaCdnPrivateKey, true);
 
-            Assert.Equal(_akamaiCdnKeyId, result.CdnKeyName.CdnKeyId);
+            Assert.Equal(_mediaCdnKeyId, result.CdnKeyName.CdnKeyId);
         }
 
         [Fact]
@@ -61,7 +61,7 @@ namespace Stitcher.Samples.Tests
             _fixture.CdnKeyIds.Add(_cloudCdnKeyId);
             var result = _createSample.CreateCdnKey(
                 _fixture.ProjectId, _fixture.LocationId,
-                _cloudCdnKeyId, _fixture.Hostname, _fixture.CloudCdnKeyName, _fixture.CloudCdnTokenKey, null);
+                _cloudCdnKeyId, _fixture.Hostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
 
             Assert.Equal(_cloudCdnKeyId, result.CdnKeyName.CdnKeyId);
         }

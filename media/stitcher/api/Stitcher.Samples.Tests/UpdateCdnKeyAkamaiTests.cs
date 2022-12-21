@@ -19,22 +19,22 @@ using Xunit;
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class UpdateCdnKeyTest
+    public class UpdateCdnKeyAkamaiTest
     {
         private StitcherFixture _fixture;
-        private readonly UpdateCdnKeySample _updateSample;
+        private readonly UpdateCdnKeyAkamaiSample _updateSample;
 
-        public UpdateCdnKeyTest(StitcherFixture fixture)
+        public UpdateCdnKeyAkamaiTest(StitcherFixture fixture)
         {
             _fixture = fixture;
-            _updateSample = new UpdateCdnKeySample();
+            _updateSample = new UpdateCdnKeyAkamaiSample();
         }
 
         [Fact]
-        public void UpdatesCdnKey_CloudCdn()
+        public void UpdatesCdnKey_Akamai()
         {
-            var result = _updateSample.UpdateCdnKey(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdatedHostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
-            Assert.Equal(_fixture.TestCloudCdnKeyId, result.CdnKeyName.CdnKeyId);
+            var result = _updateSample.UpdateCdnKeyAkamai(_fixture.ProjectId, _fixture.LocationId, _fixture.TestAkamaiCdnKeyId, _fixture.UpdatedHostname, _fixture.UpdatedAkamaiTokenKey);
+            Assert.Equal(_fixture.TestAkamaiCdnKeyId, result.CdnKeyName.CdnKeyId);
             Assert.Equal(_fixture.UpdatedHostname, result.Hostname);
         }
     }

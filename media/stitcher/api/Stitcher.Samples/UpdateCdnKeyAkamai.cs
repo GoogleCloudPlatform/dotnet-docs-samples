@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-// [START videostitcher_update_cdn_key]
+// [START videostitcher_update_cdn_key_akamai]
 
 using Google.Cloud.Video.Stitcher.V1;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
 
-public class UpdateCdnKeySample
+public class UpdateCdnKeyAkamaiSample
 {
-    public CdnKey UpdateCdnKey(
+    public CdnKey UpdateCdnKeyAkamai(
         string projectId, string location, string cdnKeyId, string hostname,
-        string keyName, string privateKey, bool isMediaCdn)
+        string akamaiTokenKey)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
@@ -32,33 +32,17 @@ public class UpdateCdnKeySample
         CdnKey cdnKey = new CdnKey
         {
             CdnKeyName = CdnKeyName.FromProjectLocationCdnKey(projectId, location, cdnKeyId),
-            Hostname = hostname
+            Hostname = hostname,
+            AkamaiCdnKey = new AkamaiCdnKey
+            {
+                TokenKey = ByteString.CopyFromUtf8(akamaiTokenKey)
+            }
         };
-
-        string path;
-        if (isMediaCdn)
-        {
-            path = "media_cdn_key";
-            cdnKey.MediaCdnKey = new MediaCdnKey
-            {
-                KeyName = keyName,
-                PrivateKey = ByteString.CopyFromUtf8(privateKey)
-            };
-        }
-        else
-        {
-            path = "google_cdn_key";
-            cdnKey.GoogleCdnKey = new GoogleCdnKey
-            {
-                KeyName = keyName,
-                PrivateKey = ByteString.CopyFromUtf8(privateKey)
-            };
-        }
 
         UpdateCdnKeyRequest request = new UpdateCdnKeyRequest
         {
             CdnKey = cdnKey,
-            UpdateMask = new FieldMask { Paths = { "hostname", path } }
+            UpdateMask = new FieldMask { Paths = { "hostname", "akamai_cdn_key" } }
         };
 
         // Call the API.
@@ -68,4 +52,4 @@ public class UpdateCdnKeySample
         return newCdnKey;
     }
 }
-// [END videostitcher_update_cdn_key]
+// [END videostitcher_update_cdn_key_akamai]

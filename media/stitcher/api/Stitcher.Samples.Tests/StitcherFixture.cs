@@ -31,6 +31,7 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
     public string SlateIdPrefix { get; } = "test-slate";
     public string AkamaiCdnKeyIdPrefix { get; } = "test-akamai-cdn-key";
     public string CloudCdnKeyIdPrefix { get; } = "test-cloud-cdn-key";
+    public string MediaCdnKeyIdPrefix { get; } = "test-media-cdn-key";
 
     public List<string> SlateIds { get; } = new List<string>();
     public List<string> CdnKeyIds { get; } = new List<string>();
@@ -45,19 +46,26 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
     public string LiveAdTagUri { get; } = "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
 
     public string Hostname { get; } = "cdn.example.com";
-    public string UpdateHostname { get; } = "update.cdn.example.com";
+    public string UpdatedHostname { get; } = "updated.cdn.example.com";
 
     public CdnKey TestCloudCdnKey { get; set; }
     public string TestCloudCdnKeyId { get; set; }
-    public string CloudCdnKeyName { get; } = "gcdn-key";
-    public string CloudCdnTokenKey { get; } = "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==";
-    public string UpdatedCloudCdnTokenKey = "VGhpcyBpcyBhbiB1cGRhdGVkIHRlc3Qgc3RyaW5nLg==";
+
+    public CdnKey TestAkamaiCdnKey { get; set; }
+    public string TestAkamaiCdnKeyId { get; set; }
+
+    public string KeyName { get; } = "my-key";
+    public string CloudCdnPrivateKey { get; } = "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==";
+    public string MediaCdnPrivateKey { get; } = "MTIzNDU2Nzg5MDEyMzQ1Njc4Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTIzNAAA";
     public string AkamaiTokenKey { get; } = "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==";
+    public string UpdatedAkamaiTokenKey { get; } = "VGhpcyBpcyBhbiB1cGRhdGVkIHRlc3Qgc3RyaW5nLg==";
 
     private readonly CreateSlateSample _createSlateSample = new CreateSlateSample();
     private readonly ListSlatesSample _listSlatesSample = new ListSlatesSample();
     private readonly DeleteSlateSample _deleteSlateSample = new DeleteSlateSample();
     private readonly CreateCdnKeySample _createCdnKeySample = new CreateCdnKeySample();
+    private readonly CreateCdnKeyAkamaiSample _createCdnKeyAkamaiSample = new CreateCdnKeyAkamaiSample();
+
     private readonly ListCdnKeysSample _listCdnKeysSample = new ListCdnKeysSample();
     private readonly DeleteCdnKeySample _deleteCdnKeySample = new DeleteCdnKeySample();
 
@@ -79,7 +87,11 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
 
         TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
-        TestCloudCdnKey = _createCdnKeySample.CreateCdnKey(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, CloudCdnKeyName, CloudCdnTokenKey, null);
+        TestCloudCdnKey = _createCdnKeySample.CreateCdnKey(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
+
+        TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{TimestampId()}";
+        CdnKeyIds.Add(TestAkamaiCdnKeyId);
+        TestAkamaiCdnKey = _createCdnKeyAkamaiSample.CreateCdnKeyAkamai(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
 
         httpClient = new HttpClient();
     }
