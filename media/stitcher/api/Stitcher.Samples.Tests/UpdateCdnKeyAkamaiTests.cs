@@ -33,9 +33,9 @@ namespace Stitcher.Samples.Tests
         [Fact]
         public void UpdatesCdnKey_Akamai()
         {
-            var result = _updateSample.UpdateCdnKeyAkamai(_fixture.ProjectId, _fixture.LocationId, _fixture.TestAkamaiCdnKeyId, _fixture.UpdatedHostname, _fixture.UpdatedAkamaiTokenKey);
+            var result = _updateSample.UpdateCdnKeyAkamai(_fixture.ProjectId, _fixture.LocationId, _fixture.TestAkamaiCdnKeyId, _fixture.UpdatedAkamaiHostname, _fixture.UpdatedAkamaiTokenKey);
             Assert.Equal(_fixture.TestAkamaiCdnKeyId, result.CdnKeyName.CdnKeyId);
-            Assert.Equal(_fixture.UpdatedHostname, result.Hostname);
+            Assert.Equal(_fixture.UpdatedAkamaiHostname, result.Hostname);
         }
     }
 }
