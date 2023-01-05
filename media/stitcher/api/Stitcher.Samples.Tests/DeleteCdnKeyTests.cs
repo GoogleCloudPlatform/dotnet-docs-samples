@@ -38,7 +38,7 @@ namespace Stitcher.Samples.Tests
             _fixture.CdnKeyIds.Add(_cdnKeyId);
             _createSample.CreateCdnKey(
                 _fixture.ProjectId, _fixture.LocationId,
-                _cdnKeyId, _fixture.Hostname, _fixture.CloudCdnKeyName, _fixture.CloudCdnTokenKey, null);
+                _cdnKeyId, _fixture.Hostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
         }
 
         public void Dispose()
