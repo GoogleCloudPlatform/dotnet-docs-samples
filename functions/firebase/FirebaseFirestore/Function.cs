@@ -22,45 +22,44 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FirebaseFirestore
+namespace FirebaseFirestore;
+
+public class Function : ICloudEventFunction<DocumentEventData>
 {
-    public class Function : ICloudEventFunction<DocumentEventData>
+    private readonly ILogger _logger;
+
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public Task HandleAsync(CloudEvent cloudEvent, DocumentEventData data, CancellationToken cancellationToken)
     {
-        private readonly ILogger _logger;
+        _logger.LogInformation("Function triggered by event on {subject}", cloudEvent.Subject);
+        _logger.LogInformation("Event type: {type}", cloudEvent.Type);
+        MaybeLogDocument("Old value", data.OldValue);
+        MaybeLogDocument("New value", data.Value);
 
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
+        // In this example, we don't need to perform any asynchronous operations, so the
+        // method doesn't need to be declared async.
+        return Task.CompletedTask;
+    }
 
-        public Task HandleAsync(CloudEvent cloudEvent, DocumentEventData data, CancellationToken cancellationToken)
+    /// <summary>
+    /// Logs the names and values of the fields in a document in a very simplistic way.
+    /// </summary>
+    private void MaybeLogDocument(string message, Document document)
+    {
+        if (document is null)
         {
-            _logger.LogInformation("Function triggered by event on {subject}", cloudEvent.Subject);
-            _logger.LogInformation("Event type: {type}", cloudEvent.Type);
-            MaybeLogDocument("Old value", data.OldValue);
-            MaybeLogDocument("New value", data.Value);
-
-            // In this example, we don't need to perform any asynchronous operations, so the
-            // method doesn't need to be declared async.
-            return Task.CompletedTask;
+            return;
         }
 
-        /// <summary>
-        /// Logs the names and values of the fields in a document in a very simplistic way.
-        /// </summary>
-        private void MaybeLogDocument(string message, Document document)
-        {
-            if (document is null)
-            {
-                return;
-            }
-
-            // ConvertFields converts the Firestore representation into a .NET-friendly
-            // representation.
-            IReadOnlyDictionary<string, object> fields = document.ConvertFields();
-            var fieldNamesAndTypes = fields
-                .OrderBy(pair => pair.Key)
-                .Select(pair => $"{pair.Key}: {pair.Value}");
-            _logger.LogInformation(message + ": {fields}", string.Join(", ", fieldNamesAndTypes));
-        }
+        // ConvertFields converts the Firestore representation into a .NET-friendly
+        // representation.
+        IReadOnlyDictionary<string, object> fields = document.ConvertFields();
+        var fieldNamesAndTypes = fields
+            .OrderBy(pair => pair.Key)
+            .Select(pair => $"{pair.Key}: {pair.Value}");
+        _logger.LogInformation(message + ": {fields}", string.Join(", ", fieldNamesAndTypes));
     }
 }
 // [END functions_firebase_firestore]

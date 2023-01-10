@@ -19,70 +19,69 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HelloWorld.Tests
+namespace HelloWorld.Tests;
+
+public class HelloHttpTest : FunctionTestBase<HelloHttp.Function>
 {
-    public class HelloHttpTest : FunctionTestBase<HelloHttp.Function>
+    [Fact]
+    public async Task EmptyRequest()
     {
-        [Fact]
-        public async Task EmptyRequest()
-        {
-            using var client = Server.CreateClient();
-            using var response = await client.GetAsync("uri");
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Assert.Equal("Hello world!", responseBody);
-            Assert.Empty(Server.GetFunctionLogEntries());
-        }
+        using var client = Server.CreateClient();
+        using var response = await client.GetAsync("uri");
+        response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.Equal("Hello world!", responseBody);
+        Assert.Empty(Server.GetFunctionLogEntries());
+    }
 
-        [Fact]
-        public async Task NameInQuery()
-        {
-            using var client = Server.CreateClient();
-            using var response = await client.GetAsync("uri?name=test");
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Assert.Equal("Hello test!", responseBody);
-            Assert.Empty(Server.GetFunctionLogEntries());
-        }
+    [Fact]
+    public async Task NameInQuery()
+    {
+        using var client = Server.CreateClient();
+        using var response = await client.GetAsync("uri?name=test");
+        response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.Equal("Hello test!", responseBody);
+        Assert.Empty(Server.GetFunctionLogEntries());
+    }
 
-        [Fact]
-        public async Task JsonWithNameInBody()
-        {
-            using var client = Server.CreateClient();
-            using var content = new StringContent("{\"name\":\"test\"}", Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("uri", content);
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Assert.Equal("Hello test!", responseBody);
-            Assert.Empty(Server.GetFunctionLogEntries());
-        }
+    [Fact]
+    public async Task JsonWithNameInBody()
+    {
+        using var client = Server.CreateClient();
+        using var content = new StringContent("{\"name\":\"test\"}", Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("uri", content);
+        response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.Equal("Hello test!", responseBody);
+        Assert.Empty(Server.GetFunctionLogEntries());
+    }
 
-        [Fact]
-        public async Task JsonWithoutNameInBody()
-        {
-            using var client = Server.CreateClient();
-            using var content = new StringContent("{\"foo\":\"test\"}", Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("uri", content);
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Assert.Equal("Hello world!", responseBody);
-            Assert.Empty(Server.GetFunctionLogEntries());
-        }
+    [Fact]
+    public async Task JsonWithoutNameInBody()
+    {
+        using var client = Server.CreateClient();
+        using var content = new StringContent("{\"foo\":\"test\"}", Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("uri", content);
+        response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.Equal("Hello world!", responseBody);
+        Assert.Empty(Server.GetFunctionLogEntries());
+    }
 
-        [Fact]
-        public async Task InvalidJson()
-        {
-            // If the JSON is invalid, we log an error but don't fail.
-            // TODO: Check that the error is logged. (Maybe this is something we should do in the FunctionTestServer...)
-            using var client = Server.CreateClient();
-            using var content = new StringContent("{\"name\":\"test\",invalid}", Encoding.UTF8, "application/json");
-            var response = await client.PostAsync("uri", content);
-            response.EnsureSuccessStatusCode();
-            var responseBody = await response.Content.ReadAsStringAsync();
-            Assert.Equal("Hello world!", responseBody);
-            var error = Assert.Single(Server.GetFunctionLogEntries());
-            Assert.Equal("Error parsing JSON request", error.Message);
-            Assert.Equal(LogLevel.Error, error.Level);
-        }
+    [Fact]
+    public async Task InvalidJson()
+    {
+        // If the JSON is invalid, we log an error but don't fail.
+        // TODO: Check that the error is logged. (Maybe this is something we should do in the FunctionTestServer...)
+        using var client = Server.CreateClient();
+        using var content = new StringContent("{\"name\":\"test\",invalid}", Encoding.UTF8, "application/json");
+        var response = await client.PostAsync("uri", content);
+        response.EnsureSuccessStatusCode();
+        var responseBody = await response.Content.ReadAsStringAsync();
+        Assert.Equal("Hello world!", responseBody);
+        var error = Assert.Single(Server.GetFunctionLogEntries());
+        Assert.Equal("Error parsing JSON request", error.Message);
+        Assert.Equal(LogLevel.Error, error.Level);
     }
 }

@@ -22,58 +22,57 @@ using System.IO;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace HttpFormData
+namespace HttpFormData;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    private readonly ILogger _logger;
+
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public async Task HandleAsync(HttpContext context)
     {
-        private readonly ILogger _logger;
+        HttpResponse response = context.Response;
+        HttpRequest request = context.Request;
 
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
-
-        public async Task HandleAsync(HttpContext context)
+        if (request.Method != "POST")
         {
-            HttpResponse response = context.Response;
-            HttpRequest request = context.Request;
+            response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
+            return;
+        }
 
-            if (request.Method != "POST")
+        // This code will process each file uploaded.
+        string tempDirectory = Path.GetTempPath();
+        foreach (IFormFile file in request.Form.Files)
+        {
+            if (string.IsNullOrEmpty(file.FileName))
             {
-                response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
-                return;
+                continue;
+            }
+            _logger.LogInformation("Processed file: {file}", file.FileName);
+
+            // Note: GCF's temp directory is an in-memory file system
+            // Thus, any files in it must fit in the instance's memory.
+            string outputPath = Path.Combine(tempDirectory, file.FileName);
+
+            // Note: files saved to a GCF instance itself may not persist across executions.
+            // Persistent files should be stored elsewhere, e.g. a Cloud Storage bucket.
+            using (FileStream output = File.Create(outputPath))
+            {
+                await file.CopyToAsync(output);
             }
 
-            // This code will process each file uploaded.
-            string tempDirectory = Path.GetTempPath();
-            foreach (IFormFile file in request.Form.Files)
-            {
-                if (string.IsNullOrEmpty(file.FileName))
-                {
-                    continue;
-                }
-                _logger.LogInformation("Processed file: {file}", file.FileName);
+            // TODO(developer): process saved files here
+            File.Delete(outputPath);
+        }
 
-                // Note: GCF's temp directory is an in-memory file system
-                // Thus, any files in it must fit in the instance's memory.
-                string outputPath = Path.Combine(tempDirectory, file.FileName);
-
-                // Note: files saved to a GCF instance itself may not persist across executions.
-                // Persistent files should be stored elsewhere, e.g. a Cloud Storage bucket.
-                using (FileStream output = File.Create(outputPath))
-                {
-                    await file.CopyToAsync(output);
-                }
-
-                // TODO(developer): process saved files here
-                File.Delete(outputPath);
-            }
-
-            // This code will process other form fields.
-            foreach (KeyValuePair<string, StringValues> parameter in request.Form)
-            {
-                // TODO(developer): process field values here
-                _logger.LogInformation("Processed field '{key}' (value: '{value}')",
-                    parameter.Key, (string) parameter.Value);
-            }
+        // This code will process other form fields.
+        foreach (KeyValuePair<string, StringValues> parameter in request.Form)
+        {
+            // TODO(developer): process field values here
+            _logger.LogInformation("Processed field '{key}' (value: '{value}')",
+                parameter.Key, (string) parameter.Value);
         }
     }
 }

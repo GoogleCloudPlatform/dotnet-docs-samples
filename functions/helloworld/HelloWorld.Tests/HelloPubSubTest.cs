@@ -21,48 +21,47 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HelloWorld.Tests
+namespace HelloWorld.Tests;
+
+public abstract class HelloPubSubTestBase<TFunction> : FunctionTestBase<TFunction>
 {
-    public abstract class HelloPubSubTestBase<TFunction> : FunctionTestBase<TFunction>
+    [Fact]
+    public async Task MessageWithTextData()
     {
-        [Fact]
-        public async Task MessageWithTextData()
+        var data = new MessagePublishedData { Message = new PubsubMessage { TextData = "PubSub user" } };
+        await ExecuteCloudEventRequestAsync(MessagePublishedData.MessagePublishedCloudEventType, data);
+
+        var logEntry = Assert.Single(GetFunctionLogEntries());
+        Assert.Equal("Hello PubSub user", logEntry.Message);
+        Assert.Equal(LogLevel.Information, logEntry.Level);
+    }
+
+    [Fact]
+    public async Task MessageWithoutTextData()
+    {
+        var data = new MessagePublishedData
         {
-            var data = new MessagePublishedData { Message = new PubsubMessage { TextData = "PubSub user" } };
-            await ExecuteCloudEventRequestAsync(MessagePublishedData.MessagePublishedCloudEventType, data);
+            Message = new PubsubMessage { Attributes = { { "key", "value" } } }
+        };
+        await ExecuteCloudEventRequestAsync(MessagePublishedData.MessagePublishedCloudEventType, data);
 
-            var logEntry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal("Hello PubSub user", logEntry.Message);
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-        }
-
-        [Fact]
-        public async Task MessageWithoutTextData()
-        {
-            var data = new MessagePublishedData
-            {
-                Message = new PubsubMessage { Attributes = { { "key", "value" } } }
-            };
-            await ExecuteCloudEventRequestAsync(MessagePublishedData.MessagePublishedCloudEventType, data);
-
-            var logEntry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal("Hello world", logEntry.Message);
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-        }
+        var logEntry = Assert.Single(GetFunctionLogEntries());
+        Assert.Equal("Hello world", logEntry.Message);
+        Assert.Equal(LogLevel.Information, logEntry.Level);
     }
+}
 
-    // C# test
-    public class HelloPubSubTest : HelloPubSubTestBase<HelloPubSub.Function>
-    {
-    }
+// C# test
+public class HelloPubSubTest : HelloPubSubTestBase<HelloPubSub.Function>
+{
+}
 
-    // VB test
-    public class HelloPubSubVbTest : HelloPubSubTestBase<HelloPubSubVb.CloudFunction>
-    {
-    }
+// VB test
+public class HelloPubSubVbTest : HelloPubSubTestBase<HelloPubSubVb.CloudFunction>
+{
+}
 
-    // F# test
-    public class HelloPubSubFSharpTest : HelloPubSubTestBase<HelloPubSubFSharp.Function>
-    {
-    }
+// F# test
+public class HelloPubSubFSharpTest : HelloPubSubTestBase<HelloPubSubFSharp.Function>
+{
 }

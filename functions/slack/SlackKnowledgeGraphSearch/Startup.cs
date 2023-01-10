@@ -24,25 +24,24 @@ using System;
 // This can also be specified on the function type.
 [assembly: FunctionsStartup(typeof(SlackKnowledgeGraphSearch.Startup))]
 
-namespace SlackKnowledgeGraphSearch
+namespace SlackKnowledgeGraphSearch;
+
+public class Startup : FunctionsStartup
 {
-    public class Startup : FunctionsStartup
+    private static readonly TimeSpan SlackTimestampTolerance = TimeSpan.FromMinutes(5);
+
+    public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
     {
-        private static readonly TimeSpan SlackTimestampTolerance = TimeSpan.FromMinutes(5);
+        // These can come from an environment variable or a configuration file.
+        string kgApiKey = context.Configuration["KG_API_KEY"];
+        string slackSigningSecret = context.Configuration["SLACK_SECRET"];
 
-        public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services)
+        services.AddSingleton(new KgsearchService(new BaseClientService.Initializer
         {
-            // These can come from an environment variable or a configuration file.
-            string kgApiKey = context.Configuration["KG_API_KEY"];
-            string slackSigningSecret = context.Configuration["SLACK_SECRET"];
-
-            services.AddSingleton(new KgsearchService(new BaseClientService.Initializer
-            {
-                ApiKey = kgApiKey
-            }));
-            services.AddSingleton(new SlackRequestVerifier(slackSigningSecret, SlackTimestampTolerance));
-            base.ConfigureServices(context, services);
-        }
+            ApiKey = kgApiKey
+        }));
+        services.AddSingleton(new SlackRequestVerifier(slackSigningSecret, SlackTimestampTolerance));
+        base.ConfigureServices(context, services);
     }
 }
 // [END functions_slack_setup]

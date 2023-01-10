@@ -18,75 +18,73 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
 using System;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-namespace ParseContentType
+namespace ParseContentType;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    public async Task HandleAsync(HttpContext context)
     {
-        public async Task HandleAsync(HttpContext context)
+        HttpRequest request = context.Request;
+        HttpResponse response = context.Response;
+
+        string name = null;
+        ContentType contentType = new ContentType(request.ContentType);
+
+        switch (contentType.MediaType)
         {
-            HttpRequest request = context.Request;
-            HttpResponse response = context.Response;
-
-            string name = null;
-            ContentType contentType = new ContentType(request.ContentType);
-
-            switch (contentType.MediaType)
+            case "application/json":
             {
-                case "application/json":
+                // '{"name":"John"}'
+                using TextReader reader = new StreamReader(request.Body);
+                string json = await reader.ReadToEndAsync();
+                JsonElement body = JsonSerializer.Deserialize<JsonElement>(json);
+                if (body.TryGetProperty("name", out JsonElement property) && property.ValueKind == JsonValueKind.String)
                 {
-                    // '{"name":"John"}'
-                    using TextReader reader = new StreamReader(request.Body);
-                    string json = await reader.ReadToEndAsync();
-                    JsonElement body = JsonSerializer.Deserialize<JsonElement>(json);
-                    if (body.TryGetProperty("name", out JsonElement property) && property.ValueKind == JsonValueKind.String)
-                    {
-                        name = property.GetString();
-                    }
-                    break;
+                    name = property.GetString();
                 }
-                case "application/octet-stream":
-                {
-                    // 'John', encoded to bytes using UTF-8, then encoded as base64
-                    using TextReader reader = new StreamReader(request.Body);
-                    string base64 = await reader.ReadToEndAsync();
-                    byte[] data = Convert.FromBase64String(base64);
-                    name = Encoding.UTF8.GetString(data);
-                    break;
-                }
-                case "text/plain":
-                {
-                    // 'John'
-                    using TextReader reader = new StreamReader(request.Body);
-                    name = await reader.ReadLineAsync();
-                    break;
-                }
-                case "application/x-www-form-urlencoded":
-                {
-                    // 'name=John' in the body of a POST request (not the URL)
-                    if (request.Form.TryGetValue("name", out StringValues value))
-                    {
-                        name = value;
-                    }
-                    break;
-                }
+                break;
             }
-            if (name is object)
+            case "application/octet-stream":
             {
-                await response.WriteAsync($"Hello {name}!");
+                // 'John', encoded to bytes using UTF-8, then encoded as base64
+                using TextReader reader = new StreamReader(request.Body);
+                string base64 = await reader.ReadToEndAsync();
+                byte[] data = Convert.FromBase64String(base64);
+                name = Encoding.UTF8.GetString(data);
+                break;
             }
-            else
+            case "text/plain":
             {
-                // Unrecognized content type, or the name wasn't in the content
-                // (e.g. JSON without a "name" property)
-                response.StatusCode = (int) HttpStatusCode.BadRequest;
+                // 'John'
+                using TextReader reader = new StreamReader(request.Body);
+                name = await reader.ReadLineAsync();
+                break;
             }
+            case "application/x-www-form-urlencoded":
+            {
+                // 'name=John' in the body of a POST request (not the URL)
+                if (request.Form.TryGetValue("name", out StringValues value))
+                {
+                    name = value;
+                }
+                break;
+            }
+        }
+        if (name is object)
+        {
+            await response.WriteAsync($"Hello {name}!");
+        }
+        else
+        {
+            // Unrecognized content type, or the name wasn't in the content
+            // (e.g. JSON without a "name" property)
+            response.StatusCode = (int) HttpStatusCode.BadRequest;
         }
     }
 }

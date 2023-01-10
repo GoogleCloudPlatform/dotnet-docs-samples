@@ -16,20 +16,19 @@ using Google.Cloud.Functions.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Concepts.Tests
-{
-    public class ExecutionCountTest : FunctionTestBase<ExecutionCount.Function>
-    {
-        // This test relies on it being the *only* test to use ExecutionCount.Function.
-        // Without that, we might need some kind of reset capability.
-        [Fact]
-        public async Task TwoRequests()
-        {
-            string request1 = await ExecuteHttpGetRequestAsync();
-            string request2 = await ExecuteHttpGetRequestAsync();
+namespace Concepts.Tests;
 
-            Assert.Equal("Server execution count: 1", request1);
-            Assert.Equal("Server execution count: 2", request2);
-        }
+public class ExecutionCountTest : FunctionTestBase<ExecutionCount.Function>
+{
+    // This test relies on it being the *only* test to use ExecutionCount.Function.
+    // Without that, we might need some kind of reset capability.
+    [Fact]
+    public async Task TwoRequests()
+    {
+        string request1 = await ExecuteHttpGetRequestAsync();
+        string request2 = await ExecuteHttpGetRequestAsync();
+
+        Assert.Equal("Server execution count: 1", request1);
+        Assert.Equal("Server execution count: 2", request2);
     }
 }

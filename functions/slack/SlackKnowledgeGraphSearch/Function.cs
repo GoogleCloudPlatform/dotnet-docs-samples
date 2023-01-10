@@ -23,125 +23,124 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace SlackKnowledgeGraphSearch
+namespace SlackKnowledgeGraphSearch;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    // [START functions_slack_search]
+    private readonly ILogger _logger;
+    private readonly KgsearchService _kgService;
+    private readonly SlackRequestVerifier _verifier;
+
+    public Function(ILogger<Function> logger, KgsearchService kgService, SlackRequestVerifier verifier) =>
+        (_logger, _kgService, _verifier) = (logger, kgService, verifier);
+
+    public async Task HandleAsync(HttpContext context)
     {
-        // [START functions_slack_search]
-        private readonly ILogger _logger;
-        private readonly KgsearchService _kgService;
-        private readonly SlackRequestVerifier _verifier;
+        var request = context.Request;
+        var response = context.Response;
 
-        public Function(ILogger<Function> logger, KgsearchService kgService, SlackRequestVerifier verifier) =>
-            (_logger, _kgService, _verifier) = (logger, kgService, verifier);
-
-        public async Task HandleAsync(HttpContext context)
+        // Validate request
+        if (request.Method != "POST")
         {
-            var request = context.Request;
-            var response = context.Response;
-
-            // Validate request
-            if (request.Method != "POST")
-            {
-                _logger.LogWarning("Unexpected request method '{method}'", request.Method);
-                response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
-                return;
-            }
-
-            if (!request.HasFormContentType)
-            {
-                _logger.LogWarning("Unexpected content type '{contentType}'", request.ContentType);
-                response.StatusCode = (int) HttpStatusCode.BadRequest;
-                return;
-            }
-
-            // We need to read the request body twice: once to validate the signature,
-            // and once to read the form content. We copy it into a memory stream,
-            // so that we can rewind it after reading.
-            var bodyCopy = new MemoryStream();
-            await request.Body.CopyToAsync(bodyCopy);
-            request.Body = bodyCopy;
-            bodyCopy.Position = 0;
-
-            if (!_verifier.VerifyRequest(request, bodyCopy.ToArray()))
-            {
-                _logger.LogWarning("Slack request verification failed");
-                response.StatusCode = (int) HttpStatusCode.Unauthorized;
-                return;
-            }
-
-            var form = await request.ReadFormAsync();
-            if (!form.TryGetValue("text", out var query))
-            {
-                _logger.LogWarning("Slack request form did not contain a text element");
-                response.StatusCode = (int) HttpStatusCode.BadRequest;
-                return;
-            }
-
-            var kgResponse = await SearchKnowledgeGraphAsync(query);
-            string formattedResponse = FormatSlackMessage(kgResponse, query);
-            response.ContentType = "application/json";
-            await response.WriteAsync(formattedResponse);
+            _logger.LogWarning("Unexpected request method '{method}'", request.Method);
+            response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
+            return;
         }
-        // [END functions_slack_search]
 
-        // [START functions_slack_request]
-        private async Task<SearchResponse> SearchKnowledgeGraphAsync(string query)
+        if (!request.HasFormContentType)
         {
-            _logger.LogInformation("Performing Knowledge Graph search for '{query}'", query);
-            var request = _kgService.Entities.Search();
-            request.Limit = 1;
-            request.Query = query;
-            return await request.ExecuteAsync();
+            _logger.LogWarning("Unexpected content type '{contentType}'", request.ContentType);
+            response.StatusCode = (int) HttpStatusCode.BadRequest;
+            return;
         }
-        // [END functions_slack_request]
 
-        // [START functions_slack_format]
-        private string FormatSlackMessage(SearchResponse kgResponse, string query)
+        // We need to read the request body twice: once to validate the signature,
+        // and once to read the form content. We copy it into a memory stream,
+        // so that we can rewind it after reading.
+        var bodyCopy = new MemoryStream();
+        await request.Body.CopyToAsync(bodyCopy);
+        request.Body = bodyCopy;
+        bodyCopy.Position = 0;
+
+        if (!_verifier.VerifyRequest(request, bodyCopy.ToArray()))
         {
-            JObject attachment = new JObject();
-            JObject response = new JObject();
-
-            response["response_type"] = "in_channel";
-            response["text"] = $"Query: {query}";
-
-            var element = kgResponse.ItemListElement?.FirstOrDefault() as JObject;
-            if (element is object && element.TryGetValue("result", out var entityToken) &&
-                entityToken is JObject entity)
-            {
-                string title = (string) entity["name"];
-                if (entity.TryGetValue("description", out var description))
-                {
-                    title = $"{title}: {description}";
-                }
-                attachment["title"] = title;
-                if (entity.TryGetValue("detailedDescription", out var detailedDescriptionToken) &&
-                    detailedDescriptionToken is JObject detailedDescription)
-                {
-                    AddPropertyIfPresent(detailedDescription, "url", "title_link");
-                    AddPropertyIfPresent(detailedDescription, "articleBody", "text");
-                }
-                if (entity.TryGetValue("image", out var imageToken) &&
-                    imageToken is JObject image)
-                {
-                    AddPropertyIfPresent(image, "contentUrl", "image_url");
-                }
-            }
-            else
-            {
-                attachment["text"] = "No results match your query...";
-            }
-            response["attachments"] = new JArray { attachment };
-            return response.ToString();
-
-            void AddPropertyIfPresent(JObject parent, string sourceProperty, string targetProperty)
-            {
-                if (parent.TryGetValue(sourceProperty, out var propertyValue))
-                {
-                    attachment[targetProperty] = propertyValue;
-                }
-            }
+            _logger.LogWarning("Slack request verification failed");
+            response.StatusCode = (int) HttpStatusCode.Unauthorized;
+            return;
         }
-        // [END functions_slack_format]
+
+        var form = await request.ReadFormAsync();
+        if (!form.TryGetValue("text", out var query))
+        {
+            _logger.LogWarning("Slack request form did not contain a text element");
+            response.StatusCode = (int) HttpStatusCode.BadRequest;
+            return;
+        }
+
+        var kgResponse = await SearchKnowledgeGraphAsync(query);
+        string formattedResponse = FormatSlackMessage(kgResponse, query);
+        response.ContentType = "application/json";
+        await response.WriteAsync(formattedResponse);
     }
+    // [END functions_slack_search]
+
+    // [START functions_slack_request]
+    private async Task<SearchResponse> SearchKnowledgeGraphAsync(string query)
+    {
+        _logger.LogInformation("Performing Knowledge Graph search for '{query}'", query);
+        var request = _kgService.Entities.Search();
+        request.Limit = 1;
+        request.Query = query;
+        return await request.ExecuteAsync();
+    }
+    // [END functions_slack_request]
+
+    // [START functions_slack_format]
+    private string FormatSlackMessage(SearchResponse kgResponse, string query)
+    {
+        JObject attachment = new JObject();
+        JObject response = new JObject();
+
+        response["response_type"] = "in_channel";
+        response["text"] = $"Query: {query}";
+
+        var element = kgResponse.ItemListElement?.FirstOrDefault() as JObject;
+        if (element is object && element.TryGetValue("result", out var entityToken) &&
+            entityToken is JObject entity)
+        {
+            string title = (string) entity["name"];
+            if (entity.TryGetValue("description", out var description))
+            {
+                title = $"{title}: {description}";
+            }
+            attachment["title"] = title;
+            if (entity.TryGetValue("detailedDescription", out var detailedDescriptionToken) &&
+                detailedDescriptionToken is JObject detailedDescription)
+            {
+                AddPropertyIfPresent(detailedDescription, "url", "title_link");
+                AddPropertyIfPresent(detailedDescription, "articleBody", "text");
+            }
+            if (entity.TryGetValue("image", out var imageToken) &&
+                imageToken is JObject image)
+            {
+                AddPropertyIfPresent(image, "contentUrl", "image_url");
+            }
+        }
+        else
+        {
+            attachment["text"] = "No results match your query...";
+        }
+        response["attachments"] = new JArray { attachment };
+        return response.ToString();
+
+        void AddPropertyIfPresent(JObject parent, string sourceProperty, string targetProperty)
+        {
+            if (parent.TryGetValue(sourceProperty, out var propertyValue))
+            {
+                attachment[targetProperty] = propertyValue;
+            }
+        }
+    }
+    // [END functions_slack_format]
 }

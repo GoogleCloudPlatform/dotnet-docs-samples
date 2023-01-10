@@ -19,43 +19,42 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Firebase.Tests
-{
-    public class FirebaseAnalyticsTest : FunctionTestBase<FirebaseAnalytics.Function>
-    {
-        [Fact]
-        public async Task LoggingForEvent()
-        {
-            var data = new AnalyticsLogData
-            {
-                EventDim =
-                {
-                    new EventDimensions
-                    {
-                        Name = "my-event",
-                        TimestampMicros = 1599818774000000L
-                    }
-                },
-                UserDim = new UserDimensions
-                {
-                    DeviceInfo = new DeviceInfo { DeviceModel = "Pixel" },
-                    GeoInfo = new GeoInfo { City = "London", Country = "UK" }
-                }
-            };
-            await ExecuteCloudEventRequestAsync(AnalyticsLogData.WrittenCloudEventType, data,
-                new Uri("//firebaseanalytics.googleapis.com/projects/my-project/apps/my-app", UriKind.RelativeOrAbsolute));
+namespace Firebase.Tests;
 
-            string[] expectedMessages =
+public class FirebaseAnalyticsTest : FunctionTestBase<FirebaseAnalytics.Function>
+{
+    [Fact]
+    public async Task LoggingForEvent()
+    {
+        var data = new AnalyticsLogData
+        {
+            EventDim =
             {
-                "Event source: //firebaseanalytics.googleapis.com/projects/my-project/apps/my-app",
-                "Event count: 1",
-                "First event name: my-event",
-                "First event timestamp: 2020-09-11 10:06:14Z",
-                "Device model: Pixel",
-                "Location: London, UK"
-            };
-            var actualMessages = GetFunctionLogEntries().Select(entry => entry.Message).ToArray();
-            Assert.Equal(expectedMessages, actualMessages);
-        }
+                new EventDimensions
+                {
+                    Name = "my-event",
+                    TimestampMicros = 1599818774000000L
+                }
+            },
+            UserDim = new UserDimensions
+            {
+                DeviceInfo = new DeviceInfo { DeviceModel = "Pixel" },
+                GeoInfo = new GeoInfo { City = "London", Country = "UK" }
+            }
+        };
+        await ExecuteCloudEventRequestAsync(AnalyticsLogData.WrittenCloudEventType, data,
+            new Uri("//firebaseanalytics.googleapis.com/projects/my-project/apps/my-app", UriKind.RelativeOrAbsolute));
+
+        string[] expectedMessages =
+        {
+            "Event source: //firebaseanalytics.googleapis.com/projects/my-project/apps/my-app",
+            "Event count: 1",
+            "First event name: my-event",
+            "First event timestamp: 2020-09-11 10:06:14Z",
+            "Device model: Pixel",
+            "Location: London, UK"
+        };
+        var actualMessages = GetFunctionLogEntries().Select(entry => entry.Message).ToArray();
+        Assert.Equal(expectedMessages, actualMessages);
     }
 }

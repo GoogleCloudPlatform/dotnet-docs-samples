@@ -16,15 +16,14 @@ using Google.Cloud.Functions.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Concepts.Tests
+namespace Concepts.Tests;
+
+public class LazyFieldsTest : FunctionTestBase<LazyFields.Function>
 {
-    public class LazyFieldsTest : FunctionTestBase<LazyFields.Function>
+    [Fact]
+    public async Task ResponseText()
     {
-        [Fact]
-        public async Task ResponseText()
-        {
-            var responseBody = await ExecuteHttpGetRequestAsync();
-            Assert.Equal("Lazy global: 45; non-lazy global: 362880", responseBody);
-        }
+        var responseBody = await ExecuteHttpGetRequestAsync();
+        Assert.Equal("Lazy global: 45; non-lazy global: 362880", responseBody);
     }
 }

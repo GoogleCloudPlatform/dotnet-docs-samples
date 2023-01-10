@@ -18,23 +18,22 @@ using Microsoft.AspNetCore.Http;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ExecutionCount
-{
-    public class Function : IHttpFunction
-    {
-        // Note that this variable must be static, because a new instance is
-        // created for each request. An alternative approach would be to use
-        // dependency injection with a singleton resource injected into the function
-        // constructor.
-        private static int _count;
+namespace ExecutionCount;
 
-        public async Task HandleAsync(HttpContext context)
-        {
-            // Note: the total function invocation count across
-            // all servers may not be equal to this value!
-            int currentCount = Interlocked.Increment(ref _count);
-            await context.Response.WriteAsync($"Server execution count: {currentCount}");
-        }
+public class Function : IHttpFunction
+{
+    // Note that this variable must be static, because a new instance is
+    // created for each request. An alternative approach would be to use
+    // dependency injection with a singleton resource injected into the function
+    // constructor.
+    private static int _count;
+
+    public async Task HandleAsync(HttpContext context)
+    {
+        // Note: the total function invocation count across
+        // all servers may not be equal to this value!
+        int currentCount = Interlocked.Increment(ref _count);
+        await context.Response.WriteAsync($"Server execution count: {currentCount}");
     }
 }
 // [END functions_concepts_stateless]

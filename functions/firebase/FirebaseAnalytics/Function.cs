@@ -22,38 +22,37 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FirebaseAnalytics
+namespace FirebaseAnalytics;
+
+public class Function : ICloudEventFunction<AnalyticsLogData>
 {
-    public class Function : ICloudEventFunction<AnalyticsLogData>
+    private readonly ILogger _logger;
+
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public Task HandleAsync(CloudEvent cloudEvent, AnalyticsLogData data, CancellationToken cancellationToken)
     {
-        private readonly ILogger _logger;
+        _logger.LogInformation("Event source: {source}", cloudEvent.Source);
+        _logger.LogInformation("Event count: {count}", data.EventDim.Count);
 
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
-
-        public Task HandleAsync(CloudEvent cloudEvent, AnalyticsLogData data, CancellationToken cancellationToken)
+        var firstEvent = data.EventDim.FirstOrDefault();
+        if (firstEvent is object)
         {
-            _logger.LogInformation("Event source: {source}", cloudEvent.Source);
-            _logger.LogInformation("Event count: {count}", data.EventDim.Count);
-
-            var firstEvent = data.EventDim.FirstOrDefault();
-            if (firstEvent is object)
-            {
-                _logger.LogInformation("First event name: {name}", firstEvent.Name);
-                DateTimeOffset timestamp = DateTimeOffset.FromUnixTimeMilliseconds(firstEvent.TimestampMicros / 1000);
-                _logger.LogInformation("First event timestamp: {timestamp:u}", timestamp);
-            }
-
-            var userObject = data.UserDim;
-            if (userObject is object)
-            {
-                _logger.LogInformation("Device model: {device}", userObject.DeviceInfo?.DeviceModel);
-                _logger.LogInformation("Location: {city}, {country}", userObject.GeoInfo?.City, userObject.GeoInfo.Country);
-            }
-            // In this example, we don't need to perform any asynchronous operations, so the
-            // method doesn't need to be declared async.
-            return Task.CompletedTask;
+            _logger.LogInformation("First event name: {name}", firstEvent.Name);
+            DateTimeOffset timestamp = DateTimeOffset.FromUnixTimeMilliseconds(firstEvent.TimestampMicros / 1000);
+            _logger.LogInformation("First event timestamp: {timestamp:u}", timestamp);
         }
+
+        var userObject = data.UserDim;
+        if (userObject is object)
+        {
+            _logger.LogInformation("Device model: {device}", userObject.DeviceInfo?.DeviceModel);
+            _logger.LogInformation("Location: {city}, {country}", userObject.GeoInfo?.City, userObject.GeoInfo.Country);
+        }
+        // In this example, we don't need to perform any asynchronous operations, so the
+        // method doesn't need to be declared async.
+        return Task.CompletedTask;
     }
 }
 // [END functions_firebase_analytics]

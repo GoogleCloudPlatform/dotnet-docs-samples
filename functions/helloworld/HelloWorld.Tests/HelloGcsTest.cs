@@ -23,51 +23,50 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HelloWorld.Tests
+namespace HelloWorld.Tests;
+
+public class HelloGcsTest : FunctionTestBase<HelloGcs.Function>
 {
-    public class HelloGcsTest : FunctionTestBase<HelloGcs.Function>
+    [Fact]
+    public async Task CloudEventIsLogged()
     {
-        [Fact]
-        public async Task CloudEventIsLogged()
+        var client = Server.CreateClient();
+
+        var created = DateTimeOffset.UtcNow.AddMinutes(-5);
+        var updated = created.AddMinutes(2);
+        var data = new StorageObjectData
         {
-            var client = Server.CreateClient();
+            Name = "new-file.txt",
+            Bucket = "my-bucket",
+            Metageneration = 23,
+            TimeCreated = new DateTimeOffset(2020, 7, 9, 13, 0, 5, TimeSpan.Zero).ToTimestamp(),
+            Updated = new DateTimeOffset(2020, 7, 9, 13, 23, 25, TimeSpan.Zero).ToTimestamp()
+        };
+        var cloudEvent = new CloudEvent
+        {
+            Type = StorageObjectData.DeletedCloudEventType,
+            Source = new Uri("//storage.googleapis.com", UriKind.RelativeOrAbsolute),
+            Id = "1234",
+            Data = data
+        };
 
-            var created = DateTimeOffset.UtcNow.AddMinutes(-5);
-            var updated = created.AddMinutes(2);
-            var data = new StorageObjectData
-            {
-                Name = "new-file.txt",
-                Bucket = "my-bucket",
-                Metageneration = 23,
-                TimeCreated = new DateTimeOffset(2020, 7, 9, 13, 0, 5, TimeSpan.Zero).ToTimestamp(),
-                Updated = new DateTimeOffset(2020, 7, 9, 13, 23, 25, TimeSpan.Zero).ToTimestamp()
-            };
-            var cloudEvent = new CloudEvent
-            {
-                Type = StorageObjectData.DeletedCloudEventType,
-                Source = new Uri("//storage.googleapis.com", UriKind.RelativeOrAbsolute),
-                Id = "1234",
-                Data = data
-            };
+        await ExecuteCloudEventRequestAsync(cloudEvent);
 
-            await ExecuteCloudEventRequestAsync(cloudEvent);
+        var logs = GetFunctionLogEntries();
+        Assert.All(logs, entry => Assert.Equal(LogLevel.Information, entry.Level));
 
-            var logs = GetFunctionLogEntries();
-            Assert.All(logs, entry => Assert.Equal(LogLevel.Information, entry.Level));
+        var actualMessages = logs.Select(entry => entry.Message).ToArray();
+        var expectedMessages = new[]
+        {
+            "Event: 1234",
+            $"Event Type: {StorageObjectData.DeletedCloudEventType}",
+            "Bucket: my-bucket",
+            "File: new-file.txt",
+            "Metageneration: 23",
+            "Created: 2020-07-09T13:00:05",
+            "Updated: 2020-07-09T13:23:25",
+        };
 
-            var actualMessages = logs.Select(entry => entry.Message).ToArray();
-            var expectedMessages = new[]
-            {
-                "Event: 1234",
-                $"Event Type: {StorageObjectData.DeletedCloudEventType}",
-                "Bucket: my-bucket",
-                "File: new-file.txt",
-                "Metageneration: 23",
-                "Created: 2020-07-09T13:00:05",
-                "Updated: 2020-07-09T13:23:25",
-            };
-
-            Assert.Equal(expectedMessages, actualMessages);
-        }
+        Assert.Equal(expectedMessages, actualMessages);
     }
 }

@@ -18,28 +18,27 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Http.Tests
-{
-    public class HttpRequestMethodTest : FunctionTestBase<HttpRequestMethod.Function>
-    {
-        [Theory]
-        [InlineData("GET", HttpStatusCode.OK, "Hello world!")]
-        [InlineData("PUT", HttpStatusCode.Forbidden, "Forbidden!")]
-        [InlineData("DELETE", HttpStatusCode.MethodNotAllowed, "Something blew up!")]
-        public async Task ExecuteFunction(string method, HttpStatusCode expectedStatus, string expectedContent)
-        {
-            var request = new HttpRequestMessage
-            {
-                Method = new HttpMethod(method),
-                RequestUri = new Uri("uri", UriKind.Relative)
-            };
+namespace Http.Tests;
 
-            await ExecuteHttpRequestAsync(request, async response =>
-            {
-                Assert.Equal(expectedStatus, response.StatusCode);
-                var actualContent = await response.Content.ReadAsStringAsync();
-                Assert.Equal(expectedContent, actualContent);
-            });
-        }
+public class HttpRequestMethodTest : FunctionTestBase<HttpRequestMethod.Function>
+{
+    [Theory]
+    [InlineData("GET", HttpStatusCode.OK, "Hello world!")]
+    [InlineData("PUT", HttpStatusCode.Forbidden, "Forbidden!")]
+    [InlineData("DELETE", HttpStatusCode.MethodNotAllowed, "Something blew up!")]
+    public async Task ExecuteFunction(string method, HttpStatusCode expectedStatus, string expectedContent)
+    {
+        var request = new HttpRequestMessage
+        {
+            Method = new HttpMethod(method),
+            RequestUri = new Uri("uri", UriKind.Relative)
+        };
+
+        await ExecuteHttpRequestAsync(request, async response =>
+        {
+            Assert.Equal(expectedStatus, response.StatusCode);
+            var actualContent = await response.Content.ReadAsStringAsync();
+            Assert.Equal(expectedContent, actualContent);
+        });
     }
 }

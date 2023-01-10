@@ -24,33 +24,32 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HelloWorld.Tests
+namespace HelloWorld.Tests;
+
+public class HelloGcsUnitTest
 {
-    public class HelloGcsUnitTest
+    [Fact]
+    public async Task FileNameIsLogged()
     {
-        [Fact]
-        public async Task FileNameIsLogged()
+        // Prepare the inputs
+        var data = new StorageObjectData { Name = "new-file.txt" };
+        var cloudEvent = new CloudEvent
         {
-            // Prepare the inputs
-            var data = new StorageObjectData { Name = "new-file.txt" };
-            var cloudEvent = new CloudEvent
-            {
-                Type = StorageObjectData.FinalizedCloudEventType,
-                Source = new Uri("//storage.googleapis.com", UriKind.RelativeOrAbsolute),
-                Id = "1234",
-                Data = data
-            };
-            var logger = new MemoryLogger<HelloGcs.Function>();
+            Type = StorageObjectData.FinalizedCloudEventType,
+            Source = new Uri("//storage.googleapis.com", UriKind.RelativeOrAbsolute),
+            Id = "1234",
+            Data = data
+        };
+        var logger = new MemoryLogger<HelloGcs.Function>();
 
-            // Execute the function
-            var function = new HelloGcs.Function(logger);
-            await function.HandleAsync(cloudEvent, data, CancellationToken.None);
+        // Execute the function
+        var function = new HelloGcs.Function(logger);
+        await function.HandleAsync(cloudEvent, data, CancellationToken.None);
 
-            // Check the log results - just the entry starting with "File:".
-            var logEntry = Assert.Single(logger.ListLogEntries(), entry => entry.Message.StartsWith("File:"));
-            Assert.Equal("File: new-file.txt", logEntry.Message);
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-        }
+        // Check the log results - just the entry starting with "File:".
+        var logEntry = Assert.Single(logger.ListLogEntries(), entry => entry.Message.StartsWith("File:"));
+        Assert.Equal("File: new-file.txt", logEntry.Message);
+        Assert.Equal(LogLevel.Information, logEntry.Level);
     }
 }
 // [END functions_storage_unit_test]

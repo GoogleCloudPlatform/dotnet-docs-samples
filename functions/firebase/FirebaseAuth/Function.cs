@@ -20,31 +20,30 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FirebaseAuth
+namespace FirebaseAuth;
+
+public class Function : ICloudEventFunction<AuthEventData>
 {
-    public class Function : ICloudEventFunction<AuthEventData>
+    private readonly ILogger _logger;
+
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public Task HandleAsync(CloudEvent cloudEvent, AuthEventData data, CancellationToken cancellationToken)
     {
-        private readonly ILogger _logger;
-
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
-
-        public Task HandleAsync(CloudEvent cloudEvent, AuthEventData data, CancellationToken cancellationToken)
+        _logger.LogInformation("Function triggered by change to user: {uid}", data.Uid);
+        if (data.Metadata is UserMetadata metadata)
         {
-            _logger.LogInformation("Function triggered by change to user: {uid}", data.Uid);
-            if (data.Metadata is UserMetadata metadata)
-            {
-                _logger.LogInformation("User created at: {created:s}", metadata.CreateTime.ToDateTimeOffset());
-            }
-            if (!string.IsNullOrEmpty(data.Email))
-            {
-                _logger.LogInformation("Email: {email}", data.Email);
-            }
-
-            // In this example, we don't need to perform any asynchronous operations, so the
-            // method doesn't need to be declared async.
-            return Task.CompletedTask;
+            _logger.LogInformation("User created at: {created:s}", metadata.CreateTime.ToDateTimeOffset());
         }
+        if (!string.IsNullOrEmpty(data.Email))
+        {
+            _logger.LogInformation("Email: {email}", data.Email);
+        }
+
+        // In this example, we don't need to perform any asynchronous operations, so the
+        // method doesn't need to be declared async.
+        return Task.CompletedTask;
     }
 }
 // [END functions_firebase_auth]

@@ -16,15 +16,14 @@ using Google.Cloud.Functions.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Concepts.Tests
+namespace Concepts.Tests;
+
+public class ScopesTest : FunctionTestBase<Scopes.Function>
 {
-    public class ScopesTest : FunctionTestBase<Scopes.Function>
+    [Fact]
+    public async Task ResponseText()
     {
-        [Fact]
-        public async Task ResponseText()
-        {
-            var responseBody = await ExecuteHttpGetRequestAsync();
-            Assert.Equal("Global: 362880; function: 45", responseBody);
-        }
+        var responseBody = await ExecuteHttpGetRequestAsync();
+        Assert.Equal("Global: 362880; function: 45", responseBody);
     }
 }
