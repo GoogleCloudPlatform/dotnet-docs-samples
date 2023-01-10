@@ -25,58 +25,57 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FirestoreReactive
+namespace FirestoreReactive;
+
+public class Startup : FunctionsStartup
 {
-    public class Startup : FunctionsStartup
+    public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services) =>
+        services.AddSingleton(FirestoreDb.Create());
+}
+
+// Register the startup class to provide the Firestore dependency.
+[FunctionsStartup(typeof(Startup))]
+public class Function : ICloudEventFunction<DocumentEventData>
+{
+    private readonly ILogger _logger;
+    private readonly FirestoreDb _firestoreDb;
+
+    public Function(ILogger<Function> logger, FirestoreDb firestoreDb) =>
+        (_logger, _firestoreDb) = (logger, firestoreDb);
+
+    public async Task HandleAsync(CloudEvent cloudEvent, DocumentEventData data, CancellationToken cancellationToken)
     {
-        public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services) =>
-            services.AddSingleton(FirestoreDb.Create());
-    }
-
-    // Register the startup class to provide the Firestore dependency.
-    [FunctionsStartup(typeof(Startup))]
-    public class Function : ICloudEventFunction<DocumentEventData>
-    {
-        private readonly ILogger _logger;
-        private readonly FirestoreDb _firestoreDb;
-
-        public Function(ILogger<Function> logger, FirestoreDb firestoreDb) =>
-            (_logger, _firestoreDb) = (logger, firestoreDb);
-
-        public async Task HandleAsync(CloudEvent cloudEvent, DocumentEventData data, CancellationToken cancellationToken)
+        // Get the recently-written value. This expression will result in a null value
+        // if any of the following is true:
+        // - The event doesn't contain a "new" document
+        // - The value doesn't contain a field called "original"
+        // - The "original" field isn't a string
+        string currentValue = data.Value?.ConvertFields().GetValueOrDefault("original") as string;
+        if (currentValue is null)
         {
-            // Get the recently-written value. This expression will result in a null value
-            // if any of the following is true:
-            // - The event doesn't contain a "new" document
-            // - The value doesn't contain a field called "original"
-            // - The "original" field isn't a string
-            string currentValue = data.Value?.ConvertFields().GetValueOrDefault("original") as string;
-            if (currentValue is null)
-            {
-                _logger.LogWarning($"Event did not contain a suitable document");
-                return;
-            }
-
-            string newValue = currentValue.ToUpperInvariant();
-            if (newValue == currentValue)
-            {
-                _logger.LogInformation("Value is already upper-cased; no replacement necessary");
-                return;
-            }
-
-            // The CloudEvent subject is "documents/x/y/...".
-            // The Firestore SDK FirestoreDb.Document method expects a reference relative to
-            // "documents" (so just the "x/y/..." part). This may be simplified over time.
-            if (cloudEvent.Subject is null || !cloudEvent.Subject.StartsWith("documents/"))
-            {
-                _logger.LogWarning("CloudEvent subject is not a document reference.");
-                return;
-            }
-            string documentPath = cloudEvent.Subject.Substring("documents/".Length);
-
-            _logger.LogInformation("Replacing '{current}' with '{new}' in '{path}'", currentValue, newValue, documentPath);
-            await _firestoreDb.Document(documentPath).UpdateAsync("original", newValue);
+            _logger.LogWarning($"Event did not contain a suitable document");
+            return;
         }
+
+        string newValue = currentValue.ToUpperInvariant();
+        if (newValue == currentValue)
+        {
+            _logger.LogInformation("Value is already upper-cased; no replacement necessary");
+            return;
+        }
+
+        // The CloudEvent subject is "documents/x/y/...".
+        // The Firestore SDK FirestoreDb.Document method expects a reference relative to
+        // "documents" (so just the "x/y/..." part). This may be simplified over time.
+        if (cloudEvent.Subject is null || !cloudEvent.Subject.StartsWith("documents/"))
+        {
+            _logger.LogWarning("CloudEvent subject is not a document reference.");
+            return;
+        }
+        string documentPath = cloudEvent.Subject.Substring("documents/".Length);
+
+        _logger.LogInformation("Replacing '{current}' with '{new}' in '{path}'", currentValue, newValue, documentPath);
+        await _firestoreDb.Document(documentPath).UpdateAsync("original", newValue);
     }
 }
 // [END functions_firebase_reactive]

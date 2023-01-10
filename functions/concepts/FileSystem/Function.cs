@@ -18,19 +18,18 @@ using Microsoft.AspNetCore.Http;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace FileSystem
-{
-    public class Function : IHttpFunction
-    {
-        public async Task HandleAsync(HttpContext context)
-        {
-            string[] files = Directory.GetFiles(".");
+namespace FileSystem;
 
-            await context.Response.WriteAsync("Files:\n");
-            foreach (string file in files)
-            {
-                await context.Response.WriteAsync($"\t{file}\n");
-            }
+public class Function : IHttpFunction
+{
+    public async Task HandleAsync(HttpContext context)
+    {
+        string[] files = Directory.GetFiles(".");
+
+        await context.Response.WriteAsync("Files:\n");
+        foreach (string file in files)
+        {
+            await context.Response.WriteAsync($"\t{file}\n");
         }
     }
 }

@@ -19,48 +19,47 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Firebase.Tests
+namespace Firebase.Tests;
+
+public class FirebaseAuthTest : FunctionTestBase<FirebaseAuth.Function>
 {
-    public class FirebaseAuthTest : FunctionTestBase<FirebaseAuth.Function>
+    [Fact]
+    public async Task LoggingForMinimalEvent()
     {
-        [Fact]
-        public async Task LoggingForMinimalEvent()
+        var data = new AuthEventData { Uid = "my-uid" };
+        await ExecuteCloudEventRequestAsync(AuthEventData.CreatedCloudEventType, data);
+
+        var entry = Assert.Single(GetFunctionLogEntries());
+        Assert.Equal("Function triggered by change to user: my-uid", entry.Message);
+    }
+
+
+    [Fact]
+    public async Task CreatedLoggedWhenPresent()
+    {
+        var created = new DateTimeOffset(2020, 8, 26, 17, 29, 30, TimeSpan.Zero);
+        var data = new AuthEventData
         {
-            var data = new AuthEventData { Uid = "my-uid" };
-            await ExecuteCloudEventRequestAsync(AuthEventData.CreatedCloudEventType, data);
+            Uid = "my-uid",
+            Metadata = new UserMetadata { CreateTime = created.ToTimestamp() }
+        };
+        await ExecuteCloudEventRequestAsync(AuthEventData.CreatedCloudEventType, data);
 
-            var entry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal("Function triggered by change to user: my-uid", entry.Message);
-        }
+        var entries = GetFunctionLogEntries();
+        Assert.Equal(2, entries.Count);
+        // The first entry is the UID
+        Assert.Equal("User created at: 2020-08-26T17:29:30", entries[1].Message);
+    }
 
+    [Fact]
+    public async Task EmailLoggedWhenPresent()
+    {
+        var data = new AuthEventData { Uid = "my-uid", Email = "noone@nowhere.com" };
+        await ExecuteCloudEventRequestAsync(AuthEventData.CreatedCloudEventType, data);
 
-        [Fact]
-        public async Task CreatedLoggedWhenPresent()
-        {
-            var created = new DateTimeOffset(2020, 8, 26, 17, 29, 30, TimeSpan.Zero);
-            var data = new AuthEventData
-            {
-                Uid = "my-uid",
-                Metadata = new UserMetadata { CreateTime = created.ToTimestamp() }
-            };
-            await ExecuteCloudEventRequestAsync(AuthEventData.CreatedCloudEventType, data);
-
-            var entries = GetFunctionLogEntries();
-            Assert.Equal(2, entries.Count);
-            // The first entry is the UID
-            Assert.Equal("User created at: 2020-08-26T17:29:30", entries[1].Message);
-        }
-
-        [Fact]
-        public async Task EmailLoggedWhenPresent()
-        {
-            var data = new AuthEventData { Uid = "my-uid", Email = "noone@nowhere.com" };
-            await ExecuteCloudEventRequestAsync(AuthEventData.CreatedCloudEventType, data);
-
-            var entries = GetFunctionLogEntries();
-            Assert.Equal(2, entries.Count);
-            // The first entry is the UID
-            Assert.Equal("Email: noone@nowhere.com", entries[1].Message);
-        }
+        var entries = GetFunctionLogEntries();
+        Assert.Equal(2, entries.Count);
+        // The first entry is the UID
+        Assert.Equal("Email: noone@nowhere.com", entries[1].Message);
     }
 }

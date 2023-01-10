@@ -16,17 +16,16 @@ using Google.Cloud.Functions.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Concepts.Tests
+namespace Concepts.Tests;
+
+public class FileSystemTest : FunctionTestBase<FileSystem.Function>
 {
-    public class FileSystemTest : FunctionTestBase<FileSystem.Function>
+    [Fact]
+    public async Task FilesAreListed()
     {
-        [Fact]
-        public async Task FilesAreListed()
-        {
-            var responseBody = await ExecuteHttpGetRequestAsync();
-            Assert.Contains("Files:\n", responseBody);
-            // We expect the working directory to contain the test assembly.
-            Assert.Contains("Concepts.Tests.dll", responseBody);
-        }
+        var responseBody = await ExecuteHttpGetRequestAsync();
+        Assert.Contains("Files:\n", responseBody);
+        // We expect the working directory to contain the test assembly.
+        Assert.Contains("Concepts.Tests.dll", responseBody);
     }
 }

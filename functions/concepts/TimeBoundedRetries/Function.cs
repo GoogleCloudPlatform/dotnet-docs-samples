@@ -21,40 +21,39 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace TimeBoundedRetries
+namespace TimeBoundedRetries;
+
+public class Function : ICloudEventFunction<MessagePublishedData>
 {
-    public class Function : ICloudEventFunction<MessagePublishedData>
+    private static readonly TimeSpan MaxEventAge = TimeSpan.FromSeconds(10);
+    private readonly ILogger _logger;
+
+    // Note: for additional testability, use an injectable clock abstraction.
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public Task HandleAsync(CloudEvent cloudEvent, MessagePublishedData data, CancellationToken cancellationToken)
     {
-        private static readonly TimeSpan MaxEventAge = TimeSpan.FromSeconds(10);
-        private readonly ILogger _logger;
+        string textData = data.Message.TextData;
 
-        // Note: for additional testability, use an injectable clock abstraction.
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
+        DateTimeOffset utcNow = DateTimeOffset.UtcNow;
 
-        public Task HandleAsync(CloudEvent cloudEvent, MessagePublishedData data, CancellationToken cancellationToken)
+        // Every PubSub CloudEvent will contain a timestamp.
+        DateTimeOffset timestamp = cloudEvent.Time.Value;
+        DateTimeOffset expiry = timestamp + MaxEventAge;
+
+        // Ignore events that are too old.
+        if (utcNow > expiry)
         {
-            string textData = data.Message.TextData;
-
-            DateTimeOffset utcNow = DateTimeOffset.UtcNow;
-
-            // Every PubSub CloudEvent will contain a timestamp.
-            DateTimeOffset timestamp = cloudEvent.Time.Value;
-            DateTimeOffset expiry = timestamp + MaxEventAge;
-
-            // Ignore events that are too old.
-            if (utcNow > expiry)
-            {
-                _logger.LogInformation("Dropping PubSub message '{text}'", textData);
-                return Task.CompletedTask;
-            }
-
-            // Process events that are recent enough.
-            // If this processing throws an exception, the message will be retried until either
-            // processing succeeds or the event becomes too old and is dropped by the code above.
-            _logger.LogInformation("Processing PubSub message '{text}'", textData);
+            _logger.LogInformation("Dropping PubSub message '{text}'", textData);
             return Task.CompletedTask;
         }
+
+        // Process events that are recent enough.
+        // If this processing throws an exception, the message will be retried until either
+        // processing succeeds or the event becomes too old and is dropped by the code above.
+        _logger.LogInformation("Processing PubSub message '{text}'", textData);
+        return Task.CompletedTask;
     }
 }
 // [END functions_tips_infinite_retries]

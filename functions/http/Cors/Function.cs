@@ -18,33 +18,32 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace Cors
+namespace Cors;
+
+// For more information about CORS and CORS preflight requests, see
+// https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request.
+public class Function : IHttpFunction
 {
-    // For more information about CORS and CORS preflight requests, see
-    // https://developer.mozilla.org/en-US/docs/Glossary/Preflight_request.
-    public class Function : IHttpFunction
+    public async Task HandleAsync(HttpContext context)
     {
-        public async Task HandleAsync(HttpContext context)
+        HttpRequest request = context.Request;
+        HttpResponse response = context.Response;
+
+        // Set CORS headers
+        //   Allows GETs from any origin with the Content-Type
+        //   header and caches preflight response for 3600s
+
+        response.Headers.Append("Access-Control-Allow-Origin", "*");
+        if (HttpMethods.IsOptions(request.Method))
         {
-            HttpRequest request = context.Request;
-            HttpResponse response = context.Response;
-
-            // Set CORS headers
-            //   Allows GETs from any origin with the Content-Type
-            //   header and caches preflight response for 3600s
-
-            response.Headers.Append("Access-Control-Allow-Origin", "*");
-            if (HttpMethods.IsOptions(request.Method))
-            {
-                response.Headers.Append("Access-Control-Allow-Methods", "GET");
-                response.Headers.Append("Access-Control-Allow-Headers", "Content-Type");
-                response.Headers.Append("Access-Control-Max-Age", "3600");
-                response.StatusCode = (int) HttpStatusCode.NoContent;
-                return;
-            }
-
-            await response.WriteAsync("CORS headers set successfully!");
+            response.Headers.Append("Access-Control-Allow-Methods", "GET");
+            response.Headers.Append("Access-Control-Allow-Headers", "Content-Type");
+            response.Headers.Append("Access-Control-Max-Age", "3600");
+            response.StatusCode = (int) HttpStatusCode.NoContent;
+            return;
         }
+
+        await response.WriteAsync("CORS headers set successfully!");
     }
 }
 // [END functions_http_cors]

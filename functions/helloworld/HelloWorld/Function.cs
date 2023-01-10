@@ -17,14 +17,13 @@ using Google.Cloud.Functions.Framework;
 using Microsoft.AspNetCore.Http;
 using System.Threading.Tasks;
 
-namespace HelloWorld
+namespace HelloWorld;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    public async Task HandleAsync(HttpContext context)
     {
-        public async Task HandleAsync(HttpContext context)
-        {
-            await context.Response.WriteAsync("Hello World!");
-        }
+        await context.Response.WriteAsync("Hello World!");
     }
 }
 // [END functions_helloworld_get]

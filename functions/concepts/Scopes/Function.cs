@@ -18,39 +18,38 @@ using Microsoft.AspNetCore.Http;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Scopes
+namespace Scopes;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    // Global (server-wide) scope.
+    // This computation runs at server cold-start.
+    // Warning: Class variables used in functions code must be thread-safe.
+    private static readonly int GlobalVariable = HeavyComputation();
+
+    // Note that one instance of this class (Function) is created per invocation,
+    // so calling HeavyComputation in the constructor would not have the same
+    // benefit.
+
+    public async Task HandleAsync(HttpContext context)
     {
-        // Global (server-wide) scope.
-        // This computation runs at server cold-start.
-        // Warning: Class variables used in functions code must be thread-safe.
-        private static readonly int GlobalVariable = HeavyComputation();
+        // Per-function-invocation scope.
+        // This computation runs every time this function is called.
+        int functionVariable = LightComputation();
 
-        // Note that one instance of this class (Function) is created per invocation,
-        // so calling HeavyComputation in the constructor would not have the same
-        // benefit.
+        await context.Response.WriteAsync($"Global: {GlobalVariable}; function: {functionVariable}");
+    }
 
-        public async Task HandleAsync(HttpContext context)
-        {
-            // Per-function-invocation scope.
-            // This computation runs every time this function is called.
-            int functionVariable = LightComputation();
+    private static int LightComputation()
+    {
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        return numbers.Sum();
+    }
 
-            await context.Response.WriteAsync($"Global: {GlobalVariable}; function: {functionVariable}");
-        }
-
-        private static int LightComputation()
-        {
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            return numbers.Sum();
-        }
-
-        private static int HeavyComputation()
-        {
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            return numbers.Aggregate((current, next) => current * next);
-        }
+    private static int HeavyComputation()
+    {
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        return numbers.Aggregate((current, next) => current * next);
     }
 }
 // [END functions_tips_scopes]

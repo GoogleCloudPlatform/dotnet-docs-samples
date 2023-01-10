@@ -20,24 +20,23 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FirebaseRtdb
+namespace FirebaseRtdb;
+
+public class Function : ICloudEventFunction<ReferenceEventData>
 {
-    public class Function : ICloudEventFunction<ReferenceEventData>
+    private readonly ILogger _logger;
+
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public Task HandleAsync(CloudEvent cloudEvent, ReferenceEventData data, CancellationToken cancellationToken)
     {
-        private readonly ILogger _logger;
+        _logger.LogInformation("Function triggered by change to {subject}", cloudEvent.Subject);
+        _logger.LogInformation("Delta: {delta}", data.Delta);
 
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
-
-        public Task HandleAsync(CloudEvent cloudEvent, ReferenceEventData data, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Function triggered by change to {subject}", cloudEvent.Subject);
-            _logger.LogInformation("Delta: {delta}", data.Delta);
-
-            // In this example, we don't need to perform any asynchronous operations, so the
-            // method doesn't need to be declared async.
-            return Task.CompletedTask;
-        }
+        // In this example, we don't need to perform any asynchronous operations, so the
+        // method doesn't need to be declared async.
+        return Task.CompletedTask;
     }
 }
 // [END functions_firebase_rtdb]

@@ -12,20 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 using Google.Cloud.Functions.Testing;
-using System.Net;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Http.Tests
+namespace Http.Tests;
+
+public class SendHttpRequestTest : FunctionTestBase<SendHttpRequest.Function>
 {
-    public class SendHttpRequestTest : FunctionTestBase<SendHttpRequest.Function>
+    [Fact]
+    public async Task SuccessfulRequest()
     {
-        [Fact]
-        public async Task SuccessfulRequest()
-        {
-            var actualContent = await ExecuteHttpGetRequestAsync("uri");
-            var expectedContent = "Received code '200' from URL 'http://example.com'.";
-            Assert.Equal(expectedContent, actualContent);
-        }
+        var actualContent = await ExecuteHttpGetRequestAsync("uri");
+        var expectedContent = "Received code '200' from URL 'http://example.com'.";
+        Assert.Equal(expectedContent, actualContent);
     }
 }

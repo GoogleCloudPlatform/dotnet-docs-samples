@@ -21,30 +21,29 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Firebase.Tests
+namespace Firebase.Tests;
+
+public class FirebaseRemoteConfigTest : FunctionTestBase<FirebaseRemoteConfig.Function>
 {
-    public class FirebaseRemoteConfigTest : FunctionTestBase<FirebaseRemoteConfig.Function>
+    [Fact]
+    public async Task DetailsAreLogged()
     {
-        [Fact]
-        public async Task DetailsAreLogged()
+        var data = new RemoteConfigEventData
         {
-            var data = new RemoteConfigEventData
-            {
-                UpdateType = RemoteConfigUpdateType.IncrementalUpdate,
-                UpdateOrigin = RemoteConfigUpdateOrigin.Console,
-                VersionNumber = 12345L
-            };
+            UpdateType = RemoteConfigUpdateType.IncrementalUpdate,
+            UpdateOrigin = RemoteConfigUpdateOrigin.Console,
+            VersionNumber = 12345L
+        };
 
-            await ExecuteCloudEventRequestAsync(RemoteConfigEventData.UpdatedCloudEventType, data);
+        await ExecuteCloudEventRequestAsync(RemoteConfigEventData.UpdatedCloudEventType, data);
 
-            var expectedMessages = new[]
-            {
-                "Update type: IncrementalUpdate",
-                "Update origin: Console",
-                "Version number: 12345"
-            };
-            var actualMessages = GetFunctionLogEntries().Select(entry => entry.Message).ToArray();
-            Assert.Equal(expectedMessages, actualMessages);
-        }
+        var expectedMessages = new[]
+        {
+            "Update type: IncrementalUpdate",
+            "Update origin: Console",
+            "Version number: 12345"
+        };
+        var actualMessages = GetFunctionLogEntries().Select(entry => entry.Message).ToArray();
+        Assert.Equal(expectedMessages, actualMessages);
     }
 }

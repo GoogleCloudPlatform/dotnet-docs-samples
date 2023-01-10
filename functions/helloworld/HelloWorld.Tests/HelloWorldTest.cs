@@ -16,30 +16,29 @@ using Google.Cloud.Functions.Testing;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HelloWorld.Tests
+namespace HelloWorld.Tests;
+
+public abstract class HelloWorldTestBase<TFunction> : FunctionTestBase<TFunction>
 {
-    public abstract class HelloWorldTestBase<TFunction> : FunctionTestBase<TFunction>
+    [Fact]
+    public async Task EmptyRequest()
     {
-        [Fact]
-        public async Task EmptyRequest()
-        {
-            var responseBody = await ExecuteHttpGetRequestAsync("uri");
-            Assert.Equal("Hello World!", responseBody);
-        }
+        var responseBody = await ExecuteHttpGetRequestAsync("uri");
+        Assert.Equal("Hello World!", responseBody);
     }
+}
 
-    // C# test
-    public class HelloWorldTest : HelloWorldTestBase<HelloWorld.Function>
-    {
-    }
+// C# test
+public class HelloWorldTest : HelloWorldTestBase<HelloWorld.Function>
+{
+}
 
-    // VB test
-    public class HelloWorldVbTest : HelloWorldTestBase<HelloWorldVb.CloudFunction>
-    {
-    }
+// VB test
+public class HelloWorldVbTest : HelloWorldTestBase<HelloWorldVb.CloudFunction>
+{
+}
 
-    // F# test
-    public class HelloWorldFSharpTest : HelloWorldTestBase<HelloWorldFSharp.Function>
-    {
-    }
+// F# test
+public class HelloWorldFSharpTest : HelloWorldTestBase<HelloWorldFSharp.Function>
+{
 }

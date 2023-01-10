@@ -23,55 +23,54 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace HelloWorld.Tests
+namespace HelloWorld.Tests;
+
+public class HelloPubSubUnitTest
 {
-    public class HelloPubSubUnitTest
+    [Fact]
+    public async Task MessageWithTextData()
     {
-        [Fact]
-        public async Task MessageWithTextData()
+        var data = new MessagePublishedData { Message = new PubsubMessage { TextData = "PubSub user" } };
+        var cloudEvent = new CloudEvent
         {
-            var data = new MessagePublishedData { Message = new PubsubMessage { TextData = "PubSub user" } };
-            var cloudEvent = new CloudEvent
-            {
-                Type = MessagePublishedData.MessagePublishedCloudEventType,
-                Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
-                Id = Guid.NewGuid().ToString(),
-                Time = DateTimeOffset.UtcNow,
-                Data = data
-            };
+            Type = MessagePublishedData.MessagePublishedCloudEventType,
+            Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
+            Id = Guid.NewGuid().ToString(),
+            Time = DateTimeOffset.UtcNow,
+            Data = data
+        };
 
-            var logger = new MemoryLogger<HelloPubSub.Function>();
-            var function = new HelloPubSub.Function(logger);
-            await function.HandleAsync(cloudEvent, data, CancellationToken.None);
+        var logger = new MemoryLogger<HelloPubSub.Function>();
+        var function = new HelloPubSub.Function(logger);
+        await function.HandleAsync(cloudEvent, data, CancellationToken.None);
 
-            var logEntry = Assert.Single(logger.ListLogEntries());
-            Assert.Equal("Hello PubSub user", logEntry.Message);
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-        }
+        var logEntry = Assert.Single(logger.ListLogEntries());
+        Assert.Equal("Hello PubSub user", logEntry.Message);
+        Assert.Equal(LogLevel.Information, logEntry.Level);
+    }
 
-        [Fact]
-        public async Task MessageWithoutTextData()
+    [Fact]
+    public async Task MessageWithoutTextData()
+    {
+        var data = new MessagePublishedData
         {
-            var data = new MessagePublishedData
-            {
-                Message = new PubsubMessage { Attributes = { { "key", "value" } } }
-            };
-            var cloudEvent = new CloudEvent
-            {
-                Type = MessagePublishedData.MessagePublishedCloudEventType,
-                Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
-                Id = Guid.NewGuid().ToString(),
-                Time = DateTimeOffset.UtcNow
-            };
+            Message = new PubsubMessage { Attributes = { { "key", "value" } } }
+        };
+        var cloudEvent = new CloudEvent
+        {
+            Type = MessagePublishedData.MessagePublishedCloudEventType,
+            Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
+            Id = Guid.NewGuid().ToString(),
+            Time = DateTimeOffset.UtcNow
+        };
 
-            var logger = new MemoryLogger<HelloPubSub.Function>();
-            var function = new HelloPubSub.Function(logger);
-            await function.HandleAsync(cloudEvent, data, CancellationToken.None);
+        var logger = new MemoryLogger<HelloPubSub.Function>();
+        var function = new HelloPubSub.Function(logger);
+        await function.HandleAsync(cloudEvent, data, CancellationToken.None);
 
-            var logEntry = Assert.Single(logger.ListLogEntries());
-            Assert.Equal("Hello world", logEntry.Message);
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-        }
+        var logEntry = Assert.Single(logger.ListLogEntries());
+        Assert.Equal("Hello world", logEntry.Message);
+        Assert.Equal(LogLevel.Information, logEntry.Level);
     }
 }
 // [END functions_pubsub_unit_test]

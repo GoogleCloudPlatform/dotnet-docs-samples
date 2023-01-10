@@ -17,27 +17,26 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Concepts.Tests
-{
-    // Note: these tests modify the "FOO" environment variable
-    // without any attempt to restore the original value. We assume
-    // no other tests will use that environment variable.
-    public class EnvironmentVariablesTest : FunctionTestBase<EnvironmentVariables.Function>
-    {
-        [Fact]
-        public async Task VariableSet()
-        {
-            Environment.SetEnvironmentVariable("FOO", "Test foo value");
-            var responseBody = await ExecuteHttpGetRequestAsync();
-            Assert.Equal("Test foo value", responseBody);
-        }
+namespace Concepts.Tests;
 
-        [Fact]
-        public async Task VariableNotSet()
-        {
-            Environment.SetEnvironmentVariable("FOO", null);
-            var responseBody = await ExecuteHttpGetRequestAsync();
-            Assert.Equal("Specified environment variable is not set.", responseBody);
-        }
+// Note: these tests modify the "FOO" environment variable
+// without any attempt to restore the original value. We assume
+// no other tests will use that environment variable.
+public class EnvironmentVariablesTest : FunctionTestBase<EnvironmentVariables.Function>
+{
+    [Fact]
+    public async Task VariableSet()
+    {
+        Environment.SetEnvironmentVariable("FOO", "Test foo value");
+        var responseBody = await ExecuteHttpGetRequestAsync();
+        Assert.Equal("Test foo value", responseBody);
+    }
+
+    [Fact]
+    public async Task VariableNotSet()
+    {
+        Environment.SetEnvironmentVariable("FOO", null);
+        var responseBody = await ExecuteHttpGetRequestAsync();
+        Assert.Equal("Specified environment variable is not set.", responseBody);
     }
 }

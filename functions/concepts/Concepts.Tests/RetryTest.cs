@@ -21,45 +21,44 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Concepts.Tests
+namespace Concepts.Tests;
+
+public class RetryTest : FunctionTestBase<Retry.Function>
 {
-    public class RetryTest : FunctionTestBase<Retry.Function>
+    public static TheoryData<PubsubMessage> NonRetryMessages = new TheoryData<PubsubMessage>
     {
-        public static TheoryData<PubsubMessage> NonRetryMessages = new TheoryData<PubsubMessage>
+        // Explicit retry=false
+        new PubsubMessage { TextData = "{ \"retry\": false }" },
+        // No retry property at all
+        new PubsubMessage { TextData = "{ \"not-retry\": 123 }" },
+        // No text at all
+        new PubsubMessage { Attributes = { { "key", "value" } } }
+    };
+
+    [Fact]
+    public async Task RetryTrue()
+    {
+        var data = new MessagePublishedData
         {
-            // Explicit retry=false
-            new PubsubMessage { TextData = "{ \"retry\": false }" },
-            // No retry property at all
-            new PubsubMessage { TextData = "{ \"not-retry\": 123 }" },
-            // No text at all
-            new PubsubMessage { Attributes = { { "key", "value" } } }
+            Message = new PubsubMessage { TextData = "{ \"retry\": true }" }
         };
 
-        [Fact]
-        public async Task RetryTrue()
-        {
-            var data = new MessagePublishedData
-            {
-                Message = new PubsubMessage { TextData = "{ \"retry\": true }" }
-            };
+        // The test server propagates the exception to the caller. The real server would respond
+        // with a status code of 500.
+        await Assert.ThrowsAsync<InvalidOperationException>(
+            () => ExecuteCloudEventRequestAsync(MessagePublishedData.MessagePublishedCloudEventType, data));
+        Assert.Empty(GetFunctionLogEntries());
+    }
 
-            // The test server propagates the exception to the caller. The real server would respond
-            // with a status code of 500.
-            await Assert.ThrowsAsync<InvalidOperationException>(
-                () => ExecuteCloudEventRequestAsync(MessagePublishedData.MessagePublishedCloudEventType, data));
-            Assert.Empty(GetFunctionLogEntries());
-        }
-
-        [Theory]
-        [MemberData(nameof(NonRetryMessages))]
-        public async Task NoRetry(PubsubMessage message)
-        {
-            await ExecuteCloudEventRequestAsync(
-                MessagePublishedData.MessagePublishedCloudEventType,
-                new MessagePublishedData { Message = message });
-            var logEntry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-            Assert.Equal("Not retrying...", logEntry.Message);
-        }
+    [Theory]
+    [MemberData(nameof(NonRetryMessages))]
+    public async Task NoRetry(PubsubMessage message)
+    {
+        await ExecuteCloudEventRequestAsync(
+            MessagePublishedData.MessagePublishedCloudEventType,
+            new MessagePublishedData { Message = message });
+        var logEntry = Assert.Single(GetFunctionLogEntries());
+        Assert.Equal(LogLevel.Information, logEntry.Level);
+        Assert.Equal("Not retrying...", logEntry.Message);
     }
 }

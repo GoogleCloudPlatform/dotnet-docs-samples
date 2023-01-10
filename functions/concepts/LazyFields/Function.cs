@@ -20,40 +20,39 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace LazyFields
+namespace LazyFields;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    // This computation runs at server cold-start.
+    // Warning: Class variables used in functions code must be thread-safe.
+    private static readonly int NonLazyGlobal = FileWideComputation();
+
+    // This variable is initialized at server cold-start, but the
+    // computation is only performed when the function needs the result.
+    private static readonly Lazy<int> LazyGlobal = new Lazy<int>(
+        FunctionSpecificComputation,
+        LazyThreadSafetyMode.ExecutionAndPublication);
+
+    public async Task HandleAsync(HttpContext context)
     {
-        // This computation runs at server cold-start.
-        // Warning: Class variables used in functions code must be thread-safe.
-        private static readonly int NonLazyGlobal = FileWideComputation();
+        // In a more complex function, there might be some paths that use LazyGlobal.Value,
+        // and others that don't. The computation is only performed when necessary, and
+        // only once per server.
+        await context.Response.WriteAsync(
+            $"Lazy global: {LazyGlobal.Value}; non-lazy global: {NonLazyGlobal}");
+    }
 
-        // This variable is initialized at server cold-start, but the
-        // computation is only performed when the function needs the result.
-        private static readonly Lazy<int> LazyGlobal = new Lazy<int>(
-            FunctionSpecificComputation,
-            LazyThreadSafetyMode.ExecutionAndPublication);
+    private static int FunctionSpecificComputation()
+    {
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        return numbers.Sum();
+    }
 
-        public async Task HandleAsync(HttpContext context)
-        {
-            // In a more complex function, there might be some paths that use LazyGlobal.Value,
-            // and others that don't. The computation is only performed when necessary, and
-            // only once per server.
-            await context.Response.WriteAsync(
-                $"Lazy global: {LazyGlobal.Value}; non-lazy global: {NonLazyGlobal}");
-        }
-
-        private static int FunctionSpecificComputation()
-        {
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            return numbers.Sum();
-        }
-
-        private static int FileWideComputation()
-        {
-            int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
-            return numbers.Aggregate((current, next) => current * next);
-        }
+    private static int FileWideComputation()
+    {
+        int[] numbers = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+        return numbers.Aggregate((current, next) => current * next);
     }
 }
 // [END functions_tips_lazy_globals]
