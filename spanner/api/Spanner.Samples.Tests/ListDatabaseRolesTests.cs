@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+﻿// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,27 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class ReadStaleDataAsyncTest
+public class ListDatabasesRolesTests
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public ReadStaleDataAsyncTest(SpannerFixture spannerFixture)
-    {
+    public ListDatabasesRolesTests(SpannerFixture spannerFixture) =>
         _spannerFixture = spannerFixture;
-    }
 
     [Fact]
-    public async Task TestReadStaleDataAsync()
+    public async Task TestListDatabaseRolesAsync()
     {
-        ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
-        await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
-        await Task.Delay(TimeSpan.FromSeconds(15));
-        var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 1 && a.MarketingBudget == 300000);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(databaseId =>
+        {
+            var listDatabaseRolesSample = new ListDatabaseRolesSample();
+            var dbroles = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.NotEmpty(dbroles);
+            return Task.CompletedTask;
+        });
     }
 }
