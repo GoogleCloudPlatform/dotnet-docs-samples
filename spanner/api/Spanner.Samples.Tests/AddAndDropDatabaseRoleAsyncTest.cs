@@ -17,11 +17,11 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class AddAndDropDatabaseRoleTests
+public class AddAndDropDatabaseRoleAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public AddAndDropDatabaseRoleTests(SpannerFixture spannerFixture) =>
+    public AddAndDropDatabaseRoleAsyncTest(SpannerFixture spannerFixture) =>
         _spannerFixture = spannerFixture;
 
     [Fact]
@@ -29,13 +29,13 @@ public class AddAndDropDatabaseRoleTests
     {
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
-            var addAndDropDatabaseRoleSample = new AddAndDropDatabaseRoleSample();
+            var addAndDropDatabaseRoleSample = new AddAndDropDatabaseRoleAsyncSample();
             var listDatabaseRolesSample = new ListDatabaseRolesSample();
             string testDbRole = "testRole";
 
-            var oldDbRoles = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId,databaseId);
+            var oldDbRoles = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-            await addAndDropDatabaseRoleSample.AddDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId,databaseId, testDbRole);
+            await addAndDropDatabaseRoleSample.AddDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);
             var newDbRolesAfterAddition = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
             await addAndDropDatabaseRoleSample.DropDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);

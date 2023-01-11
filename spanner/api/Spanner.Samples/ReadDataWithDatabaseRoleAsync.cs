@@ -18,7 +18,7 @@ using Google.Cloud.Spanner.Data;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class ReadDataWithDatabaseRoleSample
+public class ReadDataWithDatabaseRoleAsyncSample
 {
     public class Singer
     {

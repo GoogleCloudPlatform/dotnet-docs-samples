@@ -44,8 +44,7 @@ public class ListDatabaseRolesSample
             }
             nextPageToken = page.NextPageToken;
 
-        }while (!string.IsNullOrEmpty(nextPageToken));
-
+        } while (!string.IsNullOrEmpty(nextPageToken));
         return databaseRoles;
     }
 }

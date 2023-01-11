@@ -16,11 +16,11 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class ListDatabasesRolesTests
+public class ListDatabasesRolesTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public ListDatabasesRolesTests(SpannerFixture spannerFixture) =>
+    public ListDatabasesRolesTest(SpannerFixture spannerFixture) =>
         _spannerFixture = spannerFixture;
 
     [Fact]

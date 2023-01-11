@@ -12,16 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Admin.Database.V1;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class ReadDataWithDatabaseRoleTest
+public class ReadDataWithDatabaseRoleAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public ReadDataWithDatabaseRoleTest(SpannerFixture spannerFixture) =>
+    public ReadDataWithDatabaseRoleAsyncTest(SpannerFixture spannerFixture) =>
         _spannerFixture = spannerFixture;
 
     [Fact]
@@ -29,23 +28,23 @@ public class ReadDataWithDatabaseRoleTest
     {
         string dbRole = "readerRole";
         var createSingersTable =
-                 @"CREATE TABLE Singers (
-                     SingerId INT64 NOT NULL,
-                     FirstName STRING(1024),
-                     LastName STRING(1024)
-                 ) PRIMARY KEY (SingerId)";
+            @"CREATE TABLE Singers (
+                SingerId INT64 NOT NULL,
+                FirstName STRING(1024),
+                LastName STRING(1024)
+            ) PRIMARY KEY (SingerId)";
         var createAlbumsTable =
-                 @"CREATE TABLE Albums (
-                     SingerId INT64 NOT NULL,
-                     AlbumId INT64 NOT NULL,
-                     AlbumTitle STRING(MAX)
-                 )PRIMARY KEY (SingerId, AlbumId)";
+            @"CREATE TABLE Albums (
+                SingerId INT64 NOT NULL,
+                AlbumId INT64 NOT NULL,
+                AlbumTitle STRING(MAX)
+            )PRIMARY KEY (SingerId, AlbumId)";
         string grantAccessStatement = $"GRANT SELECT ON TABLE Singers TO ROLE {dbRole}";
         string createRoleStatement = $"CREATE ROLE {dbRole}";
 
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
-            var readDataWithDatabaseRoleSample = new ReadDataWithDatabaseRoleSample();
+            var readDataWithDatabaseRoleSample = new ReadDataWithDatabaseRoleAsyncSample();
             var insertDataAsyncSample = new InsertDataAsyncSample();
             await insertDataAsyncSample.InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 

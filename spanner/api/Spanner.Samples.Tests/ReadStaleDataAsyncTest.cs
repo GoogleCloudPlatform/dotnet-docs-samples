@@ -31,7 +31,11 @@ public class ReadStaleDataAsyncTest
     {
         ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
         await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
+        
+        // As the sample of ReadStaleDataAsync reading 15 sec stale data. A delay of 15 sec is added to make sure
+        // the sample reads the data updated by the previous statement.
         await Task.Delay(TimeSpan.FromSeconds(15));
+
         var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
         Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 1 && a.MarketingBudget == 300000);
     }

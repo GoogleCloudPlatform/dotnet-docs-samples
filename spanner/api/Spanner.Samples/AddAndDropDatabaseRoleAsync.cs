@@ -17,7 +17,7 @@
 using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 
-public class AddAndDropDatabaseRoleSample
+public class AddAndDropDatabaseRoleAsyncSample
 {
     public async Task AddDatabaseRoleAsync(string projectId, string instanceId, string databaseId, string databaseRole)
     {

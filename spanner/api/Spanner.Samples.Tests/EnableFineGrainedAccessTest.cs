@@ -22,8 +22,8 @@ using System.Threading.Tasks;
 public class EnableFineGrainedAccessTest
 {
     private readonly SpannerFixture _spannerFixture;
-    private string ServiceAccountId { get; } = "SpannerFGACTestAccount";
-    private string ServiceAccountDisplayName { get; } = "SpannerFGACTest";
+    private const string ServiceAccountId = "SpannerFGACTestAccount";
+    private const string ServiceAccountDisplayName = "SpannerFGACTest";
 
     public EnableFineGrainedAccessTest(SpannerFixture spannerFixture) =>
         _spannerFixture = spannerFixture;
