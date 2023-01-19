@@ -13,17 +13,17 @@
 // limitations under the License.
 
 using Google.Apis.Auth.OAuth2;
-using Google.Apis.Iam.v1.Data;
 using Google.Apis.Iam.v1;
-using Xunit;
+using Google.Apis.Iam.v1.Data;
 using System.Threading.Tasks;
+using Xunit;
 
 [Collection(nameof(SpannerFixture))]
 public class EnableFineGrainedAccessTest
 {
-    private readonly SpannerFixture _spannerFixture;
     private const string ServiceAccountId = "SpannerFGACTestAccount";
     private const string ServiceAccountDisplayName = "SpannerFGACTest";
+    private readonly SpannerFixture _spannerFixture;
 
     public EnableFineGrainedAccessTest(SpannerFixture spannerFixture) =>
         _spannerFixture = spannerFixture;

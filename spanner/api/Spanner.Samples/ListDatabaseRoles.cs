@@ -43,7 +43,6 @@ public class ListDatabaseRolesSample
                 databaseRoles.Add(dbRole.DatabaseRoleName.ToString());
             }
             nextPageToken = page.NextPageToken;
-
         } while (!string.IsNullOrEmpty(nextPageToken));
         return databaseRoles;
     }

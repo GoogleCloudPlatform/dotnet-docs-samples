@@ -29,16 +29,16 @@ public class ReadDataWithDatabaseRoleAsyncTest
         string dbRole = "readerRole";
         var createSingersTable =
             @"CREATE TABLE Singers (
-                SingerId INT64 NOT NULL,
-                FirstName STRING(1024),
-                LastName STRING(1024)
+            SingerId INT64 NOT NULL,
+            FirstName STRING(1024),
+            LastName STRING(1024)
             ) PRIMARY KEY (SingerId)";
         var createAlbumsTable =
             @"CREATE TABLE Albums (
-                SingerId INT64 NOT NULL,
-                AlbumId INT64 NOT NULL,
-                AlbumTitle STRING(MAX)
-            )PRIMARY KEY (SingerId, AlbumId)";
+            SingerId INT64 NOT NULL,
+            AlbumId INT64 NOT NULL,
+            AlbumTitle STRING(MAX)
+            ) PRIMARY KEY (SingerId, AlbumId)";
         string grantAccessStatement = $"GRANT SELECT ON TABLE Singers TO ROLE {dbRole}";
         string createRoleStatement = $"CREATE ROLE {dbRole}";
 

@@ -41,7 +41,7 @@ public class ReadDataWithDatabaseRoleAsyncSample
         var createSelectCmd = connection.CreateSelectCommand($"SELECT * FROM {tableName}");
         using var reader = await createSelectCmd.ExecuteReaderAsync();
         var singers = new List<Singer>();
-        while (reader.Read())
+        while (await reader.ReadAsync())
         {
             singers.Add(new Singer
             {
