@@ -3,7 +3,8 @@
 These samples demonstrate how to interact with the [Google Cloud Document AI API][Documentai] using C# and
 the .NET client libraries to call the Cloud Document AI API.
 
-The samples requires [.NET Core 3.1][net-core] or later.  That means using
+The samples require [.NET 6][net-6] or later.  That means using
+
 [Visual Studio 2019](https://www.visualstudio.com/), or the command line.
 
 ## Setup
