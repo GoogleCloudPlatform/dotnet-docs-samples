@@ -5,7 +5,8 @@ the .NET client libraries to call the Cloud Document AI API.
 
 The samples require [.NET 6][net-6] or later.  That means using
 
-[Visual Studio 2019](https://www.visualstudio.com/), or the command line.
+[Visual Studio 2022](https://www.visualstudio.com/), or the command line.
+
 
 ## Setup
 
