@@ -3,7 +3,6 @@
     <TargetFramework>net6.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Google.Cloud.DocumentAI.V1" Version="3.3.0" />
     <PackageReference Include="Google.Protobuf" Version="3.21.0" />
