@@ -30,4 +30,5 @@ The samples require [.NET 6][net-6] or later.  That means using
 
 [Documentai]: https://cloud.google.com/documentai/docs
 [enable-api]: https://console.cloud.google.com/flows/enableapi?apiid=documentai.googleapis.com&showconfirmation=true
-[net-core]: https://www.microsoft.com/net/core
+[net-6]: https://dotnet.microsoft.com/download/dotnet/6.0
+
