@@ -33,7 +33,10 @@ public class QuickstartSample
     )
     {
         // Create client
-        DocumentProcessorServiceClient client = DocumentProcessorServiceClient.Create();
+        var client = new DocumentProcessorServiceClientBuilder
+        {
+            Endpoint = $"{locationId}-documentai.googleapis.com"
+        }.Build();
 
         // Read in local file
         using var fileStream = File.OpenRead(localPath);
