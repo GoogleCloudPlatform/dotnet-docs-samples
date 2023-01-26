@@ -25,7 +25,7 @@ public class AddAndDropDatabaseRoleAsyncTest
         _spannerFixture = spannerFixture;
 
     [Fact]
-    public async Task TestAddAndDropDatabaseRole()
+    public async Task TestAddDatabaseRole()
     {
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
@@ -36,13 +36,28 @@ public class AddAndDropDatabaseRoleAsyncTest
             var oldDbRoles = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
             await addAndDropDatabaseRoleSample.AddDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);
-            var newDbRolesAfterAddition = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            var dbRolesAfterAddition = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
+            Assert.Equal(oldDbRoles.Count + 1, dbRolesAfterAddition.Count);
+        });
+    }
+
+    [Fact]
+    public async Task TestDropDatabaseRole()
+    {
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            var addAndDropDatabaseRoleSample = new AddAndDropDatabaseRoleAsyncSample();
+            var listDatabaseRolesSample = new ListDatabaseRolesSample();
+            string testDbRole = "testRole";
+
+            await addAndDropDatabaseRoleSample.AddDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);
+            var dbRolesAfterAddition = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
             await addAndDropDatabaseRoleSample.DropDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);
-            var newDbRolesAfterDeletion = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            var dbRolesAfterDeletion = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-            Assert.Equal(oldDbRoles.Count, newDbRolesAfterDeletion.Count);
-            Assert.Equal(oldDbRoles.Count + 1, newDbRolesAfterAddition.Count);
+            Assert.Equal(dbRolesAfterAddition.Count - 1, dbRolesAfterDeletion.Count);
         });
     }
 }

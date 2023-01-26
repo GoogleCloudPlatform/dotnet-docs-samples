@@ -15,18 +15,23 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class EnableFineGrainedAccessTest
+public class EnableFineGrainedAccessTest : IDisposable
 {
-    private const string ServiceAccountId = "SpannerFGACTestAccount";
-    private const string ServiceAccountDisplayName = "SpannerFGACTest";
+    private readonly string ServiceAccountId = $"FgacTestAccount{Guid.NewGuid().ToString().Substring(0, 10)}";
+    private readonly string ServiceAccountDisplayName = $"FgacTestAccount{Guid.NewGuid().ToString().Substring(0, 10)}";
     private readonly SpannerFixture _spannerFixture;
+    private readonly ServiceAccount _serviceAccount;
 
-    public EnableFineGrainedAccessTest(SpannerFixture spannerFixture) =>
+    public EnableFineGrainedAccessTest(SpannerFixture spannerFixture)
+    {
         _spannerFixture = spannerFixture;
+        _serviceAccount = CreateServiceAccount();
+    }
 
     private ServiceAccount CreateServiceAccount()
     {
@@ -49,35 +54,31 @@ public class EnableFineGrainedAccessTest
         return serviceAccount;
     }
 
-    private void DeleteServiceAccount(string ServiceAccountName)
+    private void DeleteServiceAccount(string serviceAccountName)
     {
         var credential = GoogleCredential.GetApplicationDefault().CreateScoped(IamService.Scope.CloudPlatform);
         var service = new IamService(new IamService.Initializer
         {
             HttpClientInitializer = credential
         });
-        service.Projects.ServiceAccounts.Delete(ServiceAccountName).Execute();
+        service.Projects.ServiceAccounts.Delete(serviceAccountName).Execute();
     }
 
     [Fact]
     public async Task TestEnableFineGrainedAccessAsync()
     {
-        var serviceAccount = CreateServiceAccount();
-        try
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(databaseId =>
         {
-            await _spannerFixture.RunWithTemporaryDatabaseAsync(databaseId =>
-            {
-                string databaseRole = "testrole";
-                var enableFineGrainedAccessSample = new EnableFineGrainedAccessSample();
-                var updatedPolicy = enableFineGrainedAccessSample.EnableFineGrainedAccess(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
-                    databaseId, databaseRole, $"serviceAccount:{serviceAccount.Email}");
-                Assert.Contains(updatedPolicy.Bindings, b => b.Role == "roles/spanner.fineGrainedAccessUser");
-                return Task.CompletedTask;
-            });
-        }
-        finally
-        {
-            DeleteServiceAccount(serviceAccount.Name);
-        }
+            string databaseRole = "testrole";
+            var enableFineGrainedAccessSample = new EnableFineGrainedAccessSample();
+            var updatedPolicy = enableFineGrainedAccessSample.EnableFineGrainedAccess(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
+                databaseId, databaseRole, $"serviceAccount:{_serviceAccount.Email}");
+            Assert.Contains(updatedPolicy.Bindings, b => b.Role == "roles/spanner.fineGrainedAccessUser");
+            return Task.CompletedTask;
+        });
+    }
+    public void Dispose()
+    {
+        DeleteServiceAccount(_serviceAccount.Name);
     }
 }

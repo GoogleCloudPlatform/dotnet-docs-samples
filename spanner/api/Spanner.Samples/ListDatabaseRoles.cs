@@ -14,6 +14,7 @@
 
 // [START spanner_list_database_roles]
 
+using Google.Api.Gax;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using System;
 using System.Collections.Generic;
@@ -25,26 +26,14 @@ public class ListDatabaseRolesSample
         string parent = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
         int pageSize = 5;
         var client = new DatabaseAdminClientBuilder().Build();
-        string nextPageToken = null;
-        List<string> databaseRoles = new List<string>();
-        do
+        List<string> databaseRolesList = new List<string>();
+        PagedEnumerable<ListDatabaseRolesResponse,DatabaseRole> databaseRoles = client.ListDatabaseRoles(parent, pageSize: pageSize);
+        foreach (var dbRole in databaseRoles)
         {
-            ListDatabaseRolesRequest req = new ListDatabaseRolesRequest
-            {
-                Parent = parent,
-                PageSize = pageSize,
-                PageToken = nextPageToken ?? ""
-            };
-            var ListDatabaseResponse = client.ListDatabaseRoles(req);
-            var page = ListDatabaseResponse.ReadPage(pageSize);
-            foreach (var dbRole in page)
-            {
-                Console.WriteLine($"Database Role: {dbRole.DatabaseRoleName}");
-                databaseRoles.Add(dbRole.DatabaseRoleName.ToString());
-            }
-            nextPageToken = page.NextPageToken;
-        } while (!string.IsNullOrEmpty(nextPageToken));
-        return databaseRoles;
+            Console.WriteLine($"Database Role: {dbRole.DatabaseRoleName}");
+            databaseRolesList.Add(dbRole.DatabaseRoleName.ToString());
+        }
+        return databaseRolesList;
     }
 }
 // [END spanner_list_database_roles]

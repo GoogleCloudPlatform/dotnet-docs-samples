@@ -20,13 +20,15 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 
 public class EnableFineGrainedAccessSample
 {
-    public Policy EnableFineGrainedAccess(string projectId, string instanceId, string databaseId, string databaseRole, string iamMember)
+    public Policy EnableFineGrainedAccess(
+        string projectId, string instanceId, string databaseId, 
+        string databaseRole, string iamMember)
     {
         var resourceName = new UnparsedResourceName($"projects/{projectId}/instances/{instanceId}/databases/{databaseId}");
 
         var client = new DatabaseAdminClientBuilder().Build();
 
-        // Requests policy version 3. As earlier versions does not support condition field in role binding.
+        // Request policy version 3 as earlier versions do not support condition field in role binding.
         // For more info see https://cloud.google.com/iam/docs/policies#versions.
         GetIamPolicyRequest getIamPolicyRequest = new GetIamPolicyRequest
         {
@@ -39,6 +41,8 @@ public class EnableFineGrainedAccessSample
 
         var policy = client.GetIamPolicy(getIamPolicyRequest);
 
+        // Gives the given iam member access to the all the database roles that ends with the string value of ../databaseRoles/{databaseRole}.
+        // For more info see https://cloud.google.com/iam/docs/conditions-overview.
         Binding newBinding = new Binding
         {
             Role = "roles/spanner.fineGrainedAccessUser",
@@ -60,8 +64,8 @@ public class EnableFineGrainedAccessSample
             Policy = policy,
             ResourceAsResourceName = resourceName,
         };
-        client.SetIamPolicy(setIamPolicyRequest);
-        return policy;
+        var updatedPolicy = client.SetIamPolicy(setIamPolicyRequest);
+        return updatedPolicy;
     }
 }
 // [END spanner_enable_fine_grained_access]

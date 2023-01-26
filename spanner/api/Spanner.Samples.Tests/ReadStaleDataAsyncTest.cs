@@ -33,6 +33,7 @@ public class ReadStaleDataAsyncTest
         await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
 
         // Add a delay of 15 seconds to ensure that the call to ReadStaleDataAsync reads the data updated by the previous statement. 
+        // TODO: This is a workaround while issue https://b.corp.google.com/issues/265610770 is addressed.
         await Task.Delay(TimeSpan.FromSeconds(15));
 
         var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);

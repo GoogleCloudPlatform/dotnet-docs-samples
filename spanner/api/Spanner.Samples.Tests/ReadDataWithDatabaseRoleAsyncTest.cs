@@ -39,8 +39,8 @@ public class ReadDataWithDatabaseRoleAsyncTest
             AlbumId INT64 NOT NULL,
             AlbumTitle STRING(MAX)
             ) PRIMARY KEY (SingerId, AlbumId)";
-        string grantAccessStatement = $"GRANT SELECT ON TABLE Singers TO ROLE {dbRole}";
         string createRoleStatement = $"CREATE ROLE {dbRole}";
+        string grantAccessStatement = $"GRANT SELECT ON TABLE Singers TO ROLE {dbRole}";
 
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
