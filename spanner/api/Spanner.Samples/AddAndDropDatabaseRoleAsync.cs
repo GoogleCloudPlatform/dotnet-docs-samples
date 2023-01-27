@@ -22,22 +22,22 @@ public class AddAndDropDatabaseRoleAsyncSample
     public async Task AddDatabaseRoleAsync(string projectId, string instanceId, string databaseId, string databaseRole)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        string createRoleDDlStatement = $"CREATE ROLE {databaseRole}";
+        string createRoleStatement = $"CREATE ROLE {databaseRole}";
 
         // Creates the given database role.
         using var connection = new SpannerConnection(connectionString);
-        using var updateCmd = connection.CreateDdlCommand(createRoleDDlStatement);
+        using var updateCmd = connection.CreateDdlCommand(createRoleStatement);
         await updateCmd.ExecuteNonQueryAsync();
     }
 
     public async Task DropDatabaseRoleAsync(string projectId, string instanceId, string databaseId, string databaseRole)
     {
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        string dropDatabaseRoleStatement = $"DROP ROLE {databaseRole}";
+        string deleteRoleStatement = $"DROP ROLE {databaseRole}";
 
         // Drops the given database role.
         using var connection = new SpannerConnection(connectionString);
-        using var updateCmd = connection.CreateDdlCommand(dropDatabaseRoleStatement);
+        using var updateCmd = connection.CreateDdlCommand(deleteRoleStatement);
         await updateCmd.ExecuteNonQueryAsync();
     }
 }

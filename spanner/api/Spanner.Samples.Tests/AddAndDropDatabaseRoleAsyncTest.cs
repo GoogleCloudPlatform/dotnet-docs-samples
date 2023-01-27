@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -34,11 +34,13 @@ public class AddAndDropDatabaseRoleAsyncTest
             string testDbRole = "testRole";
 
             var oldDbRoles = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            int oldDbRolesCount = oldDbRoles.Select(res => res.DatabaseRoleName).Count();
 
             await addAndDropDatabaseRoleSample.AddDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);
             var dbRolesAfterAddition = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            int dbRolesAfterAdditionCount = dbRolesAfterAddition.Select(res => res.DatabaseRoleName).Count();
 
-            Assert.Equal(oldDbRoles.Count + 1, dbRolesAfterAddition.Count);
+            Assert.Equal(oldDbRolesCount + 1, dbRolesAfterAdditionCount);
         });
     }
 
@@ -53,11 +55,13 @@ public class AddAndDropDatabaseRoleAsyncTest
 
             await addAndDropDatabaseRoleSample.AddDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);
             var dbRolesAfterAddition = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            int dbRolesAfterAdditionCount = dbRolesAfterAddition.Select(res => res.DatabaseRoleName).Count();
 
             await addAndDropDatabaseRoleSample.DropDatabaseRoleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, testDbRole);
             var dbRolesAfterDeletion = listDatabaseRolesSample.ListDatabaseRoles(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            int dbRolesAfterDeletionCount = dbRolesAfterDeletion.Select(res => res.DatabaseRoleName).Count();
 
-            Assert.Equal(dbRolesAfterAddition.Count - 1, dbRolesAfterDeletion.Count);
+            Assert.Equal(dbRolesAfterAdditionCount - 1, dbRolesAfterDeletionCount);
         });
     }
 }

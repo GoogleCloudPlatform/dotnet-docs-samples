@@ -17,23 +17,19 @@
 using Google.Api.Gax;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using System;
-using System.Collections.Generic;
 
 public class ListDatabaseRolesSample
 {
-    public List<string> ListDatabaseRoles(string projectId, string instanceId, string databaseId)
+    public PagedEnumerable<ListDatabaseRolesResponse, DatabaseRole> ListDatabaseRoles(string projectId, string instanceId, string databaseId)
     {
         string parent = $"projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
-        int pageSize = 5;
-        var client = new DatabaseAdminClientBuilder().Build();
-        List<string> databaseRolesList = new List<string>();
-        PagedEnumerable<ListDatabaseRolesResponse,DatabaseRole> databaseRoles = client.ListDatabaseRoles(parent, pageSize: pageSize);
+        var client = DatabaseAdminClient.Create();
+        PagedEnumerable<ListDatabaseRolesResponse, DatabaseRole> databaseRoles = client.ListDatabaseRoles(parent);
         foreach (var dbRole in databaseRoles)
         {
             Console.WriteLine($"Database Role: {dbRole.DatabaseRoleName}");
-            databaseRolesList.Add(dbRole.DatabaseRoleName.ToString());
         }
-        return databaseRolesList;
+        return databaseRoles;
     }
 }
 // [END spanner_list_database_roles]

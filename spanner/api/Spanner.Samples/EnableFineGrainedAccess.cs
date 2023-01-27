@@ -41,8 +41,9 @@ public class EnableFineGrainedAccessSample
 
         var policy = client.GetIamPolicy(getIamPolicyRequest);
 
-        // Gives the given iam member access to the all the database roles that ends with the string value of ../databaseRoles/{databaseRole}.
-        // For more info see https://cloud.google.com/iam/docs/conditions-overview.
+        // Gives the given IAM member access to the all the database roles
+        // with resource name ending in ../databaseRoles/{databaseRole}.
+        // For more information see https://cloud.google.com/iam/docs/conditions-overview.
         Binding newBinding = new Binding
         {
             Role = "roles/spanner.fineGrainedAccessUser",
