@@ -50,7 +50,7 @@ public class DocumentAIFixture : IDisposable, ICollectionFixture<DocumentAIFixtu
         LocationId = "us";
         LocationName = new LocationName(ProjectId, LocationId);
 
-        ProcessorId = "aaaaaaaaaa";
+        ProcessorId = "8219a5b956a3e0d8";
         ProcessorName = ProcessorName.FromProjectLocationProcessor(ProjectId, LocationId, ProcessorId);
 
         LocalPath = "Resources/Invoice.pdf";
