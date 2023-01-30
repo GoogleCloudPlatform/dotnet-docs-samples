@@ -39,7 +39,8 @@ public class EnableFineGrainedAccessTest : IDisposable
         _serviceAccount = CreateServiceAccount(_service);
     }
 
-    private ServiceAccount CreateServiceAccount(IamService service)
+    private static ServiceAccount CreateServiceAccount(IamService service)
+
     {
         var request = new CreateServiceAccountRequest
         {
@@ -49,12 +50,13 @@ public class EnableFineGrainedAccessTest : IDisposable
                 DisplayName = ServiceAccountDisplayName
             }
         };
-        var serviceAccount = service.Projects.ServiceAccounts.Create(
+        return service.Projects.ServiceAccounts.Create(
             request, $"projects/{_spannerFixture.ProjectId}").Execute();
-        return serviceAccount;
+
     }
 
-    private void DeleteServiceAccount(IamService service, string serviceAccountName)
+    private static void DeleteServiceAccount(IamService service, string serviceAccountName)
+
     {
         try
         {

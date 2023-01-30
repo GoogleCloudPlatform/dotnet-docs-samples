@@ -29,7 +29,8 @@ public class EnableFineGrainedAccessSample
         var client = new DatabaseAdminClientBuilder().Build();
 
         // Request policy version 3 as earlier versions do not support condition field in role binding.
-        // For more info see https://cloud.google.com/iam/docs/policies#versions.
+        // For more information see https://cloud.google.com/iam/docs/policies#versions.
+
         GetIamPolicyRequest getIamPolicyRequest = new GetIamPolicyRequest
         {
             ResourceAsResourceName = resourceName,
