@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,6 +31,11 @@ public class ReadStaleDataAsyncTest
     {
         ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
         await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
+
+        // Add a delay of 15 seconds to ensure that the call to ReadStaleDataAsync reads the data updated by the previous statement. 
+        // TODO: This is a workaround while issue https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/2021 is addressed.
+        await Task.Delay(TimeSpan.FromSeconds(15));
+
         var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
         Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 1 && a.MarketingBudget == 300000);
     }
