@@ -26,10 +26,7 @@ using Xunit;
 public class DocumentAIFixture : ICollectionFixture<DocumentAIFixture>
 {
     public string ProjectId { get; }
-    public ProjectName ProjectName { get; }
-
     public string LocationId { get; }
-    public LocationName LocationName { get; }
 
     public string ProcessorId { get; }
     public ProcessorName ProcessorName { get; }
@@ -45,10 +42,8 @@ public class DocumentAIFixture : ICollectionFixture<DocumentAIFixture>
         {
             throw new Exception("Missing GOOGLE_PROJECT_ID environment variable.");
         }
-        ProjectName = new ProjectName(ProjectId);
 
         LocationId = "us";
-        LocationName = new LocationName(ProjectId, LocationId);
 
         ProcessorId = "8219a5b956a3e0d8";
         ProcessorName = ProcessorName.FromProjectLocationProcessor(ProjectId, LocationId, ProcessorId);

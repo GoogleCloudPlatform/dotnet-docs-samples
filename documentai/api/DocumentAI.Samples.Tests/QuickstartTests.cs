@@ -32,6 +32,7 @@ public class QuickstartTest
     public void Runs()
     {
         // Run the sample code.
-        _sample.Quickstart(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, processorId: _fixture.ProcessorId, localPath: _fixture.LocalPath, mimeType: _fixture.MimeType);
+        var document = _sample.Quickstart(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, processorId: _fixture.ProcessorId, localPath: _fixture.LocalPath, mimeType: _fixture.MimeType);
+        Assert.Contains("Invoice", document.Text);
     }
 }

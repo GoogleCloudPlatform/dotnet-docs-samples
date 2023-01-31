@@ -24,7 +24,7 @@ using System.IO;
 
 public class QuickstartSample
 {
-    public void Quickstart(
+    public Document Quickstart(
         string projectId = "your-project-id",
         string locationId = "your-processor-location",
         string processorId = "your-processor-id",
@@ -58,6 +58,7 @@ public class QuickstartSample
 
         var document = response.Document;
         Console.WriteLine(document.Text);
+        return document;
     }
 }
 
