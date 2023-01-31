@@ -56,9 +56,4 @@ public class DocumentAIFixture : ICollectionFixture<DocumentAIFixture>
         LocalPath = "Resources/Invoice.pdf";
         MimeType = "application/pdf";
     }
-
-    public void Dispose()
-    {
-    }
-
 }
