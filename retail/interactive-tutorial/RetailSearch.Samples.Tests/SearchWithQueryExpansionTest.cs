@@ -26,8 +26,7 @@ namespace RetailSearch.Samples.Tests
             
             var firstPage = SearchWithQueryExpansionTutorial.Search().First();
 
-            Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
-            Assert.Contains(firstPage, result => !result.Product.Title.Contains(ExpectedProductTitle));
+            Assert.True(firstPage.queryExpansionInfo.expandedQuery);
         }
     }
 }
