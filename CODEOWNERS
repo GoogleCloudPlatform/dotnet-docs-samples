@@ -18,7 +18,6 @@ iot/        @GoogleCloudPlatform/api-iot @amanda-tarafa @jskeet
 storage/    @GoogleCloudPlatform/cloud-storage-dpes @shivgautam @amanda-tarafa @jskeet
 
 bigquery/                  @shivgautam @amanda-tarafa @jskeet
-applications/leaderboard/  @jsimonweb @amanda-tarafa @jskeet
 
 spanner/  @GoogleCloudPlatform/api-spanner-dotnet @shivgautam @amanda-tarafa @jskeet
 
@@ -27,8 +26,6 @@ secretmanager/  @sethvargo @amanda-tarafa @jskeet
 
 applications/googlehome-meets-dotnetcontainers/  @meteatamel @amanda-tarafa @jskeet
 run/                                             @meteatamel @jskeet @amanda-tarafa
-
-securitycenter/  @hsanchez94 @amanda-tarafa @jskeet
 
 retail/ @chenlei1216 @amanda-tarafa @jskeet
 media/ @irataxy @amanda-tarafa @jskeet 
