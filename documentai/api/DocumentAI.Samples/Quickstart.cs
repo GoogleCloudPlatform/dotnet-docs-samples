@@ -57,7 +57,7 @@ public class QuickstartSample
         var response = client.ProcessDocument(request);
 
         var document = response.Document;
-        Console.WriteLine($"{document.Text}");
+        Console.WriteLine(document.Text);
     }
 }
 
