@@ -43,7 +43,7 @@ public class DocumentAIFixture : IDisposable, ICollectionFixture<DocumentAIFixtu
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (string.IsNullOrEmpty(ProjectId))
         {
-            throw new Exception("missing GOOGLE_PROJECT_ID");
+            throw new Exception("Missing GOOGLE_PROJECT_ID environment variable.");
         }
         ProjectName = new ProjectName(ProjectId);
 
