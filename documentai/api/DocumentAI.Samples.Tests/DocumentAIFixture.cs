@@ -54,7 +54,6 @@ public class DocumentAIFixture : IDisposable, ICollectionFixture<DocumentAIFixtu
         ProcessorName = ProcessorName.FromProjectLocationProcessor(ProjectId, LocationId, ProcessorId);
 
         LocalPath = "Resources/Invoice.pdf";
-
         MimeType = "application/pdf";
     }
 
