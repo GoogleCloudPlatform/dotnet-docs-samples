@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\testutil\testutil.csproj" />
     <ProjectReference Include="..\DocumentAI.Samples\DocumentAI.Samples.csproj" />
   </ItemGroup>
 
