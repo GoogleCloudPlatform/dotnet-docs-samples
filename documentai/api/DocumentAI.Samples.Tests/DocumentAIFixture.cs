@@ -23,7 +23,7 @@ using System.Threading;
 using Xunit;
 
 [CollectionDefinition(nameof(DocumentAIFixture))]
-public class DocumentAIFixture : IDisposable, ICollectionFixture<DocumentAIFixture>
+public class DocumentAIFixture : ICollectionFixture<DocumentAIFixture>
 {
     public string ProjectId { get; }
     public ProjectName ProjectName { get; }
