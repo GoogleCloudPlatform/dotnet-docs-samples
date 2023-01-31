@@ -26,7 +26,7 @@ namespace RetailSearch.Samples.Tests
             
             var firstPage = SearchWithQueryExpansionTutorial.Search().First();
 
-            Assert.True(firstPage.queryExpansionInfo.expandedQuery);
+            Assert.True(firstPage.QueryExpansionInfo.ExpandedQuery);
         }
     }
 }
