@@ -45,7 +45,11 @@ public class DocumentAIFixture : ICollectionFixture<DocumentAIFixture>
 
         LocationId = "us";
 
-        ProcessorId = "8219a5b956a3e0d8";
+        ProcessorId = Environment.GetEnvironmentVariable("DOCUMENT_AI_PROCESSOR_ID");
+        if (string.IsNullOrEmpty(ProcessorId))
+        {
+            throw new Exception("Missing DOCUMENT_AI_PROCESSOR_ID environment variable.");
+        }
         ProcessorName = ProcessorName.FromProjectLocationProcessor(ProjectId, LocationId, ProcessorId);
 
         LocalPath = "Resources/Invoice.pdf";
