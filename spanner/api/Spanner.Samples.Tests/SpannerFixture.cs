@@ -76,6 +76,20 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public SpannerConnection SpannerConnection { get; private set; }
     public SpannerConnection PgSpannerConnection { get; private set; }
 
+    public readonly string CreateSingersTableStatement =
+    @"CREATE TABLE Singers (
+            SingerId INT64 NOT NULL,
+            FirstName STRING(1024),
+            LastName STRING(1024)
+            ) PRIMARY KEY (SingerId)";
+
+    public readonly string CreateAlbumsTableStatement =
+        @"CREATE TABLE Albums (
+            SingerId INT64 NOT NULL,
+            AlbumId INT64 NOT NULL,
+            AlbumTitle STRING(MAX)
+            ) PRIMARY KEY (SingerId, AlbumId)";
+
     public RetryRobot Retryable { get; } = new RetryRobot
     {
         ShouldRetry = ex => ex.IsTransientSpannerFault()
@@ -227,6 +241,14 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await RefillMarketingBudgetsAsync(300000, 300000);
         // Create table with Timestamp column
         await createTableWithTimestampColumnAsyncSample.CreateTableWithTimestampColumnAsync(ProjectId, InstanceId, DatabaseId);
+    }
+
+    public async Task InitializeTempDatabaseAsync(string databaseId)
+    {
+        InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+        AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
+        await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, databaseId);
+        await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, databaseId);
     }
 
     private async Task InitializeBackupAsync()
@@ -545,6 +567,21 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         for (int i = 1; i <= 2; ++i)
         {
             var cmd = SpannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+                {
+                    { "SingerId", SpannerDbType.Int64, i },
+                    { "AlbumId", SpannerDbType.Int64, i },
+                    { "MarketingBudget", SpannerDbType.Int64, i == 1 ? firstAlbumBudget : secondAlbumBudget },
+                });
+            await cmd.ExecuteNonQueryAsync();
+        }
+    }
+
+    public async Task RefillMarketingBudgetsForTempDatabaseAsync(string databaseId, int firstAlbumBudget, int secondAlbumBudget)
+    {
+        var spannerConnection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
+        for (int i = 1; i <= 2; ++i)
+        {
+            var cmd = spannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection
                 {
                     { "SingerId", SpannerDbType.Int64, i },
                     { "AlbumId", SpannerDbType.Int64, i },

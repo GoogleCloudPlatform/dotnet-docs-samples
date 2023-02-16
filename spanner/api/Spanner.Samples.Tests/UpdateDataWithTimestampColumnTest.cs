@@ -28,8 +28,17 @@ public class UpdateDataWithTimestampColumnTest
     [Fact]
     public async Task TestUpdateDataWithTimestampColumn()
     {
-        UpdateDataWithTimestampColumnAsyncSample sample = new UpdateDataWithTimestampColumnAsyncSample();
-        var rowCount = await sample.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(2, rowCount);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+            AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
+            await addCommitTimestampAsyncSample.AddCommitTimestampAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
+            UpdateDataWithTimestampColumnAsyncSample sample = new UpdateDataWithTimestampColumnAsyncSample();
+            var rowCount = await sample.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(2, rowCount);
+
+        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+
     }
 }

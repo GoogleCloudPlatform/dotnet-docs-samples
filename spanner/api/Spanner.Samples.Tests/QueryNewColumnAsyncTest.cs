@@ -28,10 +28,15 @@ public class QueryNewColumnAsyncTest
     [Fact]
     public async Task TestQueryNewColumnAsync()
     {
-        QueryNewColumnAsyncSample sample = new QueryNewColumnAsyncSample();
-        await _spannerFixture.RefillMarketingBudgetsAsync(100000, 500000);
-        var albums = await sample.QueryNewColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(albums, a => a.AlbumId == 1 && a.MarketingBudget == 100000);
-        Assert.Contains(albums, a => a.AlbumId == 2 && a.MarketingBudget == 500000);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+            QueryNewColumnAsyncSample sample = new QueryNewColumnAsyncSample();
+            await _spannerFixture.RefillMarketingBudgetsForTempDatabaseAsync(databaseId, 100000, 500000);
+
+            var albums = await sample.QueryNewColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Contains(albums, a => a.AlbumId == 1 && a.MarketingBudget == 100000);
+            Assert.Contains(albums, a => a.AlbumId == 2 && a.MarketingBudget == 500000);
+        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
     }
 }

@@ -28,9 +28,16 @@ public class ReadWriteWithTransactionCoreAsyncTest
     [Fact]
     public async Task TestReadWriteWithTransactionCoreAsync()
     {
-        ReadWriteWithTransactionCoreAsyncSample sample = new ReadWriteWithTransactionCoreAsyncSample();
-        await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
-        var rowCount = await sample.ReadWriteWithTransactionCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(2, rowCount);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+
+            ReadWriteWithTransactionCoreAsyncSample sample = new ReadWriteWithTransactionCoreAsyncSample();
+            await _spannerFixture.RefillMarketingBudgetsForTempDatabaseAsync(databaseId, 300000, 300000);
+            var rowCount = await sample.ReadWriteWithTransactionCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(2, rowCount);
+
+        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+
     }
 }
