@@ -19,6 +19,7 @@ if (-Not $Dir) {
 
 # Install choco packages.
 get-command choco -ErrorAction Stop
+choco upgrade -y --sxs --no-progress chocolatey-windowsupdate.extension
 choco list -li | Tee-Object -Variable chocoList
 $chocoPackages = ($chocoList) -join ' '
 
@@ -26,12 +27,11 @@ if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.2.')) {
     choco install -y --sxs --no-progress dotnetcore-2.2-sdk
 }
 
-if (-not $chocoPackages.Contains('.NET Core SDK 3.1.')) {
+if (-not $chocoPackages.Contains('.NET Core SDK 3.1.')) {    
     choco install -y --sxs --no-progress dotnetcore-3.1-sdk
 }
 
 if (-not $chocoPackages.Contains('Microsoft .NET SDK 6.')) {
-    choco upgrade -y --sxs --no-progress chocolatey-windowsupdate.extension
     choco install -y --sxs --no-progress dotnet-6.0-sdk
 }
 
