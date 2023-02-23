@@ -27,7 +27,7 @@ if (-not $chocoPackages.Contains('Microsoft .NET Core SDK - 2.2.')) {
 }
 
 if (-not $chocoPackages.Contains('.NET Core SDK 3.1.')) {
-    choco install -y --sxs --no-progress dotnetcore-sdk
+    choco install -y --sxs --no-progress dotnetcore-3.1-sdk
 }
 
 if (-not $chocoPackages.Contains('Microsoft .NET SDK 6.')) {
