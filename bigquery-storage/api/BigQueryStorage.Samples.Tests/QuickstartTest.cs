@@ -18,21 +18,22 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(BigQueryStorageFixture))]
-public class StorageAvroSampleTest
+public class QuickstartTest
 {
     private readonly BigQueryStorageFixture _fixture;
 
-    private readonly StorageAvroSample _sample;
-    public StorageAvroSampleTest(BigQueryStorageFixture bigQueryStorageFixture)
+    private readonly QuickstartSample _sample;
+
+    public QuickstartTest(BigQueryStorageFixture bigQueryStorageFixture)
     {
         _fixture = bigQueryStorageFixture;
-        _sample = new StorageAvroSample();
+        _sample = new QuickstartSample();
     }
 
     [Fact]
-    public async Task TestAvroSampleAsync()
+    public async Task TestQuickstartSample()
     {
-       var rows = await _sample.AvroSampleAsync(_fixture.ProjectId);
+        var rows = await _sample.QuickstartAsync(_fixture.ProjectId);
         Assert.NotEmpty(rows);
     }
 }
