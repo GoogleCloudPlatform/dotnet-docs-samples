@@ -38,18 +38,15 @@ public class QuickstartSample
 
     public async Task<List<Data>> QuickstartAsync(string projectId)
     {
-        BigQueryReadClient bigQueryReadClient = BigQueryReadClient.Create();
-
-        // This example uses baby name data from the public datasets.
-        var srcTable = "projects/bigquery-public-data/datasets/usa_names/tables/usa_1910_current";
-        var parent = $"projects/{projectId}";
+        var bigQueryReadClient = BigQueryReadClient.Create();
 
         CreateReadSessionRequest createReadSessionRequest = new CreateReadSessionRequest
         {
-            Parent = parent,
+            Parent = $"projects/{projectId}",
             ReadSession = new ReadSession
             {
-                Table = srcTable,
+                // This example uses baby name data from the public datasets.
+                Table = "projects/bigquery-public-data/datasets/usa_names/tables/usa_1910_current",
                 DataFormat = DataFormat.Avro,
                 ReadOptions = new TableReadOptions
                 {
@@ -60,26 +57,24 @@ public class QuickstartSample
             },
             MaxStreamCount = 1,
         };
-        var session = bigQueryReadClient.CreateReadSession(createReadSessionRequest);
-
-        var schema = Schema.Parse(session.AvroSchema.Schema);
-        DatumReader<GenericRecord> reader = new GenericDatumReader<GenericRecord>(schema, schema);
+        var readSession = bigQueryReadClient.CreateReadSession(createReadSessionRequest);
 
         // Using the first stream to perform reading.
-        var readRowStream = bigQueryReadClient.ReadRows(session.Streams.First().Name, 0).GetResponseStream();
+        var readRowsStream = bigQueryReadClient.ReadRows(readSession.Streams.First().Name, 0).GetResponseStream();
+        var schema = Schema.Parse(readSession.AvroSchema.Schema);
+        var reader = new GenericDatumReader<GenericRecord>(schema, schema);
         var dataList = new List<Data>();
 
-        await foreach (var stream in readRowStream)
+        await foreach (var readRowResponse in readRowsStream)
         {
-            var byteArray = stream.AvroRows.SerializedBinaryRows.ToByteArray();
+            var byteArray = readRowResponse.AvroRows.SerializedBinaryRows.ToByteArray();
             var decoder = new BinaryDecoder(new MemoryStream(byteArray));
-
-            for (int i = 0; i < stream.RowCount; i++)
+            for (int counter = 0; counter < readRowResponse.RowCount; counter++)
             {
-                var row = reader.Read(null!, decoder);
-                row.TryGetValue("name", out var name);
-                row.TryGetValue("state", out var state);
-                row.TryGetValue("number", out var number);
+                var record = reader.Read(null, decoder);
+                record.TryGetValue("name", out var name);
+                record.TryGetValue("state", out var state);
+                record.TryGetValue("number", out var number);
                 dataList.Add(new Data { Name = (string) name, Number = (long) number, State = (string) state });
                 Console.WriteLine($"name: {name}, state: {state}, number: {number}");
             }
