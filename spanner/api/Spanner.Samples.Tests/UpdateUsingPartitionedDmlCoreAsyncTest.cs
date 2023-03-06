@@ -35,7 +35,6 @@ public class UpdateUsingPartitionedDmlCoreAsyncTest
             UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
             var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(3, rowCount);
-
-        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

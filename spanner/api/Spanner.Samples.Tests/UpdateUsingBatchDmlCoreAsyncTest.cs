@@ -35,7 +35,6 @@ public class UpdateUsingBatchDmlCoreAsyncTest
             UpdateUsingBatchDmlCoreAsyncSample sample = new UpdateUsingBatchDmlCoreAsyncSample();
             var rowCount = await sample.UpdateUsingBatchDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(2, rowCount);
-
-        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

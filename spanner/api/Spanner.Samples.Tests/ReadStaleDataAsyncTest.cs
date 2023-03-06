@@ -33,10 +33,11 @@ public class ReadStaleDataAsyncTest
         {
             await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
             ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
-            await _spannerFixture.RefillMarketingBudgetsForTempDatabaseAsync(databaseId, 300000, 300000);
+            await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000, databaseId);
             await Task.Delay(TimeSpan.FromSeconds(15));
+
             var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 1 && a.MarketingBudget == 300000);
-        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

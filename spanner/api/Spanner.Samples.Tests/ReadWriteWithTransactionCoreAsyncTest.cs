@@ -31,13 +31,12 @@ public class ReadWriteWithTransactionCoreAsyncTest
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
             await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
-
+            await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000, databaseId);
             ReadWriteWithTransactionCoreAsyncSample sample = new ReadWriteWithTransactionCoreAsyncSample();
-            await _spannerFixture.RefillMarketingBudgetsForTempDatabaseAsync(databaseId, 300000, 300000);
+            
             var rowCount = await sample.ReadWriteWithTransactionCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(2, rowCount);
-
-        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
 
     }
 }

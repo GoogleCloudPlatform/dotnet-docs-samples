@@ -35,7 +35,6 @@ public class UpdateDataAsyncTest
             UpdateDataAsyncSample sample = new UpdateDataAsyncSample();
             var rowCount = await sample.UpdateDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(2, rowCount);
-
-        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

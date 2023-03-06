@@ -37,6 +37,6 @@ public class UpdateUsingDmlWithTimestampCoreAsyncTest
             UpdateUsingDmlWithTimestampCoreAsyncSample sample = new UpdateUsingDmlWithTimestampCoreAsyncSample();
             var rowCount = await sample.UpdateUsingDmlWithTimestampCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(2, rowCount);
-        }, _spannerFixture.CreateSingersTableStatement, _spannerFixture.CreateAlbumsTableStatement);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }
