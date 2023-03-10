@@ -514,6 +514,32 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }));
     }
 
+    public async Task CreateSingersAndAlbumsTableAsync(string projectId, string instanceId, string databaseId)
+    {
+        using var connection = new SpannerConnection($"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}");
+;
+        var createSingersTable =
+        @"CREATE TABLE Singers (
+                 SingerId INT64 NOT NULL,
+                 FirstName STRING(1024),
+                 LastName STRING(1024),
+                 ComposerInfo BYTES(MAX),
+                 FullName STRING(2048) AS (ARRAY_TO_STRING([FirstName, LastName], "" "")) STORED
+             ) PRIMARY KEY (SingerId)";
+
+        var createAlbumsTable =
+        @"CREATE TABLE Albums (
+                 SingerId INT64 NOT NULL,
+                 AlbumId INT64 NOT NULL,
+                 AlbumTitle STRING(MAX),
+                 MarketingBudget INT64
+             ) PRIMARY KEY (SingerId, AlbumId),
+             INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+
+        using var createDdlCommand = connection.CreateDdlCommand(createSingersTable, createAlbumsTable);
+        await createDdlCommand.ExecuteNonQueryAsync();
+    }
+
     public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
     {
         for (int i = 1; i <= 2; ++i)
