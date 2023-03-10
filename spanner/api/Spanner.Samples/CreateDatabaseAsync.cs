@@ -31,7 +31,8 @@ public class CreateDatabaseAsyncSample
                      SingerId INT64 NOT NULL,
                      FirstName STRING(1024),
                      LastName STRING(1024),
-                     ComposerInfo BYTES(MAX)
+                     ComposerInfo BYTES(MAX),
+                     FullName STRING(2048) AS (ARRAY_TO_STRING([FirstName, LastName], "" "")) STORED
                  ) PRIMARY KEY (SingerId)";
         // Define create table statement for table #2.
         var createAlbumsTable =

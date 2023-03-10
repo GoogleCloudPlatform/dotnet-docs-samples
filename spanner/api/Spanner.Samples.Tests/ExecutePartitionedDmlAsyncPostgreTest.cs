@@ -44,8 +44,8 @@ public class ExecutePartitionedDmlAsyncPostgreTest
     private async Task InsertDataAsync()
     {
         SpannerBatchCommand batchCommand = _spannerFixture.PgSpannerConnection.CreateBatchDmlCommand();
-        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (12, 'Elvis', 'Presley')");
-        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (13, 'John', 'Lennon')");
+        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (16, 'Elvis', 'Presley')");
+        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (17, 'John', 'Lennon')");
 
         await batchCommand.ExecuteNonQueryAsync();
     }

@@ -28,7 +28,7 @@ public class ExecutePartitionedDmlAsyncPostgreSample
         await connection.OpenAsync();
 
         // See https://cloud.google.com/spanner/docs/dml-partitioned for more information.
-        using var cmd = connection.CreateDmlCommand("DELETE FROM Singers WHERE SingerId > 11");
+        using var cmd = connection.CreateDmlCommand("DELETE FROM Singers WHERE SingerId > 15");
 
         // The returned count is a lower bound of the number of records that was deleted.
         long rowCount = await cmd.ExecutePartitionedUpdateAsync();
