@@ -18,13 +18,13 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(BigQueryStorageFixture))]
-public class QuickstartTest
+public class QuickstartTests
 {
     private readonly BigQueryStorageFixture _fixture;
 
     private readonly QuickstartSample _sample;
 
-    public QuickstartTest(BigQueryStorageFixture bigQueryStorageFixture)
+    public QuickstartTests(BigQueryStorageFixture bigQueryStorageFixture)
     {
         _fixture = bigQueryStorageFixture;
         _sample = new QuickstartSample();

@@ -17,8 +17,10 @@
 // [START bigquerystorage_quickstart]
 
 using Avro;
-using Avro.Generic;
 using Avro.IO;
+using Avro.Specific;
+using BigQueryStorage.Samples.Utilities;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.BigQuery.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -29,54 +31,44 @@ using static Google.Cloud.BigQuery.Storage.V1.ReadSession.Types;
 
 public class QuickstartSample
 {
-    public struct Data
-    {
-        public string Name { get; set; }
-        public string State { get; set; }
-        public long Number { get; set; }
-    }
 
-    public async Task<List<Data>> QuickstartAsync(string projectId)
+    public async Task<List<BabyNamesData>> QuickstartAsync(string projectId)
     {
         var bigQueryReadClient = BigQueryReadClient.Create();
-
         CreateReadSessionRequest createReadSessionRequest = new CreateReadSessionRequest
         {
-            Parent = $"projects/{projectId}",
+            ParentAsProjectName = new ProjectName(projectId),
             ReadSession = new ReadSession
             {
                 // This example uses baby name data from the public datasets.
-                Table = "projects/bigquery-public-data/datasets/usa_names/tables/usa_1910_current",
+                TableAsTableName = new TableName("bigquery-public-data", "usa_names", "usa_1910_current"),
                 DataFormat = DataFormat.Avro,
                 ReadOptions = new TableReadOptions
                 {
                     // Specify the columns to be projected by adding them to the selected fields.
                     SelectedFields = { "name", "number", "state" },
-                    RowRestriction = "state = \"WA\""
-                }
+                    RowRestriction = "state = \"WA\"",
+                },
             },
+            // Sets maximum number of reading streams to 1.
             MaxStreamCount = 1,
         };
         var readSession = bigQueryReadClient.CreateReadSession(createReadSessionRequest);
 
-        // Using the first stream to perform reading.
+        // Uses the first (and only) stream to read data from and reading starts from offset 0.
         var readRowsStream = bigQueryReadClient.ReadRows(readSession.Streams.First().Name, 0).GetResponseStream();
         var schema = Schema.Parse(readSession.AvroSchema.Schema);
-        var reader = new GenericDatumReader<GenericRecord>(schema, schema);
-        var dataList = new List<Data>();
-
+        var reader = new SpecificDatumReader<BabyNamesData>(schema, schema);
+        var dataList = new List<BabyNamesData>();
         await foreach (var readRowResponse in readRowsStream)
         {
             var byteArray = readRowResponse.AvroRows.SerializedBinaryRows.ToByteArray();
             var decoder = new BinaryDecoder(new MemoryStream(byteArray));
-            for (int counter = 0; counter < readRowResponse.RowCount; counter++)
+            for (int row = 0; row < readRowResponse.RowCount; row++)
             {
-                var record = reader.Read(null, decoder);
-                record.TryGetValue("name", out var name);
-                record.TryGetValue("state", out var state);
-                record.TryGetValue("number", out var number);
-                dataList.Add(new Data { Name = (string) name, Number = (long) number, State = (string) state });
-                Console.WriteLine($"name: {name}, state: {state}, number: {number}");
+                var record = reader.Read(new BabyNamesData(), decoder);
+                dataList.Add(record);
+                Console.WriteLine($"name: {record.name}, state: {record.state}, number: {record.number}");
             }
         }
         return dataList;
