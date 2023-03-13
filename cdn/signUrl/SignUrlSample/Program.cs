@@ -66,6 +66,7 @@ namespace SignUrlSample
         }
 
         // [START CreateSignedUrl]
+        // [START cloudcdn_sign_url]
         /// <summary>
         /// Creates signed URL for Google Cloud SDN
         /// More details about order of operations is here: 
@@ -134,6 +135,7 @@ namespace SignUrlSample
             }
         }
 
+        // [END cloudcdn_sign_url] 
         // [END CreateSignedUrl]
     }
 }
