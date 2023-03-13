@@ -31,6 +31,20 @@ using CryptoKeyName = Google.Cloud.Spanner.Admin.Database.V1.CryptoKeyName;
 [CollectionDefinition(nameof(SpannerFixture))]
 public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 {
+    public const string CreateSingersTableStatement =
+    @"CREATE TABLE Singers (
+            SingerId INT64 NOT NULL,
+            FirstName STRING(1024),
+            LastName STRING(1024)
+            ) PRIMARY KEY (SingerId)";
+
+    public const string CreateAlbumsTableStatement =
+    @"CREATE TABLE Albums (
+        SingerId INT64 NOT NULL,
+        AlbumId INT64 NOT NULL,
+        AlbumTitle STRING(MAX)
+        ) PRIMARY KEY (SingerId, AlbumId)";
+
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
     public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
@@ -75,20 +89,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public SpannerConnection AdminSpannerConnection { get; private set; }
     public SpannerConnection SpannerConnection { get; private set; }
     public SpannerConnection PgSpannerConnection { get; private set; }
-
-    public const string CreateSingersTableStatement =
-    @"CREATE TABLE Singers (
-            SingerId INT64 NOT NULL,
-            FirstName STRING(1024),
-            LastName STRING(1024)
-            ) PRIMARY KEY (SingerId)";
-
-    public const string CreateAlbumsTableStatement =
-    @"CREATE TABLE Albums (
-        SingerId INT64 NOT NULL,
-        AlbumId INT64 NOT NULL,
-        AlbumTitle STRING(MAX)
-        ) PRIMARY KEY (SingerId, AlbumId)";
 
     public RetryRobot Retryable { get; } = new RetryRobot
     {
@@ -564,7 +564,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget, string databaseId = null)
     {
-        var spannerConnection = (databaseId == null) ? SpannerConnection : new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
+        var spannerConnection = databaseId is null ? SpannerConnection : new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
         for (int i = 1; i <= 2; ++i)
         {
             var cmd = spannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection

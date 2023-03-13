@@ -37,6 +37,5 @@ public class ReadWriteWithTransactionCoreAsyncTest
             var rowCount = await sample.ReadWriteWithTransactionCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(2, rowCount);
         }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
-
     }
 }

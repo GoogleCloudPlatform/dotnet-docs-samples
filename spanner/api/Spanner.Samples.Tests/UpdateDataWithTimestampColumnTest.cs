@@ -37,8 +37,6 @@ public class UpdateDataWithTimestampColumnTest
             UpdateDataWithTimestampColumnAsyncSample sample = new UpdateDataWithTimestampColumnAsyncSample();
             var rowCount = await sample.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(2, rowCount);
-
         }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
-
     }
 }

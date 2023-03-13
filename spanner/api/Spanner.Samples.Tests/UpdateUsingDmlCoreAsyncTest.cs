@@ -36,6 +36,5 @@ public class UpdateUsingDmlCoreAsyncTest
             var rowCount = await sample.UpdateUsingDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
             Assert.Equal(1, rowCount);
         }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
-
     }
 }
