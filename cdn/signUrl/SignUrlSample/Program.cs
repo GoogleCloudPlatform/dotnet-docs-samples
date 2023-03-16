@@ -65,7 +65,6 @@ namespace SignUrlSample
             return 0;
         }
 
-        // [START CreateSignedUrl]
         // [START cloudcdn_sign_url]
         /// <summary>
         /// Creates signed URL for Google Cloud SDN
@@ -135,7 +134,6 @@ namespace SignUrlSample
             }
         }
 
-        // [END cloudcdn_sign_url] 
-        // [END CreateSignedUrl]
+        // [END cloudcdn_sign_url]
     }
 }
