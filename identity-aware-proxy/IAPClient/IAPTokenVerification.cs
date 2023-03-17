@@ -15,6 +15,7 @@
 // [START iap_validate_jwt]
 
 using Google.Apis.Auth;
+using Google.Apis.Auth.OAuth2;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -40,7 +41,9 @@ public class IAPTokenVerification
             // between the issuer and the verifier.
             IssuedAtClockTolerance = TimeSpan.FromMinutes(1),
             ExpiryClockTolerance = TimeSpan.FromMinutes(1),
-            TrustedAudiences = { expectedAudience }
+            TrustedAudiences = { expectedAudience },
+            TrustedIssuers = { "https://cloud.google.com/iap" },
+            CertificatesUrl = GoogleAuthConsts.IapKeySetUrl,
         };
         
         return await JsonWebSignature.VerifySignedTokenAsync(signedJwt, options, cancellationToken: cancellationToken);
