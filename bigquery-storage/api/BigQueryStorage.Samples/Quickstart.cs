@@ -58,6 +58,9 @@ public class QuickstartSample
         // Uses the first (and only) stream to read data from and reading starts from offset 0.
         var readRowsStream = bigQueryReadClient.ReadRows(readSession.Streams.First().Name, 0).GetResponseStream();
         var schema = Schema.Parse(readSession.AvroSchema.Schema);
+
+        // BabyNamesData has been generated using AvroGen, version 1.11.1.
+        // The file is available here https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/main/bigquery-storage/api/BigQueryStorage.Samples/Utilities/BabyNamesData.g.cs
         var reader = new SpecificDatumReader<BabyNamesData>(schema, schema);
         var dataList = new List<BabyNamesData>();
         await foreach (var readRowResponse in readRowsStream)
