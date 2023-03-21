@@ -31,6 +31,20 @@ using CryptoKeyName = Google.Cloud.Spanner.Admin.Database.V1.CryptoKeyName;
 [CollectionDefinition(nameof(SpannerFixture))]
 public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 {
+    public const string CreateSingersTableStatement =
+    @"CREATE TABLE Singers (
+            SingerId INT64 NOT NULL,
+            FirstName STRING(1024),
+            LastName STRING(1024)
+            ) PRIMARY KEY (SingerId)";
+
+    public const string CreateAlbumsTableStatement =
+    @"CREATE TABLE Albums (
+        SingerId INT64 NOT NULL,
+        AlbumId INT64 NOT NULL,
+        AlbumTitle STRING(MAX)
+        ) PRIMARY KEY (SingerId, AlbumId)";
+
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
     public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
@@ -227,6 +241,14 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await RefillMarketingBudgetsAsync(300000, 300000);
         // Create table with Timestamp column
         await createTableWithTimestampColumnAsyncSample.CreateTableWithTimestampColumnAsync(ProjectId, InstanceId, DatabaseId);
+    }
+
+    public async Task InitializeTempDatabaseAsync(string databaseId)
+    {
+        InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+        AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
+        await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, databaseId);
+        await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, databaseId);
     }
 
     private async Task InitializeBackupAsync()
@@ -540,11 +562,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await createDdlCommand.ExecuteNonQueryAsync();
     }
 
-    public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
+    public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget, string databaseId = null)
     {
+        var spannerConnection = databaseId is null ? SpannerConnection : new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
         for (int i = 1; i <= 2; ++i)
         {
-            var cmd = SpannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+            var cmd = spannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection
                 {
                     { "SingerId", SpannerDbType.Int64, i },
                     { "AlbumId", SpannerDbType.Int64, i },
