@@ -34,6 +34,7 @@ public class ReadStaleDataAsyncTest
             await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
             ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
             await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000, databaseId);
+            // We need to wait to actually make the data stale.
             await Task.Delay(TimeSpan.FromSeconds(15));
 
             var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
