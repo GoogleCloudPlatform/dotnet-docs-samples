@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START functions_cloudevent_firebase_firestore]
 // [START functions_firebase_firestore]
 using CloudNative.CloudEvents;
 using Google.Cloud.Functions.Framework;
@@ -63,3 +64,4 @@ public class Function : ICloudEventFunction<DocumentEventData>
     }
 }
 // [END functions_firebase_firestore]
+// [END functions_cloudevent_firebase_firestore]
