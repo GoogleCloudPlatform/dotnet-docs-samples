@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START functions_cloudevent_firebase_reactive]
 // [START functions_firebase_reactive]
 using CloudNative.CloudEvents;
 using Google.Cloud.Firestore;
@@ -79,3 +80,4 @@ public class Function : ICloudEventFunction<DocumentEventData>
     }
 }
 // [END functions_firebase_reactive]
+// [END functions_cloudevent_firebase_reactive]
