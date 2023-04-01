@@ -16,23 +16,23 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class IdentifierCaseSensitivityAsyncPostgreTest
+public class IdentifierCaseSensitivityAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly IdentifierCaseSensitivityAsyncPostgreSample _sample;
+    private readonly IdentifierCaseSensitivityAsyncPostgresSample _sample;
 
-    public IdentifierCaseSensitivityAsyncPostgreTest(SpannerFixture spannerFixture)
+    public IdentifierCaseSensitivityAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new IdentifierCaseSensitivityAsyncPostgreSample();
+        _sample = new IdentifierCaseSensitivityAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestIdentifierCaseSensitivityAsyncPostgre()
+    public async Task TestIdentifierCaseSensitivityAsyncPostgres()
     {
         // Act.
-        var count = await _sample.IdentifierCaseSensitivityAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var count = await _sample.IdentifierCaseSensitivityAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         //Assert.
         // The last insert operation inserts one row. If we reach till the last insert statement without any issue,

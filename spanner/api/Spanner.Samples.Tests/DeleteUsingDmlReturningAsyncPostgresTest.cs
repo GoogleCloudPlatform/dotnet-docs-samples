@@ -18,21 +18,21 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class DeleteUsingDmlReturningAsyncPostgreTest
+public class DeleteUsingDmlReturningAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public DeleteUsingDmlReturningAsyncPostgreTest(SpannerFixture spannerFixture)
+    public DeleteUsingDmlReturningAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestDeleteUsingDmlReturningAsyncPostgre()
+    public async Task TestDeleteUsingDmlReturningAsyncPostgres()
     {
         await InsertDataAsync();
-        var sample = new DeleteUsingDmlReturningAsyncPostgreSample();
-        var deletedSingerNames = await sample.DeleteUsingDmlReturningAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var sample = new DeleteUsingDmlReturningAsyncPostgresSample();
+        var deletedSingerNames = await sample.DeleteUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         Assert.Single(deletedSingerNames);
         Assert.Equal("Lata Mangeshkar", deletedSingerNames[0]);

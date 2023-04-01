@@ -12,30 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UseFunctionAsyncPostgreTest
+public class UpdateDataWithJsonbAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly UseFunctionAsyncPostgreSample _sample;
+    private readonly UpdateDataWithJsonbAsyncPostgresSample _sample;
 
-    public UseFunctionAsyncPostgreTest(SpannerFixture spannerFixture)
+    public UpdateDataWithJsonbAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new UseFunctionAsyncPostgreSample();
+        _sample = new UpdateDataWithJsonbAsyncPostgresSample();
     }
-
+    
     [Fact]
-    public async Task TestUseFunctionAsyncPostgre()
+    public async Task TestUpdateDataWithJsonbAsyncPostgres()
     {
-        // Act.
-        var result = await _sample.UseFunctionAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
-
-        // Assert.
-        Assert.Equal(DateTime.Parse("2010-09-13T04:32:03Z").ToUniversalTime(), result);
+        // Act - Update the VenueInformation table.
+        await _sample.UpdateDataWithJsonbAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
     }
 }

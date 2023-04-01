@@ -16,22 +16,22 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class AddColumnAsyncPostgreTest
+public class AddStoringIndexAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly AddColumnAsyncPostgreSample _sample;
+    private readonly AddStoringIndexAsyncPostgresSample _sample;
 
-    public AddColumnAsyncPostgreTest(SpannerFixture spannerFixture)
+    public AddStoringIndexAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new AddColumnAsyncPostgreSample();
+        _sample = new AddStoringIndexAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestAddColumnAsyncPostgre()
+    public async Task TestAddStoringIndexAsyncPostgres()
     {
         //Act.
-        await _sample.AddColumnAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _sample.AddStoringIndexAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
     }
 }

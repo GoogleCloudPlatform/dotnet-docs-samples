@@ -16,34 +16,25 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateUsingDmlAsyncPostgreTest
+public class InsertUsingBatchDmlAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly UpdateUsingDmlAsyncPostgreSample _sample;
+    private readonly InsertUsingBatchDmlAsyncPostgresSample _sample;
 
-    public UpdateUsingDmlAsyncPostgreTest(SpannerFixture spannerFixture)
+    public InsertUsingBatchDmlAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new UpdateUsingDmlAsyncPostgreSample();
+        _sample = new InsertUsingBatchDmlAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestUpdateUsingDmlAsyncPostgre()
+    public async Task TestInsertUsingBatchDmlAsyncPostgres()
     {
-        // Arrange.
-        await InsertDataAsync();
-
         // Act.
-        var count = await _sample.UpdateUsingDmlAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var count = await _sample.InsertUsingBatchDmlAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         // Assert.
-        Assert.Equal(1, count);
-    }
-
-    private async Task InsertDataAsync()
-    {
-        var command = _spannerFixture.PgSpannerConnection.CreateDmlCommand("INSERT INTO Singers(SingerId, FirstName, LastName) VALUES(11, 'Elton', 'John')");
-        await command.ExecuteNonQueryAsync();
+        Assert.True(count >= 3); // Other tests may have inserted data.
     }
 }

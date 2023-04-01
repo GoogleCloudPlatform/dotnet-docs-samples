@@ -12,34 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Admin.Database.V1;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class CreateDatabaseAsyncPostgreTest
+public class ConnectToDatabaseAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly CreateDatabaseAsyncPostgreSample _sample;
+    private readonly ConnectToDatabaseAsyncPostgresSample _sample;
 
-    public CreateDatabaseAsyncPostgreTest(SpannerFixture spannerFixture)
+    public ConnectToDatabaseAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new CreateDatabaseAsyncPostgreSample();
+        _sample = new ConnectToDatabaseAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestCreateDatabaseAsyncPostgre()
+    public async Task TestConnectToDatabaseAsyncPostgres()
     {
-        // Arrange.
-        var databaseId = _spannerFixture.GenerateTempDatabaseId();
-
         // Act.
-        await _sample.CreateDatabaseAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        var result = await _sample.ConnectToDatabaseAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
-        // Assert.
-        var databases = _spannerFixture.GetDatabases();
-        Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId && d.DatabaseDialect == DatabaseDialect.Postgresql);
+        //Assert.
+        Assert.Equal($"Hello from Spanner PostgreSQL!", result);
     }
 }

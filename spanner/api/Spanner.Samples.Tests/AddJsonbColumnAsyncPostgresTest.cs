@@ -16,25 +16,25 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class AddJsonbColumnAsyncPostgreTest
+public class AddJsonbColumnAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly AddJsonbColumnAsyncPostgreSample _sample;
+    private readonly AddJsonbColumnAsyncPostgresSample _sample;
 
-    public AddJsonbColumnAsyncPostgreTest(SpannerFixture spannerFixture)
+    public AddJsonbColumnAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new AddJsonbColumnAsyncPostgreSample();
+        _sample = new AddJsonbColumnAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestAddJsonbColumnAsyncPostgre()
+    public async Task TestAddJsonbColumnAsyncPostgres()
     {
         // Arrange - Create VenueDetails table.
         await CreateVenueDetailsTable();
         // Act - Add a JSONB column to the VenueDetails table.
-        await _sample.AddJsonbColumnAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _sample.AddJsonbColumnAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
         // If we reach here without error, we are good. 
     }
 
@@ -45,6 +45,6 @@ public class AddJsonbColumnAsyncPostgreTest
         @"CREATE TABLE VenueDetails (
             VenueId BIGINT NOT NULL PRIMARY KEY,
             VenueName VARCHAR(1024))";
-        await _spannerFixture.CreateTableAsyncPostgre(createVenueDetailsTableStatement);
+        await _spannerFixture.CreateTableAsyncPostgres(createVenueDetailsTableStatement);
     }
 }

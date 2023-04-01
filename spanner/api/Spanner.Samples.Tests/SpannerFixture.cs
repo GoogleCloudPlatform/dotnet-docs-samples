@@ -291,9 +291,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task InitializePostgreSqlDatabaseAsync()
     {
-        CreateDatabaseAsyncPostgreSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgreSample();
-        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgre(ProjectId, InstanceId, PostgreSqlDatabaseId);
-        await CreateVenueTablesAndInsertDataAsyncPostgre();
+        CreateDatabaseAsyncPostgresSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgresSample();
+        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgres(ProjectId, InstanceId, PostgreSqlDatabaseId);
+        await CreateVenueTablesAndInsertDataAsyncPostgres();
     }
 
     private async Task InitializeEncryptionKeys()
@@ -584,7 +584,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         return databases;
     }
 
-    private async Task CreateVenueTablesAndInsertDataAsyncPostgre()
+    private async Task CreateVenueTablesAndInsertDataAsyncPostgres()
     {
         // We create VenueInformation table so that update and query jsonb data sample can run out of order. 
 
@@ -595,7 +595,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             VenueName VARCHAR(1024),
             Details JSONB)";
 
-        await CreateTableAsyncPostgre(createVenueInformationTableStatement);
+        await CreateTableAsyncPostgres(createVenueInformationTableStatement);
 
         // Insert data in VenueInformation table.
         int[] ids = new int[] { 4, 19, 42 };
@@ -610,7 +610,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }));
     }
 
-    public async Task CreateTableAsyncPostgre(string createTableStatement)
+    public async Task CreateTableAsyncPostgres(string createTableStatement)
     {
         using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
         await cmd.ExecuteNonQueryAsync();
