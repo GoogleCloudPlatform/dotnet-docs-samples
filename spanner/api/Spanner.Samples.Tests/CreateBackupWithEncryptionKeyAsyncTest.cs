@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -29,10 +28,9 @@ public class CreateBackupWithEncryptionKeyAsyncTest
         _fixture = fixture;
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task TestCreatBackupWithEncryptionKeyAsync()
     {
-        Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         // Create a backup with a custom encryption key.
         var sample = new CreateBackupWithEncryptionKeyAsyncSample();
         var backup = await sample.CreateBackupWithEncryptionKeyAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedEncryptedDatabaseId, _fixture.EncryptedBackupId, _fixture.KmsKeyName);
