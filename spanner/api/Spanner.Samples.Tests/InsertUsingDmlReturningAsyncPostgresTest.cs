@@ -17,20 +17,20 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class InsertUsingDmlReturningAsyncPostgreTest
+public class InsertUsingDmlReturningAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public InsertUsingDmlReturningAsyncPostgreTest(SpannerFixture spannerFixture)
+    public InsertUsingDmlReturningAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestInsertUsingDmlReturningAsyncPostgre()
+    public async Task TestInsertUsingDmlReturningAsyncPostgres()
     {
-        var sample = new InsertUsingDmlReturningAsyncPostgreSample();
-        var insertedSingerNames = await sample.InsertUsingDmlReturningAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var sample = new InsertUsingDmlReturningAsyncPostgresSample();
+        var insertedSingerNames = await sample.InsertUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         Assert.Equal(4, insertedSingerNames.Count);
         Assert.Contains("Melissa Garcia", insertedSingerNames);

@@ -16,25 +16,27 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class InsertUsingBatchDmlAsyncPostgreTest
+public class GetInformationSchemaAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly InsertUsingBatchDmlAsyncPostgreSample _sample;
+    private readonly GetInformationSchemaAsyncPostgresSample _sample;
 
-    public InsertUsingBatchDmlAsyncPostgreTest(SpannerFixture spannerFixture)
+    public GetInformationSchemaAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new InsertUsingBatchDmlAsyncPostgreSample();
+        _sample = new GetInformationSchemaAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestInsertUsingBatchDmlAsyncPostgre()
+    public async Task TestGetInformationSchemaAsyncPostgres()
     {
         // Act.
-        var count = await _sample.InsertUsingBatchDmlAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var result = await _sample.GetInformationSchemaAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         // Assert.
-        Assert.True(count >= 3); // Other tests may have inserted data.
+        // These two tables will always exist.
+        Assert.Contains(result, r => r.Name == "albums" && r.Schema == "public" && r.UserDefinedType == "undefined");
+        Assert.Contains(result, r => r.Name == "singers" && r.Schema == "public" && r.UserDefinedType == "undefined");
     }
 }

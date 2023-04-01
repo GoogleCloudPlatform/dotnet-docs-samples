@@ -17,21 +17,21 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateUsingDmlReturningAsyncPostgreTest
+public class UpdateUsingDmlReturningAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public UpdateUsingDmlReturningAsyncPostgreTest(SpannerFixture spannerFixture)
+    public UpdateUsingDmlReturningAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestUpdateUsingDmlReturningAsyncPostgre()
+    public async Task TestUpdateUsingDmlReturningAsyncPostgres()
     {
         await InsertDataAsync();
-        var sample = new UpdateUsingDmlReturningAsyncPostgreSample();
-        var updatedMarketingBudgets = await sample.UpdateUsingDmlReturningAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var sample = new UpdateUsingDmlReturningAsyncPostgresSample();
+        var updatedMarketingBudgets = await sample.UpdateUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         Assert.Single(updatedMarketingBudgets);
         Assert.Equal(20000, updatedMarketingBudgets[0]);

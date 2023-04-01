@@ -19,26 +19,26 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class OrderNullsAsyncPostgreTest
+public class OrderNullsAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly OrderNullsAsyncPostgreSample _sample;
+    private readonly OrderNullsAsyncPostgresSample _sample;
 
-    public OrderNullsAsyncPostgreTest(SpannerFixture spannerFixture)
+    public OrderNullsAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new OrderNullsAsyncPostgreSample();
+        _sample = new OrderNullsAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestOrderNullsAsyncPostgre()
+    public async Task TestOrderNullsAsyncPostgres()
     {
         // Arrange.
         await CreateTableForOrderingAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         // Act.
-        var result = await _sample.OrderNullsAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var result = await _sample.OrderNullsAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         //Assert.
         Assert.Collection(result,

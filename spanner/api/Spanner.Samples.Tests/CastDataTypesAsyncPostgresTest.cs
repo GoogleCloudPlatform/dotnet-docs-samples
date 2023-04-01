@@ -12,29 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class ConnectToDatabaseAsyncPostgreTest
+public class CastDataTypesAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly ConnectToDatabaseAsyncPostgreSample _sample;
+    private readonly CastDataTypesAsyncPostgresSample _sample;
 
-    public ConnectToDatabaseAsyncPostgreTest(SpannerFixture spannerFixture)
+    public CastDataTypesAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new ConnectToDatabaseAsyncPostgreSample();
+        _sample = new CastDataTypesAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestConnectToDatabaseAsyncPostgre()
+    public async Task TestCastDataTypesAsyncPostgres()
     {
         // Act.
-        var result = await _sample.ConnectToDatabaseAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var result = await _sample.CastDataTypesAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         //Assert.
-        Assert.Equal($"Hello from Spanner PostgreSQL!", result);
+        Assert.Equal("1", result.String);
+        Assert.Equal(2, result.Integer);
+        Assert.Equal(3, result.Decimal);
+        Assert.Equal("34", BitConverter.ToString(result.Bytes));
+        Assert.Equal(5.00, result.Float);
+        Assert.True(result.Bool);
+        Assert.Equal("2021-11-03 09:35:01Z", result.Timestamp.ToString("u"));
     }
 }

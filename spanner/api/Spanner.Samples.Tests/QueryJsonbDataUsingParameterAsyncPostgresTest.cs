@@ -17,29 +17,29 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class QueryJsonbDataUsingParameterAsyncPostgreTest
+public class QueryJsonbDataUsingParameterAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly QueryJsonbDataUsingParameterAsyncPostgreSample _sample;
+    private readonly QueryJsonbDataUsingParameterAsyncPostgresSample _sample;
 
-    private readonly UpdateDataWithJsonbAsyncPostgreSample _updateDataSample;
+    private readonly UpdateDataWithJsonbAsyncPostgresSample _updateDataSample;
 
-    public QueryJsonbDataUsingParameterAsyncPostgreTest(SpannerFixture spannerFixture)
+    public QueryJsonbDataUsingParameterAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new QueryJsonbDataUsingParameterAsyncPostgreSample();
-        _updateDataSample = new UpdateDataWithJsonbAsyncPostgreSample();
+        _sample = new QueryJsonbDataUsingParameterAsyncPostgresSample();
+        _updateDataSample = new UpdateDataWithJsonbAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestQueryJsonbDataUsingParameterAsyncPostgre()
+    public async Task TestQueryJsonbDataUsingParameterAsyncPostgres()
     {
         // Arrange - Update data.
-        await _updateDataSample.UpdateDataWithJsonbAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _updateDataSample.UpdateDataWithJsonbAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         // Act - Query the VenueInformation table.
-        var venues = await _sample.QueryJsonbDataUsingParameterAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var venues = await _sample.QueryJsonbDataUsingParameterAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         // Assert that venues collection is not empty and all the venues in the collection have a rating greater than 2.
         Assert.NotEmpty(venues);

@@ -12,26 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.V1;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateDataWithJsonbAsyncPostgreTest
+public class UsePgNumericAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly UpdateDataWithJsonbAsyncPostgreSample _sample;
+    private readonly UsePgNumericAsyncPostgresSample _sample;
 
-    public UpdateDataWithJsonbAsyncPostgreTest(SpannerFixture spannerFixture)
+    public UsePgNumericAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new UpdateDataWithJsonbAsyncPostgreSample();
+        _sample = new UsePgNumericAsyncPostgresSample();
     }
-    
+
     [Fact]
-    public async Task TestUpdateDataWithJsonbAsyncPostgre()
+    public async Task TestUsePgNumericAsyncPostgres()
     {
-        // Act - Update the VenueInformation table.
-        await _sample.UpdateDataWithJsonbAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        // Act.
+        var result = await _sample.UsePgNumericAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+
+        //Assert.
+        Assert.Collection(result,
+        item1 => Assert.Equal(PgNumeric.Parse("3150.25"), item1.Revenue),
+        item2 => Assert.Equal(PgNumeric.Parse("NaN"), item2.Revenue),
+        item3 => Assert.Null(item3.Revenue));
     }
 }

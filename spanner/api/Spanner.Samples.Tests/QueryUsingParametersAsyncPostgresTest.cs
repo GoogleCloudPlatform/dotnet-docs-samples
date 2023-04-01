@@ -12,41 +12,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class ExecutePartitionedDmlAsyncPostgreTest
+public class QueryUsingParametersAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly ExecutePartitionedDmlAsyncPostgreSample _sample;
+    private readonly QueryUsingParametersAsyncPostgresSample _sample;
 
-    public ExecutePartitionedDmlAsyncPostgreTest(SpannerFixture spannerFixture)
+    public QueryUsingParametersAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new ExecutePartitionedDmlAsyncPostgreSample();
+        _sample = new QueryUsingParametersAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestExecutePartitionedDmlAsyncPostgre()
+    public async Task TestQueryUsingParametersAsyncPostgres()
     {
-        // Arrange.
+        //Arrange. 
         // Insert data that cannot be inserted by any other tests to avoid errors.
         await InsertDataAsync();
 
         // Act.
-        var result = await _sample.ExecutePartitionedDmlAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
-        Assert.Equal(2, result);
+        var result = await _sample.QueryUsingParametersAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+
+        //Assert.
+        Assert.Single(result);
     }
 
     private async Task InsertDataAsync()
     {
-        SpannerBatchCommand batchCommand = _spannerFixture.PgSpannerConnection.CreateBatchDmlCommand();
-        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (16, 'Elvis', 'Presley')");
-        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (17, 'John', 'Lennon')");
-
-        await batchCommand.ExecuteNonQueryAsync();
+        var command = _spannerFixture.PgSpannerConnection.CreateDmlCommand("INSERT INTO Singers(SingerId, FirstName, LastName) VALUES(10, 'Sonu', 'Nigam')");
+        await command.ExecuteNonQueryAsync();
     }
 }

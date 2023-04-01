@@ -12,33 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.Spanner.V1;
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class UsePgNumericAsyncPostgreTest
+public class UseFunctionAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly UsePgNumericAsyncPostgreSample _sample;
+    private readonly UseFunctionAsyncPostgresSample _sample;
 
-    public UsePgNumericAsyncPostgreTest(SpannerFixture spannerFixture)
+    public UseFunctionAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new UsePgNumericAsyncPostgreSample();
+        _sample = new UseFunctionAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestUsePgNumericAsyncPostgre()
+    public async Task TestUseFunctionAsyncPostgres()
     {
         // Act.
-        var result = await _sample.UsePgNumericAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        var result = await _sample.UseFunctionAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
-        //Assert.
-        Assert.Collection(result,
-        item1 => Assert.Equal(PgNumeric.Parse("3150.25"), item1.Revenue),
-        item2 => Assert.Equal(PgNumeric.Parse("NaN"), item2.Revenue),
-        item3 => Assert.Null(item3.Revenue));
+        // Assert.
+        Assert.Equal(DateTime.Parse("2010-09-13T04:32:03Z").ToUniversalTime(), result);
     }
 }

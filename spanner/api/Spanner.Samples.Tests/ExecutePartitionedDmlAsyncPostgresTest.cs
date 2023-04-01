@@ -12,39 +12,41 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class QueryUsingParametersAsyncPostgreTest
+public class ExecutePartitionedDmlAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly QueryUsingParametersAsyncPostgreSample _sample;
+    private readonly ExecutePartitionedDmlAsyncPostgresSample _sample;
 
-    public QueryUsingParametersAsyncPostgreTest(SpannerFixture spannerFixture)
+    public ExecutePartitionedDmlAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new QueryUsingParametersAsyncPostgreSample();
+        _sample = new ExecutePartitionedDmlAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestQueryUsingParametersAsyncPostgre()
+    public async Task TestExecutePartitionedDmlAsyncPostgres()
     {
-        //Arrange. 
+        // Arrange.
         // Insert data that cannot be inserted by any other tests to avoid errors.
         await InsertDataAsync();
 
         // Act.
-        var result = await _sample.QueryUsingParametersAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
-
-        //Assert.
-        Assert.Single(result);
+        var result = await _sample.ExecutePartitionedDmlAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        Assert.Equal(2, result);
     }
 
     private async Task InsertDataAsync()
     {
-        var command = _spannerFixture.PgSpannerConnection.CreateDmlCommand("INSERT INTO Singers(SingerId, FirstName, LastName) VALUES(10, 'Sonu', 'Nigam')");
-        await command.ExecuteNonQueryAsync();
+        SpannerBatchCommand batchCommand = _spannerFixture.PgSpannerConnection.CreateBatchDmlCommand();
+        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (16, 'Elvis', 'Presley')");
+        batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (17, 'John', 'Lennon')");
+
+        await batchCommand.ExecuteNonQueryAsync();
     }
 }

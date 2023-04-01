@@ -12,31 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Admin.Database.V1;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class GetInformationSchemaAsyncPostgreTest
+public class CreateDatabaseAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly GetInformationSchemaAsyncPostgreSample _sample;
+    private readonly CreateDatabaseAsyncPostgresSample _sample;
 
-    public GetInformationSchemaAsyncPostgreTest(SpannerFixture spannerFixture)
+    public CreateDatabaseAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new GetInformationSchemaAsyncPostgreSample();
+        _sample = new CreateDatabaseAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestGetInformationSchemaAsyncPostgre()
+    public async Task TestCreateDatabaseAsyncPostgres()
     {
+        // Arrange.
+        var databaseId = _spannerFixture.GenerateTempDatabaseId();
+
         // Act.
-        var result = await _sample.GetInformationSchemaAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _sample.CreateDatabaseAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
         // Assert.
-        // These two tables will always exist.
-        Assert.Contains(result, r => r.Name == "albums" && r.Schema == "public" && r.UserDefinedType == "undefined");
-        Assert.Contains(result, r => r.Name == "singers" && r.Schema == "public" && r.UserDefinedType == "undefined");
+        var databases = _spannerFixture.GetDatabases();
+        Assert.Contains(databases, d => d.DatabaseName.DatabaseId == databaseId && d.DatabaseDialect == DatabaseDialect.Postgresql);
     }
 }

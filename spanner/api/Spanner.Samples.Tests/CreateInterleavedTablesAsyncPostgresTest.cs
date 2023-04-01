@@ -18,23 +18,23 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class CreateInterleavedTablesAsyncPostgreTest
+public class CreateInterleavedTablesAsyncPostgresTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    private readonly CreateInterleavedTablesAsyncPostgreSample _sample;
+    private readonly CreateInterleavedTablesAsyncPostgresSample _sample;
 
-    public CreateInterleavedTablesAsyncPostgreTest(SpannerFixture spannerFixture)
+    public CreateInterleavedTablesAsyncPostgresTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
-        _sample = new CreateInterleavedTablesAsyncPostgreSample();
+        _sample = new CreateInterleavedTablesAsyncPostgresSample();
     }
 
     [Fact]
-    public async Task TestCreateInterleavedTablesAsyncPostgre()
+    public async Task TestCreateInterleavedTablesAsyncPostgres()
     {
         // Act.
-        await _sample.CreateInterleavedTablesAsyncPostgre(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _sample.CreateInterleavedTablesAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
         // Assert that both interleaved tables are created.
         var tables = await ListTableNamesAsync();
