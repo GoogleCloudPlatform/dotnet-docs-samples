@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google.Cloud.Spanner.Admin.Database.V1;
-using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -30,10 +29,9 @@ public class RestoreDatabaseWithEncryptionKeyAsyncTest
         _fixture = fixture;
     }
 
-    [SkippableFact]
+    [Fact]
     public async Task TestRestoreDatabaseWithEncryptionKeyAsync()
     {
-        Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         var sample = new RestoreDatabaseWithEncryptionAsyncSample();
         var database = await sample.RestoreDatabaseWithEncryptionAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedRestoreDatabaseId, _fixture.FixedEncryptedBackupId, _fixture.KmsKeyName);
         Assert.Equal(_fixture.KmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));
