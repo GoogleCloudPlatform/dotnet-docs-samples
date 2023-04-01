@@ -42,7 +42,7 @@ Where command is one of
         private static async Task AddDocAsMap(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_add_doc_as_map]
+            // [START firestore_data_set_from_map]
             DocumentReference docRef = db.Collection("cities").Document("LA");
             Dictionary<string, object> city = new Dictionary<string, object>
             {
@@ -51,28 +51,28 @@ Where command is one of
                 { "country", "USA" }
             };
             await docRef.SetAsync(city);
-            // [END fs_add_doc_as_map]
+            // [END firestore_data_set_from_map]
             Console.WriteLine("Added data to the LA document in the cities collection.");
         }
 
         private static async Task UpdateCreateIfMissing(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_update_create_if_missing]
+            // [START firestore_data_set_doc_upsert]
             DocumentReference docRef = db.Collection("cities").Document("LA");
             Dictionary<string, object> update = new Dictionary<string, object>
             {
                 { "capital", false }
             };
             await docRef.SetAsync(update, SetOptions.MergeAll);
-            // [END fs_update_create_if_missing]
+            // [END firestore_data_set_doc_upsert]
             Console.WriteLine("Merged data into the LA document in the cities collection.");
         }
 
         private static async Task AddDocDataTypes(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_add_doc_data_types]
+            // [START firestore_data_set_from_map_nested]
             DocumentReference docRef = db.Collection("data").Document("one");
             Dictionary<string, object> docData = new Dictionary<string, object>
             {
@@ -96,11 +96,11 @@ Where command is one of
             docData.Add("objectExample", objectExample);
 
             await docRef.SetAsync(docData);
-            // [END fs_add_doc_data_types]
+            // [END firestore_data_set_from_map_nested]
             Console.WriteLine("Set multiple data-type data for the one document in the data collection.");
         }
 
-        // [START fs_class_definition]
+        // [START firestore_data_custom_type_definition]
         [FirestoreData]
         public class City
         {
@@ -119,12 +119,12 @@ Where command is one of
             [FirestoreProperty]
             public long Population { get; set; }
         }
-        // [END fs_class_definition]
+        // [END firestore_data_custom_type_definition]
 
         private static async Task AddSimpleDocAsEntity(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_add_simple_doc_as_entity]
+            // [START firestore_data_set_from_custom_type]
             DocumentReference docRef = db.Collection("cities").Document("LA");
             City city = new City
             {
@@ -135,7 +135,7 @@ Where command is one of
                 Population = 3900000L
             };
             await docRef.SetAsync(city);
-            // [END fs_add_simple_doc_as_entity]
+            // [END firestore_data_set_from_custom_type]
             Console.WriteLine("Added custom City object to the cities collection.");
         }
 
@@ -147,16 +147,16 @@ Where command is one of
                 { "Name", "Phuket" },
                 { "Country", "Thailand" }
             };
-            // [START fs_set_requires_id]
+            // [START firestore_data_set_id_specified]
             await db.Collection("cities").Document("new-city-id").SetAsync(city);
-            // [END fs_set_requires_id]
+            // [END firestore_data_set_id_specified]
             Console.WriteLine("Added document with ID: new-city-id.");
         }
 
         private static async Task AddDocDataWithAutoId(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_add_doc_data_with_auto_id]
+            // [START firestore_data_set_id_random_collection]
             Dictionary<string, object> city = new Dictionary<string, object>
             {
                 { "Name", "Tokyo" },
@@ -164,7 +164,7 @@ Where command is one of
             };
             DocumentReference addedDocRef = await db.Collection("cities").AddAsync(city);
             Console.WriteLine("Added document with ID: {0}.", addedDocRef.Id);
-            // [END fs_add_doc_data_with_auto_id]
+            // [END firestore_data_set_id_random_collection]
         }
 
         private static async Task AddDocDataAfterAutoId(string project)
@@ -175,18 +175,18 @@ Where command is one of
                 { "Name", "Moscow" },
                 { "Country", "Russia" }
             };
-            // [START fs_add_doc_data_after_auto_id]
+            // [START firestore_data_set_id_random_document_ref]
             DocumentReference addedDocRef = db.Collection("cities").Document();
             Console.WriteLine("Added document with ID: {0}.", addedDocRef.Id);
             await addedDocRef.SetAsync(city);
-            // [END fs_add_doc_data_after_auto_id]
+            // [END firestore_data_set_id_random_document_ref]
             Console.WriteLine("Added data to the {0} document in the cities collection.", addedDocRef.Id);
         }
 
         private static async Task UpdateDoc(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_update_doc]
+            // [START firestore_data_set_field]
             DocumentReference cityRef = db.Collection("cities").Document("new-city-id");
             Dictionary<string, object> updates = new Dictionary<string, object>
             {
@@ -195,14 +195,14 @@ Where command is one of
             await cityRef.UpdateAsync(updates);
 
             // You can also update a single field with: await cityRef.UpdateAsync("Capital", false);
-            // [END fs_update_doc]
+            // [END firestore_data_set_field]
             Console.WriteLine("Updated the Capital field of the new-city-id document in the cities collection.");
         }
 
         private static async Task UpdateNestedFields(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_update_nested_fields]
+            // [START firestore_data_set_nested_fields]
             DocumentReference frankDocRef = db.Collection("users").Document("frank");
             Dictionary<string, object> initialData = new Dictionary<string, object>
             {
@@ -228,24 +228,24 @@ Where command is one of
 
             // Asynchronously update the document
             await frankDocRef.UpdateAsync(updates);
-            // [END fs_update_nested_fields]
+            // [END firestore_data_set_nested_fields]
             Console.WriteLine("Updated the age and favorite color fields of the Frank document in the users collection.");
         }
 
         private static async Task UpdateServerTimestamp(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_update_server_timestamp]
+            // [START firestore_data_set_server_timestamp]
             DocumentReference cityRef = db.Collection("cities").Document("new-city-id");
             await cityRef.UpdateAsync("Timestamp", Timestamp.GetCurrentTimestamp());
-            // [END fs_update_server_timestamp]
+            // [END firestore_data_set_server_timestamp]
             Console.WriteLine("Updated the Timestamp field of the new-city-id document in the cities collection.");
         }
 
         private static async Task UpdateDocumentArray(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_update_document_array]
+            // [START firestore_data_set_array_operations]
             DocumentReference washingtonRef = db.Collection("cities").Document("DC");
 
             // Atomically add a new region to the "regions" array field.
@@ -253,19 +253,19 @@ Where command is one of
 
             // Atomically remove a region from the "regions" array field.
             await washingtonRef.UpdateAsync("Regions", FieldValue.ArrayRemove("east_coast"));
-            // [END fs_update_document_array]
+            // [END firestore_data_set_array_operations]
             Console.WriteLine("Updated the Regions array of the DC document in the cities collection.");
         }
 
         private static async Task UpdateDocumentIncrement(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_update_document_increment]
+            // [START firestore_data_set_numeric_increment]
             DocumentReference washingtonRef = db.Collection("cities").Document("DC");
 
             // Atomically increment the population of the city by 50.
             await washingtonRef.UpdateAsync("Regions", FieldValue.Increment(50));
-            // [END fs_update_document_increment]
+            // [END firestore_data_set_numeric_increment]
             Console.WriteLine("Updated the population of the DC document in the cities collection.");
         }
 

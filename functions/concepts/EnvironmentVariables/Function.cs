@@ -18,16 +18,15 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Threading.Tasks;
 
-namespace EnvironmentVariables
+namespace EnvironmentVariables;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    public async Task HandleAsync(HttpContext context)
     {
-        public async Task HandleAsync(HttpContext context)
-        {
-            string foo = Environment.GetEnvironmentVariable("FOO")
-                ?? "Specified environment variable is not set.";
-            await context.Response.WriteAsync(foo);
-        }
+        string foo = Environment.GetEnvironmentVariable("FOO")
+            ?? "Specified environment variable is not set.";
+        await context.Response.WriteAsync(foo);
     }
 }
 // [END functions_env_vars]

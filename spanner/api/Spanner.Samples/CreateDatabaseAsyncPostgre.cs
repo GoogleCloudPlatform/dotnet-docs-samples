@@ -52,13 +52,15 @@ public class CreateDatabaseAsyncPostgreSample
             FirstName varchar(1024),
             LastName varchar(1024),
             Rating numeric,
-            SingerInfo bytea)";
+            SingerInfo bytea,
+            FullName character varying(2048) GENERATED ALWAYS AS (FirstName || ' ' || LastName) STORED)";
 
         // Define create table statement for table #2 in PostgreSQL syntax.
         var createAlbumsTable = @"CREATE TABLE Albums (
             AlbumId bigint NOT NULL PRIMARY KEY,
             SingerId bigint NOT NULL REFERENCES Singers (SingerId),
-            AlbumTitle text)";
+            AlbumTitle text,
+            MarketingBudget BIGINT)";
 
         DatabaseName databaseName = DatabaseName.FromProjectInstanceDatabase(projectId, instanceId, databaseId);
 

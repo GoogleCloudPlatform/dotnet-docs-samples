@@ -28,8 +28,13 @@ public class UpdateUsingPartitionedDmlCoreAsyncTest
     [Fact]
     public async Task TestUpdateUsingPartitionedDmlCoreAsync()
     {
-        UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
-        var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+
+            UpdateUsingPartitionedDmlCoreAsyncSample sample = new UpdateUsingPartitionedDmlCoreAsyncSample();
+            var rowCount = await sample.UpdateUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(3, rowCount);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

@@ -41,9 +41,9 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_order_by_name_limit_query]
+            // [START firestore_query_order_limit]
             Query query = citiesRef.OrderBy("Name").Limit(3);
-            // [END fs_order_by_name_limit_query]
+            // [END firestore_query_order_limit]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -55,9 +55,9 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_order_by_name_desc_limit_query]
+            // [START firestore_query_order_desc_limit]
             Query query = citiesRef.OrderByDescending("Name").Limit(3);
-            // [END fs_order_by_name_desc_limit_query]
+            // [END firestore_query_order_desc_limit]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -69,9 +69,9 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_order_by_state_and_population_query]
+            // [START firestore_query_order_multi]
             Query query = citiesRef.OrderBy("State").OrderByDescending("Population");
-            // [END fs_order_by_state_and_population_query]
+            // [END firestore_query_order_multi]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -83,12 +83,12 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_where_order_by_limit_query]
+            // [START firestore_query_order_limit_field_valid]
             Query query = citiesRef
                 .WhereGreaterThan("Population", 2500000)
                 .OrderBy("Population")
                 .Limit(2);
-            // [END fs_where_order_by_limit_query]
+            // [END firestore_query_order_limit_field_valid]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -100,11 +100,11 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_range_order_by_query]
+            // [START firestore_query_order_with_filter]
             Query query = citiesRef
                 .WhereGreaterThan("Population", 2500000)
                 .OrderBy("Population");
-            // [END fs_range_order_by_query]
+            // [END firestore_query_order_with_filter]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in querySnapshot.Documents)
             {
@@ -116,11 +116,11 @@ Where command is one of
         {
             FirestoreDb db = FirestoreDb.Create(project);
             CollectionReference citiesRef = db.Collection("cities");
-            // [START fs_invalid_range_order_by_query]
+            // [START firestore_query_order_field_invalid]
             Query query = citiesRef
                 .WhereGreaterThan("Population", 2500000)
                 .OrderBy("Country");
-            // [END fs_invalid_range_order_by_query]
+            // [END firestore_query_order_field_invalid]
         }
 
         public static void Main(string[] args)

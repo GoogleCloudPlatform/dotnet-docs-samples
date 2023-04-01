@@ -22,6 +22,8 @@ using System;
 class CreateAppEngineTask
 {
     public string CreateTask(
+        // TODO<developer>: call this method by passing correct values for
+        // the following parameters or change the parameters' default values.
         string projectId = "YOUR-PROJECT-ID",
         string location = "us-central1",
         string queue = "my-queue",

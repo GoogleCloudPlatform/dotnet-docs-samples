@@ -28,3 +28,4 @@ applications/liftAndShiftPetshop/PrecompiledWeb/
 applications/liftAndShiftPetshop/Web/
 *.leu
 .cr/
+.DS_Store

@@ -22,58 +22,57 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Http.Tests
+namespace Http.Tests;
+
+public class HttpFormDataTest : FunctionTestBase<HttpFormData.Function>
 {
-    public class HttpFormDataTest : FunctionTestBase<HttpFormData.Function>
+    [Fact]
+    public async Task FilesProcessed()
     {
-        [Fact]
-        public async Task FilesProcessed()
+        var content = new MultipartFormDataContent
         {
-            var content = new MultipartFormDataContent
-            {
-                { new StringContent("text"), "name1", "text.txt" },
-                { new ByteArrayContent(new byte[] { 1, 2, 3 }), "name2", "binary.bin" }
-            };
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri("uri", UriKind.Relative),
-                Content = content
-            };
-            await ExecuteHttpRequestAsync(request,
-                response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
-
-            var logEntries = GetFunctionLogEntries().ToList();
-
-            Assert.All(logEntries, entry => Assert.Equal(LogLevel.Information, entry.Level));
-            Assert.Collection(logEntries,
-                entry0 => Assert.Equal("Processed file: text.txt", entry0.Message),
-                entry1 => Assert.Equal("Processed file: binary.bin", entry1.Message));
-        }
-
-        [Fact]
-        public async Task QueryParametersProcessed()
+            { new StringContent("text"), "name1", "text.txt" },
+            { new ByteArrayContent(new byte[] { 1, 2, 3 }), "name2", "binary.bin" }
+        };
+        var request = new HttpRequestMessage
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Post,
-                RequestUri = new Uri("uri", UriKind.Relative),
-                Content = new FormUrlEncodedContent(new[] { KeyValuePair.Create("foo", "bar") })
-            };
+            Method = HttpMethod.Post,
+            RequestUri = new Uri("uri", UriKind.Relative),
+            Content = content
+        };
+        await ExecuteHttpRequestAsync(request,
+            response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
 
-            await ExecuteHttpRequestAsync(request,
-                response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
+        var logEntries = GetFunctionLogEntries().ToList();
 
-            var logEntry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-            Assert.Equal("Processed field 'foo' (value: 'bar')", logEntry.Message);
-        }
+        Assert.All(logEntries, entry => Assert.Equal(LogLevel.Information, entry.Level));
+        Assert.Collection(logEntries,
+            entry0 => Assert.Equal("Processed file: text.txt", entry0.Message),
+            entry1 => Assert.Equal("Processed file: binary.bin", entry1.Message));
+    }
 
-        [Fact]
-        public async Task NonPostRequestRejected()
+    [Fact]
+    public async Task QueryParametersProcessed()
+    {
+        var request = new HttpRequestMessage
         {
-            await ExecuteHttpRequestAsync(new HttpRequestMessage(HttpMethod.Get, "uri"),
-                response => Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode));
-        }
+            Method = HttpMethod.Post,
+            RequestUri = new Uri("uri", UriKind.Relative),
+            Content = new FormUrlEncodedContent(new[] { KeyValuePair.Create("foo", "bar") })
+        };
+
+        await ExecuteHttpRequestAsync(request,
+            response => Assert.Equal(HttpStatusCode.OK, response.StatusCode));
+
+        var logEntry = Assert.Single(GetFunctionLogEntries());
+        Assert.Equal(LogLevel.Information, logEntry.Level);
+        Assert.Equal("Processed field 'foo' (value: 'bar')", logEntry.Message);
+    }
+
+    [Fact]
+    public async Task NonPostRequestRejected()
+    {
+        await ExecuteHttpRequestAsync(new HttpRequestMessage(HttpMethod.Get, "uri"),
+            response => Assert.Equal(HttpStatusCode.MethodNotAllowed, response.StatusCode));
     }
 }

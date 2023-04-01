@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_create_cdn_key]
+// [START videostitcher_create_cdn_key]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
@@ -24,8 +24,8 @@ using Google.Protobuf;
 public class CreateCdnKeySample
 {
     public CdnKey CreateCdnKey(
-        string projectId, string location, string cdnKeyId, string hostname,
-        string gcdnKeyName, string gcdnPrivateKey, string akamaiTokenKey)
+    string projectId, string location, string cdnKeyId, string hostname,
+    string keyName, string privateKey, bool isMediaCdn)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
@@ -35,19 +35,20 @@ public class CreateCdnKeySample
             Hostname = hostname
         };
 
-        if (akamaiTokenKey is null)
+        if (isMediaCdn)
         {
-            cdnKey.GoogleCdnKey = new GoogleCdnKey
+            cdnKey.MediaCdnKey = new MediaCdnKey
             {
-                KeyName = gcdnKeyName,
-                PrivateKey = ByteString.CopyFromUtf8(gcdnPrivateKey)
+                KeyName = keyName,
+                PrivateKey = ByteString.CopyFromUtf8(privateKey)
             };
         }
         else
         {
-            cdnKey.AkamaiCdnKey = new AkamaiCdnKey
+            cdnKey.GoogleCdnKey = new GoogleCdnKey
             {
-                TokenKey = ByteString.CopyFromUtf8(akamaiTokenKey)
+                KeyName = keyName,
+                PrivateKey = ByteString.CopyFromUtf8(privateKey)
             };
         }
 
@@ -65,4 +66,4 @@ public class CreateCdnKeySample
         return newCdnKey;
     }
 }
-// [END video_stitcher_create_cdn_key]
+// [END videostitcher_create_cdn_key]

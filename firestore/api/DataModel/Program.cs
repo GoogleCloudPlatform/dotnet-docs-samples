@@ -38,35 +38,35 @@ Where command is one of
         private static void DocumentRef(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_document_ref]
+            // [START firestore_data_reference_document]
             DocumentReference documentRef = db.Collection("users").Document("alovelace");
-            // [END fs_document_ref]
+            // [END firestore_data_reference_document]
         }
 
         private static void CollectionRef(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_collection_ref]
+            // [START firestore_data_reference_collection]
             CollectionReference collectionRef = db.Collection("users");
-            // [END fs_collection_ref]
+            // [END firestore_data_reference_collection]
         }
 
         private static void DocumentPathRef(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_document_path_ref]
+            // [START firestore_data_reference_document_path]
             DocumentReference documentRef = db.Document("users/alovelace");
-            // [END fs_document_path_ref]
+            // [END firestore_data_reference_document_path]
         }
 
         private static void SubcollectionRef(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_subcollection_ref]
+            // [START firestore_data_reference_subcollection]
             DocumentReference documentRef = db
                 .Collection("Rooms").Document("RoomA")
                 .Collection("Messages").Document("Message1");
-            // [END fs_subcollection_ref]
+            // [END firestore_data_reference_subcollection]
         }
 
         public static void Main(string[] args)

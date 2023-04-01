@@ -104,6 +104,17 @@ public class SearchWithFacetSpecSample
                 Console.WriteLine(item);
                 Console.WriteLine();
             }
+            Console.WriteLine("Facets:");
+            foreach (var facet in firstPage.Facets)
+            {
+                Console.WriteLine($"key: {facet.Key}");
+                Console.WriteLine("values:");
+                foreach (var facetValue in facet.Values)
+                {
+                    Console.WriteLine(facetValue);
+                }
+                Console.WriteLine();
+            }
         }
 
         return searchResultPages;

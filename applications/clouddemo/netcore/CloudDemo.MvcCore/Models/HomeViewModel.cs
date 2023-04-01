@@ -24,9 +24,9 @@ namespace CloudDemo.MvcCore.Models
     public class HomeViewModel
     {
         public bool IsRunningOnGoogleCloud => this.CloudRuntime != null;
-        public string CloudRuntime { get; }
+        public string? CloudRuntime { get; }
 
-        public HomeViewModel(string runtime)
+        public HomeViewModel(string? runtime)
         {
             this.CloudRuntime = runtime;
         }

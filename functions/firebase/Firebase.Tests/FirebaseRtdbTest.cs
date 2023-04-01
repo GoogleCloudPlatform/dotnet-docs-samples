@@ -18,23 +18,22 @@ using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Firebase.Tests
-{
-    public class FirebaseRtdbTest : FunctionTestBase<FirebaseRtdb.Function>
-    {
-        [Fact]
-        public async Task SubjectAndDeltaAreLogged()
-        {
-            var data = new ReferenceEventData
-            {
-                Data = Value.ForNumber(5),
-                Delta = Value.ForNumber(10)
-            };
-            await ExecuteCloudEventRequestAsync(ReferenceEventData.UpdatedCloudEventType, data, subject: "refs/sample_ref/score");
+namespace Firebase.Tests;
 
-            var logEntries = GetFunctionLogEntries();
-            Assert.Contains(logEntries, entry => entry.Message == "Function triggered by change to refs/sample_ref/score");
-            Assert.Contains(logEntries, entry => entry.Message == "Delta: 10");
-        }
+public class FirebaseRtdbTest : FunctionTestBase<FirebaseRtdb.Function>
+{
+    [Fact]
+    public async Task SubjectAndDeltaAreLogged()
+    {
+        var data = new ReferenceEventData
+        {
+            Data = Value.ForNumber(5),
+            Delta = Value.ForNumber(10)
+        };
+        await ExecuteCloudEventRequestAsync(ReferenceEventData.UpdatedCloudEventType, data, subject: "refs/sample_ref/score");
+
+        var logEntries = GetFunctionLogEntries();
+        Assert.Contains(logEntries, entry => entry.Message == "Function triggered by change to refs/sample_ref/score");
+        Assert.Contains(logEntries, entry => entry.Message == "Delta: 10");
     }
 }

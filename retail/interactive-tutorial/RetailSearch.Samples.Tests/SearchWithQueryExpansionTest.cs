@@ -23,15 +23,10 @@ namespace RetailSearch.Samples.Tests
         public void TestSearchWithQueryExpansion()
         {
             const string ExpectedProductTitle = "Google Youth Hero Tee Grey";
+            
+            var firstPage = SearchWithQueryExpansionTutorial.Search().First();
 
-            var searchResultPages = SearchWithQueryExpansionTutorial.Search();
-
-            var topPages = searchResultPages.Take(2).ToList();
-            var firstPage = topPages[0];
-            var secondPage = topPages[1];
-
-            Assert.Contains(firstPage, result => result.Product.Title.Contains(ExpectedProductTitle));
-            Assert.Contains(secondPage, result => !result.Product.Title.Contains(ExpectedProductTitle));
+            Assert.True(firstPage.QueryExpansionInfo.ExpandedQuery);
         }
     }
 }

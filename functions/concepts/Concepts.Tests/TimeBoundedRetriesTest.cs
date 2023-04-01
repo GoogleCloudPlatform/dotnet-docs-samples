@@ -21,31 +21,30 @@ using System;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Concepts.Tests
+namespace Concepts.Tests;
+
+public class TimeBoundedRetriesTest : FunctionTestBase<TimeBoundedRetries.Function>
 {
-    public class TimeBoundedRetriesTest : FunctionTestBase<TimeBoundedRetries.Function>
+    // Note: In real code I'd use an IClock dependency to make this more reliably testable,
+    // but I don't want to add that complexity into a sample.
+
+    [Theory]
+    [InlineData("Recent message", 1, "Processing PubSub message 'Recent message'")]
+    [InlineData("Old message", 12, "Dropping PubSub message 'Old message'")]
+    public async Task Processing(string textData, int ageInSeconds, string expectedLog)
     {
-        // Note: In real code I'd use an IClock dependency to make this more reliably testable,
-        // but I don't want to add that complexity into a sample.
-
-        [Theory]
-        [InlineData("Recent message", 1, "Processing PubSub message 'Recent message'")]
-        [InlineData("Old message", 12, "Dropping PubSub message 'Old message'")]
-        public async Task Processing(string textData, int ageInSeconds, string expectedLog)
+        var cloudEvent = new CloudEvent
         {
-            var cloudEvent = new CloudEvent
-            {
-                Type = MessagePublishedData.MessagePublishedCloudEventType,
-                Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
-                Id = "1234",
-                Time = DateTimeOffset.UtcNow.AddSeconds(-ageInSeconds),
-                Data = new MessagePublishedData { Message = new PubsubMessage { TextData = textData } }
-            };
+            Type = MessagePublishedData.MessagePublishedCloudEventType,
+            Source = new Uri("//pubsub.googleapis.com", UriKind.RelativeOrAbsolute),
+            Id = "1234",
+            Time = DateTimeOffset.UtcNow.AddSeconds(-ageInSeconds),
+            Data = new MessagePublishedData { Message = new PubsubMessage { TextData = textData } }
+        };
 
-            await ExecuteCloudEventRequestAsync(cloudEvent);
-            var logEntry = Assert.Single(GetFunctionLogEntries());
-            Assert.Equal(LogLevel.Information, logEntry.Level);
-            Assert.Equal(expectedLog, logEntry.Message);
-        }
+        await ExecuteCloudEventRequestAsync(cloudEvent);
+        var logEntry = Assert.Single(GetFunctionLogEntries());
+        Assert.Equal(LogLevel.Information, logEntry.Level);
+        Assert.Equal(expectedLog, logEntry.Message);
     }
 }

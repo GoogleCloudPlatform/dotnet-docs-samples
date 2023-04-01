@@ -19,69 +19,68 @@ using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Firebase.Tests
+namespace Firebase.Tests;
+
+public class FirebaseFirestoreTest : FunctionTestBase<FirebaseFirestore.Function>
 {
-    public class FirebaseFirestoreTest : FunctionTestBase<FirebaseFirestore.Function>
+    [Fact]
+    public async Task FullLogging()
     {
-        [Fact]
-        public async Task FullLogging()
+        string documentName = "projects/my-project/databases/(default)/documents/games/xyz";
+        var data = new DocumentEventData
         {
-            string documentName = "projects/my-project/databases/(default)/documents/games/xyz";
-            var data = new DocumentEventData
+            OldValue = new Document
             {
-                OldValue = new Document
+                Name = documentName,
+                Fields =
                 {
-                    Name = documentName,
-                    Fields =
-                    {
-                        { "highScore", new Value { IntegerValue = 10 } },
-                        { "name", new Value { StringValue = "Function Tester" } }
-                    }
-                },
-                Value = new Document
-                {
-                    Name = documentName,
-                    Fields =
-                    {
-                        { "highScore", new Value { IntegerValue = 20 } },
-                        { "name", new Value { StringValue = "Function Tester" } }
-                    }
+                    { "highScore", new Value { IntegerValue = 10 } },
+                    { "name", new Value { StringValue = "Function Tester" } }
                 }
-            };
-            await ExecuteCloudEventRequestAsync(
-                DocumentEventData.UpdatedCloudEventType,
-                data,
-                new Uri("//firestore.googleapis.com/projects/my-project"),
-                "documents/games/xyz");
-
-            var logEntries = GetFunctionLogEntries();
-
-            var expectedMessages = new[]
+            },
+            Value = new Document
             {
-                "Function triggered by event on documents/games/xyz",
-                "Event type: google.cloud.firestore.document.v1.updated",
-                "Old value: highScore: 10, name: Function Tester",
-                "New value: highScore: 20, name: Function Tester"
-            };
-            var actualMessages = GetFunctionLogEntries().Select(entry => entry.Message).ToArray();
+                Name = documentName,
+                Fields =
+                {
+                    { "highScore", new Value { IntegerValue = 20 } },
+                    { "name", new Value { StringValue = "Function Tester" } }
+                }
+            }
+        };
+        await ExecuteCloudEventRequestAsync(
+            DocumentEventData.UpdatedCloudEventType,
+            data,
+            new Uri("//firestore.googleapis.com/projects/my-project"),
+            "documents/games/xyz");
 
-            Assert.Equal(expectedMessages, actualMessages);
-        }
+        var logEntries = GetFunctionLogEntries();
 
-        [Fact]
-        public async Task MissingFieldsIgnored()
+        var expectedMessages = new[]
         {
-            // There really would normally be Value or OldValue, but it's simpler to test
-            // a completely empty payload.
-            var data = new DocumentEventData();
-            await ExecuteCloudEventRequestAsync(
-                DocumentEventData.DeletedCloudEventType,
-                data,
-                new Uri("//firestore.googleapis.com/projects/my-project"),
-                "documents/games/xyz");
+            "Function triggered by event on documents/games/xyz",
+            "Event type: google.cloud.firestore.document.v1.updated",
+            "Old value: highScore: 10, name: Function Tester",
+            "New value: highScore: 20, name: Function Tester"
+        };
+        var actualMessages = GetFunctionLogEntries().Select(entry => entry.Message).ToArray();
 
-            // We still have the trigger and type log entries, but not the values.
-            Assert.Equal(2, GetFunctionLogEntries().Count);
-        }
+        Assert.Equal(expectedMessages, actualMessages);
+    }
+
+    [Fact]
+    public async Task MissingFieldsIgnored()
+    {
+        // There really would normally be Value or OldValue, but it's simpler to test
+        // a completely empty payload.
+        var data = new DocumentEventData();
+        await ExecuteCloudEventRequestAsync(
+            DocumentEventData.DeletedCloudEventType,
+            data,
+            new Uri("//firestore.googleapis.com/projects/my-project"),
+            "documents/games/xyz");
+
+        // We still have the trigger and type log entries, but not the values.
+        Assert.Equal(2, GetFunctionLogEntries().Count);
     }
 }

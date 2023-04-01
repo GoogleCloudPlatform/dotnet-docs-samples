@@ -31,7 +31,8 @@ public class LogCommitStatsAsyncTest
         var sample = new LogCommitStatsAsyncSample();
         var mutationCount = await sample.LogCommitStatsAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
 
-        // Insert one row with three columns means a mutation count of 3.
-        Assert.Equal(3, mutationCount);
+        // Insert one row with three columns and one auto-generated column FillName.
+        // Therefore means a mutation count of 4.
+        Assert.Equal(4, mutationCount);
     }
 }

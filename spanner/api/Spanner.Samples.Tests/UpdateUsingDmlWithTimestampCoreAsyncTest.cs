@@ -28,8 +28,15 @@ public class UpdateUsingDmlWithTimestampCoreAsyncTest
     [Fact]
     public async Task TestUpdateUsingDmlWithTimestampCoreAsync()
     {
-        UpdateUsingDmlWithTimestampCoreAsyncSample sample = new UpdateUsingDmlWithTimestampCoreAsyncSample();
-        var rowCount = await sample.UpdateUsingDmlWithTimestampCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(3, rowCount);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+            AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
+            await addCommitTimestampAsyncSample.AddCommitTimestampAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
+            UpdateUsingDmlWithTimestampCoreAsyncSample sample = new UpdateUsingDmlWithTimestampCoreAsyncSample();
+            var rowCount = await sample.UpdateUsingDmlWithTimestampCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(2, rowCount);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

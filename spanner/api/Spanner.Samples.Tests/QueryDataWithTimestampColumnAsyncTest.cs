@@ -28,11 +28,18 @@ public class QueryDataWithTimestampColumnAsyncTest
     [Fact]
     public async Task TestQueryDataWithTimestampColumnAsync()
     {
-        QueryDataWithTimestampColumnAsyncSample sample = new QueryDataWithTimestampColumnAsyncSample();
-        UpdateDataWithTimestampColumnAsyncSample updateWithTimestamp = new UpdateDataWithTimestampColumnAsyncSample();
-        await updateWithTimestamp.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        var albums = await sample.QueryDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(albums, a => a.AlbumId == 1 && a.SingerId == 1 && a.LastUpdateTime != null);
-        Assert.Contains(albums, a => a.AlbumId == 2 && a.SingerId == 2 && a.LastUpdateTime != null);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+            AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
+            await addCommitTimestampAsyncSample.AddCommitTimestampAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
+            QueryDataWithTimestampColumnAsyncSample sample = new QueryDataWithTimestampColumnAsyncSample();
+            UpdateDataWithTimestampColumnAsyncSample updateWithTimestamp = new UpdateDataWithTimestampColumnAsyncSample();
+            await updateWithTimestamp.UpdateDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            var albums = await sample.QueryDataWithTimestampColumnAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Contains(albums, a => a.AlbumId == 1 && a.SingerId == 1 && a.LastUpdateTime != null);
+            Assert.Contains(albums, a => a.AlbumId == 2 && a.SingerId == 2 && a.LastUpdateTime != null);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

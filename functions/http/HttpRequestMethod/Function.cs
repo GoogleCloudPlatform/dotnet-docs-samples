@@ -18,28 +18,27 @@ using Microsoft.AspNetCore.Http;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace HttpRequestMethod
+namespace HttpRequestMethod;
+
+public class Function : IHttpFunction
 {
-    public class Function : IHttpFunction
+    public async Task HandleAsync(HttpContext context)
     {
-        public async Task HandleAsync(HttpContext context)
+        HttpResponse response = context.Response;
+        switch (context.Request.Method)
         {
-            HttpResponse response = context.Response;
-            switch (context.Request.Method)
-            {
-                case "GET":
-                    response.StatusCode = (int) HttpStatusCode.OK;
-                    await response.WriteAsync("Hello world!");
-                    break;
-                case "PUT":
-                    response.StatusCode = (int) HttpStatusCode.Forbidden;
-                    await response.WriteAsync("Forbidden!");
-                    break;
-                default:
-                    response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
-                    await response.WriteAsync("Something blew up!");
-                    break;
-            }
+            case "GET":
+                response.StatusCode = (int) HttpStatusCode.OK;
+                await response.WriteAsync("Hello world!");
+                break;
+            case "PUT":
+                response.StatusCode = (int) HttpStatusCode.Forbidden;
+                await response.WriteAsync("Forbidden!");
+                break;
+            default:
+                response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
+                await response.WriteAsync("Something blew up!");
+                break;
         }
     }
 }

@@ -31,6 +31,20 @@ using CryptoKeyName = Google.Cloud.Spanner.Admin.Database.V1.CryptoKeyName;
 [CollectionDefinition(nameof(SpannerFixture))]
 public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 {
+    public const string CreateSingersTableStatement =
+    @"CREATE TABLE Singers (
+            SingerId INT64 NOT NULL,
+            FirstName STRING(1024),
+            LastName STRING(1024)
+            ) PRIMARY KEY (SingerId)";
+
+    public const string CreateAlbumsTableStatement =
+    @"CREATE TABLE Albums (
+        SingerId INT64 NOT NULL,
+        AlbumId INT64 NOT NULL,
+        AlbumTitle STRING(MAX)
+        ) PRIMARY KEY (SingerId, AlbumId)";
+
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
     public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
@@ -229,6 +243,14 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await createTableWithTimestampColumnAsyncSample.CreateTableWithTimestampColumnAsync(ProjectId, InstanceId, DatabaseId);
     }
 
+    public async Task InitializeTempDatabaseAsync(string databaseId)
+    {
+        InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+        AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
+        await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, databaseId);
+        await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, databaseId);
+    }
+
     private async Task InitializeBackupAsync()
     {
         // Sample database for backup and restore tests.
@@ -271,6 +293,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         CreateDatabaseAsyncPostgreSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgreSample();
         await createDatabaseAsyncSample.CreateDatabaseAsyncPostgre(ProjectId, InstanceId, PostgreSqlDatabaseId);
+        await CreateVenueTablesAndInsertDataAsyncPostgre();
     }
 
     private async Task InitializeEncryptionKeys()
@@ -513,11 +536,38 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }));
     }
 
-    public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget)
+    public async Task CreateSingersAndAlbumsTableAsync(string projectId, string instanceId, string databaseId)
     {
+        using var connection = new SpannerConnection($"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}");
+;
+        var createSingersTable =
+        @"CREATE TABLE Singers (
+                 SingerId INT64 NOT NULL,
+                 FirstName STRING(1024),
+                 LastName STRING(1024),
+                 ComposerInfo BYTES(MAX),
+                 FullName STRING(2048) AS (ARRAY_TO_STRING([FirstName, LastName], "" "")) STORED
+             ) PRIMARY KEY (SingerId)";
+
+        var createAlbumsTable =
+        @"CREATE TABLE Albums (
+                 SingerId INT64 NOT NULL,
+                 AlbumId INT64 NOT NULL,
+                 AlbumTitle STRING(MAX),
+                 MarketingBudget INT64
+             ) PRIMARY KEY (SingerId, AlbumId),
+             INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+
+        using var createDdlCommand = connection.CreateDdlCommand(createSingersTable, createAlbumsTable);
+        await createDdlCommand.ExecuteNonQueryAsync();
+    }
+
+    public async Task RefillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget, string databaseId = null)
+    {
+        var spannerConnection = databaseId is null ? SpannerConnection : new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
         for (int i = 1; i <= 2; ++i)
         {
-            var cmd = SpannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection
+            var cmd = spannerConnection.CreateUpdateCommand("Albums", new SpannerParameterCollection
                 {
                     { "SingerId", SpannerDbType.Int64, i },
                     { "AlbumId", SpannerDbType.Int64, i },
@@ -532,5 +582,37 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         var databases = DatabaseAdminClient.ListDatabases(instanceName);
         return databases;
+    }
+
+    private async Task CreateVenueTablesAndInsertDataAsyncPostgre()
+    {
+        // We create VenueInformation table so that update and query jsonb data sample can run out of order. 
+
+        // Define create table statement for VenueInformation.
+        const string createVenueInformationTableStatement =
+        @"CREATE TABLE VenueInformation (
+            VenueId BIGINT NOT NULL PRIMARY KEY,
+            VenueName VARCHAR(1024),
+            Details JSONB)";
+
+        await CreateTableAsyncPostgre(createVenueInformationTableStatement);
+
+        // Insert data in VenueInformation table.
+        int[] ids = new int[] { 4, 19, 42 };
+        await Task.WhenAll(ids.Select(id =>
+        {
+            using var cmd = PgSpannerConnection.CreateInsertCommand("VenueInformation", new SpannerParameterCollection
+            {
+                { "VenueId", SpannerDbType.Int64, id },
+                { "VenueName", SpannerDbType.String, $"Venue {id}" }
+            });
+            return cmd.ExecuteNonQueryAsync();
+        }));
+    }
+
+    public async Task CreateTableAsyncPostgre(string createTableStatement)
+    {
+        using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

@@ -40,7 +40,7 @@ Where command is one of
         private static async Task RetrieveCreateExamples(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_retrieve_create_examples]
+            // [START firestore_data_get_dataset]
             CollectionReference citiesRef = db.Collection("cities");
             await citiesRef.Document("SF").SetAsync(new Dictionary<string, object>(){
                 { "Name", "San Francisco" },
@@ -78,13 +78,13 @@ Where command is one of
                 { "Population", 21500000 }
             });
             Console.WriteLine("Added example cities data to the cities collection.");
-            // [END fs_retrieve_create_examples]
+            // [END firestore_data_get_dataset]
         }
 
         private static async Task GetDocAsMap(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_get_doc_as_map]
+            // [START firestore_data_get_as_map]
             DocumentReference docRef = db.Collection("cities").Document("SF");
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
             if (snapshot.Exists)
@@ -100,7 +100,7 @@ Where command is one of
             {
                 Console.WriteLine("Document {0} does not exist!", snapshot.Id);
             }
-            // [END fs_get_doc_as_map]
+            // [END firestore_data_get_as_map]
         }
 
         // A custom City class used by the GetDocAsEntity function.
@@ -126,7 +126,7 @@ Where command is one of
         private static async Task GetDocAsEntity(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_get_doc_as_entity]
+            // [START firestore_data_get_as_custom_type]
             DocumentReference docRef = db.Collection("cities").Document("BJ");
             DocumentSnapshot snapshot = await docRef.GetSnapshotAsync();
             if (snapshot.Exists)
@@ -143,13 +143,13 @@ Where command is one of
             {
                 Console.WriteLine("Document {0} does not exist!", snapshot.Id);
             }
-            // [END fs_get_doc_as_entity]
+            // [END firestore_data_get_as_custom_type]
         }
 
         private static async Task GetMultipleDocs(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_get_multiple_docs]
+            // [START firestore_data_query]
             Query capitalQuery = db.Collection("cities").WhereEqualTo("Capital", true);
             QuerySnapshot capitalQuerySnapshot = await capitalQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in capitalQuerySnapshot.Documents)
@@ -162,13 +162,13 @@ Where command is one of
                 }
                 Console.WriteLine("");
             }
-            // [END fs_get_multiple_docs]
+            // [END firestore_data_query]
         }
 
         private static async Task GetAllDocs(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_get_all_docs]
+            // [START firestore_data_get_all_documents]
             Query allCitiesQuery = db.Collection("cities");
             QuerySnapshot allCitiesQuerySnapshot = await allCitiesQuery.GetSnapshotAsync();
             foreach (DocumentSnapshot documentSnapshot in allCitiesQuerySnapshot.Documents)
@@ -181,13 +181,13 @@ Where command is one of
                 }
                 Console.WriteLine("");
             }
-            // [END fs_get_all_docs]
+            // [END firestore_data_get_all_documents]
         }
 
         private static async Task AddSubcollection(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_add_subcollection]
+            // [START firestore_data_add_sub_collection]
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             CollectionReference subcollectionRef = cityRef.Collection("neighborhoods");
             Dictionary<string, object> data = new Dictionary<string, object>
@@ -195,14 +195,14 @@ Where command is one of
                 { "name", "Marina" },
             };
             await subcollectionRef.Document("Marina").SetAsync(data);
-            // [END fs_add_subcollection]
+            // [END firestore_data_add_sub_collection]
             Console.WriteLine("Added data to the Marina document in the neighborhoods subcollection in the SF document in the cities collection.");
         }
 
         private static async Task GetCollections(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_get_collections]
+            // [START firestore_data_get_sub_collections]
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             IAsyncEnumerable<CollectionReference> subcollections = cityRef.ListCollectionsAsync();
             IAsyncEnumerator<CollectionReference> subcollectionsEnumerator = subcollections.GetAsyncEnumerator(default);
@@ -211,7 +211,7 @@ Where command is one of
                 CollectionReference subcollectionRef = subcollectionsEnumerator.Current;
                 Console.WriteLine("Found subcollection with ID: {0}", subcollectionRef.Id);
             }
-            // [END fs_get_collections]
+            // [END firestore_data_get_sub_collections]
         }
 
         public static void Main(string[] args)

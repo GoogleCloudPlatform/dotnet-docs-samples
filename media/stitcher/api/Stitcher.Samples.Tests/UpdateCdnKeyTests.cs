@@ -31,19 +31,19 @@ namespace Stitcher.Samples.Tests
         }
 
         [Fact]
-        public void UpdatesCdnKey_CloudCdn()
+        public void UpdatesCdnKey_MediaCdn()
         {
-            var result = _updateSample.UpdateCdnKey(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdateHostname, _fixture.CloudCdnKeyName, _fixture.UpdatedCloudCdnTokenKey, null);
+            var result = _updateSample.UpdateCdnKey(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdatedMediaCdnHostname, _fixture.KeyName, _fixture.MediaCdnPrivateKey, true);
             Assert.Equal(_fixture.TestCloudCdnKeyId, result.CdnKeyName.CdnKeyId);
-            Assert.Equal(_fixture.UpdateHostname, result.Hostname);
+            Assert.Equal(_fixture.UpdatedMediaCdnHostname, result.Hostname);
         }
 
         [Fact]
-        public void UpdatesCdnKey_Akamai()
+        public void UpdatesCdnKey_CloudCdn()
         {
-            var result = _updateSample.UpdateCdnKey(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.Hostname, null, null, _fixture.AkamaiTokenKey);
+            var result = _updateSample.UpdateCdnKey(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdatedCloudCdnHostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
             Assert.Equal(_fixture.TestCloudCdnKeyId, result.CdnKeyName.CdnKeyId);
-            Assert.Equal(_fixture.Hostname, result.Hostname);
+            Assert.Equal(_fixture.UpdatedCloudCdnHostname, result.Hostname);
         }
     }
 }

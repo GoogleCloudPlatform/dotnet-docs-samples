@@ -65,7 +65,6 @@ spec:
     spec:
       nodeSelector:
         kubernetes.io/os: windows
-        cloud.google.com/gke-os-distribution: windows_ltsc
       containers:
       - name: clouddemo-net4
         image: CLOUDDEMO_IMAGE

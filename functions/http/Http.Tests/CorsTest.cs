@@ -19,44 +19,43 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace Http.Tests
+namespace Http.Tests;
+
+public class CorsTest : FunctionTestBase<Cors.Function>
 {
-    public class CorsTest : FunctionTestBase<Cors.Function>
+    [Fact]
+    public async Task GetRequest()
     {
-        [Fact]
-        public async Task GetRequest()
+        var request = new HttpRequestMessage(HttpMethod.Get, "uri");
+
+        await ExecuteHttpRequestAsync(request, async response =>
         {
-            var request = new HttpRequestMessage(HttpMethod.Get, "uri");
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Single(response.Headers.GetValues("Access-Control-Allow-Origin"), "*");
+            var actualContent = await response.Content.ReadAsStringAsync();
+            var expectedContent = "CORS headers set successfully!";
+            Assert.Equal(expectedContent, actualContent);
+        });
+    }
 
-            await ExecuteHttpRequestAsync(request, async response =>
-            {
-                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-                Assert.Single(response.Headers.GetValues("Access-Control-Allow-Origin"), "*");
-                var actualContent = await response.Content.ReadAsStringAsync();
-                var expectedContent = "CORS headers set successfully!";
-                Assert.Equal(expectedContent, actualContent);
-            });
-        }
-
-        [Fact]
-        public async Task OptionsRequest()
+    [Fact]
+    public async Task OptionsRequest()
+    {
+        var request = new HttpRequestMessage
         {
-            var request = new HttpRequestMessage
-            {
-                Method = HttpMethod.Options,
-                RequestUri = new Uri("uri", UriKind.Relative)
-            };
-            await ExecuteHttpRequestAsync(request, async response =>
-            {
-                Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
-                Assert.Single(response.Headers.GetValues("Access-Control-Allow-Origin"), "*");
-                Assert.Single(response.Headers.GetValues("Access-Control-Allow-Methods"), "GET");
-                Assert.Single(response.Headers.GetValues("Access-Control-Allow-Headers"), "Content-Type");
-                Assert.Single(response.Headers.GetValues("Access-Control-Max-Age"), "3600");
+            Method = HttpMethod.Options,
+            RequestUri = new Uri("uri", UriKind.Relative)
+        };
+        await ExecuteHttpRequestAsync(request, async response =>
+        {
+            Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+            Assert.Single(response.Headers.GetValues("Access-Control-Allow-Origin"), "*");
+            Assert.Single(response.Headers.GetValues("Access-Control-Allow-Methods"), "GET");
+            Assert.Single(response.Headers.GetValues("Access-Control-Allow-Headers"), "Content-Type");
+            Assert.Single(response.Headers.GetValues("Access-Control-Max-Age"), "3600");
 
-                var actualContent = await response.Content.ReadAsStringAsync();
-                Assert.Empty(actualContent);
-            });
-        }
+            var actualContent = await response.Content.ReadAsStringAsync();
+            Assert.Empty(actualContent);
+        });
     }
 }

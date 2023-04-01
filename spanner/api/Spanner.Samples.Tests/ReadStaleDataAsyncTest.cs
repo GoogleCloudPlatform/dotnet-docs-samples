@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,9 +29,16 @@ public class ReadStaleDataAsyncTest
     [Fact]
     public async Task TestReadStaleDataAsync()
     {
-        ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
-        await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000);
-        var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 1 && a.MarketingBudget == 300000);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+            ReadStaleDataAsyncSample sample = new ReadStaleDataAsyncSample();
+            await _spannerFixture.RefillMarketingBudgetsAsync(300000, 300000, databaseId);
+            // We need to wait to actually make the data stale.
+            await Task.Delay(TimeSpan.FromSeconds(15));
+
+            var albums = await sample.ReadStaleDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Contains(albums, a => a.SingerId == 1 && a.AlbumId == 1 && a.MarketingBudget == 300000);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

@@ -36,7 +36,7 @@ Where command is one of
         private static async Task ListenDocument(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_listen_document]
+            // [START firestore_listen_document]
             DocumentReference docRef = db.Collection("cities").Document("SF");
             FirestoreChangeListener listener = docRef.Listen(snapshot =>
             {
@@ -52,7 +52,7 @@ Where command is one of
                     }
                 }
             });
-            // [END fs_listen_document]
+            // [END firestore_listen_document]
 
             // Create a new document at cities/SF to demonstrate realtime listener
             Console.WriteLine("Creating document");
@@ -69,15 +69,15 @@ Where command is one of
 
             // Stop the listener when you no longer want to receive updates.
             Console.WriteLine("Stopping the listener");
-            // [START fs_detach_listener]
+            // [START firestore_listen_detach]
             await listener.StopAsync();
-            // [END fs_detach_listener]
+            // [END firestore_listen_detach]
         }
 
         private static async Task ListenMultiple(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_listen_multiple]
+            // [START firestore_listen_query_snapshots]
             CollectionReference citiesRef = db.Collection("cities");
             Query query = db.Collection("cities").WhereEqualTo("State", "CA");
 
@@ -90,7 +90,7 @@ Where command is one of
                     Console.WriteLine(documentSnapshot.Id);
                 }
             });
-            // [END fs_listen_multiple]
+            // [END firestore_listen_query_snapshots]
 
             // Create a new document at cities/LA to demonstrate realtime listener
             Console.WriteLine("Creating document");
@@ -114,7 +114,7 @@ Where command is one of
         private static async Task ListenForChanges(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_listen_for_changes]
+            // [START firestore_listen_query_changes]
             CollectionReference citiesRef = db.Collection("cities");
             Query query = db.Collection("cities").WhereEqualTo("State", "CA");
 
@@ -136,7 +136,7 @@ Where command is one of
                     }
                 }
             });
-            // [END fs_listen_for_changes]
+            // [END firestore_listen_query_changes]
 
             // Create a new document at cities/MTV to demonstrate realtime listener
             Console.WriteLine("Creating document");

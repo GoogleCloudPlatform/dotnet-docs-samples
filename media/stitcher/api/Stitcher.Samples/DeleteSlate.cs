@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_delete_slate]
+// [START videostitcher_delete_slate]
 
 using Google.Cloud.Video.Stitcher.V1;
 
@@ -35,4 +35,4 @@ public class DeleteSlateSample
         client.DeleteSlate(request);
     }
 }
-// [END video_stitcher_delete_slate]
+// [END videostitcher_delete_slate]

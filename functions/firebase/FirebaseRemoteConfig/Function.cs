@@ -20,25 +20,24 @@ using Microsoft.Extensions.Logging;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace FirebaseRemoteConfig
+namespace FirebaseRemoteConfig;
+
+public class Function : ICloudEventFunction<RemoteConfigEventData>
 {
-    public class Function : ICloudEventFunction<RemoteConfigEventData>
+    private readonly ILogger _logger;
+
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public Task HandleAsync(CloudEvent cloudEvent, RemoteConfigEventData data, CancellationToken cancellationToken)
     {
-        private readonly ILogger _logger;
+        _logger.LogInformation("Update type: {origin}", data.UpdateType);
+        _logger.LogInformation("Update origin: {origin}", data.UpdateOrigin);
+        _logger.LogInformation("Version number: {version}", data.VersionNumber);
 
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
-
-        public Task HandleAsync(CloudEvent cloudEvent, RemoteConfigEventData data, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Update type: {origin}", data.UpdateType);
-            _logger.LogInformation("Update origin: {origin}", data.UpdateOrigin);
-            _logger.LogInformation("Version number: {version}", data.VersionNumber);
-
-            // In this example, we don't need to perform any asynchronous operations, so the
-            // method doesn't need to be declared async.
-            return Task.CompletedTask;
-        }
+        // In this example, we don't need to perform any asynchronous operations, so the
+        // method doesn't need to be declared async.
+        return Task.CompletedTask;
     }
 }
 // [END functions_firebase_remote_config]

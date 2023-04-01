@@ -27,15 +27,15 @@ using System.Net.Http.Headers;
 
 namespace GoogleCloudSamples
 {
-    // [START fs_index_field]
+    // [START firestore_index_field]
     public class IndexField
     {
         public string fieldPath;
         public string mode;
     }
-    // [END fs_index_field]
+    // [END firestore_index_field]
 
-    // [START fs_index_content]
+    // [START firestore_index_content]
     public class IndexContent
     {
         public string collectionId;
@@ -56,7 +56,7 @@ namespace GoogleCloudSamples
             fields = fieldsArray;
         }
     }
-    // [END fs_index_content]
+    // [END firestore_index_content]
 
     public class ManageIndexes
     {
@@ -70,7 +70,7 @@ Where command is one of
 ";
 
         // Counts the number of created indexes for a given collection in a project.
-        // [START fs_count_indexes]
+        // [START firestore_count_indexes]
         private static int CountIndexes(string project, string collectionId)
         {
             GoogleCredential credential =
@@ -112,10 +112,10 @@ Where command is one of
             }
             return numIndexesCreated;
         }
-        // [END fs_count_indexes]
+        // [END firestore_count_indexes]
 
         // Creates an index for a given collection in a project.
-        // [START fs_create_index]
+        // [START firestore_create_index]
         private static async Task CreateIndex(string project, string collectionId, string field1, string order1, string field2, string order2)
         {
             GoogleCredential credential =
@@ -143,10 +143,10 @@ Where command is one of
             UriBuilder uri = new UriBuilder(uriString);
             await http.PostAsync(uri.Uri, new StringContent(jsonRequest, System.Text.Encoding.UTF8, "application/json"));
         }
-        // [END fs_create_index]
+        // [END firestore_create_index]
 
         // Retrieves all indexes for a given collection in a project and deletes them.
-        // [START fs_delete_indexes]
+        // [START firestore_delete_indexes]
         private static async Task DeleteIndexes(string project, string collectionId)
         {
             GoogleCredential credential =
@@ -197,7 +197,7 @@ Where command is one of
             }
             Console.WriteLine("Index deletion completed!");
         }
-        // [END fs_delete_indexes]
+        // [END firestore_delete_indexes]
 
         public static void Main(string[] args)
         {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START video_stitcher_list_slates]
+// [START videostitcher_list_slates]
 
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
@@ -40,4 +40,4 @@ public class ListSlatesSample
         return response;
     }
 }
-// [END video_stitcher_list_slates]
+// [END videostitcher_list_slates]

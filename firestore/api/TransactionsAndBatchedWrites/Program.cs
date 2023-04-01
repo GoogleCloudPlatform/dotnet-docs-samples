@@ -34,7 +34,7 @@ Where command is one of
         private static async Task RunSimpleTransaction(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_run_simple_transaction]
+            // [START firestore_transaction_document_update]
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             await db.RunTransactionAsync(async transaction =>
             {
@@ -46,14 +46,14 @@ Where command is one of
                 };
                 transaction.Update(cityRef, updates);
             });
-            // [END fs_run_simple_transaction]
+            // [END firestore_transaction_document_update]
             Console.WriteLine("Ran a simple transaction to update the population field in the SF document in the cities collection.");
         }
 
         private static async Task ReturnInfoTransaction(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_return_info_transaction]
+            // [START firestore_transaction_document_update_conditional]
             DocumentReference cityRef = db.Collection("cities").Document("SF");
             bool transactionResult = await db.RunTransactionAsync(async transaction =>
             {
@@ -82,13 +82,13 @@ Where command is one of
             {
                 Console.WriteLine("Sorry! Population is too big.");
             }
-            // [END fs_return_info_transaction]
+            // [END firestore_transaction_document_update_conditional]
         }
 
         private static async Task BatchWrite(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START fs_batch_write]
+            // [START firestore_data_batch_writes]
             WriteBatch batch = db.StartBatch();
 
             // Set the data for NYC
@@ -113,7 +113,7 @@ Where command is one of
 
             // Commit the batch
             await batch.CommitAsync();
-            // [END fs_batch_write]
+            // [END firestore_data_batch_writes]
             Console.WriteLine("Batch write successfully completed.");
         }
 

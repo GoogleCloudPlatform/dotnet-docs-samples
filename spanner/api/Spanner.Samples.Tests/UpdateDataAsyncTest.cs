@@ -28,8 +28,13 @@ public class UpdateDataAsyncTest
     [Fact]
     public async Task TestUpdateDataAsync()
     {
-        UpdateDataAsyncSample sample = new UpdateDataAsyncSample();
-        var rowCount = await sample.UpdateDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(2, rowCount);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+
+            UpdateDataAsyncSample sample = new UpdateDataAsyncSample();
+            var rowCount = await sample.UpdateDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(2, rowCount);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

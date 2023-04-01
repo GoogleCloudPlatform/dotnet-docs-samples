@@ -22,40 +22,39 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Retry
+namespace Retry;
+
+public class Function : ICloudEventFunction<MessagePublishedData>
 {
-    public class Function : ICloudEventFunction<MessagePublishedData>
+    private readonly ILogger _logger;
+
+    public Function(ILogger<Function> logger) =>
+        _logger = logger;
+
+    public Task HandleAsync(CloudEvent cloudEvent, MessagePublishedData data, CancellationToken cancellationToken)
     {
-        private readonly ILogger _logger;
+        bool retry = false;
+        string text = data.Message?.TextData;
 
-        public Function(ILogger<Function> logger) =>
-            _logger = logger;
-
-        public Task HandleAsync(CloudEvent cloudEvent, MessagePublishedData data, CancellationToken cancellationToken)
+        // Get the value of the "retry" JSON parameter, if one exists.
+        if (!string.IsNullOrEmpty(text))
         {
-            bool retry = false;
-            string text = data.Message?.TextData;
+            JsonElement element = JsonSerializer.Deserialize<JsonElement>(data.Message.TextData);
 
-            // Get the value of the "retry" JSON parameter, if one exists.
-            if (!string.IsNullOrEmpty(text))
-            {
-                JsonElement element = JsonSerializer.Deserialize<JsonElement>(data.Message.TextData);
-
-                retry = element.TryGetProperty("retry", out var property) &&
-                    property.ValueKind == JsonValueKind.True;
-            }
-
-            // Throwing an exception causes the execution to be retried.
-            if (retry)
-            {
-                throw new InvalidOperationException("Retrying...");
-            }
-            else
-            {
-                _logger.LogInformation("Not retrying...");
-            }
-            return Task.CompletedTask;
+            retry = element.TryGetProperty("retry", out var property) &&
+                property.ValueKind == JsonValueKind.True;
         }
+
+        // Throwing an exception causes the execution to be retried.
+        if (retry)
+        {
+            throw new InvalidOperationException("Retrying...");
+        }
+        else
+        {
+            _logger.LogInformation("Not retrying...");
+        }
+        return Task.CompletedTask;
     }
 }
 // [END functions_tips_retry]
