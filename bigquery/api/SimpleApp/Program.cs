@@ -27,7 +27,7 @@ namespace GoogleCloudSamples
         public static void Main(string[] args)
         {
             // [START bigquery_simple_app_client]
-            string projectId = "YOUR-PROJECT-ID";
+            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             var client = BigQueryClient.Create(projectId);
             // [END bigquery_simple_app_client]
             // [START bigquery_simple_app_query]
