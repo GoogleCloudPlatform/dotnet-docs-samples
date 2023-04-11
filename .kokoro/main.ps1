@@ -24,9 +24,11 @@ try {
     # Import secrets:
     .\.kokoro-windows\Import-Secrets.ps1
 
+    $private:currentDir = (Get-Location).Path
+
     # The list of changed subdirectories.
-    git config --global --add safe.directory /tmpfs/src/github/dotnet-docs-samples
-    $changedDirs = ($(git diff main --name-only | cut -d/ -f 1 | uniq))
+    git config --global --add safe.directory "$currentDir"
+    $changedDirs = ($(git --git-dir="$currentDir/.git" --work-tree="$currentDir" diff main --name-only | cut -d/ -f 1 | uniq))
 
     # The list of all subdirectories.
     $allDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
