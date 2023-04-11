@@ -1,29 +1,33 @@
 assign_issues_by:
 - labels:
-  - 'api: cloudiot'
-  to:
-  - simoncsaba-g
-- labels:
   - 'api: bigtable'
   - 'api: datastore'
   - 'api: firestore'
+  - 'api: storage'
+  - 'api: spanner'
   to:
-  - GoogleCloudPlatform/cloud-native-db-dpes
+  - gforgurups
 - labels:
   - 'api: cloudsql'
   to:
   - GoogleCloudPlatform/infra-db-dpes
 - labels:
-  - 'api: spanner'
+  - 'api: dlp'
   to:
-  - shivgautam
+  - GoogleCloudPlatform/googleapis-dlp
+- labels:
+  - 'api: retail'
+  to:
+  - chenlei1216
+- labels:
+  - 'api: videostitcher'
+  - 'api: livestream'
+  - 'api: transcoder'
+  to:
+  - irataxy
 
 assign_prs_by:
 - labels:
-  - 'api: cloudiot'
-  to:
-  - simoncsaba-g
-- labels:
   - 'api: bigtable'
   - 'api: datastore'
   - 'api: firestore'
@@ -33,3 +37,25 @@ assign_prs_by:
   - 'api: cloudsql'
   to:
   - GoogleCloudPlatform/infra-db-dpes
+- labels:
+  - 'api: storage'
+  to:
+  - GoogleCloudPlatform/cloud-storage-dpes
+- labels:
+  - 'api: spanner'
+  to:
+  - GoogleCloudPlatform/api-spanner-dotnet
+- labels:
+  - 'api: dlp'
+  to:
+  - GoogleCloudPlatform/googleapis-dlp
+- labels:
+  - 'api: retail'
+  to:
+  - chenlei1216
+- labels:
+  - 'api: videostitcher'
+  - 'api: livestream'
+  - 'api: transcoder'
+  to:
+  - irataxy
