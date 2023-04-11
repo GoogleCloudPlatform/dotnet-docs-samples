@@ -50,9 +50,9 @@ public class CreateJobWithAnimatedOverlaySample
             BitrateBps = 64000
         };
 
-        // Create the overlay image. Only JPEG is supported. Image resolution is based on output
-        // video resolution. This example uses the values x: 0 and y: 0 to maintain the original
-        // resolution of the overlay image.
+        // Create the overlay image. Image resolution is based on output video resolution.
+        // This example uses the values x: 0 and y: 0 to maintain the original resolution
+        // of the overlay image.
         Overlay.Types.Image overlayImage = new Overlay.Types.Image
         {
             Uri = overlayImageUri,

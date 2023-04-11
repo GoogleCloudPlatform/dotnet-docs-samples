@@ -50,10 +50,10 @@ public class CreateJobWithStaticOverlaySample
             BitrateBps = 64000
         };
 
-        // Create the overlay image. Only JPEG is supported. Image resolution is based on output
-        // video resolution. To respect the original image aspect ratio, set either x or y to 0.0.
-        // This example stretches the overlay image the full width and half of the height of the
-        // output video.
+        // Create the overlay image. Image resolution is based on output video
+        // resolution. To respect the original image aspect ratio, set either x
+        // or y to 0.0. This example stretches the overlay image the full width
+        // and half of the height of the output video.
         Overlay.Types.Image overlayImage = new Overlay.Types.Image
         {
             Uri = overlayImageUri,
