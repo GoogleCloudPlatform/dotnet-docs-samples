@@ -17,6 +17,10 @@ assign_issues_by:
   - 'api: spanner'
   to:
   - shivgautam
+- labels:
+  - 'api: dlp'
+  to:
+  - GoogleCloudPlatform/googleapis-dlp
 
 assign_prs_by:
 - labels:
@@ -33,3 +37,7 @@ assign_prs_by:
   - 'api: cloudsql'
   to:
   - GoogleCloudPlatform/infra-db-dpes
+- labels:
+  - 'api: dlp'
+  to:
+  - GoogleCloudPlatform/googleapis-dlp
