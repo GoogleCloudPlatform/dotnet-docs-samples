@@ -12,6 +12,7 @@
 
 bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
 datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
+dlp/        @GoogleCloudPlatform/googleapis-dlp @amanda-tarafa @jskeet
 cloud-sql/  @GoogleCloudPlatform/infra-db-dpes @amanda-tarafa @jskeet
 firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
 iot/        @GoogleCloudPlatform/api-iot @amanda-tarafa @jskeet
