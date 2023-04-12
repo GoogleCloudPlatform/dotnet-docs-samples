@@ -18,7 +18,9 @@ cloud-sql/  @GoogleCloudPlatform/infra-db-dpes @amanda-tarafa @jskeet
 
 storage/    @GoogleCloudPlatform/cloud-storage-dpes @amanda-tarafa @jskeet
 
-spanner/  @GoogleCloudPlatform/api-spanner-dotnet @amanda-tarafa @jskeet
+spanner/    @GoogleCloudPlatform/api-spanner-dotnet @amanda-tarafa @jskeet
+
+dlp/        @GoogleCloudPlatform/googleapis-dlp @amanda-tarafa @jskeet
 
 appengine/flexible/ @GoogleCloudPlatform/gae-flex-runtimes @amanda-tarafa @jskeet
 
@@ -29,4 +31,5 @@ applications/googlehome-meets-dotnetcontainers/  @meteatamel @amanda-tarafa @jsk
 run/                                             @meteatamel @jskeet @amanda-tarafa
 
 retail/ @chenlei1216 @amanda-tarafa @jskeet
+
 media/ @irataxy @amanda-tarafa @jskeet 
