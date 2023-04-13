@@ -75,7 +75,7 @@ PS > gcloud beta app deploy .\bin\Debug\netcoreapp2.0\publish\app.yaml
 
 5. In Visual Studio, choose `Tools | Google Cloud Tools | Show Stackdriver Logs Viewer`
 
-6. In the logs viewer, click the resource drop-down menu which defaults to "GCE VM Instance" and select the "Global" drop-down menu item. You should be able to see the log entires just created.
+6. In the logs viewer, click the resource drop-down menu which defaults to "GCE VM Instance" and select the "Global" drop-down menu item. You should be able to see the log entries just created.
 	
 ## Contributing changes
 

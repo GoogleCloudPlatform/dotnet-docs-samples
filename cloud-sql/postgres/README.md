@@ -240,17 +240,17 @@ configuring SSL certificates will ensure the connection is encrypted.
         2. Select the **mmc** application to open it.
         3. Click the **File** menu and select **Add/Remove Snap-in**.
         4. Select the **Certificates** and click **Add >**.
-        5. In the **Certficates Snap-in" dialog window, select **Computer account** and click **Next**.
+        5. In the **Certificates Snap-in" dialog window, select **Computer account** and click **Next**.
         6. In the **Select Computer** dialog window with **Local computer** selected, click **Finish**.
         7. Click **OK** to complete the process of adding the **Certificates** Snap-in.
         8. Expand the **Certificates (Local Computer)** Snap-in item and then expand the **Trusted Root Certification Authorities** item. 
         9. Right-click the **Certificates** item (that appears below the **Trusted Root Certification Authorities** item) and select **All Tasks > Import**. 
         10. In the **Certificate Import Wizard** dialog window, click **Next**.
         11. Click the **Browse** button.
-        12. In the **Open** file dialog window, change the file type from **X.509 Certifcate (*.cer,*.crt)** to be **All Files (*.*)**.
+        12. In the **Open** file dialog window, change the file type from **X.509 Certificate (*.cer,*.crt)** to be **All Files (*.*)**.
         13. Browse to and select the **server-ca.pem** file that you created in a previous step and then click **Open**.
         14. Click **Next** in the **Certificate Import Wizard > File to Import** dialog window.
-        14. With **Place all certificates in the following store** selected and **Trusted Root Certification Authorities** specified as the **Certifcate store**, click **Next** in the **Certificate Import Wizard > Certificate Store** dialog window.
+        14. With **Place all certificates in the following store** selected and **Trusted Root Certification Authorities** specified as the **Certificate store**, click **Next** in the **Certificate Import Wizard > Certificate Store** dialog window.
         15. Click **Finish** to import the server certificate. 
         16. You will see a dialog window that confirms the certificate import was successful. Click **OK**.
 
@@ -260,7 +260,7 @@ configuring SSL certificates will ensure the connection is encrypted.
    openssl pkcs12 -export -in certs/client-cert.pem -inkey certs/client-key.pem -certfile certs/server-ca.pem -out certs/client.pfx
    ```
 
-1. Specify the .pfx file as the client certifcate via Environment variable:
+1. Specify the .pfx file as the client certificate via Environment variable:
 
     #### Linux
     ```
