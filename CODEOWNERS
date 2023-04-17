@@ -22,7 +22,7 @@ spanner/    @GoogleCloudPlatform/api-spanner-dotnet @amanda-tarafa @jskeet
 
 dlp/        @GoogleCloudPlatform/googleapis-dlp @amanda-tarafa @jskeet
 
-appengine/flexible/ @GoogleCloudPlatform/gae-flex-runtimes @amanda-tarafa @jskeet
+appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @amanda-tarafa @jskeet
 
 kms/            @sethvargo @amanda-tarafa @jskeet
 secretmanager/  @sethvargo @amanda-tarafa @jskeet
