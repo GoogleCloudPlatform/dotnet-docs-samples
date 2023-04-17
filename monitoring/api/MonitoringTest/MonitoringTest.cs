@@ -114,7 +114,7 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestListMonitoredResourceDescriptors()
         {
-            string testResourceName = "monitoredResourceDescriptors/api";
+            string testResourceName = $"projects/{_projectId}/monitoredResourceDescriptors/";
             var output = _cloudMonitoring.Run("listResources", _projectId);
             Assert.Equal(0, output.ExitCode);
             Assert.Contains(testResourceName, output.Stdout);
