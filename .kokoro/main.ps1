@@ -27,7 +27,10 @@ try {
     $private:currentDir = (Get-Location).Path
 
     # The list of changed subdirectories.
+    # On the Windows Kokoro image we need to run these Git commands to make things work.
     git config --global --add safe.directory "$currentDir"
+    git config --global --add core.autocrlf input
+    git --git-dir="$currentDir/.git" --work-tree="$currentDir" config core.filemode false
     $changedDirs = ($(git --git-dir="$currentDir/.git" --work-tree="$currentDir" diff main --name-only | cut -d/ -f 1 | uniq))
 
     # The list of all subdirectories.
