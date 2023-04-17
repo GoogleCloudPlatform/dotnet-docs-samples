@@ -451,14 +451,17 @@ namespace GoogleCloudSamples
 
             PagedEnumerable<ListMonitoredResourceDescriptorsResponse, MonitoredResourceDescriptor>
                 resources = client.ListMonitoredResourceDescriptors(projectName);
-            if (resources != null)
+            if (resources.Any())
             {
                 foreach (MonitoredResourceDescriptor resource in resources.Take(10))
                 {
                     Console.WriteLine($"{resource.Name}: {resource.DisplayName}");
                 }
             }
-            else { Console.WriteLine("No resources found."); }
+            else
+            { 
+                Console.WriteLine("No resources found.");
+            }
             return 0;
         }
         // [END monitoring_list_resources]
