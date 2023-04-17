@@ -79,7 +79,6 @@ try {
         if ($scripts.Count -gt 0)
         {
             $scripts.VersionInfo.FileName `
-                | Sort-Object -Descending -Property {Get-GitTimeStampForScript $_} `
                 | Run-TestScripts -TimeoutSeconds 600
         }
     }
