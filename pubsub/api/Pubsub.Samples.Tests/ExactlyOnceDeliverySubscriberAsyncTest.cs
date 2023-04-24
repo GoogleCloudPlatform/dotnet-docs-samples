@@ -42,7 +42,11 @@ public class ExactlyOnceDeliverySubscriberAsyncTest
 
         await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, new string[] { message });
 
-        var successfulIds = await _exactlyOnceDeliverySubscriberAsyncSample.ExactlyOnceDeliverySubscriberAsync(_pubsubFixture.ProjectId, subscriptionId);
-        Assert.Single(successfulIds);
+        // Validate that the published message is received exactly once.
+        await _pubsubFixture.Pull.Eventually(async () =>
+        {
+            var successfulIds = await _exactlyOnceDeliverySubscriberAsyncSample.ExactlyOnceDeliverySubscriberAsync(_pubsubFixture.ProjectId, subscriptionId);
+            Assert.Single(successfulIds);
+        });
     }
 }
