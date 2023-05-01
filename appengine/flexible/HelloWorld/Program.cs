@@ -23,3 +23,6 @@ app.MapGet("/", () => builder.Configuration["My:Greeting"]);
 app.Run();
 // [END gae_flex_quickstart]
 
+// Below declaration used for tests only.
+public partial class Program { }
+

@@ -12,4 +12,8 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="HelloWorld.Tests" />
+  </ItemGroup>
+
 </Project>
