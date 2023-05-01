@@ -13,9 +13,13 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
+
+// [START gae_flex_quickstart]
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.MapGet("/", () => builder.Configuration["My:Greeting"]);
 
 app.Run();
+// [END gae_flex_quickstart]
+
