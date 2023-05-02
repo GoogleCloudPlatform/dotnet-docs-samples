@@ -1,3 +1,6 @@
-﻿# Optional file for deploying to Google App Engine Flexible Environment.
-runtime: aspnetcore
+﻿runtime: aspnetcore
 env: flex
+
+runtime_config:
+  operating_system: ubuntu22
+
