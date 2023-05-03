@@ -16,13 +16,8 @@
 
 using Google.Cloud.Datastore.V1;
 using Microsoft.AspNetCore.Builder;
-//using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
-//using Microsoft.Extensions.DependencyInjection;
-//using Microsoft.Extensions.Logging;
-//using System;
-//using System.Linq;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -34,8 +29,8 @@ async Task handleGet(HttpContext context) {
   var newVisit = new Entity();
   newVisit.Key = visitKeyFactory.CreateIncompleteKey();
   newVisit["time_stamp"] = DateTime.UtcNow;
-  newVisit["ip_address"] = FormatAddress(
-    context.Connection.RemoteIpAddress);
+  newVisit["ip_address"] =
+    context.Connection.RemoteIpAddress.ToString();
   await datastore.InsertAsync(newVisit);
 
   // Look up the last 10 visits.
