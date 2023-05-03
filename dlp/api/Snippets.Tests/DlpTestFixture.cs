@@ -24,7 +24,10 @@ namespace GoogleCloudSamples
         public string ProjectId => Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         public string WrappedKey => Environment.GetEnvironmentVariable("DLP_DEID_WRAPPED_KEY");
         public string KeyName => Environment.GetEnvironmentVariable("DLP_DEID_KEY_NAME");
+        public string TopicId => Environment.GetEnvironmentVariable("DLP_TOPIC_ID");
+        public string SubscriptionId => Environment.GetEnvironmentVariable("DLP_SUBSCRIPTION_ID");
         public string ResourcePath => Path.GetFullPath("../../../resources/");
+
         public CreateDlpJobRequest GetTestRiskAnalysisJobRequest()
         {
             return new CreateDlpJobRequest()
