@@ -17,38 +17,46 @@
 using Google.Cloud.Datastore.V1;
 using System.Net;
 
-var builder = WebApplication.CreateBuilder(args);
-var config = builder.Configuration;
+public class Program {
+	private WebApplication App {get; set;}
+	private DatastoreDb Datastore {get; set;}
+	private KeyFactory VisitKeyFactory {get; set;}
 
-async Task handleGet(HttpContext context) {
-  var datastore = DatastoreDb.Create(config["GoogleProjectId"]);
-  var visitKeyFactory = datastore.CreateKeyFactory("visit");
-  var newVisit = new Entity();
-  newVisit.Key = visitKeyFactory.CreateIncompleteKey();
-  newVisit["time_stamp"] = DateTime.UtcNow;
-  newVisit["ip_address"] =
-    context.Connection.RemoteIpAddress.ToString();
-  await datastore.InsertAsync(newVisit);
+	private Program(string[] args) {
+		var builder = WebApplication.CreateBuilder(args);
+		App = builder.Build();
+		App.MapGet("/", handleGetAsync);
+		Datastore = DatastoreDb.Create(builder.Configuration["GoogleProjectId"]);
+		VisitKeyFactory = Datastore.CreateKeyFactory("visit");
+	}
 
-  // Look up the last 10 visits.
-  var results = await datastore.RunQueryAsync(new Query("visit")
-  {
-    Order = { { "time_stamp", PropertyOrder.Types.Direction.Descending } },
-      Limit = 10
-    });
-    await context.Response.WriteAsync(@"<html>
-        <head><title>Visitor Log</title></head>
-        <body>Last 10 visits:<br>");
-    foreach (Entity visit in results.Entities)
-    {
-      await context.Response.WriteAsync(string.Format("{0} {1}<br>",
-          visit["time_stamp"].TimestampValue,
-          visit["ip_address"].StringValue));
-    }
-    await context.Response.WriteAsync(@"</body></html>");
+	private async Task handleGetAsync(HttpContext context) {
+		var newVisit = new Entity();
+		newVisit.Key = VisitKeyFactory.CreateIncompleteKey();
+		newVisit["time_stamp"] = DateTime.UtcNow;
+		newVisit["ip_address"] = context.Connection.RemoteIpAddress.ToString();
+		await Datastore.InsertAsync(newVisit);
+
+		// Look up the last 10 visits.
+		var results = await Datastore.RunQueryAsync(new Query("visit")
+		{
+			Order = { { "time_stamp", PropertyOrder.Types.Direction.Descending } },
+			Limit = 10
+		});
+		await context.Response.WriteAsync(@"<html>
+		    <head><title>Visitor Log</title></head>
+		    <body>Last 10 visits:<br>");
+		foreach (var visit in results.Entities)
+		{
+			await context.Response.WriteAsync(string.Format("{0} {1}<br>",
+			    visit["time_stamp"].TimestampValue,
+			    visit["ip_address"].StringValue));
+		}
+		await context.Response.WriteAsync(@"</body></html>");
+	}
+
+	public static void Main(string[] args) {
+		new Program(args).App.Run();
+	}
 }
-
-var app = builder.Build();
-app.MapGet("/", handleGet);
-app.Run();
 
