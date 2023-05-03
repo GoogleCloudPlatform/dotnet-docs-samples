@@ -34,8 +34,15 @@ public class Program {
 		var newVisit = new Entity();
 		newVisit.Key = VisitKeyFactory.CreateIncompleteKey();
 		newVisit["time_stamp"] = DateTime.UtcNow;
-		newVisit["ip_address"] = context.Connection.RemoteIpAddress.ToString();
-		await Datastore.InsertAsync(newVisit);
+		newVisit["ip_address"] = context.Connection.RemoteIpAddress?.ToString() ?? "bad_ip";
+		try {
+			await Datastore.InsertAsync(newVisit);
+		}
+		catch {
+			// Datastore not setup properly.
+			await context.Response.WriteAsync("Datastore connection failed, ensure project id is set.");
+			return;
+		}
 
 		// Look up the last 10 visits.
 		var results = await Datastore.RunQueryAsync(new Query("visit")
