@@ -15,9 +15,6 @@
  */
 
 using Google.Cloud.Datastore.V1;
-//using Microsoft.AspNetCore.Builder;
-//using Microsoft.AspNetCore.Http;
-//using Microsoft.Extensions.Configuration;
 using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -49,25 +46,6 @@ async Task handleGet(HttpContext context) {
           visit["ip_address"].StringValue));
     }
     await context.Response.WriteAsync(@"</body></html>");
-}
-
-string FormatAddress(IPAddress address)
-{
-  if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-  {
-    var bytes = address.GetAddressBytes();
-    return string.Format("{0:X2}{1:X2}:{2:X2}{3:X2}", bytes[0], bytes[1],
-        bytes[2], bytes[3]);
-  }
-  else if (address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetworkV6)
-  {
-    var bytes = address.GetAddressBytes();
-    return string.Format("{0}.{1}", bytes[0], bytes[1]);
-  }
-  else
-  {
-    return "bad.address";
-  }
 }
 
 var app = builder.Build();
