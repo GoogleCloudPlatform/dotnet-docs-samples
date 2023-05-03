@@ -40,7 +40,7 @@ public class Program {
 		}
 		catch {
 			// Datastore not setup properly.
-			await context.Response.WriteAsync("Datastore connection failed, ensure project id is set.");
+			await context.Response.WriteAsync("Datastore connection failed, ensure project id is set.\n");
 			return;
 		}
 
