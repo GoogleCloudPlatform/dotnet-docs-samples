@@ -16,10 +16,10 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     }
 
     [Fact]
-    public async Task TestGetSucceeds(string url)
+    public async Task TestGetSucceeds()
     {
         var client = _factory.CreateClient();
-        var response = await client.GetAsync(url);
+        var response = await client.GetAsync("/");
         response.EnsureSuccessStatusCode();
     }
 }
