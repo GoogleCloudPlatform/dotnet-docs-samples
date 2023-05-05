@@ -27,8 +27,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntiForgery", "AntiForgery\
 EndProject
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "F#", "F#\F#.fsproj", "{C55A9BF5-F4FA-4E94-845C-302CBA878946}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HelloWorld", "HelloWorld", "{B300174E-692E-4378-A6C4-8E6C365F815E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Sample", "HelloWorld\HelloWorld.Sample\HelloWorld.Sample.csproj", "{B15A9816-4607-4A51-BB7C-BB9F7EE37D52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Tests", "HelloWorld\HelloWorld.Tests\HelloWorld.Tests.csproj", "{35E5E524-B47F-46A6-9D30-CC3A66F5003D}"
