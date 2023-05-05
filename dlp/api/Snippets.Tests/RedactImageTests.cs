@@ -24,14 +24,14 @@ namespace GoogleCloudSamples
         {
             Fixture = fixture;
         }
-
+        [Fact]
         public void TestRedactImage()
         {
-            var input = Path.Combine(Fixture.ResourcePath, "test.png");
+            var input = Path.Combine(Fixture.ResourcePath, "test_redact_image.png");
             var output = Path.Combine(Fixture.ResourcePath, "redacted.png");
             var redacted = RedactImage.Redact(Fixture.ProjectId, input, output);
             Assert.True(File.Exists(output));
-            Assert.Equal("223-456-7890", redacted.ExtractedText);
+            Assert.Contains("223-456-7890", redacted.ExtractedText);
         }
     }
 }
