@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
-// Provides simple tests to demonstrate calling the sample app. This is
-// based on the straightforward examples provided by Microsoft here:
-// https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0
+/// <summary>
+/// Provides simple tests to demonstrate calling the sample app. This is
+/// based on the straightforward examples provided by Microsoft here:
+/// https://learn.microsoft.com/en-us/aspnet/core/test/integration-tests?view=aspnetcore-6.0
+/// </summary>
 public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly WebApplicationFactory<Program> _factory;
@@ -13,8 +15,7 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
         _factory = factory;
     }
 
-    [Theory]
-    [InlineData("/")]
+    [Fact]
     public async Task TestGetSucceeds(string url)
     {
         var client = _factory.CreateClient();
