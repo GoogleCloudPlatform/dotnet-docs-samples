@@ -26,7 +26,7 @@ public class GenerateV4UploadSignedUrlSample
         string objectName = "your-object-name",
         string credentialFilePath = "my-local-path/my-credential-file-name")
     {
-        UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credentialFilePath);
+        UrlSigner urlSigner = UrlSigner.FromCredential(GoogleCredential.GetApplicationDefault());
 
         var contentHeaders = new Dictionary<string, IEnumerable<string>>
         {
