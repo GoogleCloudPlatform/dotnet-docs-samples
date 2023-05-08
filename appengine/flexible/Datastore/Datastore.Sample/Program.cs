@@ -18,52 +18,52 @@ using Google.Cloud.Datastore.V1;
 using System.Net;
 
 public class Program {
-	private WebApplication App {get; set;}
-	private DatastoreDb Datastore {get; set;}
-	private KeyFactory VisitKeyFactory {get; set;}
+    private WebApplication App {get; set;}
+    private DatastoreDb Datastore {get; set;}
+    private KeyFactory VisitKeyFactory {get; set;}
 
-	private Program(string[] args) {
-		var builder = WebApplication.CreateBuilder(args);
-		App = builder.Build();
-		App.MapGet("/", handleGetAsync);
-		Datastore = DatastoreDb.Create(builder.Configuration["GoogleProjectId"]);
-		VisitKeyFactory = Datastore.CreateKeyFactory("visit");
-	}
+    private Program(string[] args) {
+        var builder = WebApplication.CreateBuilder(args);
+        App = builder.Build();
+        App.MapGet("/", handleGetAsync);
+        Datastore = DatastoreDb.Create(builder.Configuration["GoogleProjectId"]);
+        VisitKeyFactory = Datastore.CreateKeyFactory("visit");
+    }
 
-	private async Task handleGetAsync(HttpContext context) {
-		var newVisit = new Entity();
-		newVisit.Key = VisitKeyFactory.CreateIncompleteKey();
-		newVisit["time_stamp"] = DateTime.UtcNow;
-		newVisit["ip_address"] = context.Connection.RemoteIpAddress?.ToString() ?? "bad_ip";
-		try {
-			await Datastore.InsertAsync(newVisit);
-		}
-		catch {
-			// Datastore not setup properly.
-			await context.Response.WriteAsync("Datastore connection failed, ensure project id is set.\n");
-			return;
-		}
+    private async Task handleGetAsync(HttpContext context) {
+        var newVisit = new Entity();
+        newVisit.Key = VisitKeyFactory.CreateIncompleteKey();
+        newVisit["time_stamp"] = DateTime.UtcNow;
+        newVisit["ip_address"] = context.Connection.RemoteIpAddress?.ToString() ?? "bad_ip";
+        try {
+            await Datastore.InsertAsync(newVisit);
+        }
+        catch {
+            // Datastore not setup properly.
+            await context.Response.WriteAsync("Datastore connection failed, ensure project id is set.\n");
+            return;
+        }
 
-		// Look up the last 10 visits.
-		var results = await Datastore.RunQueryAsync(new Query("visit")
-		{
-			Order = { { "time_stamp", PropertyOrder.Types.Direction.Descending } },
-			Limit = 10
-		});
-		await context.Response.WriteAsync(@"<html>
-		    <head><title>Visitor Log</title></head>
-		    <body>Last 10 visits:<br>");
-		foreach (var visit in results.Entities)
-		{
-			await context.Response.WriteAsync(string.Format("{0} {1}<br>",
-			    visit["time_stamp"].TimestampValue,
-			    visit["ip_address"].StringValue));
-		}
-		await context.Response.WriteAsync(@"</body></html>");
-	}
+        // Look up the last 10 visits.
+        var results = await Datastore.RunQueryAsync(new Query("visit")
+        {
+            Order = { { "time_stamp", PropertyOrder.Types.Direction.Descending } },
+            Limit = 10
+        });
+        await context.Response.WriteAsync(@"<html>
+            <head><title>Visitor Log</title></head>
+            <body>Last 10 visits:<br>");
+        foreach (var visit in results.Entities)
+        {
+            await context.Response.WriteAsync(string.Format("{0} {1}<br>",
+                visit["time_stamp"].TimestampValue,
+                visit["ip_address"].StringValue));
+        }
+        await context.Response.WriteAsync(@"</body></html>");
+    }
 
-	public static void Main(string[] args) {
-		new Program(args).App.Run();
-	}
+    public static void Main(string[] args) {
+        new Program(args).App.Run();
+    }
 }
 
