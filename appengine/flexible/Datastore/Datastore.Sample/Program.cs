@@ -17,12 +17,14 @@
 using Google.Cloud.Datastore.V1;
 using System.Net;
 
-public class Program {
+public class Program
+{
     private WebApplication App {get; set;}
     private DatastoreDb Datastore {get; set;}
     private KeyFactory VisitKeyFactory {get; set;}
 
-    private Program(string[] args) {
+    private Program(string[] args)
+    {
         var builder = WebApplication.CreateBuilder(args);
         App = builder.Build();
         App.MapGet("/", handleGetAsync);
@@ -30,15 +32,18 @@ public class Program {
         VisitKeyFactory = Datastore.CreateKeyFactory("visit");
     }
 
-    private async Task handleGetAsync(HttpContext context) {
+    private async Task handleGetAsync(HttpContext context)
+    {
         var newVisit = new Entity();
         newVisit.Key = VisitKeyFactory.CreateIncompleteKey();
         newVisit["time_stamp"] = DateTime.UtcNow;
         newVisit["ip_address"] = context.Connection.RemoteIpAddress?.ToString() ?? "bad_ip";
-        try {
+        try
+	{
             await Datastore.InsertAsync(newVisit);
         }
-        catch {
+        catch
+	{
             // Datastore not setup properly.
             await context.Response.WriteAsync("Datastore connection failed, ensure project id is set.\n");
             return;
@@ -62,7 +67,8 @@ public class Program {
         await context.Response.WriteAsync(@"</body></html>");
     }
 
-    public static void Main(string[] args) {
+    public static void Main(string[] args)
+    {
         new Program(args).App.Run();
     }
 }
