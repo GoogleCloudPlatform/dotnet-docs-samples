@@ -20,37 +20,36 @@ using System.Net;
 public class Program
 {
     private WebApplication App {get; set;}
-    private DatastoreDb Datastore {get; set;}
-    private KeyFactory VisitKeyFactory {get; set;}
 
     private Program(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+        var datastore = DatastoreDb.Create(builder.Configuration["GOOGLE_PROJECT_ID"]);
+        builder.Services.AddSingleton(datastore);
+        builder.Services.AddSingleton(datastore.CreateKeyFactory("visit"));
         App = builder.Build();
         App.MapGet("/", HandleGetAsync);
-        Datastore = DatastoreDb.Create(builder.Configuration["GOOGLE_PROJECT_ID"]);
-        VisitKeyFactory = Datastore.CreateKeyFactory("visit");
     }
 
-    private async Task HandleGetAsync(HttpContext context)
+    private async Task HandleGetAsync(HttpContext context, DatastoreDb datastore, KeyFactory visitKeyFactory)
     {
         var newVisit = new Entity();
-        newVisit.Key = VisitKeyFactory.CreateIncompleteKey();
+        newVisit.Key = visitKeyFactory.CreateIncompleteKey();
         newVisit["time_stamp"] = DateTime.UtcNow;
         newVisit["ip_address"] = context.Connection.RemoteIpAddress?.ToString() ?? "bad_ip";
         try
-	{
-            await Datastore.InsertAsync(newVisit);
+    {
+            await datastore.InsertAsync(newVisit);
         }
         catch
-	{
+    {
             // Datastore not setup properly.
             await context.Response.WriteAsync("Datastore connection failed, ensure project id is set.\n");
             return;
         }
 
         // Look up the last 10 visits.
-        var results = await Datastore.RunQueryAsync(new Query("visit")
+        var results = await datastore.RunQueryAsync(new Query("visit")
         {
             Order = { { "time_stamp", PropertyOrder.Types.Direction.Descending } },
             Limit = 10
