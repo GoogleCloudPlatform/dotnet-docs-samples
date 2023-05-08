@@ -13,4 +13,7 @@
 # the License.
 
 dotnet restore --force
+if ($env:GOOGLE_PROJECT_ID -eq $null) {
+	$env:GOOGLE_PROJECT_ID = 'your-project-id'
+}
 dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
