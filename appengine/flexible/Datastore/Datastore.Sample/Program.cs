@@ -27,12 +27,12 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         App = builder.Build();
-        App.MapGet("/", handleGetAsync);
+        App.MapGet("/", HandleGetAsync);
         Datastore = DatastoreDb.Create(builder.Configuration["GoogleProjectId"]);
         VisitKeyFactory = Datastore.CreateKeyFactory("visit");
     }
 
-    private async Task handleGetAsync(HttpContext context)
+    private async Task HandleGetAsync(HttpContext context)
     {
         var newVisit = new Entity();
         newVisit.Key = VisitKeyFactory.CreateIncompleteKey();
