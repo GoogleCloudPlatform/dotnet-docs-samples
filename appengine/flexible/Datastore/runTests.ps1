@@ -13,8 +13,4 @@
 # the License.
 
 dotnet restore --force
-BackupAndEdit-TextFile "appsettings.json" `
-    @{"your-project-id" = $env:GOOGLE_PROJECT_ID} `
-{
-	dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
-}
+dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }

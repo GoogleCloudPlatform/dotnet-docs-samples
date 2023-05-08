@@ -28,7 +28,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         App = builder.Build();
         App.MapGet("/", HandleGetAsync);
-        Datastore = DatastoreDb.Create(builder.Configuration["GoogleProjectId"]);
+        Datastore = DatastoreDb.Create(builder.Configuration["GOOGLE_PROJECT_ID"]);
         VisitKeyFactory = Datastore.CreateKeyFactory("visit");
     }
 
