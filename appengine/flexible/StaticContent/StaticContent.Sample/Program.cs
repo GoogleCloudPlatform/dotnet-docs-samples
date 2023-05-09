@@ -24,3 +24,7 @@ app.UseStaticFiles();
 
 app.MapGet("/", () => "Hello World!");
 app.Run();
+
+// Below declaration used for tests only.
+public partial class Program { }
+
