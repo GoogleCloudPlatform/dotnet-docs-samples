@@ -22,7 +22,6 @@ app.UseDefaultFiles();
 app.UseStaticFiles();
 // [END gae_flex_dotnet_static_files]
 
-app.MapGet("/", () => "Hello World!");
 app.Run();
 
 // Below declaration used for tests only.
