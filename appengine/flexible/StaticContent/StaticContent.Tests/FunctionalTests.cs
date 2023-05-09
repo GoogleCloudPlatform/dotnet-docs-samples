@@ -35,11 +35,12 @@ public class FunctionalTests : IClassFixture<WebApplicationFactory<Program>>
     public async Task TestGetSucceeds()
     {
         var client = _factory.CreateClient();
-	// Get the files under the root.
-        var response = await client.GetAsync("/index.html");
-        response.EnsureSuccessStatusCode();
-	response = await client.GetAsync("/trees.jpg");
-        response.EnsureSuccessStatusCode();
+        // Get the files at and under the root.
+        foreach (var path in new string[]{"", "index.html", "trees.jpg"})
+        {
+            var response = await client.GetAsync("/" + path);
+            response.EnsureSuccessStatusCode();
+        }
     }
 }
 
