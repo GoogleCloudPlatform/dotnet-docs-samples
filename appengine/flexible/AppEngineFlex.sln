@@ -21,8 +21,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Pubsub", "Pubsub\Pubsub.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AntiForgery", "AntiForgery\AntiForgery.csproj", "{B7B77EE8-60C8-49C3-83D2-AD907B882332}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket", "WebSocket\WebSocket.csproj", "{741B1022-27F4-4E33-B59C-C1A9F7A94045}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HelloWorld", "HelloWorld", "{B300174E-692E-4378-A6C4-8E6C365F815E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld.Sample", "HelloWorld\HelloWorld.Sample\HelloWorld.Sample.csproj", "{B15A9816-4607-4A51-BB7C-BB9F7EE37D52}"
@@ -34,6 +32,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Datastore.Sample", "Datastore\Datastore.Sample\Datastore.Sample.csproj", "{B4EA63E6-26CE-4DCC-91FB-5B2891682D3F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Datastore.Tests", "Datastore\Datastore.Tests\Datastore.Tests.csproj", "{23D94D8E-33FA-46F3-981A-A3E3D16DAFF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSocket", "WebSocket\WebSocket.csproj", "{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -153,6 +153,18 @@ Global
 		{23D94D8E-33FA-46F3-981A-A3E3D16DAFF9}.Release|x64.Build.0 = Release|Any CPU
 		{23D94D8E-33FA-46F3-981A-A3E3D16DAFF9}.Release|x86.ActiveCfg = Release|Any CPU
 		{23D94D8E-33FA-46F3-981A-A3E3D16DAFF9}.Release|x86.Build.0 = Release|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Debug|x64.Build.0 = Debug|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Debug|x86.Build.0 = Debug|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Release|x64.ActiveCfg = Release|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Release|x64.Build.0 = Release|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Release|x86.ActiveCfg = Release|Any CPU
+		{E21A3A6A-486E-4DEA-8B29-4793CE692A6C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
