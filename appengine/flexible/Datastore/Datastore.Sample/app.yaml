@@ -1,0 +1,6 @@
+﻿runtime: aspnetcore
+env: flex
+
+runtime_config:
+  operating_system: ubuntu22
+

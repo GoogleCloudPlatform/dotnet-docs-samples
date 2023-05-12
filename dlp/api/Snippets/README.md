@@ -18,7 +18,19 @@ A collection of samples that demonstrate how to call the
     PS > $env:GOOGLE_PROJECT_ID = 'YOUR-GOOGLE-PROJECT-ID'
     ```
 
-9.  Run the test:
+6. [Create a Pub/Sub Topic](https://cloud.google.com/pubsub/docs/create-topic) and set the environment variable `DLP_TOPIC_ID` to your Pub/Sub Topic ID.
+
+    ```ps1
+    PS > $env:DLP_TOPIC_ID = 'YOUR-TOPIC-ID'
+    ```
+
+7. [Create a Pub/Sub Subscription](https://cloud.google.com/pubsub/docs/create-subscription) using the Topic Id created in above step and set the environment variable `DLP_SUBSCRIPTION_ID` to your Pub/Sub Subscription ID.
+
+    ```ps1
+    PS > $env:DLP_SUBSCRIPTION_ID = 'YOUR-SUBSCRIPTION-ID'
+    ``` 
+
+10. Run the test:
     ```ps1
     PS >  dotnet test
     Build started, please wait...
