@@ -5,7 +5,6 @@
     ],
     "ignorePaths": [
         "bigtable/api/**",
-        "appengine/flexible/**",
         "endpoints/getting-started/**",
         "applications/googlehome-meets-dotnetcontainers/**"
     ],
@@ -13,4 +12,7 @@
         "before 8am"
     ],
     "timezone": "Europe/London"
+    "labels": [
+        "automerge: exact"
+    ]
 }
