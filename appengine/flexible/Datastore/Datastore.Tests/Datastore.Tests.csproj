@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HelloWorld.Sample\HelloWorld.Sample.csproj" />
+    <ProjectReference Include="..\Datastore.Sample\Datastore.Sample.csproj" />
   </ItemGroup>
 
 </Project>

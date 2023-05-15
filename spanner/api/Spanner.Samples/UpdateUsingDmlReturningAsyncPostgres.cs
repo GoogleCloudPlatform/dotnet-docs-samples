@@ -15,7 +15,6 @@
 // [START spanner_postgresql_update_dml_returning]
 
 using Google.Cloud.Spanner.Data;
-using Google.Cloud.Spanner.V1;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
