@@ -5,5 +5,5 @@ Google App Engine Flexible Environment.
 
 For detailed steps to deploy this app, check out
 [the Google Cloud
-documentation.](https://cloud.google.com/appengine/docs/flexible/serving-static-files?tab=.net)
+documentation](https://cloud.google.com/appengine/docs/flexible/serving-static-files?tab=.net).
 
