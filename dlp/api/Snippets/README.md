@@ -18,19 +18,31 @@ A collection of samples that demonstrate how to call the
     PS > $env:GOOGLE_PROJECT_ID = 'YOUR-GOOGLE-PROJECT-ID'
     ```
 
-6. [Create a Pub/Sub Topic](https://cloud.google.com/pubsub/docs/create-topic) and set the environment variable `DLP_TOPIC_ID` to your Pub/Sub Topic ID.
+6. Copy paste the below data into a CSV file and upload it to the Google Cloud Storage. Use this data for `inspect_gcs_with_sampling` code sample.
+   ```
+    Sr.No,Name,Mobile No,Email,Location
+    1,Gary Jenkins,(425) 555-1212,gary.jenkins@gmail.com,USA
+    2,David,(425) 555-1213,david@gmail.com,ENG
+    3,Justin,(425) 555-1214,justin@gmail.com,UK
+   ```
+    - Set the environment variable `DLP_GCS_FILE_URI` obtained from above step.
+        ```ps1
+        PS > $env:DLP_GCS_FILE_URI = 'YOUR-GCS-FILE-URI'
+        ```
+
+7. [Create a Pub/Sub Topic](https://cloud.google.com/pubsub/docs/create-topic) and set the environment variable `DLP_TOPIC_ID` to your Pub/Sub Topic ID.
 
     ```ps1
     PS > $env:DLP_TOPIC_ID = 'YOUR-TOPIC-ID'
     ```
 
-7. [Create a Pub/Sub Subscription](https://cloud.google.com/pubsub/docs/create-subscription) using the Topic Id created in above step and set the environment variable `DLP_SUBSCRIPTION_ID` to your Pub/Sub Subscription ID.
+8.  [Create a Pub/Sub Subscription](https://cloud.google.com/pubsub/docs/create-subscription) using the Topic Id created in above step and set the environment variable `DLP_SUBSCRIPTION_ID` to your Pub/Sub Subscription ID.
 
     ```ps1
     PS > $env:DLP_SUBSCRIPTION_ID = 'YOUR-SUBSCRIPTION-ID'
     ``` 
 
-10. Run the test:
+9.  Run the test:
     ```ps1
     PS >  dotnet test
     Build started, please wait...
