@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -14,22 +14,16 @@
  * the License.
  */
 
-using Microsoft.AspNetCore.Hosting;
-using System.IO;
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
-namespace StaticContent
-{
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var host = new WebHostBuilder()
-                .UseKestrel()
-                .UseContentRoot(Directory.GetCurrentDirectory())
-                .UseStartup<Startup>()
-                .Build();
+// [START gae_flex_dotnet_static_files]
+app.UseDefaultFiles();
+app.UseStaticFiles();
+// [END gae_flex_dotnet_static_files]
 
-            host.Run();
-        }
-    }
-}
+app.Run();
+
+// Below declaration used for tests only.
+public partial class Program { }
+
