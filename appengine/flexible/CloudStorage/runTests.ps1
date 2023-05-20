@@ -13,7 +13,4 @@
 # the License.
 
 dotnet restore --force
-if ($env:TEST_GOOGLE_BUCKET_NAME -eq $null) {
-    $env:TEST_GOOGLE_BUCKET_NAME = 'your-google-bucket-name'
-}
 dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
