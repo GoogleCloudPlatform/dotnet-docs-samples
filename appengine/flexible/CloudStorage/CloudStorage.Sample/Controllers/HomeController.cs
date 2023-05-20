@@ -21,7 +21,6 @@ using System.Threading.Tasks;
 using System.Linq;
 using Google.Cloud.Storage.V1;
 using System.Text;
-using Microsoft.Extensions.Options;
 using Google;
 
 namespace CloudStorage.Controllers
@@ -34,9 +33,9 @@ namespace CloudStorage.Controllers
         // The Google Cloud Storage client.
         readonly StorageClient _storage;
 
-        public HomeController(IOptions<CloudStorageOptions> options)
+        public HomeController(CloudStorageOptions options)
         {
-            _options = options.Value;
+            _options = options;
             _storage = StorageClient.Create();
         }
 
