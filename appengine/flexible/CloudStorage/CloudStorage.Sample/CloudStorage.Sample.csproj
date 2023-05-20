@@ -16,4 +16,8 @@
     <InternalsVisibleTo Include="CloudStorage.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.5.0" />
+  </ItemGroup>
+
 </Project>
