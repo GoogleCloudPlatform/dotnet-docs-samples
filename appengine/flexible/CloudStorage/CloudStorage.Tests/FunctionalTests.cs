@@ -14,6 +14,7 @@
  * the License.
  */
 
+using CloudStorage;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 

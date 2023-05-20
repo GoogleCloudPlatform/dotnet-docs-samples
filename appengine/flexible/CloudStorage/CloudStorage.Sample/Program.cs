@@ -33,7 +33,7 @@ public class Program
             options.ObjectName = builder.Configuration["TEST_GOOGLE_OBJECT_NAME"];
         }
         builder.Services.AddSingleton(options);
-        builder.Services.AddControllers();
+        builder.Services.AddMvc();
         App = builder.Build();
         App.UseStaticFiles();
         App.MapControllerRoute(
