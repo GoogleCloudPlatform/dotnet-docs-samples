@@ -19,7 +19,7 @@ using System.Net.WebSockets;
 
 public class Program
 {
-    private WebApplication App {get; set;}
+    private WebApplication App { get; set; }
 
     private Program(string[] args)
     {
@@ -30,17 +30,18 @@ public class Program
         App.UseDefaultFiles();
         App.UseStaticFiles();
         App.UseWebSockets();
-        App.MapGet("/chat", async (HttpContext context) => {
-                if (context.WebSockets.IsWebSocketRequest)
-                {
-                    var webSocket = await context.WebSockets.AcceptWebSocketAsync();
-                    await Echo(context, webSocket);
-                }
-                else
-                {
-                    context.Response.StatusCode = 400;
-                }
-            });
+        App.MapGet("/chat", async (HttpContext context) =>
+        {
+            if (context.WebSockets.IsWebSocketRequest)
+            {
+                var webSocket = await context.WebSockets.AcceptWebSocketAsync();
+                await Echo(context, webSocket);
+            }
+            else
+            {
+                context.Response.StatusCode = 400;
+            }
+        });
         // [END gae_flex_dotnet_websocket]
     }
 
