@@ -12,12 +12,8 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
-
 dotnet restore --force
-BackupAndEdit-TextFile "appsettings.json" `
-    @{"your-google-analytics-tracking-id" = $env:TEST_GA_TRACKING_ID} `
-{
-    dotnet build --no-restore
-    Run-KestrelTest 5558 -CasperJs11
+if ($env:GA_TRACKING_ID -eq $null) {
+	$env:GA_TRACKING_ID = 'your-google-analytics-tracking-id'
 }
+dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
