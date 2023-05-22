@@ -27,10 +27,11 @@ public class Program
         App.MapGet("/", HandleGetAsync);
     }
 
-    private async Task HandleGetAsync(HttpContext context)
+    private async Task HandleGetAsync(HttpContext context, IConfiguration configuration)
     {
         // [START gae_flex_analytics_track_event]
-        var trackingId = App.Configuration["GA_TRACKING_ID"];
+        var trackingId = configuration["GA_TRACKING_ID"];
+
         var client = new HttpClient()
         {
             BaseAddress = new Uri("http://www.google-analytics.com/")
