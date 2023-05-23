@@ -1,6 +1,7 @@
 runtime: aspnetcore
 env: flex
 
+# [START configuration]
 # [START endpoints_configuration]
 endpoints_api_service:
   # The following values are to be replaced by information from the output of
@@ -12,3 +13,4 @@ endpoints_api_service:
   name: ENDPOINTS-SERVICE-NAME
   rollout_strategy: managed
 # [END endpoints_configuration]
+# [END configuration]
