@@ -15,10 +15,11 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "CloudStorage": {
+    "CloudStorage.Sample": {
       "commandName": "Project",
+      "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "http://localhost:5000",
+      "applicationUrl": "http://localhost:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
