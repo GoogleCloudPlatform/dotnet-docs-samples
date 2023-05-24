@@ -1,8 +1,0 @@
-"Pubsub": {
-    "ProjectId": "your-project-id",
-    "VerificationToken": "your-secret-token",
-    "TopicId": "your-topic",
-    "SubscriptionId": "your-subscription",
-    "AuthSubscriptionId": "your-auth-subscription",
-    "ServiceAccountEmail": "your-service-account-email"
-  },

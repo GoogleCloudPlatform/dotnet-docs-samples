@@ -17,7 +17,6 @@
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
 using Google.Apis.Auth;
 using Pubsub.ViewModels;
 using System;
@@ -37,10 +36,10 @@ namespace Pubsub.Controllers
         static ConcurrentBag<string> s_authenticatedMessages = new ConcurrentBag<string>();
         readonly PublisherClient _publisher;
 
-        public HomeController(IOptions<PubsubOptions> options,
+        public HomeController(PubsubOptions options,
             PublisherClient publisher)
         {
-            _options = options.Value;
+            _options = options;
             _publisher = publisher;
         }
 
@@ -50,11 +49,6 @@ namespace Pubsub.Controllers
         public IActionResult Index(MessageForm messageForm)
         {
             var model = new MessageList();
-            if (!_options.HasGoodProjectId())
-            {
-                model.MissingProjectId = true;
-                return View(model);
-            }
             if (!string.IsNullOrEmpty(messageForm.Message))
             {
                 // Publish the message.
