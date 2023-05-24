@@ -57,7 +57,7 @@ namespace Pubsub.Controllers
                     Data = ByteString.CopyFromUtf8(messageForm.Message)
                 };
                 pubsubMessage.Attributes["token"] = _options.VerificationToken;
-                _publisher.PublishAsync(pubsubMessage);
+                _publisher.PublishAsync(pubsubMessage).Wait();
                 model.PublishedMessage = messageForm.Message;
             }
             // Render the current list of messages.
