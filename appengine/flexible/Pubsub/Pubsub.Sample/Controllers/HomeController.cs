@@ -49,6 +49,11 @@ namespace Pubsub.Controllers
         public IActionResult Index(MessageForm messageForm)
         {
             var model = new MessageList();
+            if (!_options.HasGoodProjectId())
+            {
+                model.MissingProjectId = true;
+                return View(model);
+            }
             if (!string.IsNullOrEmpty(messageForm.Message))
             {
                 // Publish the message.
