@@ -17,6 +17,7 @@
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Google.Apis.Auth;
 using Pubsub.ViewModels;
 using System;
@@ -36,10 +37,10 @@ namespace Pubsub.Controllers
         static ConcurrentBag<string> s_authenticatedMessages = new ConcurrentBag<string>();
         readonly PublisherClient _publisher;
 
-        public HomeController(PubsubOptions options,
+        public HomeController(IOptions<PubsubOptions> options,
             PublisherClient publisher)
         {
-            _options = options;
+            _options = options.Value;
             _publisher = publisher;
         }
 

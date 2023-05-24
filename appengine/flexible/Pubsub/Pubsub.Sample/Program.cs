@@ -15,6 +15,7 @@
  */
 
 using Google.Cloud.PubSub.V1;
+using Microsoft.Extensions.Options;
 using System.Net;
 
 namespace Pubsub;
@@ -36,7 +37,7 @@ public class Program
             ServiceAccountEmail = builder.Configuration["TEST_SERVICE_ACCOUNT_EMAIL"]
         };
         var topic = CreateTopicAndSubscription(options);
-        builder.Services.AddSingleton(options);
+        builder.Services.AddSingleton(Options.Create(options));
         builder.Services.AddSingleton(PublisherClient.Create(topic));
         builder.Services.AddMvc();
         App = builder.Build();
