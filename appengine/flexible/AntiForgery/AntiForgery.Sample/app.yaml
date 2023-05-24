@@ -1,0 +1,10 @@
+runtime: aspnetcore
+env: flex
+
+runtime_config:
+  operating_system: ubuntu22
+
+env_variables:
+  TEST_BUCKET: your-bucket
+  TEST_OBJECT: your-object
+  TEST_KEY: your-key
