@@ -36,15 +36,22 @@ public class Program
             AuthSubscriptionId = builder.Configuration["TEST_AUTH_SUBSCRIPTION_ID"],
             ServiceAccountEmail = builder.Configuration["TEST_SERVICE_ACCOUNT_EMAIL"]
         };
-        var topic = CreateTopicAndSubscription(options);
-        builder.Services.AddSingleton(Options.Create(options));
-        builder.Services.AddSingleton(PublisherClient.Create(topic));
-        builder.Services.AddMvc();
-        App = builder.Build();
-        App.UseStaticFiles();
-        App.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+        try {
+            var topic = CreateTopicAndSubscription(options);
+            builder.Services.AddSingleton(Options.Create(options));
+            builder.Services.AddSingleton(PublisherClient.Create(topic));
+            builder.Services.AddMvc();
+            App = builder.Build();
+            App.UseStaticFiles();
+            App.MapControllerRoute(
+                name: "default",
+                pattern: "{controller=Home}/{action=Index}/{id?}");
+        }
+        catch {
+            // Setup failed -- add a route so we fail gracefully
+            App = builder.Build();
+            App.MapGet("/", () => "Pubsub setup failed, please ensure the code sample's environment variables are set.");
+        }
     }
 
     static TopicName CreateTopicAndSubscription(PubsubOptions options)
