@@ -43,10 +43,8 @@ else
         </ul>
         <p><small>Note: because your application is likely running multiple instances, each instance will have a different list of messages.</small></p>
     </div>
-    <!-- [START form] -->
     <form asp-controller="Home" asp-action="Index" id="MessageForm">
         <textarea asp-for="Message" placeholder="Enter message here"></textarea>
         <input id="Submit" type="submit">
     </form>
-    <!-- [END form] -->
 }
