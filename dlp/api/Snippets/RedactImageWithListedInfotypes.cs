@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START redact_image]
+// [START dlp_redact_image_listed_infotypes]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
@@ -20,7 +20,7 @@ using Google.Protobuf;
 using System;
 using System.IO;
 
-public class RedactImage
+public class RedactImageWithListedInfotypes
 {
     public static RedactImageResponse Redact(string projectId, string originalImagePath, string redactedImagePath)
     {
@@ -57,4 +57,4 @@ public class RedactImage
     }
 }
 
-// [END redact_image]
+// [END dlp_redact_image_listed_infotypes]

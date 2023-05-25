@@ -17,19 +17,16 @@ using Xunit;
 
 namespace GoogleCloudSamples
 {
-    public class RedactImageTests : IClassFixture<DlpTestFixture>
+    public class RedactImageWithListedInfotypesTests : IClassFixture<DlpTestFixture>
     {
-        private DlpTestFixture Fixture { get; }
-        public RedactImageTests(DlpTestFixture fixture)
-        {
-            Fixture = fixture;
-        }
+        private DlpTestFixture _fixture;
+        public RedactImageWithListedInfotypesTests(DlpTestFixture fixture) => _fixture = fixture;
         [Fact]
         public void TestRedactImage()
         {
-            var input = Path.Combine(Fixture.ResourcePath, "test_redact_image.png");
-            var output = Path.Combine(Fixture.ResourcePath, "redacted.png");
-            var redacted = RedactImage.Redact(Fixture.ProjectId, input, output);
+            var input = Path.Combine(_fixture.ResourcePath, "test_redact_image.png");
+            var output = Path.Combine(_fixture.ResourcePath, "redacted.png");
+            var redacted = RedactImageWithListedInfotypes.Redact(_fixture.ProjectId, input, output);
             Assert.True(File.Exists(output));
             Assert.Contains("223-456-7890", redacted.ExtractedText);
         }
