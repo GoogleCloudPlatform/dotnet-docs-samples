@@ -12,11 +12,9 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-#Skipping build, see https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/2143
+Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
-#Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+Require-Platform Win*
 
-#Require-Platform Win*
-
-#& nuget.exe restore 2>&1 | %{ "$_" }
-#& msbuild /t:clean /t:build "CloudDemo.Mvc\CloudDemo.Mvc.csproj" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:OutputPath=bin 2>&1 | %{ "$_" }
+& nuget.exe restore 2>&1 | %{ "$_" }
+& msbuild /t:clean /t:build "CloudDemo.Mvc\CloudDemo.Mvc.csproj" /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile /p:OutputPath=bin 2>&1 | %{ "$_" }
