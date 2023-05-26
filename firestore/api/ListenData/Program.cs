@@ -65,7 +65,7 @@ Where command is one of
                 { "Population", 860000 }
             };
             await docRef.CreateAsync(cityObject);
-            await Task.Delay(1000);
+            await Task.Delay(3000);
 
             // Stop the listener when you no longer want to receive updates.
             Console.WriteLine("Stopping the listener");
@@ -104,7 +104,7 @@ Where command is one of
                 { "Population", 3900000 }
             };
             await docRef.CreateAsync(cityObject);
-            await Task.Delay(1000);
+            await Task.Delay(3000);
 
             // Stop the listener when you no longer want to receive updates.
             Console.WriteLine("Stopping the listener");
@@ -150,7 +150,7 @@ Where command is one of
                 { "Population", 80000 }
             };
             await docRef.CreateAsync(cityObject);
-            await Task.Delay(1000);
+            await Task.Delay(3000);
 
             // Modify the cities/MTV document to demonstrate detection of the 'Modified change
             Console.WriteLine("Modifying document");
@@ -163,12 +163,12 @@ Where command is one of
                 { "Population", 90000 }
             };
             await docRef.SetAsync(city);
-            await Task.Delay(1000);
+            await Task.Delay(3000);
 
             // Modify the cities/MTV document to demonstrate detection of the 'Modified change
             Console.WriteLine("Deleting document");
             await docRef.DeleteAsync();
-            await Task.Delay(1000);
+            await Task.Delay(3000);
 
             // Stop the listener when you no longer want to receive updates.
             Console.WriteLine("Stopping the listener");
