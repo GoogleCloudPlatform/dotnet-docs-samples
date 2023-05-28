@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -31,20 +32,28 @@ public class AddJsonbColumnAsyncPostgresTest
     [Fact]
     public async Task TestAddJsonbColumnAsyncPostgres()
     {
-        // Arrange - Create VenueDetails table.
-        await CreateVenueDetailsTable();
-        // Act - Add a JSONB column to the VenueDetails table.
-        await _sample.AddJsonbColumnAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
-        // If we reach here without error, we are good. 
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            // Arrange - Create VenueDetails table.
+            await CreateVenueDetailsTable(databaseId);
+            // Act - Add a JSONB column to the VenueDetails table.
+            await _sample.AddJsonbColumnAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            // If we reach here without error, we are good. 
+        });
     }
 
-    private async Task CreateVenueDetailsTable()
+    private async Task CreateVenueDetailsTable(string databaseId)
     {
+        string connectionString = $"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{databaseId}";
+        using var connection = new SpannerConnection(connectionString);
+
         // Define create table statement for VenueDetails.
         const string createVenueDetailsTableStatement =
         @"CREATE TABLE VenueDetails (
             VenueId BIGINT NOT NULL PRIMARY KEY,
             VenueName VARCHAR(1024))";
-        await _spannerFixture.CreateTableAsyncPostgres(createVenueDetailsTableStatement);
+
+        using var cmd = connection.CreateDdlCommand(createVenueDetailsTableStatement);
+        await cmd.ExecuteNonQueryAsync();
     }
 }

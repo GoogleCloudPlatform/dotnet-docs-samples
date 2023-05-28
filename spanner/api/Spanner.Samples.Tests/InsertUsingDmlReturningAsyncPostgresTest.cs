@@ -29,13 +29,16 @@ public class InsertUsingDmlReturningAsyncPostgresTest
     [Fact]
     public async Task TestInsertUsingDmlReturningAsyncPostgres()
     {
-        var sample = new InsertUsingDmlReturningAsyncPostgresSample();
-        var insertedSingerNames = await sample.InsertUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            var sample = new InsertUsingDmlReturningAsyncPostgresSample();
+            var insertedSingerNames = await sample.InsertUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        Assert.Equal(4, insertedSingerNames.Count);
-        Assert.Contains("Melissa Garcia", insertedSingerNames);
-        Assert.Contains("Russell Morales", insertedSingerNames);
-        Assert.Contains("Jacqueline Long", insertedSingerNames);
-        Assert.Contains("Dylan Shaw", insertedSingerNames);
+            Assert.Equal(4, insertedSingerNames.Count);
+            Assert.Contains("Melissa Garcia", insertedSingerNames);
+            Assert.Contains("Russell Morales", insertedSingerNames);
+            Assert.Contains("Jacqueline Long", insertedSingerNames);
+            Assert.Contains("Dylan Shaw", insertedSingerNames);
+        });
     }
 }

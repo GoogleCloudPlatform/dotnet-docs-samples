@@ -32,6 +32,9 @@ public class AddColumnAsyncPostgresTest
     public async Task TestAddColumnAsyncPostgres()
     {
         //Act.
-        await _sample.AddColumnAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+       {
+           await _sample.AddColumnAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+       });
     }
 }

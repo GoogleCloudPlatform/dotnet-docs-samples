@@ -144,7 +144,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             DeleteInstanceConfig(UpdateCustomInstanceConfigId);
             DeleteInstanceConfig(DeleteCustomInstanceConfigId);
 
-            foreach(string id in TempDbIds)
+            foreach (string id in TempDbIds)
             {
                 cleanupTasks.Add(DeleteDatabaseAsync(id));
             }
@@ -388,7 +388,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             await InstanceAdminClient.DeleteInstanceAsync(InstanceName.FromProjectInstance(ProjectId, instanceId));
         }
-        catch(RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
             Console.WriteLine($"Instance {instanceId} was not found for deletion.");
         }
@@ -500,17 +500,16 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     }
 
     public async Task RunWithTemporaryPostgresDatabaseAsync(Func<string, Task> testFunction, params string[] extraStatements)
-    => await RunWithTemporaryPostgresDatabaseAsync(InstanceId, testFunction, extraStatements);
+    => await RunWithTemporaryPostgresDatabaseAsync(InstanceId, testFunction);
 
-    public async Task RunWithTemporaryPostgresDatabaseAsync(string instanceId, Func<string, Task> testFunction,
-    params string[] extraStatements)
+    public async Task RunWithTemporaryPostgresDatabaseAsync(string instanceId, Func<string, Task> testFunction)
     {
         // For temporary DBs we don't need a time based ID, as we delete them inmediately.
         var postgreSqlDatabaseId = GenerateTempDatabaseId("my-db-pg-");
-        await RunWithTemporaryPostgresDatabaseAsync(instanceId, postgreSqlDatabaseId, testFunction, extraStatements);
+        await RunWithTemporaryPostgresDatabaseAsync(instanceId, postgreSqlDatabaseId, testFunction);
     }
 
-    public async Task RunWithTemporaryPostgresDatabaseAsync(string instanceId, string postgreSqlDatabaseId, Func<string, Task> testFunction, params string[] extraStatements)
+    public async Task RunWithTemporaryPostgresDatabaseAsync(string instanceId, string postgreSqlDatabaseId, Func<string, Task> testFunction)
     {
         CreateDatabaseAsyncPostgresSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgresSample();
         await createDatabaseAsyncSample.CreateDatabaseAsyncPostgres(ProjectId, instanceId, postgreSqlDatabaseId);
@@ -638,11 +637,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
         await CreateTableAsync(databaseId, createVenueInformationTableStatement);
 
+        using var connection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
         // Insert data in VenueInformation table.
         int[] ids = new int[] { 4, 19, 42 };
         await Task.WhenAll(ids.Select(id =>
         {
-            using var cmd = PgSpannerConnection.CreateInsertCommand("VenueInformation", new SpannerParameterCollection
+            using var cmd = connection.CreateInsertCommand("VenueInformation", new SpannerParameterCollection
             {
                 { "VenueId", SpannerDbType.Int64, id },
                 { "VenueName", SpannerDbType.String, $"Venue {id}" }

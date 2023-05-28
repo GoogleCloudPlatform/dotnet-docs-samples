@@ -31,7 +31,10 @@ public class AddStoringIndexAsyncPostgresTest
     [Fact]
     public async Task TestAddStoringIndexAsyncPostgres()
     {
-        //Act.
-        await _sample.AddStoringIndexAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            //Act.
+            await _sample.AddStoringIndexAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        });
     }
 }

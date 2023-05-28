@@ -34,33 +34,36 @@ public class OrderNullsAsyncPostgresTest
     [Fact]
     public async Task TestOrderNullsAsyncPostgres()
     {
-        // Arrange.
-        await CreateTableForOrderingAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            // Arrange.
+            await CreateTableForOrderingAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        // Act.
-        var result = await _sample.OrderNullsAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+            // Act.
+            var result = await _sample.OrderNullsAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        //Assert.
-        Assert.Collection(result,
-            // Alice, Bruce, null.
-            item1 => Assert.Equal("Alice", item1),
-            item2 => Assert.Equal("Bruce", item2),
-            item3 => Assert.Null(item3),
+            //Assert.
+            Assert.Collection(result,
+                // Alice, Bruce, null.
+                item1 => Assert.Equal("Alice", item1),
+                item2 => Assert.Equal("Bruce", item2),
+                item3 => Assert.Null(item3),
 
-            // null, Bruce, Alice.
-            item4 => Assert.Null(item4),
-            item5 => Assert.Equal("Bruce", item5),
-            item6 => Assert.Equal("Alice", item6),
+                // null, Bruce, Alice.
+                item4 => Assert.Null(item4),
+                item5 => Assert.Equal("Bruce", item5),
+                item6 => Assert.Equal("Alice", item6),
 
-            // null, Alice, Bruce.
-            item7 => Assert.Null(item7),
-            item8 => Assert.Equal("Alice", item8),
-            item9 => Assert.Equal("Bruce", item9),
+                // null, Alice, Bruce.
+                item7 => Assert.Null(item7),
+                item8 => Assert.Equal("Alice", item8),
+                item9 => Assert.Equal("Bruce", item9),
 
-            // Bruce, Alice, null.
-            item10 => Assert.Equal("Alice", item10),
-            item11 => Assert.Equal("Bruce", item11),
-            item12 => Assert.Null(item12));
+                // Bruce, Alice, null.
+                item10 => Assert.Equal("Alice", item10),
+                item11 => Assert.Equal("Bruce", item11),
+                item12 => Assert.Null(item12));
+        });
     }
 
     private async Task CreateTableForOrderingAsync(string projectId, string instanceId, string databaseId)

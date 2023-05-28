@@ -31,10 +31,13 @@ public class InsertUsingBatchDmlAsyncPostgresTest
     [Fact]
     public async Task TestInsertUsingBatchDmlAsyncPostgres()
     {
-        // Act.
-        var count = await _sample.InsertUsingBatchDmlAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            // Act.
+            var count = await _sample.InsertUsingBatchDmlAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        // Assert.
-        Assert.True(count >= 3); // Other tests may have inserted data.
+            // Assert.
+            Assert.True(count >= 3);
+        });
     }
 }

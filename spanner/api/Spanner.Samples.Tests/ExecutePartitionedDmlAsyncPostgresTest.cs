@@ -32,18 +32,21 @@ public class ExecutePartitionedDmlAsyncPostgresTest
     [Fact]
     public async Task TestExecutePartitionedDmlAsyncPostgres()
     {
-        // Arrange.
-        // Insert data that cannot be inserted by any other tests to avoid errors.
-        await InsertDataAsync();
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            // Arrange.
+            await InsertDataAsync(databaseId);
 
-        // Act.
-        var result = await _sample.ExecutePartitionedDmlAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
-        Assert.Equal(2, result);
+            // Act.
+            var result = await _sample.ExecutePartitionedDmlAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(2, result);
+        });
     }
 
-    private async Task InsertDataAsync()
+    private async Task InsertDataAsync(string databaseId)
     {
-        SpannerBatchCommand batchCommand = _spannerFixture.PgSpannerConnection.CreateBatchDmlCommand();
+        using var connection = new SpannerConnection($"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{databaseId}");
+        SpannerBatchCommand batchCommand = connection.CreateBatchDmlCommand();
         batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (16, 'Elvis', 'Presley')");
         batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (17, 'John', 'Lennon')");
 

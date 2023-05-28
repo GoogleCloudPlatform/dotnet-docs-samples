@@ -32,13 +32,16 @@ public class UsePgNumericAsyncPostgresTest
     [Fact]
     public async Task TestUsePgNumericAsyncPostgres()
     {
-        // Act.
-        var result = await _sample.UsePgNumericAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            // Act.
+            var result = await _sample.UsePgNumericAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        //Assert.
-        Assert.Collection(result,
-        item1 => Assert.Equal(PgNumeric.Parse("3150.25"), item1.Revenue),
-        item2 => Assert.Equal(PgNumeric.Parse("NaN"), item2.Revenue),
-        item3 => Assert.Null(item3.Revenue));
+            //Assert.
+            Assert.Collection(result,
+            item1 => Assert.Equal(PgNumeric.Parse("3150.25"), item1.Revenue),
+            item2 => Assert.Equal(PgNumeric.Parse("NaN"), item2.Revenue),
+            item3 => Assert.Null(item3.Revenue));
+        });
     }
 }

@@ -27,11 +27,15 @@ public class UpdateDataWithJsonbAsyncPostgresTest
         _spannerFixture = spannerFixture;
         _sample = new UpdateDataWithJsonbAsyncPostgresSample();
     }
-    
+
     [Fact]
     public async Task TestUpdateDataWithJsonbAsyncPostgres()
     {
-        // Act - Update the VenueInformation table.
-        await _sample.UpdateDataWithJsonbAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.CreateVenueTablesAndInsertDataAsyncPostgres(databaseId);
+            // Act - Update the VenueInformation table.
+            await _sample.UpdateDataWithJsonbAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        });
     }
 }

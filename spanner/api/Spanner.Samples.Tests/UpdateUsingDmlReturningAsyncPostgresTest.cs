@@ -29,17 +29,21 @@ public class UpdateUsingDmlReturningAsyncPostgresTest
     [Fact]
     public async Task TestUpdateUsingDmlReturningAsyncPostgres()
     {
-        await InsertDataAsync();
-        var sample = new UpdateUsingDmlReturningAsyncPostgresSample();
-        var updatedMarketingBudgets = await sample.UpdateUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            await InsertDataAsync(databaseId);
+            var sample = new UpdateUsingDmlReturningAsyncPostgresSample();
+            var updatedMarketingBudgets = await sample.UpdateUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        Assert.Single(updatedMarketingBudgets);
-        Assert.Equal(20000, updatedMarketingBudgets[0]);
+            Assert.Single(updatedMarketingBudgets);
+            Assert.Equal(20000, updatedMarketingBudgets[0]);
+        });
     }
 
-    private async Task InsertDataAsync()
+    private async Task InsertDataAsync(string databaseId)
     {
-        var batchCommand = _spannerFixture.PgSpannerConnection.CreateBatchDmlCommand();
+        using var connection = new SpannerConnection($"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{databaseId}");
+        var batchCommand = connection.CreateBatchDmlCommand();
         batchCommand.Add("INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (14, 'Kishore', 'Kumar')");
         batchCommand.Add("INSERT INTO Albums(SingerId, AlbumId, AlbumTitle, MarketingBudget) VALUES (14, 20, 'Test Album Title', 10000)");
         await batchCommand.ExecuteNonQueryAsync();

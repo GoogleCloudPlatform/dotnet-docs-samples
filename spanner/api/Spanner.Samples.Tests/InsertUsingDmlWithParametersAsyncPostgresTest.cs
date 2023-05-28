@@ -31,10 +31,13 @@ public class InsertUsingDmlWithParametersAsyncPostgresTest
     [Fact]
     public async Task TestInsertUsingDmlWithParametersAsyncPostgres()
     {
-        // Act.
-        var count = await _sample.InsertUsingDmlWithParametersAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            // Act.
+            var count = await _sample.InsertUsingDmlWithParametersAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
 
-        // Assert.
-        Assert.Equal(2, count);
+            // Assert.
+            Assert.Equal(2, count);
+        });
     }
 }
