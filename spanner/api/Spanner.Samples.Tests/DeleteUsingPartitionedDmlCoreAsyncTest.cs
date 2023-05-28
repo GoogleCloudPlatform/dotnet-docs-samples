@@ -28,8 +28,13 @@ public class DeleteUsingPartitionedDmlCoreAsyncTest
     [Fact]
     public async Task TestDeleteUsingPartitionedDmlCoreAsync()
     {
-        DeleteUsingPartitionedDmlCoreAsyncSample sample = new DeleteUsingPartitionedDmlCoreAsyncSample();
-        var rowCount = await sample.DeleteUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.True(rowCount >= 1);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId, insertData: true, addColumn: false);
+            DeleteUsingPartitionedDmlCoreAsyncSample sample = new DeleteUsingPartitionedDmlCoreAsyncSample();
+            
+            var rowCount = await sample.DeleteUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
+            Assert.True(rowCount >= 1);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

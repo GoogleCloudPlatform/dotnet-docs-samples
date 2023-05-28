@@ -30,19 +30,12 @@ public class DeleteDmlReturningAsyncTest
     {
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
-            await CreateTableAndInsertDataAsync(databaseId);
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId, insertData: true, addColumn: false);
             var sample = new DeleteUsingDmlReturningAsyncSample();
             var deletedSingerNames = await sample.DeleteUsingDmlReturningAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
             Assert.Single(deletedSingerNames);
             Assert.Equal("Alice Trentor", deletedSingerNames[0]);
-        });
-    }
-
-    private async Task CreateTableAndInsertDataAsync(string databaseId)
-    {
-        await _spannerFixture.CreateSingersAndAlbumsTableAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-        var insertDataAsyncSample = new InsertDataAsyncSample();
-        await insertDataAsyncSample.InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

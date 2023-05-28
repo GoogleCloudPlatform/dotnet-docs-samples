@@ -31,7 +31,7 @@ public class InsertUsingDmlReturningAsyncTest
     {
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
-            await CreateTableAndInsertData(databaseId);
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId, insertData: true, addColumn: false);
             InsertUsingDmlReturningAsyncSample sample = new InsertUsingDmlReturningAsyncSample();
             var insertedSingerNames = await sample.InsertUsingDmlReturningAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
@@ -40,13 +40,7 @@ public class InsertUsingDmlReturningAsyncTest
             Assert.Contains("Russell Morales", insertedSingerNames);
             Assert.Contains("Jacqueline Long", insertedSingerNames);
             Assert.Contains("Dylan Shaw", insertedSingerNames);
-        });
-    }
 
-    private async Task CreateTableAndInsertData(string databaseId)
-    {
-        await _spannerFixture.CreateSingersAndAlbumsTableAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-        var insertDataAsyncSample = new InsertDataAsyncSample();
-        await insertDataAsyncSample.InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

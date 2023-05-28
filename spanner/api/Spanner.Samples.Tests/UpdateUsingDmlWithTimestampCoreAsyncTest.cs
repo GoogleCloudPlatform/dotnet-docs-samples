@@ -30,7 +30,7 @@ public class UpdateUsingDmlWithTimestampCoreAsyncTest
     {
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
-            await _spannerFixture.InitializeTempDatabaseAsync(databaseId);
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId, insertData: true, addColumn: false);
             AddCommitTimestampAsyncSample addCommitTimestampAsyncSample = new AddCommitTimestampAsyncSample();
             await addCommitTimestampAsyncSample.AddCommitTimestampAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 

@@ -28,8 +28,12 @@ public class WriteAndReadUsingDmlCoreAsyncTest
     [Fact]
     public async Task TestWriteAndReadUsingDmlCoreAsync()
     {
-        WriteAndReadUsingDmlCoreAsyncSample sample = new WriteAndReadUsingDmlCoreAsyncSample();
-        var rowCount = await sample.WriteAndReadUsingDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(1, rowCount);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId, insertData: false, addColumn: false);
+            WriteAndReadUsingDmlCoreAsyncSample sample = new WriteAndReadUsingDmlCoreAsyncSample();
+            var rowCount = await sample.WriteAndReadUsingDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(1, rowCount);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

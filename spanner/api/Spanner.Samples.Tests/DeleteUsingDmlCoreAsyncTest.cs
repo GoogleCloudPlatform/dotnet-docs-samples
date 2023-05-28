@@ -28,8 +28,12 @@ public class DeleteUsingDmlCoreAsyncTest
     [Fact]
     public async Task TestDeleteUsingDmlCoreAsync()
     {
-        DeleteUsingDmlCoreAsyncSample sample = new DeleteUsingDmlCoreAsyncSample();
-        var rowCount = await sample.DeleteUsingDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.Equal(1, rowCount);
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
+        {
+            await _spannerFixture.InitializeTempDatabaseAsync(databaseId, insertData: true, addColumn: false);
+            DeleteUsingDmlCoreAsyncSample sample = new DeleteUsingDmlCoreAsyncSample();
+            var rowCount = await sample.DeleteUsingDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.Equal(1, rowCount);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 }

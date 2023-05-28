@@ -35,8 +35,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     @"CREATE TABLE Singers (
             SingerId INT64 NOT NULL,
             FirstName STRING(1024),
-            LastName STRING(1024)
-            ) PRIMARY KEY (SingerId)";
+            LastName STRING(1024),
+            FullName STRING(2048) AS(ARRAY_TO_STRING([FirstName, LastName], "" "")) STORED
+             ) PRIMARY KEY(SingerId)";
+
 
     public const string CreateAlbumsTableStatement =
     @"CREATE TABLE Albums (
@@ -116,7 +118,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await CreateInstanceWithMultiRegionAsync();
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
-        await InitializePostgreSqlDatabaseAsync();
+        await InitializePostgreSqlDatabaseAsync(ProjectId, InstanceId, PostgreSqlDatabaseId);
 
         // Create encryption key for creating an encrypted database and optionally backing up and restoring an encrypted database.
         await InitializeEncryptionKeys();
@@ -243,12 +245,27 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await createTableWithTimestampColumnAsyncSample.CreateTableWithTimestampColumnAsync(ProjectId, InstanceId, DatabaseId);
     }
 
-    public async Task InitializeTempDatabaseAsync(string databaseId)
+    /// <summary>
+    /// Inserts data into `Singers` and `Albums` tables using <see cref="InsertDataAsyncSample.InsertDataAsync"/>
+    ///method and adds `MarketingBudget` column to the `Albums` table.
+    /// </summary>
+    /// <param name="databaseId"> The database id where 'Singers` and `Albums` tables already exists.</param>
+    /// <param name="insertData"> An optional parameter , if set to false, will not insert data into `Singers` and `Albums` tables. The default value is true.</param>
+    /// <param name="addColumn"> An optional parameter , if set to false, will not add `MarketingBudget` column to the `Albums` table.</param>
+    /// <returns></returns>
+    public async Task InitializeTempDatabaseAsync(string databaseId, bool insertData = true, bool addColumn = true)
     {
-        InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
-        AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
-        await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, databaseId);
-        await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, databaseId);
+        if (insertData)
+        {
+            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, databaseId);
+        }
+
+        if (addColumn)
+        {
+            AddColumnAsyncSample addColumnAsyncSample = new AddColumnAsyncSample();
+            await addColumnAsyncSample.AddColumnAsync(ProjectId, InstanceId, databaseId);
+        }
     }
 
     private async Task InitializeBackupAsync()
@@ -289,11 +306,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private async Task InitializePostgreSqlDatabaseAsync()
+    internal async Task InitializePostgreSqlDatabaseAsync(string projectId, string instanceId, string postgreSqlDatabaseId)
     {
         CreateDatabaseAsyncPostgresSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgresSample();
-        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgres(ProjectId, InstanceId, PostgreSqlDatabaseId);
-        await CreateVenueTablesAndInsertDataAsyncPostgres();
+        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgres(projectId, instanceId, postgreSqlDatabaseId);
+        await CreateVenueTablesAndInsertDataAsyncPostgres(postgreSqlDatabaseId);
     }
 
     private async Task InitializeEncryptionKeys()
@@ -482,6 +499,25 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
     }
 
+    public async Task RunWithTemporaryPostgresDatabaseAsync(Func<string, Task> testFunction, params string[] extraStatements)
+    => await RunWithTemporaryPostgresDatabaseAsync(InstanceId, testFunction, extraStatements);
+
+    public async Task RunWithTemporaryPostgresDatabaseAsync(string instanceId, Func<string, Task> testFunction,
+    params string[] extraStatements)
+    {
+        // For temporary DBs we don't need a time based ID, as we delete them inmediately.
+        var postgreSqlDatabaseId = GenerateTempDatabaseId("my-db-pg-");
+        await RunWithTemporaryPostgresDatabaseAsync(instanceId, postgreSqlDatabaseId, testFunction, extraStatements);
+    }
+
+    public async Task RunWithTemporaryPostgresDatabaseAsync(string instanceId, string postgreSqlDatabaseId, Func<string, Task> testFunction, params string[] extraStatements)
+    {
+        CreateDatabaseAsyncPostgresSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgresSample();
+        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgres(ProjectId, instanceId, postgreSqlDatabaseId);
+
+        await ExecuteFuncAndDropDatabaseAsync(postgreSqlDatabaseId, testFunction);
+    }
+
     public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
     {
         var operation = await DatabaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
@@ -496,6 +532,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             throw completedResponse.Exception;
         }
 
+        await ExecuteFuncAndDropDatabaseAsync(databaseId, testFunction);
+    }
+
+    public async Task ExecuteFuncAndDropDatabaseAsync(string databaseId, Func<string, Task> testFunction)
+    {
         try
         {
             await testFunction(databaseId);
@@ -503,7 +544,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         finally
         {
             // Cleanup the test database.
-            await DatabaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
+            await DatabaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, InstanceId, databaseId));
         }
     }
 
@@ -539,7 +580,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public async Task CreateSingersAndAlbumsTableAsync(string projectId, string instanceId, string databaseId)
     {
         using var connection = new SpannerConnection($"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}");
-;
+        ;
         var createSingersTable =
         @"CREATE TABLE Singers (
                  SingerId INT64 NOT NULL,
@@ -584,7 +625,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         return databases;
     }
 
-    private async Task CreateVenueTablesAndInsertDataAsyncPostgres()
+    internal async Task CreateVenueTablesAndInsertDataAsyncPostgres(string databaseId)
     {
         // We create VenueInformation table so that update and query jsonb data sample can run out of order. 
 
@@ -595,7 +636,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             VenueName VARCHAR(1024),
             Details JSONB)";
 
-        await CreateTableAsyncPostgres(createVenueInformationTableStatement);
+        await CreateTableAsync(databaseId, createVenueInformationTableStatement);
 
         // Insert data in VenueInformation table.
         int[] ids = new int[] { 4, 19, 42 };
@@ -610,9 +651,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }));
     }
 
-    public async Task CreateTableAsyncPostgres(string createTableStatement)
+    public async Task CreateTableAsync(string databaseId, string createTableStatement)
     {
-        using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
+        string connectionString = $"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}";
+        using var connection = new SpannerConnection(connectionString);
+        using var cmd = connection.CreateDdlCommand(createTableStatement);
         await cmd.ExecuteNonQueryAsync();
     }
 }
