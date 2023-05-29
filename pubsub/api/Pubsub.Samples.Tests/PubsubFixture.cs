@@ -61,9 +61,9 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
             {
                 deleteSubscriptionSampleObject.DeleteSubscription(ProjectId, subscriptionId);
             }
-            catch (RpcException)
+            catch (RpcException ex)
             {
-                // Do nothing, we are deleting on a best effort basis.
+                Console.WriteLine($"Exception occur while deleting subscription {subscriptionId} Exception: {ex}");
             }
         }
         foreach (string topicId in TempTopicIds)
@@ -72,9 +72,9 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
             {
                 deleteTopicSampleObject.DeleteTopic(ProjectId, topicId);
             }
-            catch (RpcException)
+            catch (RpcException ex)
             {
-                // Do nothing, we are deleting on a best effort basis.
+                Console.WriteLine($"Exception occur while deleting Topic {topicId} Exception: {ex}");
             }
         }
         foreach (string schemaId in TempSchemaIds)
@@ -83,9 +83,9 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
             {
                 deleteSchemaSampleObject.DeleteSchema(ProjectId, schemaId);
             }
-            catch (RpcException)
+            catch (RpcException ex)
             {
-                // Do nothing, we are deleting on a best effort basis.
+                Console.WriteLine($"Exception occur while deleting Schema {schemaId} Exception: {ex}");
             }
         }
         DeleteBigQueryTable();
