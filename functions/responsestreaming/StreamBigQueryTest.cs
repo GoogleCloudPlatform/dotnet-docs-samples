@@ -28,7 +28,7 @@ namespace GoogleCloudSamples
         };
 
         [Fact]
-        public void TestRunSimpleApp()
+        public void TestRunStreamBigQuery()
         {
             var output = _streamBigQuery.Run();
             Assert.Equal(0, output.ExitCode);
