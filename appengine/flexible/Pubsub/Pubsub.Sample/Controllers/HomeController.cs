@@ -47,7 +47,7 @@ namespace Pubsub.Controllers
         // [START gae_flex_pubsub_index]
         [HttpGet]
         [HttpPost]
-        public IActionResult Index(MessageForm messageForm)
+        public async Task<IActionResult> IndexAsync(MessageForm messageForm)
         {
             var model = new MessageList();
             if (!_options.HasGoodProjectId())
@@ -63,7 +63,7 @@ namespace Pubsub.Controllers
                     Data = ByteString.CopyFromUtf8(messageForm.Message)
                 };
                 pubsubMessage.Attributes["token"] = _options.VerificationToken;
-                _publisher.PublishAsync(pubsubMessage).Wait();
+                await _publisher.PublishAsync(pubsubMessage);
                 model.PublishedMessage = messageForm.Message;
             }
             // Render the current list of messages.
@@ -79,7 +79,7 @@ namespace Pubsub.Controllers
         /// </summary>
         [HttpPost]
         [Route("/Push")]
-        public IActionResult Push([FromBody]PushBody body,
+        public async Task<IActionResult> PushAsync([FromBody]PushBody body,
             [FromQuery]string token)
         {
             string verificationToken =
