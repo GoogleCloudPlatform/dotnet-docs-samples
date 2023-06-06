@@ -20,6 +20,7 @@ using Google.Api.Gax.Grpc;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Logging.Type;
 using Google.Cloud.Logging.V2;
+using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
@@ -33,7 +34,7 @@ namespace GoogleCloudSamples
 
         private static readonly string s_usage =
                 "Usage: \n" +
-                "  dotnet run create-log-entry log-id new-log-entry-text\n" +
+                "  dotnet run create-log-entry log-id\n" +
                 "  dotnet run list-log-entries log-id\n" +
                 "  dotnet run create-sink sink-id log-id\n" +
                 "  dotnet run list-sinks\n" +
@@ -68,21 +69,30 @@ namespace GoogleCloudSamples
         }
 
         // [START logging_write_log_entry]
-        private void WriteLogEntry(string logId, string message)
+        private void WriteLogEntry(string logId)
         {
             var client = LoggingServiceV2Client.Create();
             LogName logName = new LogName(s_projectId, logId);
+            var jsonPayload = new Struct()
+            {
+                Fields =
+                {
+                    { "name", Value.ForString("King Arthur") },
+                    { "quest", Value.ForString("Find the Holy Grail") },
+                    { "favorite_color", Value.ForString("Blue") }
+                }
+            };
             LogEntry logEntry = new LogEntry
             {
                 LogNameAsLogName = logName,
                 Severity = LogSeverity.Info,
-                TextPayload = $"{typeof(LoggingSample).FullName} - {message}"
+                JsonPayload = jsonPayload
             };
             MonitoredResource resource = new MonitoredResource { Type = "global" };
             IDictionary<string, string> entryLabels = new Dictionary<string, string>
             {
                 { "size", "large" },
-                { "color", "red" }
+                { "color", "blue" }
             };
             client.WriteLogEntries(logName, resource, entryLabels,
                 new[] { logEntry }, _retryAWhile);
@@ -189,8 +199,8 @@ namespace GoogleCloudSamples
                 switch (args[0].ToLower())
                 {
                     case "create-log-entry":
-                        if (args.Length < 3 && PrintUsage()) return -1;
-                        WriteLogEntry(args[1], args[2]);
+                        if (args.Length < 2 && PrintUsage()) return -1;
+                        WriteLogEntry(args[1]);
                         break;
                     case "list-log-entries":
                         if (args.Length < 2 && PrintUsage()) return -1;

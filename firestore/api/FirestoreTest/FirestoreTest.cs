@@ -473,7 +473,7 @@ namespace GoogleCloudSamples
         }
 
         // LISTEN DATA TESTS
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1162")]
+        [Fact]
         public void ListenDocumentTest()
         {
             RunDeleteData("delete-collection", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -489,7 +489,7 @@ namespace GoogleCloudSamples
             Assert.Contains("Stopping the listener", listenDocumentOutput.Stdout);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1162")]
+        [Fact]
         public void ListenMultipleTest()
         {
             RunDeleteData("delete-collection", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -501,7 +501,7 @@ namespace GoogleCloudSamples
             Assert.Contains("Stopping the listener", listenMultipleOutput.Stdout);
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1162")]
+        [Fact]
         public void ListenForChangesTest()
         {
             RunDeleteData("delete-collection", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));

@@ -25,7 +25,7 @@ namespace GoogleCloudSamples
             Fixture = fixture;
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/510")]
+        [Fact]
         public void TestDeidentifyWithDateShift()
         {
             var inputFilePath = Path.Combine(Fixture.ResourcePath, "dates-input.csv");
