@@ -17,7 +17,7 @@
 using System.Linq;
 using Xunit;
 
-namespace GoogleCloudSamples
+namespace StreamBigQuery.Tests : FunctionTestBase<StreamBigQuery.Function>
 {
     public class StreamBigQueryTest
     {
@@ -34,7 +34,7 @@ namespace GoogleCloudSamples
             Assert.Equal(0, output.ExitCode);
             var outputLines = output.Stdout.Split(new[] { '\n' });
             int rowCount = outputLines.Count();
-            Assert.Equal(10, rowCount);
+            Assert.Equal(1000, rowCount);
         }
     }
 }
