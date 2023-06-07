@@ -1,0 +1,7 @@
+<Project>
+    <PropertyGroup>        
+        <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+        <!-- When set to true, the build will fail if there are code violations as per .editorconfig diagnostics with the severity of error.-->
+        <EnforceCodeStyleInBuild>False</EnforceCodeStyleInBuild>
+    </PropertyGroup>
+</Project>
