@@ -3,3 +3,6 @@ env: flex
 
 runtime_config:
   operating_system: ubuntu22
+
+env_variables:
+  TEST_GOOGLE_BUCKET_NAME: your-bucket-name
