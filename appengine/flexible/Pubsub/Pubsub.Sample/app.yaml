@@ -1,0 +1,13 @@
+﻿runtime: aspnetcore
+env: flex
+
+runtime_config:
+  operating_system: ubuntu22
+
+env_variables:
+  TEST_PROJECT_ID: your-project-id
+  TEST_VERIFICATION_TOKEN: your-token
+  TEST_TOPIC_ID: your-topic
+  TEST_SUBSCRIPTION_ID: your-sub
+  TEST_AUTH_SUBSCRIPTION_ID: your-auth-sub
+  TEST_SERVICE_ACCOUNT_EMAIL: your-service-account-email
