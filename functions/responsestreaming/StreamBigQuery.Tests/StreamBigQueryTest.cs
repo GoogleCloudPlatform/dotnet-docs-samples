@@ -13,28 +13,33 @@
  * License for the specific language governing permissions and limitations under
  * the License.
  */
-
+using Google.Cloud.Functions.Testing;
+using System.Net;
+using System.Net.Http;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using Xunit;
 
-namespace StreamBigQuery.Tests : FunctionTestBase<StreamBigQuery.Function>
+namespace StreamBigQuery.Tests;
+
+public class StreamBigQueryTest : FunctionTestBase<StreamBigQuery.Function>
 {
-    public class StreamBigQueryTest
+    [Fact]
+    public void TestRunStreamBigQuery()
     {
-        readonly CommandLineRunner _streamBigQuery = new CommandLineRunner()
+        var request = new HttpRequestMessage
         {
-            VoidMain = Program.Main,
-            Command = "dotnet run"
+            Method = HttpMethod.Post,
+            Content = new StringContent("")
         };
 
-        [Fact]
-        public void TestRunStreamBigQuery()
+        ExecuteHttpRequestAsync(request, async response =>
         {
-            var output = _streamBigQuery.Run();
-            Assert.Equal(0, output.ExitCode);
-            var outputLines = output.Stdout.Split(new[] { '\n' });
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var actualContent = await response.Content.ReadAsStringAsync();
+            var outputLines = actualContent.Split(new[] { '\n' });
             int rowCount = outputLines.Count();
             Assert.Equal(1000, rowCount);
-        }
-    }
+        });
 }
