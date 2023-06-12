@@ -12,12 +12,23 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
-
 dotnet restore --force
-BackupAndEdit-TextFile "appsettings.json" `
-    @{"your-project-id" = $env:GOOGLE_PROJECT_ID} `
-{
-    dotnet build --no-restore
-    Run-KestrelTest 5576 localTest.js -CasperJs11
+if ($env:TEST_PROJECT_ID -eq $null) {
+	$env:TEST_PROJECT_ID = 'your-project-id'
 }
+if ($env:TEST_VERIFICATION_TOKEN -eq $null) {
+	$env:TEST_VERIFICATION_TOKEN = 'your-token'
+}
+if ($env:TEST_SUBSCRIPTION_ID -eq $null) {
+	$env:TEST_SUBSCRIPTION_ID = 'your-sub-id'
+}
+if ($env:TEST_AUTH_SUBSCRIPTION_ID -eq $null) {
+	$env:TEST_AUTH_SUBSCRIPTION_ID = 'your-auth-sub-id'
+}
+if ($env:TEST_TOPIC_ID -eq $null) {
+	$env:TEST_TOPIC_ID = 'your-topic-id'
+}
+if ($env:TEST_SERVICE_ACCOUNT_EMAIL -eq $null) {
+	$env:TEST_SERVICE_ACCOUNT_EMAIL = 'your-service-account-email'
+}
+dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
