@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -34,7 +34,12 @@ public class BatchReadRecordsAsyncSample
         transaction.DisposeBehavior = DisposeBehavior.CloseResources;
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, FirstName, LastName FROM Singers");
         cmd.Transaction = transaction;
-        var partitions = await cmd.GetReaderPartitionsAsync();
+
+        // A CommandPartition object is serializable and can be used from a different process.
+        // If data boost is enabled, partitioned read and query requests will be executed
+        // using Spanner independent compute resources.
+        var partitions = await cmd.GetReaderPartitionsAsync(PartitionOptions.Default.WithDataBoostEnabled(true));
+
         var transactionId = transaction.TransactionId;
         await Task.WhenAll(partitions.Select(x => DistributedReadWorkerAsync(x, transactionId)));
         Console.WriteLine($"Done reading!  Total rows read: {_rowsRead:N0} with {_partitionCount} partition(s)");
