@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START kms_create_key_asymmetric_sign]
+// [START kms_create_key_asymmetric_sign_test]
 
 using Google.Cloud.Kms.V1;
 using Google.Protobuf.WellKnownTypes;
