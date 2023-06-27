@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Kgsearch.v1" Version="1.60.0.2143" />
+    <PackageReference Include="Google.Apis.Kgsearch.v1" Version="1.61.0.2143" />
     <PackageReference Include="Google.Cloud.Functions.Hosting" Version="2.1.0" />
   </ItemGroup>
 </Project>
