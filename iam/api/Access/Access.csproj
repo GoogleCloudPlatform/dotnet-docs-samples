@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Apis.Iam.v1" Version="1.61.0.3073" />
-    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.60.0.2950" />
+    <PackageReference Include="Google.Apis.Cloudresourcemanager.v1" Version="1.61.0.2950" />
   </ItemGroup>
 
 </Project>
