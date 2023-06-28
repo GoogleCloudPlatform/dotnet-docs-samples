@@ -11,8 +11,5 @@
     "schedule": [
         "before 8am"
     ],
-    "timezone": "Europe/London",
-    "labels": [
-        "automerge: exact"
-    ]
+    "timezone": "Europe/London"
 }
