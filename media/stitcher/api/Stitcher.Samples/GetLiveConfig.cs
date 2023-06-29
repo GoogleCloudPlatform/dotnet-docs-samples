@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-// [START videostitcher_delete_cdn_key]
+// [START videostitcher_get_live_config]
 
 using Google.Cloud.Video.Stitcher.V1;
 
-public class DeleteCdnKeySample
+public class GetLiveConfigSample
 {
-    public void DeleteCdnKey(
-        string projectId, string location, string cdnKeyId)
+    public LiveConfig GetLiveConfig(
+        string projectId, string location, string liveConfigId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        DeleteCdnKeyRequest request = new DeleteCdnKeyRequest
+        GetLiveConfigRequest request = new GetLiveConfigRequest
         {
-            CdnKeyName = CdnKeyName.FromProjectLocationCdnKey(projectId, location, cdnKeyId)
+            LiveConfigName = LiveConfigName.FromProjectLocationLiveConfig(projectId, location, liveConfigId)
         };
 
         // Call the API.
-        client.DeleteCdnKey(request);
+        LiveConfig response = client.GetLiveConfig(request);
+
+        // Return the result.
+        return response;
     }
 }
-// [END videostitcher_delete_cdn_key]
+// [END videostitcher_get_live_config]

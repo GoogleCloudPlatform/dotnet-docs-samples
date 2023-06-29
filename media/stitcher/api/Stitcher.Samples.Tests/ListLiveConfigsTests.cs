@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,26 +19,22 @@ using Xunit;
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateLiveSessionTest
+    public class ListLiveConfigsTest
     {
         private StitcherFixture _fixture;
-        private readonly CreateLiveSessionSample _createSample;
+        private readonly ListLiveConfigsSample _listSample;
 
-        public CreateLiveSessionTest(StitcherFixture fixture)
+        public ListLiveConfigsTest(StitcherFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateLiveSessionSample();
+            _listSample = new ListLiveConfigsSample();
         }
 
         [Fact]
-        public void CreatesLiveSession()
+        public void ListsLiveConfigs()
         {
-            // Run the sample code.
-            var result = _createSample.CreateLiveSession(
-                _fixture.ProjectId, _fixture.LocationId, _fixture.TestLiveConfigId);
-
-            Assert.Equal(_fixture.LocationId, result.LiveSessionName.LocationId);
-            Assert.Contains("/liveSessions/", result.LiveSessionName.ToString());
+            var liveConfigs = _listSample.ListLiveConfigs(_fixture.ProjectId, _fixture.LocationId);
+            Assert.Contains(liveConfigs, r => _fixture.TestLiveConfigId == r.LiveConfigName.LiveConfigId);
         }
     }
 }

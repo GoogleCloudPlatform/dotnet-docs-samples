@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class UpdateSlateTest
+    public class UpdateSlateAsyncTest
     {
         private StitcherFixture _fixture;
         private readonly UpdateSlateSample _updateSample;
 
-        public UpdateSlateTest(StitcherFixture fixture)
+        public UpdateSlateAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _updateSample = new UpdateSlateSample();
         }
 
         [Fact]
-        public void UpdatesSlate()
+        public async Task UpdatesSlateAsync()
         {
-            var result = _updateSample.UpdateSlate(_fixture.ProjectId, _fixture.LocationId, _fixture.TestSlateId, _fixture.UpdateSlateUri);
+            var result = await _updateSample.UpdateSlateAsync(_fixture.ProjectId, _fixture.LocationId, _fixture.TestSlateId, _fixture.UpdateSlateUri);
             Assert.Equal(_fixture.TestSlateId, result.SlateName.SlateId);
             Assert.Equal(_fixture.UpdateSlateUri, result.Uri);
         }

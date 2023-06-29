@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,30 @@
  * limitations under the License.
  */
 
-// [START videostitcher_delete_slate]
+// [START videostitcher_list_live_configs]
 
+using Google.Api.Gax;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
 
-public class DeleteSlateSample
+public class ListLiveConfigsSample
 {
-    public void DeleteSlate(
-        string projectId, string location, string slateId)
+    public PagedEnumerable<ListLiveConfigsResponse, LiveConfig> ListLiveConfigs(
+        string projectId, string regionId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        DeleteSlateRequest request = new DeleteSlateRequest
+        ListLiveConfigsRequest request = new ListLiveConfigsRequest
         {
-            SlateName = SlateName.FromProjectLocationSlate(projectId, location, slateId)
+            ParentAsLocationName = LocationName.FromProjectLocation(projectId, regionId)
         };
 
-        // Call the API.
-        client.DeleteSlate(request);
+        // Make the request.
+        PagedEnumerable<ListLiveConfigsResponse, LiveConfig> response = client.ListLiveConfigs(request);
+
+        // Return the result.
+        return response;
     }
 }
-// [END videostitcher_delete_slate]
+// [END videostitcher_list_live_configs]

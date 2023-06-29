@@ -18,12 +18,13 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
+using Google.LongRunning;
 using Google.Protobuf;
-
+using System.Threading.Tasks;
 
 public class CreateCdnKeySample
 {
-    public CdnKey CreateCdnKey(
+    public async Task<CdnKey> CreateCdnKeyAsync(
     string projectId, string location, string cdnKeyId, string hostname,
     string keyName, string privateKey, bool isMediaCdn)
     {
@@ -59,11 +60,14 @@ public class CreateCdnKeySample
             CdnKey = cdnKey
         };
 
-        // Call the API.
-        CdnKey newCdnKey = client.CreateCdnKey(request);
+        // Make the request.
+        Operation<CdnKey, OperationMetadata> response = await client.CreateCdnKeyAsync(request);
 
-        // Return the result.
-        return newCdnKey;
+        // Poll until the returned long-running operation is complete.
+        Operation<CdnKey, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
+
+        // Retrieve the operation result.
+        return completedResponse.Result;
     }
 }
 // [END videostitcher_create_cdn_key]

@@ -42,7 +42,7 @@ namespace Stitcher.Samples.Tests
         public async Task InitializeAsync()
         {
             var session = _createSample.CreateLiveSession(
-               _fixture.ProjectId, _fixture.LocationId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateId);
+               _fixture.ProjectId, _fixture.LocationId, _fixture.TestLiveConfigId);
             _liveSessionId = session.LiveSessionName.LiveSessionId;
             _playUri = session.PlayUri;
 

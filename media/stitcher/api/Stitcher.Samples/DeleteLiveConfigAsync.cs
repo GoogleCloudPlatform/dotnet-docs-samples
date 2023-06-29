@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,31 @@
  * limitations under the License.
  */
 
-// [START videostitcher_update_slate]
+// [START videostitcher_delete_live_config]
 
 using Google.Cloud.Video.Stitcher.V1;
+using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
+using System.Threading.Tasks;
 
-public class UpdateSlateSample
+public class DeleteLiveConfigSample
 {
-    public Slate UpdateSlate(
-        string projectId, string location, string slateId, string slateUri)
+    public async Task DeleteLiveConfigAsync(
+        string projectId, string location, string liveConfigId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        UpdateSlateRequest request = new UpdateSlateRequest
+        DeleteLiveConfigRequest request = new DeleteLiveConfigRequest
         {
-            Slate = new Slate
-            {
-                SlateName = SlateName.FromProjectLocationSlate(projectId, location, slateId),
-                Uri = slateUri
-            },
-            UpdateMask = new FieldMask { Paths = { "uri" } }
+            LiveConfigName = LiveConfigName.FromProjectLocationLiveConfig(projectId, location, liveConfigId)
         };
 
-        // Call the API.
-        Slate slate = client.UpdateSlate(request);
+        // Make the request.
+        Operation<Empty, OperationMetadata> response = await client.DeleteLiveConfigAsync(request);
 
-        // Return the result.
-        return slate;
+        // Poll until the returned long-running operation is complete.
+        await response.PollUntilCompletedAsync();
     }
 }
-// [END videostitcher_update_slate]
+// [END videostitcher_delete_live_config]

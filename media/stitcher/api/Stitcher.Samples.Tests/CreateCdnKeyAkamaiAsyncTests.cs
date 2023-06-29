@@ -14,37 +14,32 @@
  * limitations under the License.
  */
 
-using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateCdnKeyAkamaiTest : IDisposable
+    public class CreateCdnKeyAkamaiAsyncTest
     {
         private StitcherFixture _fixture;
         private readonly CreateCdnKeyAkamaiSample _createSample;
 
         private string _akamaiCdnKeyId;
 
-        public CreateCdnKeyAkamaiTest(StitcherFixture fixture)
+        public CreateCdnKeyAkamaiAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateCdnKeyAkamaiSample();
             _akamaiCdnKeyId = $"{_fixture.AkamaiCdnKeyIdPrefix}-{_fixture.TimestampId()}";
         }
 
-        public void Dispose()
-        {
-            _fixture.DeleteCdnKey(_akamaiCdnKeyId);
-        }
-
         [Fact]
-        public void CreatesCdnKey_Akamai()
+        public async Task CreatesCdnKeyAsync_Akamai()
         {
             // Run the sample code and create an Akamai CDN key.
             _fixture.CdnKeyIds.Add(_akamaiCdnKeyId);
-            var result = _createSample.CreateCdnKeyAkamai(
+            var result = await _createSample.CreateCdnKeyAkamaiAsync(
                 _fixture.ProjectId, _fixture.LocationId,
                 _akamaiCdnKeyId, _fixture.Hostname, _fixture.AkamaiTokenKey);
 

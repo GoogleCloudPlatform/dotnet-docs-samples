@@ -17,12 +17,14 @@
 // [START videostitcher_update_cdn_key]
 
 using Google.Cloud.Video.Stitcher.V1;
+using Google.LongRunning;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using System.Threading.Tasks;
 
 public class UpdateCdnKeySample
 {
-    public CdnKey UpdateCdnKey(
+    public async Task<CdnKey> UpdateCdnKeyAsync(
         string projectId, string location, string cdnKeyId, string hostname,
         string keyName, string privateKey, bool isMediaCdn)
     {
@@ -61,11 +63,14 @@ public class UpdateCdnKeySample
             UpdateMask = new FieldMask { Paths = { "hostname", path } }
         };
 
-        // Call the API.
-        CdnKey newCdnKey = client.UpdateCdnKey(request);
+        // Make the request.
+        Operation<CdnKey, OperationMetadata> response = await client.UpdateCdnKeyAsync(request);
 
-        // Return the result.
-        return newCdnKey;
+        // Poll until the returned long-running operation is complete.
+        Operation<CdnKey, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
+
+        // Retrieve the operation result.
+        return completedResponse.Result;
     }
 }
 // [END videostitcher_update_cdn_key]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateLiveSessionTest
+    public class CreateLiveConfigAsyncTest
     {
         private StitcherFixture _fixture;
-        private readonly CreateLiveSessionSample _createSample;
+        private readonly CreateLiveConfigSample _createSample;
 
-        public CreateLiveSessionTest(StitcherFixture fixture)
+        private string _liveConfigId;
+
+        public CreateLiveConfigAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateLiveSessionSample();
+            _createSample = new CreateLiveConfigSample();
+            _liveConfigId = $"{_fixture.LiveConfigIdPrefix}-{_fixture.TimestampId()}";
         }
 
         [Fact]
-        public void CreatesLiveSession()
+        public async Task CreatesLiveConfigAsync()
         {
             // Run the sample code.
-            var result = _createSample.CreateLiveSession(
-                _fixture.ProjectId, _fixture.LocationId, _fixture.TestLiveConfigId);
+            _fixture.LiveConfigIds.Add(_liveConfigId);
+            var result = await _createSample.CreateLiveConfigAsync(
+                _fixture.ProjectId, _fixture.LocationId, _liveConfigId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateId);
 
-            Assert.Equal(_fixture.LocationId, result.LiveSessionName.LocationId);
-            Assert.Contains("/liveSessions/", result.LiveSessionName.ToString());
+            Assert.Equal(_liveConfigId, result.LiveConfigName.LiveConfigId);
         }
     }
 }
