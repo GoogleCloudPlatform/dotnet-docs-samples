@@ -17,12 +17,14 @@
 // [START videostitcher_update_cdn_key_akamai]
 
 using Google.Cloud.Video.Stitcher.V1;
+using Google.LongRunning;
 using Google.Protobuf;
 using Google.Protobuf.WellKnownTypes;
+using System.Threading.Tasks;
 
 public class UpdateCdnKeyAkamaiSample
 {
-    public CdnKey UpdateCdnKeyAkamai(
+    public async Task<CdnKey> UpdateCdnKeyAkamaiAsync(
         string projectId, string location, string cdnKeyId, string hostname,
         string akamaiTokenKey)
     {
@@ -45,11 +47,14 @@ public class UpdateCdnKeyAkamaiSample
             UpdateMask = new FieldMask { Paths = { "hostname", "akamai_cdn_key" } }
         };
 
-        // Call the API.
-        CdnKey newCdnKey = client.UpdateCdnKey(request);
+        // Make the request.
+        Operation<CdnKey, OperationMetadata> response = await client.UpdateCdnKeyAsync(request);
 
-        // Return the result.
-        return newCdnKey;
+        // Poll until the returned long-running operation is complete.
+        Operation<CdnKey, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
+
+        // Retrieve the operation result.
+        return completedResponse.Result;
     }
 }
 // [END videostitcher_update_cdn_key_akamai]

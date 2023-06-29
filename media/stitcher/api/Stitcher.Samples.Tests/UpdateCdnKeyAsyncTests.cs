@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class UpdateCdnKeyTest
+    public class UpdateCdnKeyAsyncTest
     {
         private StitcherFixture _fixture;
         private readonly UpdateCdnKeySample _updateSample;
 
-        public UpdateCdnKeyTest(StitcherFixture fixture)
+        public UpdateCdnKeyAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _updateSample = new UpdateCdnKeySample();
         }
 
         [Fact]
-        public void UpdatesCdnKey_MediaCdn()
+        public async Task UpdatesCdnKeyAsync_MediaCdn()
         {
-            var result = _updateSample.UpdateCdnKey(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdatedMediaCdnHostname, _fixture.KeyName, _fixture.MediaCdnPrivateKey, true);
+            var result = await _updateSample.UpdateCdnKeyAsync(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdatedMediaCdnHostname, _fixture.KeyName, _fixture.MediaCdnPrivateKey, true);
             Assert.Equal(_fixture.TestCloudCdnKeyId, result.CdnKeyName.CdnKeyId);
             Assert.Equal(_fixture.UpdatedMediaCdnHostname, result.Hostname);
         }
 
         [Fact]
-        public void UpdatesCdnKey_CloudCdn()
+        public async Task UpdatesCdnKeyAsync_CloudCdn()
         {
-            var result = _updateSample.UpdateCdnKey(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdatedCloudCdnHostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
+            var result = await _updateSample.UpdateCdnKeyAsync(_fixture.ProjectId, _fixture.LocationId, _fixture.TestCloudCdnKeyId, _fixture.UpdatedCloudCdnHostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
             Assert.Equal(_fixture.TestCloudCdnKeyId, result.CdnKeyName.CdnKeyId);
             Assert.Equal(_fixture.UpdatedCloudCdnHostname, result.Hostname);
         }

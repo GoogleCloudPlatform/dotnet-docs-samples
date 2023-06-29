@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
-// [START videostitcher_create_vod_session]
+// [START videostitcher_create_slate]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
+using Google.LongRunning;
+using System.Threading.Tasks;
 
-public class CreateVodSessionSample
+public class CreateSlateSample
 {
-    public VodSession CreateVodSession(
-        string projectId, string location, string sourceUri, string adTagUri)
+    public async Task<Slate> CreateSlateAsync(
+        string projectId, string location, string slateId, string slateUri)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        CreateVodSessionRequest request = new CreateVodSessionRequest
+        CreateSlateRequest request = new CreateSlateRequest
         {
             ParentAsLocationName = LocationName.FromProjectLocation(projectId, location),
-            VodSession = new VodSession
+            SlateId = slateId,
+            Slate = new Slate
             {
-                SourceUri = sourceUri,
-                AdTagUri = adTagUri,
-                AdTracking = AdTracking.Server
+                Uri = slateUri
             }
         };
 
-        // Call the API.
-        VodSession session = client.CreateVodSession(request);
+        // Make the request.
+        Operation<Slate, OperationMetadata> response = await client.CreateSlateAsync(request);
 
-        // Return the result.
-        return session;
+        // Poll until the returned long-running operation is complete.
+        Operation<Slate, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
+
+        // Retrieve the operation result.
+        return completedResponse.Result;
     }
 }
-// [END videostitcher_create_vod_session]
+// [END videostitcher_create_slate]

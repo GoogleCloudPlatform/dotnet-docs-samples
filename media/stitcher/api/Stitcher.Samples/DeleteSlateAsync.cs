@@ -14,34 +14,31 @@
  * limitations under the License.
  */
 
-// [START videostitcher_create_slate]
+// [START videostitcher_delete_slate]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
+using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
+using System.Threading.Tasks;
 
-public class CreateSlateSample
+public class DeleteSlateSample
 {
-    public Slate CreateSlate(
-        string projectId, string location, string slateId, string slateUri)
+    public async Task DeleteSlateAsync(
+        string projectId, string location, string slateId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        CreateSlateRequest request = new CreateSlateRequest
+        DeleteSlateRequest request = new DeleteSlateRequest
         {
-            ParentAsLocationName = LocationName.FromProjectLocation(projectId, location),
-            SlateId = slateId,
-            Slate = new Slate
-            {
-                Uri = slateUri
-            }
+            SlateName = SlateName.FromProjectLocationSlate(projectId, location, slateId)
         };
 
-        // Call the API.
-        Slate slate = client.CreateSlate(request);
+        // Make the request.
+        Operation<Empty, OperationMetadata> response = await client.DeleteSlateAsync(request);
 
-        // Return the result.
-        return slate;
+        // Poll until the returned long-running operation is complete.
+        await response.PollUntilCompletedAsync();
     }
 }
-// [END videostitcher_create_slate]
+// [END videostitcher_delete_slate]

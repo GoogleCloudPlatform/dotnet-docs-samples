@@ -14,41 +14,35 @@
  * limitations under the License.
  */
 
-using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class DeleteSlateTest : IDisposable
+    public class CreateSlateAsyncTest
     {
         private StitcherFixture _fixture;
         private readonly CreateSlateSample _createSample;
-        private readonly DeleteSlateSample _deleteSample;
 
         private string _slateId;
 
-        public DeleteSlateTest(StitcherFixture fixture)
+        public CreateSlateAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateSlateSample();
-            _deleteSample = new DeleteSlateSample();
             _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.TimestampId()}";
-
-            _fixture.SlateIds.Add(_slateId);
-            _createSample.CreateSlate(
-                _fixture.ProjectId, _fixture.LocationId,
-                _slateId, _fixture.TestSlateUri);
-        }
-
-        public void Dispose()
-        {
-            _fixture.DeleteSlate(_slateId);
         }
 
         [Fact]
-        public void DeletesSlate() =>
+        public async Task CreatesSlateAsync()
+        {
             // Run the sample code.
-            _deleteSample.DeleteSlate(_fixture.ProjectId, _fixture.LocationId, _slateId);
+            _fixture.SlateIds.Add(_slateId);
+            var result = await _createSample.CreateSlateAsync(
+                _fixture.ProjectId, _fixture.LocationId, _slateId, _fixture.TestSlateUri);
+
+            Assert.Equal(_slateId, result.SlateName.SlateId);
+        }
     }
 }

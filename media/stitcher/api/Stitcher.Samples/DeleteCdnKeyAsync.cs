@@ -14,32 +14,31 @@
  * limitations under the License.
  */
 
-// [START videostitcher_create_live_session]
+// [START videostitcher_delete_cdn_key]
 
 using Google.Cloud.Video.Stitcher.V1;
+using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
+using System.Threading.Tasks;
 
-public class CreateLiveSessionSample
+public class DeleteCdnKeySample
 {
-    public LiveSession CreateLiveSession(
-        string projectId, string location, string liveConfigId)
+    public async Task DeleteCdnKeyAsync(
+        string projectId, string location, string cdnKeyId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        CreateLiveSessionRequest request = new CreateLiveSessionRequest
+        DeleteCdnKeyRequest request = new DeleteCdnKeyRequest
         {
-            Parent = $"projects/{projectId}/locations/{location}",
-            LiveSession = new LiveSession
-            {
-                LiveConfig = LiveConfigName.FormatProjectLocationLiveConfig(projectId, location, liveConfigId)
-            }
+            CdnKeyName = CdnKeyName.FromProjectLocationCdnKey(projectId, location, cdnKeyId)
         };
 
-        // Call the API.
-        LiveSession session = client.CreateLiveSession(request);
+        // Make the request.
+        Operation<Empty, OperationMetadata> response = await client.DeleteCdnKeyAsync(request);
 
-        // Return the result.
-        return session;
+        // Poll until the returned long-running operation is complete.
+        await response.PollUntilCompletedAsync();
     }
 }
-// [END videostitcher_create_live_session]
+// [END videostitcher_delete_cdn_key]

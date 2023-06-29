@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateCdnKeyTest : IDisposable
+    public class CreateCdnKeyAsyncTest
     {
         private StitcherFixture _fixture;
         private readonly CreateCdnKeySample _createSample;
@@ -28,7 +28,7 @@ namespace Stitcher.Samples.Tests
         private string _cloudCdnKeyId;
         private string _mediaCdnKeyId;
 
-        public CreateCdnKeyTest(StitcherFixture fixture)
+        public CreateCdnKeyAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateCdnKeySample();
@@ -36,18 +36,12 @@ namespace Stitcher.Samples.Tests
             _mediaCdnKeyId = $"{_fixture.MediaCdnKeyIdPrefix}-{_fixture.TimestampId()}";
         }
 
-        public void Dispose()
-        {
-            _fixture.DeleteCdnKey(_cloudCdnKeyId);
-            _fixture.DeleteCdnKey(_mediaCdnKeyId);
-        }
-
         [Fact]
-        public void CreatesCdnKey_MediaCdn()
+        public async Task CreatesCdnKeyAsync_MediaCdn()
         {
             // Run the sample code and create a Media CDN key.
             _fixture.CdnKeyIds.Add(_mediaCdnKeyId);
-            var result = _createSample.CreateCdnKey(
+            var result = await _createSample.CreateCdnKeyAsync(
                 _fixture.ProjectId, _fixture.LocationId,
                 _mediaCdnKeyId, _fixture.Hostname, _fixture.KeyName, _fixture.MediaCdnPrivateKey, true);
 
@@ -55,11 +49,11 @@ namespace Stitcher.Samples.Tests
         }
 
         [Fact]
-        public void CreatesCdnKey_CloudCdn()
+        public async Task CreatesCdnKeyAsync_CloudCdn()
         {
             // Run the sample code and create a Cloud CDN key.
             _fixture.CdnKeyIds.Add(_cloudCdnKeyId);
-            var result = _createSample.CreateCdnKey(
+            var result = await _createSample.CreateCdnKeyAsync(
                 _fixture.ProjectId, _fixture.LocationId,
                 _cloudCdnKeyId, _fixture.Hostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
 

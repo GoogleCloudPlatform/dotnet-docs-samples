@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-using System;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class DeleteCdnKeyTest : IDisposable
+    public class DeleteCdnKeyAsyncTest : IAsyncLifetime
     {
         private StitcherFixture _fixture;
         private readonly CreateCdnKeySample _createSample;
@@ -28,27 +28,29 @@ namespace Stitcher.Samples.Tests
 
         private string _cdnKeyId;
 
-        public DeleteCdnKeyTest(StitcherFixture fixture)
+        public DeleteCdnKeyAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _createSample = new CreateCdnKeySample();
             _deleteSample = new DeleteCdnKeySample();
             _cdnKeyId = $"{_fixture.CloudCdnKeyIdPrefix}-{_fixture.TimestampId()}";
-
             _fixture.CdnKeyIds.Add(_cdnKeyId);
-            _createSample.CreateCdnKey(
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _createSample.CreateCdnKeyAsync(
                 _fixture.ProjectId, _fixture.LocationId,
                 _cdnKeyId, _fixture.Hostname, _fixture.KeyName, _fixture.CloudCdnPrivateKey, false);
         }
 
-        public void Dispose()
+        public async Task DisposeAsync()
         {
-            _fixture.DeleteCdnKey(_cdnKeyId);
         }
 
         [Fact]
-        public void DeletesCdnKey() =>
+        public async Task DeletesCdnKeyAsync() =>
             // Run the sample code.
-            _deleteSample.DeleteCdnKey(_fixture.ProjectId, _fixture.LocationId, _cdnKeyId);
+            await _deleteSample.DeleteCdnKeyAsync(_fixture.ProjectId, _fixture.LocationId, _cdnKeyId);
     }
 }

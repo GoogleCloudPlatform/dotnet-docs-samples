@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class UpdateCdnKeyAkamaiTest
+    public class UpdateCdnKeyAkamaiAsyncTest
     {
         private StitcherFixture _fixture;
         private readonly UpdateCdnKeyAkamaiSample _updateSample;
 
-        public UpdateCdnKeyAkamaiTest(StitcherFixture fixture)
+        public UpdateCdnKeyAkamaiAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
             _updateSample = new UpdateCdnKeyAkamaiSample();
         }
 
         [Fact]
-        public void UpdatesCdnKey_Akamai()
+        public async Task UpdatesCdnKeyAsync_Akamai()
         {
-            var result = _updateSample.UpdateCdnKeyAkamai(_fixture.ProjectId, _fixture.LocationId, _fixture.TestAkamaiCdnKeyId, _fixture.UpdatedAkamaiHostname, _fixture.UpdatedAkamaiTokenKey);
+            var result = await _updateSample.UpdateCdnKeyAkamaiAsync(_fixture.ProjectId, _fixture.LocationId, _fixture.TestAkamaiCdnKeyId, _fixture.UpdatedAkamaiHostname, _fixture.UpdatedAkamaiTokenKey);
             Assert.Equal(_fixture.TestAkamaiCdnKeyId, result.CdnKeyName.CdnKeyId);
             Assert.Equal(_fixture.UpdatedAkamaiHostname, result.Hostname);
         }

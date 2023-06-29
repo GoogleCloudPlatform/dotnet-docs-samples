@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 using Xunit;
 
 [CollectionDefinition(nameof(StitcherFixture))]
-public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
+public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<StitcherFixture>
 {
     public string ProjectId { get; }
     public string LocationId { get; } = "us-central1";
@@ -32,9 +32,12 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
     public string AkamaiCdnKeyIdPrefix { get; } = "test-akamai-cdn-key";
     public string CloudCdnKeyIdPrefix { get; } = "test-cloud-cdn-key";
     public string MediaCdnKeyIdPrefix { get; } = "test-media-cdn-key";
+    public string LiveConfigIdPrefix { get; } = "test-live-config";
 
     public List<string> SlateIds { get; } = new List<string>();
     public List<string> CdnKeyIds { get; } = new List<string>();
+    public List<string> LiveConfigIds { get; } = new List<string>();
+
 
     public Slate TestSlate { get; set; }
     public string TestSlateId { get; set; }
@@ -62,6 +65,9 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
     public string AkamaiTokenKey { get; } = "VGhpcyBpcyBhIHRlc3Qgc3RyaW5nLg==";
     public string UpdatedAkamaiTokenKey { get; } = "VGhpcyBpcyBhbiB1cGRhdGVkIHRlc3Qgc3RyaW5nLg==";
 
+    public LiveConfig TestLiveConfig { get; set; }
+    public string TestLiveConfigId { get; set; }
+
     private readonly CreateSlateSample _createSlateSample = new CreateSlateSample();
     private readonly ListSlatesSample _listSlatesSample = new ListSlatesSample();
     private readonly DeleteSlateSample _deleteSlateSample = new DeleteSlateSample();
@@ -70,6 +76,11 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
 
     private readonly ListCdnKeysSample _listCdnKeysSample = new ListCdnKeysSample();
     private readonly DeleteCdnKeySample _deleteCdnKeySample = new DeleteCdnKeySample();
+
+    private readonly CreateLiveConfigSample _createLiveConfigSample = new CreateLiveConfigSample();
+    private readonly ListLiveConfigsSample _listLiveConfigsSample = new ListLiveConfigsSample();
+    private readonly DeleteLiveConfigSample _deleteLiveConfigSample = new DeleteLiveConfigSample();
+
 
     private HttpClient httpClient;
 
@@ -80,25 +91,31 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
-
-        CleanOutdatedResources();
+    }
+    public async Task InitializeAsync()
+    {
+        await CleanOutdatedResources();
 
         TestSlateId = $"{SlateIdPrefix}-{TimestampId()}";
         SlateIds.Add(TestSlateId);
-        TestSlate = _createSlateSample.CreateSlate(ProjectId, LocationId, TestSlateId, TestSlateUri);
+        TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
 
         TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
-        TestCloudCdnKey = _createCdnKeySample.CreateCdnKey(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
+        TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
 
         TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{TimestampId()}";
         CdnKeyIds.Add(TestAkamaiCdnKeyId);
-        TestAkamaiCdnKey = _createCdnKeyAkamaiSample.CreateCdnKeyAkamai(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
+        TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
+
+        TestLiveConfigId = $"{LiveConfigIdPrefix}-{TimestampId()}";
+        LiveConfigIds.Add(TestLiveConfigId);
+        TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateId);
 
         httpClient = new HttpClient();
     }
 
-    public void CleanOutdatedResources()
+    public async Task CleanOutdatedResources()
     {
         int TWO_HOURS_IN_SECS = 7200;
         // Slates don't include creation time information, so encode it
@@ -118,7 +135,7 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
                     long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
-                        DeleteSlate(id);
+                        await DeleteSlate(id);
                     }
                 }
             }
@@ -140,7 +157,29 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
                     long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
-                        DeleteCdnKey(id);
+                        await DeleteCdnKey(id);
+                    }
+                }
+            }
+        }
+        // Live configs don't include creation time information, so encode it
+        // in the config name. Live configs have a low quota limit, so we need to
+        // remove outdated ones before the test begins (and creates more).
+        var liveConfigs = _listLiveConfigsSample.ListLiveConfigs(ProjectId, LocationId);
+        foreach (LiveConfig liveConfig in liveConfigs)
+        {
+            string id = liveConfig.LiveConfigName.LiveConfigId;
+            string[] subs = id.Split('-');
+            if (subs.Length > 0)
+            {
+                string temp = subs[(subs.Length - 1)];
+                bool success = long.TryParse(temp, out long creation);
+                if (success)
+                {
+                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+                    if ((now - creation) >= TWO_HOURS_IN_SECS)
+                    {
+                        await DeleteLiveConfig(id);
                     }
                 }
             }
@@ -149,24 +188,32 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
 
     public void Dispose()
     {
-        // Delete slates.
-        foreach (string id in SlateIds)
-        {
-            DeleteSlate(id);
-        }
-        // Delete CDN keys.
-        foreach (string id in CdnKeyIds)
-        {
-            DeleteCdnKey(id);
-        }
         httpClient.Dispose();
     }
 
-    public void DeleteSlate(string id)
+    public async Task DisposeAsync()
+    {
+        foreach (string id in SlateIds)
+        {
+            await DeleteSlate(id);
+        }
+
+        foreach (string id in CdnKeyIds)
+        {
+            await DeleteCdnKey(id);
+        }
+
+        foreach (string id in LiveConfigIds)
+        {
+            await DeleteLiveConfig(id);
+        }
+    }
+
+    public async Task DeleteSlate(string id)
     {
         try
         {
-            _deleteSlateSample.DeleteSlate(ProjectId, LocationId, id);
+            await _deleteSlateSample.DeleteSlateAsync(ProjectId, LocationId, id);
         }
         catch (Exception e)
         {
@@ -174,15 +221,27 @@ public class StitcherFixture : IDisposable, ICollectionFixture<StitcherFixture>
         }
     }
 
-    public void DeleteCdnKey(string id)
+    public async Task DeleteCdnKey(string id)
     {
         try
         {
-            _deleteCdnKeySample.DeleteCdnKey(ProjectId, LocationId, id);
+            await _deleteCdnKeySample.DeleteCdnKeyAsync(ProjectId, LocationId, id);
         }
         catch (Exception e)
         {
             Console.WriteLine("Delete failed for CDN key: " + id + " with error: " + e.ToString());
+        }
+    }
+
+    public async Task DeleteLiveConfig(string id)
+    {
+        try
+        {
+            await _deleteLiveConfigSample.DeleteLiveConfigAsync(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Delete failed for live config: " + id + " with error: " + e.ToString());
         }
     }
 

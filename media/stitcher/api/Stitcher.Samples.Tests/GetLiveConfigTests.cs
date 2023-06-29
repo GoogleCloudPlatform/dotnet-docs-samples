@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,40 +14,27 @@
  * limitations under the License.
  */
 
-using System;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateSlateTest : IDisposable
+    public class GetLiveConfigTest
     {
         private StitcherFixture _fixture;
-        private readonly CreateSlateSample _createSample;
+        private readonly GetLiveConfigSample _getSample;
 
-        private string _slateId;
-
-        public CreateSlateTest(StitcherFixture fixture)
+        public GetLiveConfigTest(StitcherFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateSlateSample();
-            _slateId = $"{_fixture.SlateIdPrefix}-{_fixture.TimestampId()}";
-        }
-
-        public void Dispose()
-        {
-            _fixture.DeleteSlate(_slateId);
+            _getSample = new GetLiveConfigSample();
         }
 
         [Fact]
-        public void CreatesSlate()
+        public void GetsLiveConfig()
         {
-            // Run the sample code.
-            _fixture.SlateIds.Add(_slateId);
-            var result = _createSample.CreateSlate(
-                _fixture.ProjectId, _fixture.LocationId, _slateId, _fixture.TestSlateUri);
-
-            Assert.Equal(_slateId, result.SlateName.SlateId);
+            var result = _getSample.GetLiveConfig(_fixture.ProjectId, _fixture.LocationId, _fixture.TestLiveConfigId);
+            Assert.Equal(_fixture.TestLiveConfigId, result.LiveConfigName.LiveConfigId);
         }
     }
 }
