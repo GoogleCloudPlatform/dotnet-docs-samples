@@ -33,13 +33,8 @@ public class StreamBigQueryTest : FunctionTestBase<StreamBigQuery.Function>
             Method = HttpMethod.Post,
             Content = new StringContent("")
         };
-
-        ExecuteHttpRequestAsync(request, async response =>
-        {
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var actualContent = await response.Content.ReadAsStringAsync();
-            var outputLines = actualContent.Split(new[] { '\n' });
-            int rowCount = outputLines.Count();
-            Assert.Equal(1000, rowCount);
-        });
+        var responseBody = ExecuteHttpGetRequestAsync().Result;
+        var outputLines = responseBody.Split('\n');
+        Assert.Equal(1001, outputLines.Length);
+    }
 }

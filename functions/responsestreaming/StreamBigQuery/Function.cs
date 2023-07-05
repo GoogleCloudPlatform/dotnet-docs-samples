@@ -28,21 +28,17 @@ public class Function : IHttpFunction
     {
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         BigQueryClient client = BigQueryClient.Create(projectId).WithDefaultLocation(Locations.UnitedStates);
+        
         // Example to retrieve a large payload from BigQuery public dataset
         string query = "SELECT abstract FROM `bigquery-public-data.breathe.bioasq` LIMIT 1000";
-        
-        BigQueryJob job = client.CreateQueryJob(
-            sql: query,
-            parameters: null,
-            options: new QueryOptions { UseQueryCache = false });
+        BigQueryParameter[] parameters = null;
+        BigQueryResults results = client.ExecuteQuery(query, parameters);
 
-        job = (await job.PollUntilCompletedAsync()).ThrowOnAnyError();
         // Stream out the payload response by iterating rows (payload chunked by row).
-        foreach (BigQueryRow row in client.GetQueryResults(job.Reference))
+        foreach (BigQueryRow row in results)
         {
             await context.Response.WriteAsync($"{row["abstract"]}\n");
         }
-
     }
 }
 
