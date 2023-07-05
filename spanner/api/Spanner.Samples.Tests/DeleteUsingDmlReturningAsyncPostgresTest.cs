@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,18 +30,22 @@ public class DeleteUsingDmlReturningAsyncPostgresTest
     [Fact]
     public async Task TestDeleteUsingDmlReturningAsyncPostgres()
     {
-        await InsertDataAsync();
-        var sample = new DeleteUsingDmlReturningAsyncPostgresSample();
-        var deletedSingerNames = await sample.DeleteUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.PostgreSqlDatabaseId);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            await InsertDataAsync(databaseId);
+            var sample = new DeleteUsingDmlReturningAsyncPostgresSample();
+            var deletedSingerNames = await sample.DeleteUsingDmlReturningAsyncPostgres(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-        Assert.Single(deletedSingerNames);
-        Assert.Equal("Lata Mangeshkar", deletedSingerNames[0]);
+            Assert.Single(deletedSingerNames);
+            Assert.Equal("Lata Mangeshkar", deletedSingerNames[0]);
+        });
     }
 
-    private async Task InsertDataAsync()
+    private async Task InsertDataAsync(string databaseId)
     {
+        using var connection = _spannerFixture.GetConnection(databaseId);
         string dml = "INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (12, 'Lata', 'Mangeshkar')";
-        var insertSingerCommand = _spannerFixture.PgSpannerConnection.CreateDmlCommand(dml);
+        var insertSingerCommand = connection.CreateDmlCommand(dml);
         await insertSingerCommand.ExecuteNonQueryAsync();
     }
 }

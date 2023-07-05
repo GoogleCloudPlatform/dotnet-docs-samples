@@ -424,6 +424,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         return tempDatabaseId;
     }
 
+    public SpannerConnection GetConnection(string databaseId)
+        => new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
+
     private static readonly string s_retryInfoMetadataKey = RetryInfo.Descriptor.FullName + "-bin";
     public async Task<T> SafeCreateInstanceAsync<T>(Func<Task<T>> createInstanceAsync)
     {
@@ -482,6 +485,15 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
     }
 
+    public async Task RunWithTemporaryPostgresDatabaseAsync(Func<string, Task> testFunction)
+    {
+        // For temporary DBs we don't need a time based ID, as we delete them inmediately.
+        var postgreSqlDatabaseId = GenerateTempDatabaseId("my-db-pg-");
+        CreateDatabaseAsyncPostgresSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgresSample();
+        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgres(ProjectId, InstanceId, postgreSqlDatabaseId);
+        await ExecuteFuncAndDropDatabaseAsync(postgreSqlDatabaseId, testFunction);
+    }
+
     public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
     => await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, DatabaseDialect.GoogleStandardSql, extraStatements);
 
@@ -507,6 +519,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         var completedResponse = await operation.PollUntilCompletedAsync();
         if (completedResponse.IsFaulted)
         {
+<<<<<<< HEAD
             throw completedResponse.Exception;
         }
 
@@ -528,6 +541,25 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         var databaseId = GenerateTempDatabaseId();
         await RunWithPostgresqlTemporaryDatabaseAsync(instanceId, databaseId, testFunction);
+=======
+            throw completedResponse.Exception;
+        }
+
+        await ExecuteFuncAndDropDatabaseAsync(databaseId, testFunction);
+    }
+
+    public async Task ExecuteFuncAndDropDatabaseAsync(string databaseId, Func<string, Task> testFunction)
+    {
+        try
+        {
+            await testFunction(databaseId);
+        }
+        finally
+        {
+            // Cleanup the test database.
+            await DatabaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, InstanceId, databaseId));
+        }
+>>>>>>> 478cd93f (chore: Using Temp DB for Delete Sample Tests)
     }
 
     public async Task RunWithPostgresqlTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction) =>
@@ -562,10 +594,43 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }));
     }
 
+    public async Task CreateSingersTableAndInsertDataAsync(string databaseId)
+    {
+        using var connection = GetConnection(databaseId);
+        using var cmd = connection.CreateDdlCommand(CreateSingersTableStatement);
+        await cmd.ExecuteNonQueryAsync();
+
+        List<Singer> singers = new List<Singer>
+        {
+            new Singer { SingerId = 2, FirstName = "Catalina", LastName = "Smith" },
+            new Singer { SingerId = 3, FirstName = "Alice", LastName = "Trentor" },
+        };
+
+        await connection.RunWithRetriableTransactionAsync(async transaction =>
+        {
+            await Task.WhenAll(singers.Select(singer =>
+            {
+                // Insert rows into the Singers table.
+                using var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+                {
+                        { "SingerId", SpannerDbType.Int64, singer.SingerId },
+                        { "FirstName", SpannerDbType.String, singer.FirstName },
+                        { "LastName", SpannerDbType.String, singer.LastName }
+                });
+                cmd.Transaction = transaction;
+                return cmd.ExecuteNonQueryAsync();
+            }));
+        });
+    }
+
     public async Task CreateSingersAndAlbumsTableAsync(string projectId, string instanceId, string databaseId)
     {
         using var connection = new SpannerConnection($"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}");
+<<<<<<< HEAD
         ;
+=======
+
+>>>>>>> 478cd93f (chore: Using Temp DB for Delete Sample Tests)
         var createSingersTable =
         @"CREATE TABLE Singers (
                  SingerId INT64 NOT NULL,
@@ -640,5 +705,12 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
         await cmd.ExecuteNonQueryAsync();
+    }
+
+    public class Singer
+    {
+        public int SingerId { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
     }
 }

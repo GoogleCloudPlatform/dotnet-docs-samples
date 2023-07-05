@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Data;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,8 +29,30 @@ public class DeleteUsingPartitionedDmlCoreAsyncTest
     [Fact]
     public async Task TestDeleteUsingPartitionedDmlCoreAsync()
     {
-        DeleteUsingPartitionedDmlCoreAsyncSample sample = new DeleteUsingPartitionedDmlCoreAsyncSample();
-        var rowCount = await sample.DeleteUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, _spannerFixture.DatabaseId);
-        Assert.True(rowCount >= 1);
+        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        {
+            await InsertDataAsync(databaseId);
+            DeleteUsingPartitionedDmlCoreAsyncSample sample = new DeleteUsingPartitionedDmlCoreAsyncSample();
+            var rowCount = await sample.DeleteUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            Assert.True(rowCount >= 1);
+        });
+    }
+
+    private async Task InsertDataAsync(string databaseId)
+    {
+        using var connection = _spannerFixture.GetConnection(databaseId);
+        var command = connection.CreateDmlCommand("INSERT INTO Singers (SingerId, FirstName, LastName) " +
+                           "VALUES ($1, $2, $3), " +
+                           "($4, $5, $6)",
+                           new SpannerParameterCollection
+                           {
+                                        { "p1", SpannerDbType.Int64, 15 },
+                                        { "p2", SpannerDbType.String, "Bruce" },
+                                        { "p3", SpannerDbType.String, "Allison" },
+                                        { "p4", SpannerDbType.Int64, 16 },
+                                        { "p5", SpannerDbType.String, "George" },
+                                        { "p6", SpannerDbType.String, "Harrison" },
+                           });
+        await command.ExecuteNonQueryAsync();
     }
 }
