@@ -14,10 +14,6 @@
  * the License.
  */
 using Google.Cloud.Functions.Testing;
-using System.Net;
-using System.Net.Http;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -26,14 +22,9 @@ namespace StreamBigQuery.Tests;
 public class StreamBigQueryTest : FunctionTestBase<StreamBigQuery.Function>
 {
     [Fact]
-    public void TestRunStreamBigQuery()
+    public async Task TestRunStreamBigQuery()
     {
-        var request = new HttpRequestMessage
-        {
-            Method = HttpMethod.Post,
-            Content = new StringContent("")
-        };
-        var responseBody = ExecuteHttpGetRequestAsync().Result;
+        var responseBody = await ExecuteHttpGetRequestAsync();
         var outputLines = responseBody.Split('\n');
         Assert.Equal(1001, outputLines.Length);
     }

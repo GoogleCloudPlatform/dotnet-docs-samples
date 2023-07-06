@@ -26,20 +26,23 @@ public class Function : IHttpFunction
 {
     public async Task HandleAsync(HttpContext context)
     {
+        context.Response.ContentType = "text/plain";
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         BigQueryClient client = BigQueryClient.Create(projectId).WithDefaultLocation(Locations.UnitedStates);
         
-        // Example to retrieve a large payload from BigQuery public dataset
-        string query = "SELECT abstract FROM `bigquery-public-data.breathe.bioasq` LIMIT 1000";
+        // Example to retrieve a large payload from BigQuery public dataset.
+        string query = "SELECT title FROM `bigquery-public-data.breathe.bioasq` LIMIT 1000";
         BigQueryParameter[] parameters = null;
         BigQueryResults results = client.ExecuteQuery(query, parameters);
 
-        // Stream out the payload response by iterating rows (payload chunked by row).
+        // Stream out the payload response by iterating rows.
         foreach (BigQueryRow row in results)
         {
-            await context.Response.WriteAsync($"{row["abstract"]}\n");
+            await context.Response.WriteAsync($"{row["title"]}\n");
+            // Artificially add a 50ms delay per line, just to make the streaming nature clearer
+            // when viewing the results in a browser.
+            await Task.Delay(50);
         }
     }
 }
-
 // [END functions_response_streaming]
