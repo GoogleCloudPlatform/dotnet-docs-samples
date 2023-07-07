@@ -14,11 +14,11 @@
 
 // [START functions_response_streaming]
 
+using Google.Cloud.BigQuery.V2;
 using Google.Cloud.Functions.Framework;
 using Microsoft.AspNetCore.Http;
-using System.Threading.Tasks;
-using Google.Cloud.BigQuery.V2;
 using System;
+using System.Threading.Tasks;
 
 namespace StreamBigQuery;
 
@@ -29,7 +29,7 @@ public class Function : IHttpFunction
         context.Response.ContentType = "text/plain";
         string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         BigQueryClient client = BigQueryClient.Create(projectId).WithDefaultLocation(Locations.UnitedStates);
-        
+
         // Example to retrieve a large payload from BigQuery public dataset.
         string query = "SELECT title FROM `bigquery-public-data.breathe.bioasq` LIMIT 1000";
         BigQueryParameter[] parameters = null;
