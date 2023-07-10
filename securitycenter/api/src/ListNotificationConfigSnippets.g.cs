@@ -26,6 +26,9 @@ public class ListNotificationConfigSnippets
 {
     public static PagedEnumerable<ListNotificationConfigsResponse, NotificationConfig> ListNotificationConfigs(string organizationId)
     {
+        // You can also use 'projectId' or 'folderId' instead of the 'organizationId'.
+        //      ProjectName projectName = new ProjectName(projectId);
+        //      FolderName folderName = new FolderName(folderId);
         OrganizationName orgName = new OrganizationName(organizationId);
         SecurityCenterClient client = SecurityCenterClient.Create();
         PagedEnumerable<ListNotificationConfigsResponse, NotificationConfig> notificationConfigs = client.ListNotificationConfigs(orgName);

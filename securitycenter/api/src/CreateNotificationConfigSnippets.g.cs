@@ -26,6 +26,9 @@ public class CreateNotificationConfigSnippets
     public static NotificationConfig CreateNotificationConfig(
         string organizationId, string notificationConfigId, string projectId, string topicName)
     {
+        // You can also use 'projectId' or 'folderId' instead of the 'organizationId'.
+        //      ProjectName projectName = new ProjectName(projectId);
+        //      FolderName folderName = new FolderName(folderId);
         OrganizationName orgName = new OrganizationName(organizationId);
         TopicName pubsubTopic = new TopicName(projectId, topicName);
 

@@ -23,6 +23,7 @@ public class GetNotificationConfigSnippets
     public static NotificationConfig GetNotificationConfig(string organizationId, string configId)
     {
         SecurityCenterClient client = SecurityCenterClient.Create();
+        // You can also use 'projectId' or 'folderId' instead of the 'organizationId'.
         NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, configId);
 
         NotificationConfig response = client.GetNotificationConfig(notificationConfigName);

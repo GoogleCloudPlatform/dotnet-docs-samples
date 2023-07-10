@@ -24,6 +24,7 @@ public class DeleteNotificationConfigSnippets
 {
     public static bool DeleteNotificationConfig(string organizationId, string notificationConfigId)
     {
+        // You can also use 'projectId' or 'folderId' instead of the 'organizationId'.
         NotificationConfigName notificationConfigName = new NotificationConfigName(organizationId, notificationConfigId);
         SecurityCenterClient client = SecurityCenterClient.Create();
 
