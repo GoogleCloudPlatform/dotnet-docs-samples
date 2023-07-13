@@ -31,7 +31,7 @@ namespace Stitcher.Samples.Tests
         {
             _fixture = fixture;
             _createSample = new CreateLiveConfigSample();
-            _liveConfigId = $"{_fixture.LiveConfigIdPrefix}-{_fixture.TimestampId()}";
+            _liveConfigId = $"{_fixture.LiveConfigIdPrefix}-{_fixture.RandomId()}-{_fixture.TimestampId()}";
         }
 
         [Fact]

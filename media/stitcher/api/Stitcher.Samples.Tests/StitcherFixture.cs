@@ -28,11 +28,11 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
 {
     public string ProjectId { get; }
     public string LocationId { get; } = "us-central1";
-    public string SlateIdPrefix { get; } = "test-slate";
-    public string AkamaiCdnKeyIdPrefix { get; } = "test-akamai-cdn-key";
-    public string CloudCdnKeyIdPrefix { get; } = "test-cloud-cdn-key";
-    public string MediaCdnKeyIdPrefix { get; } = "test-media-cdn-key";
-    public string LiveConfigIdPrefix { get; } = "test-live-config";
+    public string SlateIdPrefix { get; } = "slate";
+    public string AkamaiCdnKeyIdPrefix { get; } = "akamai-cdn";
+    public string CloudCdnKeyIdPrefix { get; } = "cloud-cdn";
+    public string MediaCdnKeyIdPrefix { get; } = "media-cdn";
+    public string LiveConfigIdPrefix { get; } = "live-config";
 
     public List<string> SlateIds { get; } = new List<string>();
     public List<string> CdnKeyIds { get; } = new List<string>();
@@ -96,19 +96,21 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     {
         await CleanOutdatedResources();
 
-        TestSlateId = $"{SlateIdPrefix}-{TimestampId()}";
+        TestSlateId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
+                    Console.WriteLine("TestSlateId " + TestSlateId);
+
         SlateIds.Add(TestSlateId);
         TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
 
-        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{TimestampId()}";
+        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
         TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
 
-        TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{TimestampId()}";
+        TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
         CdnKeyIds.Add(TestAkamaiCdnKeyId);
         TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
 
-        TestLiveConfigId = $"{LiveConfigIdPrefix}-{TimestampId()}";
+        TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
         TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateId);
 
@@ -247,12 +249,12 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
 
     public string TimestampId()
     {
-        return $"csharp-{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
+        return $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     }
 
     public string RandomId()
     {
-        return $"csharp-{System.Guid.NewGuid()}";
+        return $"{System.Guid.NewGuid()}";
     }
 
     public async Task<String> GetHttpResponse(string url)
