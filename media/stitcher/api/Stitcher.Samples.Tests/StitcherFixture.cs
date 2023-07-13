@@ -102,6 +102,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         try 
         {
             TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
+            Console.WriteLine("TestSlate : " + TestSlate.SlateName.ToString());
         }
         catch (Exception e)
         {
