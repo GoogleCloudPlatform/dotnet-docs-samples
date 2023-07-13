@@ -97,22 +97,52 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         await CleanOutdatedResources();
 
         TestSlateId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
-                    Console.WriteLine("TestSlateId " + TestSlateId);
-
         SlateIds.Add(TestSlateId);
-        TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
+        Console.WriteLine("TestSlateId " + TestSlateId);
+        try 
+        {
+            TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("TestSlateId : " + TestSlateId + " failed with error: " + e.ToString());
+        }
 
         TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
-        TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
+        Console.WriteLine("TestCloudCdnKey " + TestCloudCdnKeyId);
+        try 
+        {
+            TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("TestCloudCdnKeyId : " + TestCloudCdnKeyId + " failed with error: " + e.ToString());
+        }
 
         TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
         CdnKeyIds.Add(TestAkamaiCdnKeyId);
-        TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
-
+        Console.WriteLine("TestAkamaiCdnKeyId " + TestAkamaiCdnKeyId);
+        try 
+        {
+            TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("TestAkamaiCdnKeyId : " + TestAkamaiCdnKeyId + " failed with error: " + e.ToString());
+        }
+    
         TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
-        TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateId);
+        Console.WriteLine("TestLiveConfigId " + TestLiveConfigId);
+        try 
+        {
+            TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateId);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("TestLiveConfigId : " + TestLiveConfigId + " failed with error: " + e.ToString());
+        }
 
         httpClient = new HttpClient();
     }
