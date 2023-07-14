@@ -29,13 +29,13 @@ public class DeleteUsingPartitionedDmlCoreAsyncTest
     [Fact]
     public async Task TestDeleteUsingPartitionedDmlCoreAsync()
     {
-        await _spannerFixture.RunWithTemporaryPostgresDatabaseAsync(async databaseId =>
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
             await InsertDataAsync(databaseId);
             DeleteUsingPartitionedDmlCoreAsyncSample sample = new DeleteUsingPartitionedDmlCoreAsyncSample();
             var rowCount = await sample.DeleteUsingPartitionedDmlCoreAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-            Assert.True(rowCount >= 1);
-        });
+            Assert.Equal(2, rowCount);
+        }, SpannerFixture.CreateSingersTableStatement, SpannerFixture.CreateAlbumsTableStatement);
     }
 
     private async Task InsertDataAsync(string databaseId)

@@ -485,15 +485,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, extraStatements);
     }
 
-    public async Task RunWithTemporaryPostgresDatabaseAsync(Func<string, Task> testFunction)
-    {
-        // For temporary DBs we don't need a time based ID, as we delete them inmediately.
-        var postgreSqlDatabaseId = GenerateTempDatabaseId("my-db-pg-");
-        CreateDatabaseAsyncPostgresSample createDatabaseAsyncSample = new CreateDatabaseAsyncPostgresSample();
-        await createDatabaseAsyncSample.CreateDatabaseAsyncPostgres(ProjectId, InstanceId, postgreSqlDatabaseId);
-        await ExecuteFuncAndDropDatabaseAsync(postgreSqlDatabaseId, testFunction);
-    }
-
     public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
     => await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, DatabaseDialect.GoogleStandardSql, extraStatements);
 
@@ -548,6 +539,28 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await ExecuteFuncAndDropDatabaseAsync(databaseId, testFunction);
     }
 
+    public async Task RunWithTemporaryPostgresDatabaseAsync(Func<string, Task> testFunction)
+    {
+        var postgreSqlDatabaseId = GenerateId("my-db-pg-");
+        var createDatabaseRequest = new CreateDatabaseRequest
+        {
+            ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId),
+            CreateStatement = $"CREATE DATABASE \"{postgreSqlDatabaseId}\"",
+            DatabaseDialect = DatabaseDialect.Postgresql
+        };
+
+        var createOperation = await DatabaseAdminClient.CreateDatabaseAsync(createDatabaseRequest);
+        var completedResponse = await createOperation.PollUntilCompletedAsync();
+
+        if (completedResponse.IsFaulted)
+        {
+            Console.WriteLine($"Error while creating PostgreSQL database: {completedResponse.Exception}");
+            throw completedResponse.Exception;
+        }
+
+        await ExecuteFuncAndDropDatabaseAsync(postgreSqlDatabaseId, testFunction);
+    }
+
     public async Task ExecuteFuncAndDropDatabaseAsync(string databaseId, Func<string, Task> testFunction)
     {
         try
@@ -600,27 +613,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         using var cmd = connection.CreateDdlCommand(CreateSingersTableStatement);
         await cmd.ExecuteNonQueryAsync();
 
-        List<Singer> singers = new List<Singer>
-        {
-            new Singer { SingerId = 2, FirstName = "Catalina", LastName = "Smith" },
-            new Singer { SingerId = 3, FirstName = "Alice", LastName = "Trentor" },
-        };
-
-        await connection.RunWithRetriableTransactionAsync(async transaction =>
-        {
-            await Task.WhenAll(singers.Select(singer =>
-            {
-                // Insert rows into the Singers table.
-                using var cmd = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
-                {
-                        { "SingerId", SpannerDbType.Int64, singer.SingerId },
-                        { "FirstName", SpannerDbType.String, singer.FirstName },
-                        { "LastName", SpannerDbType.String, singer.LastName }
-                });
-                cmd.Transaction = transaction;
-                return cmd.ExecuteNonQueryAsync();
-            }));
-        });
+        string insertStatement = "INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (2, 'Catalina', 'Smith'), (3, 'Alice', 'Trentor')";
+        var insertSingerCommand = connection.CreateDmlCommand(insertStatement);
+        await insertSingerCommand.ExecuteNonQueryAsync();
     }
 
     public async Task CreateSingersAndAlbumsTableAsync(string projectId, string instanceId, string databaseId)
