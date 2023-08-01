@@ -488,7 +488,32 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
             CreateStatement = $"CREATE DATABASE `{databaseId}`",
-            ExtraStatements = { extraStatements },
+            ExtraStatements = { extraStatements }
+        }) ;
+        var completedResponse = await operation.PollUntilCompletedAsync();
+        if (completedResponse.IsFaulted)
+        {
+            throw completedResponse.Exception;
+        }
+
+        try
+        {
+            await testFunction(databaseId);
+        }
+        finally
+        {
+            // Cleanup the test database.
+            await DatabaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
+        }
+    }
+
+    public async Task RunWithPostgresqlTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction)
+    {
+        var operation = await DatabaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
+        {
+            ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
+            CreateStatement = $"CREATE DATABASE \"{databaseId}\"",
+            DatabaseDialect = DatabaseDialect.Postgresql
         });
         var completedResponse = await operation.PollUntilCompletedAsync();
         if (completedResponse.IsFaulted)
