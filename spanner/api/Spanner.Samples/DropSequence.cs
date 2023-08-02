@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START spanner_drop_sequence]
+// [START spanner_postgresql_drop_sequence]
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
@@ -41,4 +42,6 @@ public class DropSequenceSample
         Console.WriteLine("Altered Customers table to drop DEFAULT from CustomerId column and dropped the Seq sequence");
     }
 }
+
 // [END spanner_drop_sequence]
+// [END spanner_postgresql_drop_sequence]

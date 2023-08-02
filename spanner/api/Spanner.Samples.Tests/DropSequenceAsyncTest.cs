@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,6 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Admin.Instance.V1;
+using Google.Cloud.Spanner.Data;
+using Google.Cloud.Storage.V1;
+using Grpc.Core;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -28,8 +32,7 @@ public class DropSequenceAsyncTest
     [Fact]
     public async Task TestDropSequenceAsync()
     {
-        var databaseId = SpannerFixture.GenerateId("my-db-");
-        await _spannerFixture.RunWithTemporaryDatabaseAsync(_spannerFixture.InstanceId, databaseId, async databaseId =>
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
             var createSequenceSample = new CreateSequenceSample();
             await createSequenceSample.CreateSequenceAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
@@ -37,14 +40,36 @@ public class DropSequenceAsyncTest
             var sample = new DropSequenceSample();
             await sample.DropSequenceSampleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-            var getDatabaseDdlSample = new GetDatabaseDdlAsyncSample();
-            var databaseDdlResponse = await getDatabaseDdlSample.GetDatabaseDdlAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            string connectionString = $"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{databaseId}";
+            using var connection = new SpannerConnection(connectionString);
+            await connection.OpenAsync();
 
-            Assert.Collection(databaseDdlResponse.Statements,
-                // Only check the start of the statement, as there is no guarantee on exactly
-                // how Cloud Spanner will format the returned SQL string.
-                statement => Assert.StartsWith("CREATE TABLE Customers", statement)
-            );
+            using var cmd = connection.CreateDmlCommand(
+                @"INSERT INTO Customers (CustomerName) VALUES ('Alice'), ('David'), ('Marc') THEN RETURN CustomerId");
+
+            var exception = await Assert.ThrowsAsync<SpannerException>(async () => await cmd.ExecuteReaderAsync());
+        });
+    }
+
+    [Fact]
+    public async Task TestDropSequencePostgresqlAsync()
+    {
+        await _spannerFixture.RunWithPostgresqlTemporaryDatabaseAsync(async databaseId =>
+        {
+            var createSequenceSample = new CreateSequencePostgresqlSample();
+            await createSequenceSample.CreateSequencePostgresqlSampleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
+            var sample = new DropSequenceSample();
+            await sample.DropSequenceSampleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+
+            string connectionString = $"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{databaseId}";
+            using var connection = new SpannerConnection(connectionString);
+            await connection.OpenAsync();
+
+            using var cmd = connection.CreateDmlCommand(
+                @"INSERT INTO Customers (CustomerName) VALUES ('Alice'), ('David'), ('Marc') RETURNING CustomerId");
+
+            var exception = await Assert.ThrowsAsync<SpannerException>(async () => await cmd.ExecuteReaderAsync());
         });
     }
 }

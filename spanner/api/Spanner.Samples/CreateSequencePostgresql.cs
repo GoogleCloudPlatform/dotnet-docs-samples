@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,10 +19,11 @@ using System.Threading.Tasks;
 using System;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Data;
+using System.Collections.Generic;
 
 public class CreateSequencePostgresqlSample
 {
-    public async Task CreateSequencePostgresqlSampleAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<long>> CreateSequencePostgresqlSampleAsync(string projectId, string instanceId, string databaseId)
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
@@ -50,15 +51,15 @@ public class CreateSequencePostgresqlSample
             @"INSERT INTO Customers (CustomerName) VALUES ('Alice'), ('David'), ('Marc') RETURNING CustomerId");
 
         var reader = await cmd.ExecuteReaderAsync();
-        long customerId;
-        long insertCount = 0;
+        var customerIds = new List<long>();
         while (await reader.ReadAsync())
         {
-            customerId = reader.GetFieldValue<long>("customerid");
+            var customerId = reader.GetFieldValue<long>("customerid");
             Console.WriteLine($"Inserted customer record with CustomerId: {customerId}");
-            insertCount++;
+            customerIds.Add(customerId);
         }
-        Console.WriteLine($"Number of customer records inserted is: {insertCount}");
+        Console.WriteLine($"Number of customer records inserted is: {customerIds.Count}");
+        return customerIds;
     }
 }
 // [END spanner_postgresql_create_sequence]

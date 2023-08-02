@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,11 +18,12 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.Cloud.Spanner.Data;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class AlterSequenceSample
 {
-    public async Task AlterSequenceSampleAsync(string projectId, string instanceId, string databaseId)
+    public async Task<List<long>> AlterSequenceSampleAsync(string projectId, string instanceId, string databaseId)
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
@@ -48,15 +49,16 @@ public class AlterSequenceSample
             @"INSERT INTO Customers (CustomerName) VALUES ('Alice'), ('David'), ('Marc') THEN RETURN CustomerId");
 
         var reader = await cmd.ExecuteReaderAsync();
-        long customerId;
-        long insertCount = 0;
+        var customerIds = new List<long>();
         while (await reader.ReadAsync())
         {
-            customerId = reader.GetFieldValue<long>("CustomerId");
+            long customerId = reader.GetFieldValue<long>("CustomerId");
             Console.WriteLine($"Inserted customer record with CustomerId: {customerId}");
-            insertCount++;
+            customerIds.Add(customerId);
         }
-        Console.WriteLine($"Number of customer records inserted is: {insertCount}");
+        Console.WriteLine($"Number of customer records inserted is: {customerIds.Count}");
+
+        return customerIds;
     }
 }
 // [END spanner_alter_sequence]

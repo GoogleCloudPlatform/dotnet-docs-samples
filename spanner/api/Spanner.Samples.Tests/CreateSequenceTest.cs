@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,21 +28,13 @@ public class CreateSequenceTest
     [Fact]
     public async Task TestCreateSequenceAsync()
     {
-        var databaseId = SpannerFixture.GenerateId("my-db-");
-        await _spannerFixture.RunWithTemporaryDatabaseAsync(_spannerFixture.InstanceId, databaseId, async databaseId =>
+        await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
             var sample = new CreateSequenceSample();
-            await sample.CreateSequenceAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
+            var customerIds = await sample.CreateSequenceAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-            var getDatabaseDdlSample = new GetDatabaseDdlAsyncSample();
-            var databaseDdlResponse = await getDatabaseDdlSample.GetDatabaseDdlAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-
-            Assert.Collection(databaseDdlResponse.Statements,
-                // Only check the start of the statement, as there is no guarantee on exactly
-                // how Cloud Spanner will format the returned SQL string.
-                statement => Assert.StartsWith("CREATE SEQUENCE Seq", statement),
-                statement => Assert.StartsWith("CREATE TABLE Customers", statement)
-            );
+            Assert.NotEmpty(customerIds);
+            Assert.Equal(3, customerIds.Count);
         });
     }
 }
