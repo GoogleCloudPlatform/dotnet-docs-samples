@@ -37,7 +37,7 @@ public class AlterSequencePostgresqlTest
             var sample = new AlterSequencePostgresqlSample();
             var customerIds = await sample.AlterSequencePostgresqlSampleAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-            Assert.Contains(customerIds, cid => cid < 1000 || cid > 5000000);
+            Assert.All(customerIds, cid => Assert.True(cid < 1000 || cid > 5000000));
         });
     }
 }

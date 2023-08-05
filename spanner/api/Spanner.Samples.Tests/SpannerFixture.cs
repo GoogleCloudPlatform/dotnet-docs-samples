@@ -487,6 +487,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, DatabaseDialect databaseDialect, params string[] extraStatements)
     {
+        if(databaseDialect == DatabaseDialect.Postgresql && extraStatements?.Length >=1)
+        {
+            throw new ArgumentException("Postgres does not accept extra statements for DB creation");
+        }
         var databaseCreateRequest = new CreateDatabaseRequest
         {
             ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
