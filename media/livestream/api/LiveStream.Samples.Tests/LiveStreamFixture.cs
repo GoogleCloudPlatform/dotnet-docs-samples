@@ -29,6 +29,9 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
     public string InputIdPrefix { get; } = "test-input";
     public string ChannelIdPrefix { get; } = "test-channel";
     public string EventIdPrefix { get; } = "test-event";
+    public string AssetIdPrefix { get; } = "test-asset";
+    public string AssetUri { get; } = "gs://cloud-samples-data/media/ForBiggerEscapes.mp4";
+  
     public string ChannelOutputUri { get; } = "gs://my-bucket/my-output-folder/";
 
     public System.Int32 UpdateTopPixels { get; } = 5;
@@ -36,9 +39,9 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
     public Channel.Types.StreamingState ChannelStartedState { get; } = Channel.Types.StreamingState.AwaitingInput;
     public Channel.Types.StreamingState ChannelStoppedState { get; } = Channel.Types.StreamingState.Stopped;
 
-
     public List<string> InputIds { get; } = new List<string>();
     public List<string> ChannelIds { get; } = new List<string>();
+    public List<string> AssetIds { get; } = new List<string>();
 
     public Input TestInput { get; set; }
     public string TestInputId { get; set; }
@@ -46,6 +49,7 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
     public string TestUpdateInputId { get; set; }
     public Channel TestChannel { get; set; }
     public string TestChannelId { get; set; }
+    public string TestPoolId { get; } = "default"; // only 1 pool supported per location
 
     public Input TestInputForCreateEvent { get; set; }
     public string TestInputForCreateEventId { get; set; }
@@ -64,6 +68,9 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
 
     public string TestEventId { get; set; }
 
+    public Asset TestAsset { get; set; }
+    public string TestAssetId { get; set; }
+
     private readonly CreateInputSample _createInputSample = new CreateInputSample();
     private readonly ListInputsSample _listInputsSample = new ListInputsSample();
     private readonly DeleteInputSample _deleteInputSample = new DeleteInputSample();
@@ -75,7 +82,9 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
     private readonly ListChannelEventsSample _listChannelEventsSample = new ListChannelEventsSample();
     private readonly CreateChannelEventSample _createChannelEventSample = new CreateChannelEventSample();
     private readonly DeleteChannelEventSample _deleteChannelEventSample = new DeleteChannelEventSample();
-
+    private readonly CreateAssetSample _createAssetSample = new CreateAssetSample();
+    private readonly ListAssetsSample _listAssetsSample = new ListAssetsSample();
+    private readonly DeleteAssetSample _deleteAssetSample = new DeleteAssetSample();
 
     public LiveStreamFixture()
     {
@@ -136,6 +145,10 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
         TestChannelForDeleteEvent = await _createChannelSample.CreateChannelAsync(ProjectId, LocationId, TestChannelForDeleteEventId, TestInputForDeleteEventId, ChannelOutputUri);
         await _startChannelSample.StartChannelAsync(ProjectId, LocationId, TestChannelForDeleteEventId);
         _createChannelEventSample.CreateChannelEvent(ProjectId, LocationId, TestChannelForDeleteEventId, TestEventId);
+
+        TestAssetId = $"{AssetIdPrefix}-{RandomId()}";
+        AssetIds.Add(TestAssetId);
+        TestAsset = await _createAssetSample.CreateAssetAsync(ProjectId, LocationId, TestAssetId, AssetUri);
     }
 
     public async Task CleanOutdatedResources()
@@ -165,6 +178,19 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
                 await DeleteInput(id);
             }
         }
+
+        // Delete assets next.
+        var assets = _listAssetsSample.ListAssets(ProjectId, LocationId);
+        foreach (Asset asset in assets)
+        {
+            string id = asset.AssetName.AssetId;
+            long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+            long creation = asset.CreateTime.Seconds;
+            if ((now - creation) >= TWO_HOURS_IN_SECS)
+            {
+                await DeleteAsset(id);
+            }
+        }
     }
 
     public async Task DisposeAsync()
@@ -179,6 +205,12 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
         foreach (string id in InputIds)
         {
             await DeleteInput(id);
+        }
+
+        // Delete assets next.
+        foreach (string id in AssetIds)
+        {
+            await DeleteAsset(id);
         }
     }
 
@@ -235,6 +267,18 @@ public class LiveStreamFixture : IDisposable, IAsyncLifetime, ICollectionFixture
         catch (Exception e)
         {
             Console.WriteLine("Delete failed for input: " + id + " with error: " + e.ToString());
+        }
+    }
+
+    public async Task DeleteAsset(string id)
+    {
+        try
+        {
+            await _deleteAssetSample.DeleteAssetAsync(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Delete failed for asset: " + id + " with error: " + e.ToString());
         }
     }
 
