@@ -42,7 +42,7 @@ public class GreetingRequest
 public class GreetingResponse
 {
     [JsonPropertyName("message")]
-    public dynamic Message { get; set; }
+    public string Message { get; set; }
 }
 
 // [END functions_typed_greeting]

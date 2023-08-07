@@ -34,12 +34,12 @@ namespace GoogleChatBot;
 /// The startup class can be used to perform additional configuration, including
 /// adding application configuration sources, reconfiguring logging, providing services
 /// for dependency injection, and adding middleware to the eventual application pipeline.
-/// In this case, we simply add an IHttpRequestReader and IHttpRequestWriter that will handle JSON encoded content for a typed function.
+/// In this case, we simply add an IHttpRequestReader and IHttpRequestWriter that will 
+/// handle JSON encoded content for a typed function.
 /// </summary>
 public class Startup : FunctionsStartup
 {
-    // Provide implementations for IOperationSingleton, and IOperationScoped.
-    // The implementation is the same for both interfaces (the Operation class)
+    // Provide implementations for IHttpRequestReader and IHttpResponseWriter.
     public override void ConfigureServices(WebHostBuilderContext context, IServiceCollection services) =>
         services
                 .AddSingleton(typeof(IHttpRequestReader<JObject>), new CustomJsonReader<JObject>())
@@ -57,8 +57,7 @@ public class TypedFunction : ITypedFunction<JObject, JObject>
     {
         string displayName = (string) request.SelectToken("$.message.sender.displayName");
         string imageUrl = (string) request.SelectToken("$.message.sender.imageUrl");
-
-        return Task.FromResult(JObject.FromObject(new
+        var response = new
         {
             cardsV2 = new[] {
                 new {
@@ -89,31 +88,70 @@ public class TypedFunction : ITypedFunction<JObject, JObject>
                     }
                 }
             }
-        }));
+        };
+        return Task.FromResult(JObject.FromObject(response));
     }
 }
 
-/// <summary>
-/// Implementation of <see cref="IHttpRequestReader{TRequest}"/> using Newtonsoft.Json
-/// </summary>
-class CustomJsonReader<TRequest> : IHttpRequestReader<TRequest>
+public class ChatRequest
 {
-    public async Task<TRequest> ReadRequestAsync(HttpRequest httpRequest)
-    {
-        var bodyStream = new StreamReader(httpRequest.Body);
-        var bodyText = await bodyStream.ReadToEndAsync();
-        return JsonConvert.DeserializeObject<TRequest>(bodyText);
-    }
+    [JsonPropertyName("message")]
+    public Message Message { get; set; }
 }
 
-/// <summary>
-/// Implementation of <see cref="IHttpResponseWriter{TResponse}"/> using Newtonsoft.Json
-/// </summary>
-class CustomJsonWriter<TResponse> : IHttpResponseWriter<TResponse>
-{
-    public async Task WriteResponseAsync(HttpResponse httpResponse, TResponse functionResponse)
-    {
-        await httpResponse.WriteAsync(JsonConvert.SerializeObject(functionResponse));
-    }
+public class Message {
+    [JsonPropertyName("sender")]
+    public Sender Sender;
 }
-// [END functions_typed_googlechatbot]
+
+public class Sender {
+    [JsonPropertyName("displayName")]
+    public string DisplayName;
+
+    [JsonPropertyName("imageUrl")]
+    public string ImageUrl;
+}
+
+public class ChatResponse {
+    [JsonProperty["cardsV2"]]
+    public CardV2 CardV2;
+}
+
+class CardV2 {
+    [JsonPropertyName("cardId")]
+    public string CardID;
+
+    [JsonPropertyName("card")]
+    public Card Card;
+}
+
+class Card {
+    [JsonPropertyName("name")]
+    public String Name;
+
+    [JsonPropertyName("header")]
+    public Header Header;
+
+    [JsonPropertyName("sections")]
+    public string[] Sections;
+}
+
+class Header {
+    [JsonPropertyName("title")]
+    public string Title;
+}
+
+class Section {
+    [JsonPropertyName("widgets")]
+    public Object Widgets; 
+}
+
+class TextWidget {
+    [JsonPropertyName("textParagraph")]
+    public string TextParagraph;
+}
+
+class ImageWidget {
+    [JsonPropertyName("imageWidget")]
+    public string TextParagraph;
+}
