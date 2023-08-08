@@ -28,45 +28,40 @@ namespace GoogleCloudSamples
         [Fact]
         public void TestUpdate()
         {
+            // Create an input bucket.
+            using var randomInputBucketFixture = new RandomBucketFixture();
+            var inputBucketName = randomInputBucketFixture.BucketName;
+            using var inputBucketCollector = new BucketCollector(inputBucketName);
+
+            // Upload file to bucket.
+            var fileName = "test.txt";
+            var objectName = $"gs://{inputBucketName}/{fileName}";
+            inputBucketCollector.CopyToBucket(Path.Combine(_fixture.ResourcePath, "test.txt"), fileName);
+
+            // Create an output bucket.
+            using var randomOutputBucketFixture = new RandomBucketFixture();
+            var outputBucketName = randomOutputBucketFixture.BucketName;
+            using var outputBucketCollector = new BucketCollector(outputBucketName);
+
             Random random = new Random();
-            // Create the bucket for creating stored infoType.
-            var storage = StorageClient.Create();
-            var bucket = storage.CreateBucket(_fixture.ProjectId, $"dlp_update_dotnet_test_bucket_samples_{random.Next()}");
 
-            // Create output bucket.
-            var bucketOutput = storage.CreateBucket(_fixture.ProjectId, $"dlp_update_dotnet_test_stored_infotype_bucket_{random.Next()}");
+            // Create Stored InfoType first.
+            var storedInfoTypeId = $"github-usernames-update-{random.Next()}";
+            var response = CreateStoredInfoTypes.Create(_fixture.ProjectId, $"gs://{inputBucketName}", storedInfoTypeId);
 
-            // Upload the file to cloud storage.
-            var filePath = Path.Combine(_fixture.ResourcePath, "test.txt");
-            using var fileStream = File.OpenRead(filePath);
-            storage.UploadObject(bucket.Name, "test.txt", null, fileStream);
+            var result = UpdateStoredInfoTypes.Update($"gs://{inputBucketName}/test.txt", response.Name, $"gs://{outputBucketName}");
 
-            try
+            // Check whether stored infoType contains cloud storage file set field or not
+            // as we are changing source from Bigquery to GCS.
+            Assert.Contains("cloudStorageFileSet", result.ToString());
+
+            var dlp = DlpServiceClient.Create();
+
+            // Delete the created stored infoType.
+            dlp.DeleteStoredInfoType(new DeleteStoredInfoTypeRequest
             {
-                // Create Stored InfoType first.
-                var storedInfoTypeId = $"github-usernames-update-{random.Next()}";
-                var response = CreateStoredInfoTypes.Create(_fixture.ProjectId, $"gs://{bucket.Name}", storedInfoTypeId);
-
-                var result = UpdateStoredInfoTypes.Update($"gs://{bucket.Name}/test.txt", response.Name, $"gs://{bucketOutput.Name}");
-
-                // Check whether stored infoType contains cloud storage file set field or not
-                // as we are changing source from Bigquery to GCS.
-                Assert.Contains("cloudStorageFileSet", result.ToString());
-
-                var dlp = DlpServiceClient.Create();
-
-                // Delete the created stored infoType.
-                dlp.DeleteStoredInfoType(new DeleteStoredInfoTypeRequest
-                {
-                    Name = result.Name
-                });
-            }
-            finally
-            {
-                // Delete the created buckets.
-                storage.DeleteBucket(bucketOutput.Name, new DeleteBucketOptions { DeleteObjects = true });
-                storage.DeleteBucket(bucket.Name, new DeleteBucketOptions { DeleteObjects = true });
-            }
+                Name = result.Name
+            });
         }
     }
 }
