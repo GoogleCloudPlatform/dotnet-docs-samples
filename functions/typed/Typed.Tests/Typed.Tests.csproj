@@ -17,7 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Greeting\Greeting.csproj" />
-    <ProjectReference Include="..\GoogleChatBot\GoogleChatBot.csproj" />
   </ItemGroup>
 
 </Project>
