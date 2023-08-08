@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ public class GenerateV4UploadSignedUrlSample
         string objectName = "your-object-name",
         string credentialFilePath = "my-local-path/my-credential-file-name")
     {
-        UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credentialFilePath);
+        UrlSigner urlSigner = UrlSigner.FromCredentialFile(credentialFilePath);
 
         var contentHeaders = new Dictionary<string, IEnumerable<string>>
         {

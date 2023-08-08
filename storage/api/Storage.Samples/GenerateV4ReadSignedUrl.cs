@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ public class GenerateV4SignedReadUrlSample
         string objectName = "your-object-name",
         string credentialFilePath = "my-local-path/my-credential-file-name")
     {
-        UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credentialFilePath);
+        UrlSigner urlSigner = UrlSigner.FromCredentialFile(credentialFilePath);
         // V4 is the default signing version.
         string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
         Console.WriteLine("Generated GET signed URL:");
