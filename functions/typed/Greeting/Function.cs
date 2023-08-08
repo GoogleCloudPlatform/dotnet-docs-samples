@@ -14,7 +14,6 @@
 
 // [START functions_typed_greeting]
 using Google.Cloud.Functions.Framework;
-using System.Dynamic;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,7 +25,7 @@ public class TypedFunction : ITypedFunction<GreetingRequest, GreetingResponse>
     public Task<GreetingResponse> HandleAsync(GreetingRequest request, CancellationToken cancellationToken) =>
         Task.FromResult(new GreetingResponse
         {
-            Message = string.Format("Hello {0} {1}!", request.FirstName, request.LastName)
+            Message = $"Hello {request.FirstName} {request.LastName}!",
         });
 }
 

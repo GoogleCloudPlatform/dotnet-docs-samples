@@ -33,8 +33,7 @@ public class TypedGreetingTest : FunctionTestBase<TypedFunction>
         request.Content = new StringContent(@"{
             ""first_name"": ""Jane"",
             ""last_name"": ""Doe""
-        }
-        ", Encoding.UTF8);
+        }", Encoding.UTF8);
 
         await ExecuteHttpRequestAsync(request, async response =>
         {
@@ -42,7 +41,7 @@ public class TypedGreetingTest : FunctionTestBase<TypedFunction>
             JToken expected = JToken.Parse(@"{
                 ""message"": ""Hello Jane Doe!""
             }");
-            Assert.True(JToken.DeepEquals(actual, expected), string.Format("JSON response {0} did not match expected {1}", actual, expected));
+            Assert.True(JToken.DeepEquals(actual, expected), $"JSON response {actual} did not match expected {expected}");
         });
     }
 }
