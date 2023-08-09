@@ -14,6 +14,7 @@
 
 // [START storage_generate_upload_signed_url_v4]
 
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using System;
 using System.Collections.Generic;
@@ -23,10 +24,9 @@ public class GenerateV4UploadSignedUrlSample
 {
     public string GenerateV4UploadSignedUrl(
         string bucketName = "your-unique-bucket-name",
-        string objectName = "your-object-name",
-        string credentialFilePath = "my-local-path/my-credential-file-name")
+        string objectName = "your-object-name")
     {
-        UrlSigner urlSigner = UrlSigner.FromCredentialFile(credentialFilePath);
+        UrlSigner urlSigner = UrlSigner.FromCredential(GoogleCredential.GetApplicationDefault());
 
         var contentHeaders = new Dictionary<string, IEnumerable<string>>
         {
