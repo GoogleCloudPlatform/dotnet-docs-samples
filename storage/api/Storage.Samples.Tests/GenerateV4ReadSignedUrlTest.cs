@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,8 +30,7 @@ public class GenerateV4ReadSignedUrlTest
     public async void GenerateV4ReadSignedUrl()
     {
         GenerateV4SignedReadUrlSample generateV4SignedReadUrlSample = new GenerateV4SignedReadUrlSample();
-        var credentialFilePath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
-        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_fixture.BucketNameGeneric, _fixture.FileName, credentialFilePath);
+        var signedUrl = generateV4SignedReadUrlSample.GenerateV4SignedReadUrl(_fixture.BucketNameGeneric, _fixture.FileName);
 
         using var client = new HttpClient();
         var response = await client.GetAsync(signedUrl);
