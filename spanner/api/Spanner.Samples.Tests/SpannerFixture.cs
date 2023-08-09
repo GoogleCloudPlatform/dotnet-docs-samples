@@ -142,7 +142,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             DeleteInstanceConfig(UpdateCustomInstanceConfigId);
             DeleteInstanceConfig(DeleteCustomInstanceConfigId);
 
-            foreach(string id in TempDbIds)
+            foreach (string id in TempDbIds)
             {
                 cleanupTasks.Add(DeleteDatabaseAsync(id));
             }
@@ -371,7 +371,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             await InstanceAdminClient.DeleteInstanceAsync(InstanceName.FromProjectInstance(ProjectId, instanceId));
         }
-        catch(RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
+        catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
             Console.WriteLine($"Instance {instanceId} was not found for deletion.");
         }
@@ -483,13 +483,27 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     }
 
     public async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, params string[] extraStatements)
+    => await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, DatabaseDialect.GoogleStandardSql, extraStatements);
+
+    private async Task RunWithTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction, DatabaseDialect databaseDialect, params string[] extraStatements)
     {
-        var operation = await DatabaseAdminClient.CreateDatabaseAsync(new CreateDatabaseRequest
+        if(databaseDialect == DatabaseDialect.Postgresql && extraStatements?.Length >=1)
+        {
+            throw new ArgumentException("Postgres does not accept extra statements for DB creation");
+        }
+        var databaseCreateRequest = new CreateDatabaseRequest
         {
             ParentAsInstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
-            CreateStatement = $"CREATE DATABASE `{databaseId}`",
-            ExtraStatements = { extraStatements },
-        });
+            CreateStatement = databaseDialect == DatabaseDialect.GoogleStandardSql ? $"CREATE DATABASE `{databaseId}`" : $"CREATE DATABASE \"{databaseId}\"",
+            DatabaseDialect = databaseDialect,
+        };
+        if (databaseDialect == DatabaseDialect.GoogleStandardSql)
+        {
+            databaseCreateRequest.ExtraStatements.Add(extraStatements);
+        }
+
+        var operation = await DatabaseAdminClient.CreateDatabaseAsync(databaseCreateRequest);
+
         var completedResponse = await operation.PollUntilCompletedAsync();
         if (completedResponse.IsFaulted)
         {
@@ -506,6 +520,18 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             await DatabaseAdminClient.DropDatabaseAsync(DatabaseName.FormatProjectInstanceDatabase(ProjectId, instanceId, databaseId));
         }
     }
+
+    public async Task RunWithPostgresqlTemporaryDatabaseAsync(Func<string, Task> testFunction) =>
+        await RunWithPostgresqlTemporaryDatabaseAsync(InstanceId, testFunction);
+
+    public async Task RunWithPostgresqlTemporaryDatabaseAsync(string instanceId, Func<string, Task> testFunction)
+    {
+        var databaseId = GenerateTempDatabaseId();
+        await RunWithPostgresqlTemporaryDatabaseAsync(instanceId, databaseId, testFunction);
+    }
+
+    public async Task RunWithPostgresqlTemporaryDatabaseAsync(string instanceId, string databaseId, Func<string, Task> testFunction) =>
+        await RunWithTemporaryDatabaseAsync(instanceId, databaseId, testFunction, DatabaseDialect.Postgresql);
 
     public async Task CreateVenuesTableAndInsertDataAsync(string databaseId)
     {
@@ -539,7 +565,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public async Task CreateSingersAndAlbumsTableAsync(string projectId, string instanceId, string databaseId)
     {
         using var connection = new SpannerConnection($"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}");
-;
+        ;
         var createSingersTable =
         @"CREATE TABLE Singers (
                  SingerId INT64 NOT NULL,
