@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,7 @@ public class GenerateV4UploadSignedUrlTest
     public void TestGenerateV4UploadSignedUrl()
     {
         GenerateV4UploadSignedUrlSample generateV4UploadSignedUrlSample = new GenerateV4UploadSignedUrlSample();
-        var credentialFilePath = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
-        var signedUrl = generateV4UploadSignedUrlSample.GenerateV4UploadSignedUrl(_fixture.BucketNameGeneric, _fixture.FileName, credentialFilePath);
+        var signedUrl = generateV4UploadSignedUrlSample.GenerateV4UploadSignedUrl(_fixture.BucketNameGeneric, _fixture.FileName);
         Assert.NotNull(signedUrl);
     }
 }
