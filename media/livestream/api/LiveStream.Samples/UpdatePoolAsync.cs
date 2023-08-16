@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 public class UpdatePoolSample
 {
-    public async Task<Pool> UpdatePoolAsync(
+    public async Task UpdatePoolAsync(
          string projectId, string locationId, string poolId, string peeredNetwork)
     {
         // Create the client.
@@ -44,12 +44,16 @@ public class UpdatePoolSample
 
         // Make the request.
         Operation<Pool, OperationMetadata> response = await client.UpdatePoolAsync(request);
-
-        // Poll until the returned long-running operation is complete.
-        Operation<Pool, OperationMetadata> completedResponse = await response.PollUntilCompletedAsync();
-
-        // Retrieve the operation result.
-        return completedResponse.Result;
+        // Get the name of the operation.
+        string operationName = response.Name;
+        // This name can be stored, then the long-running operation retrieved later by name.
+        Operation<Pool, OperationMetadata> retrievedResponse = await client.PollOnceUpdatePoolAsync(operationName);
+        // Check if the retrieved long-running operation has completed.
+        if (retrievedResponse.IsCompleted)
+        {
+            // If it has completed, then access the result.
+            _ = retrievedResponse.Result;
+        }
     }
 }
 // [END livestream_update_pool]

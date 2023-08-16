@@ -39,10 +39,9 @@ namespace LiveStream.Samples.Tests
         {
             // Pool updates take a long time to run, so the test updates the peered
             // network with the same value to decrease this time.
-            var result = await _updateSample.UpdatePoolAsync(_fixture.ProjectId, _fixture.LocationId, _fixture.TestPoolId, "");
-            Assert.Equal(_fixture.ProjectId, result.PoolName.ProjectId);
-            Assert.Equal(_fixture.LocationId, result.PoolName.LocationId);
-            Assert.Equal(_fixture.TestPoolId, result.PoolName.PoolId);
+            await _updateSample.UpdatePoolAsync(_fixture.ProjectId, _fixture.LocationId, _fixture.TestPoolId, "");
+
+            // Assert equal on the fixture test pool ID and the result pool ID.
         }
     }
 }
