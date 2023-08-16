@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 
 // [START storage_generate_signed_url_v4]
 
+using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
 using System;
 using System.Net.Http;
@@ -22,10 +23,9 @@ public class GenerateV4SignedReadUrlSample
 {
     public string GenerateV4SignedReadUrl(
         string bucketName = "your-unique-bucket-name",
-        string objectName = "your-object-name",
-        string credentialFilePath = "my-local-path/my-credential-file-name")
+        string objectName = "your-object-name")
     {
-        UrlSigner urlSigner = UrlSigner.FromServiceAccountPath(credentialFilePath);
+        UrlSigner urlSigner = UrlSigner.FromCredential(GoogleCredential.GetApplicationDefault());
         // V4 is the default signing version.
         string url = urlSigner.Sign(bucketName, objectName, TimeSpan.FromHours(1), HttpMethod.Get);
         Console.WriteLine("Generated GET signed URL:");
