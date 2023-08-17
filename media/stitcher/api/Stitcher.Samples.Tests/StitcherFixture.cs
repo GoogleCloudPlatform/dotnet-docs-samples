@@ -118,6 +118,13 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
         Console.WriteLine("TestAkamaiCdnKey created: " + TestAkamaiCdnKey.CdnKeyName.CdnKeyId);
 
+        var slates = _listSlatesSample.ListSlates(ProjectId, LocationId);
+        foreach (Slate slate in slates)
+        {
+            string id = slate.SlateName.SlateId;
+            Console.WriteLine("Slates created: " + slate.SlateName.ToString());
+        }
+
         TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
         TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateForLiveConfigId);
