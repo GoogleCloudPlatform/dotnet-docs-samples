@@ -5,6 +5,6 @@
   </PropertyGroup> 
   <ItemGroup>
     <PackageReference Include="Apache.Avro" Version="1.11.2" />
-    <PackageReference Include="Google.Cloud.BigQuery.Storage.V1" Version="3.9.0" />
+    <PackageReference Include="Google.Cloud.BigQuery.Storage.V1" Version="3.10.0" />
   </ItemGroup> 
 </Project>
