@@ -101,22 +101,27 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         TestSlateId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
         SlateIds.Add(TestSlateId);
         TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
+        Console.WriteLine("TestSlate created: " + TestSlate.SlateName.SlateId);
 
         TestSlateForLiveConfigId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
         SlateIds.Add(TestSlateForLiveConfigId);
         TestSlateForLiveConfig = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateForLiveConfigId, TestSlateUri);
+        Console.WriteLine("TestSlateForLiveConfig created: " + TestSlateForLiveConfig.SlateName.SlateId);
 
         TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
         TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
+        Console.WriteLine("TestCloudCdnKey created: " + TestCloudCdnKey.CdnKeyName.CdnKeyId);
 
         TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
         CdnKeyIds.Add(TestAkamaiCdnKeyId);
         TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
+        Console.WriteLine("TestAkamaiCdnKey created: " + TestAkamaiCdnKey.CdnKeyName.CdnKeyId);
 
         TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
         TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateForLiveConfigId);
+        Console.WriteLine("TestLiveConfig created: " + TestLiveConfig.LiveConfigName.LiveConfigId);
 
         httpClient = new HttpClient();
     }
