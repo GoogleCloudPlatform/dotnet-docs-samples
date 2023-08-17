@@ -123,7 +123,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
 
     public async Task CleanOutdatedResources()
     {
-        int TWO_HOURS_IN_SECS = 1;//7200;
+        int TWO_HOURS_IN_SECS = 7200;
         // Slates don't include creation time information, so encode it
         // in the slate name. Slates have a low quota limit, so we need to
         // remove outdated ones before the test begins (and creates more).
