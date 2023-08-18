@@ -114,13 +114,6 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         CdnKeyIds.Add(TestAkamaiCdnKeyId);
         TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
 
-        var slates = _listSlatesSample.ListSlates(ProjectId, LocationId);
-        foreach (Slate slate in slates)
-        {
-            string id = slate.SlateName.SlateId;
-            Console.WriteLine("Slates created: " + slate.SlateName.ToString());
-        }
-
         TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
         TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateForLiveConfigId);
@@ -131,6 +124,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     public async Task CleanOutdatedResources()
     {
         int TWO_HOURS_IN_SECS = 7200;
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         // Slates don't include creation time information, so encode it
         // in the slate name. Slates have a low quota limit, so we need to
         // remove outdated ones before the test begins (and creates more).
@@ -145,7 +139,6 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
                 bool success = long.TryParse(temp, out long creation);
                 if (success)
                 {
-                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
                         await DeleteSlate(id);
@@ -167,7 +160,6 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
                 bool success = long.TryParse(temp, out long creation);
                 if (success)
                 {
-                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
                         await DeleteCdnKey(id);
@@ -189,7 +181,6 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
                 bool success = long.TryParse(temp, out long creation);
                 if (success)
                 {
-                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
                         await DeleteLiveConfig(id);
