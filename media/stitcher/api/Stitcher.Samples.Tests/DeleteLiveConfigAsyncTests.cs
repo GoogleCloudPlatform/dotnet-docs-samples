@@ -41,7 +41,7 @@ namespace Stitcher.Samples.Tests
         {
             await _createSample.CreateLiveConfigAsync(
                 _fixture.ProjectId, _fixture.LocationId,
-                _liveConfigId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateId);
+                _liveConfigId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateForLiveConfigId);
         }
 
         public async Task DisposeAsync()

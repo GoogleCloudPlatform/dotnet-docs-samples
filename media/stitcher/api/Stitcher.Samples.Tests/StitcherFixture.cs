@@ -38,9 +38,11 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     public List<string> CdnKeyIds { get; } = new List<string>();
     public List<string> LiveConfigIds { get; } = new List<string>();
 
-
     public Slate TestSlate { get; set; }
     public string TestSlateId { get; set; }
+
+    public Slate TestSlateForLiveConfig { get; set; }
+    public string TestSlateForLiveConfigId { get; set; }
     public string TestSlateUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/ForBiggerEscapes.mp4";
     public string UpdateSlateUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/ForBiggerJoyrides.mp4";
     public string VodSourceUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/hls-vod/manifest.m3u8";
@@ -100,6 +102,10 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         SlateIds.Add(TestSlateId);
         TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
 
+        TestSlateForLiveConfigId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
+        SlateIds.Add(TestSlateForLiveConfigId);
+        TestSlateForLiveConfig = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateForLiveConfigId, TestSlateUri);
+
         TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
         TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
@@ -110,7 +116,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
 
         TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
-        TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateId);
+        TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateForLiveConfigId);
 
         httpClient = new HttpClient();
     }
@@ -118,6 +124,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     public async Task CleanOutdatedResources()
     {
         int TWO_HOURS_IN_SECS = 7200;
+        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         // Slates don't include creation time information, so encode it
         // in the slate name. Slates have a low quota limit, so we need to
         // remove outdated ones before the test begins (and creates more).
@@ -132,7 +139,6 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
                 bool success = long.TryParse(temp, out long creation);
                 if (success)
                 {
-                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
                         await DeleteSlate(id);
@@ -154,7 +160,6 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
                 bool success = long.TryParse(temp, out long creation);
                 if (success)
                 {
-                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
                         await DeleteCdnKey(id);
@@ -176,7 +181,6 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
                 bool success = long.TryParse(temp, out long creation);
                 if (success)
                 {
-                    long now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                     if ((now - creation) >= TWO_HOURS_IN_SECS)
                     {
                         await DeleteLiveConfig(id);

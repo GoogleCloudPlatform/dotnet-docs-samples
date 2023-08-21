@@ -40,7 +40,7 @@ namespace Stitcher.Samples.Tests
             // Run the sample code.
             _fixture.LiveConfigIds.Add(_liveConfigId);
             var result = await _createSample.CreateLiveConfigAsync(
-                _fixture.ProjectId, _fixture.LocationId, _liveConfigId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateId);
+                _fixture.ProjectId, _fixture.LocationId, _liveConfigId, _fixture.LiveSourceUri, _fixture.LiveAdTagUri, _fixture.TestSlateForLiveConfigId);
 
             Assert.Equal(_liveConfigId, result.LiveConfigName.LiveConfigId);
         }
