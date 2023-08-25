@@ -14,7 +14,7 @@ bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
 datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
 firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
 
-cloud-sql/  @GoogleCloudPlatform/infra-db-dpes @amanda-tarafa @jskeet
+cloud-sql/  @GoogleCloudPlatform/infra-db-sdk @amanda-tarafa @jskeet
 
 storage/    @GoogleCloudPlatform/cloud-storage-dpes @amanda-tarafa @jskeet
 
