@@ -24,10 +24,10 @@ using System.Text;
 
 namespace Typed.Tests;
 
-public class TypedGreetingTest : FunctionTestBase<TypedFunction>
+public class GreetingTest : FunctionTestBase<Function>
 {
     [Fact]
-    public async Task GreetingTest()
+    public async Task TestRequest()
     {
         var request = new HttpRequestMessage(HttpMethod.Post, "example.com");
         request.Content = new StringContent(@"{

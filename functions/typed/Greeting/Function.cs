@@ -20,7 +20,7 @@ using System.Threading.Tasks;
 
 namespace Greeting;
 
-public class TypedFunction : ITypedFunction<GreetingRequest, GreetingResponse>
+public class Function : ITypedFunction<GreetingRequest, GreetingResponse>
 {
     public Task<GreetingResponse> HandleAsync(GreetingRequest request, CancellationToken cancellationToken) =>
         Task.FromResult(new GreetingResponse
