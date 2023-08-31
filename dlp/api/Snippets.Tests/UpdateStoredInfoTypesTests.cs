@@ -64,7 +64,7 @@ namespace GoogleCloudSamples
             finally
             {
                 // Delete the created buckets.
-                storage.DeleteBucket(bucketOutput.Name);
+                storage.DeleteBucket(bucketOutput.Name, new DeleteBucketOptions { DeleteObjects = true });
                 storage.DeleteBucket(bucket.Name, new DeleteBucketOptions { DeleteObjects = true });
             }
         }
