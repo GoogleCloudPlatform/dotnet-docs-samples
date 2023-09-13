@@ -33,7 +33,7 @@ public class ErrorReportingSample
     {
         try
         {
-            throw new Exception("Generic exception for testing Stackdriver Error Reporting");
+            throw new Exception("Something went wrong");
         }
         catch (Exception e)
         {
@@ -56,16 +56,31 @@ public class ErrorReportingSample
             Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"));
 
         // Add a service context to the report. For more details see:
-        // https://cloud.google.com/error-reporting/reference/rest/v1beta1/projects.events#ServiceContext
-        ServiceContext serviceContext = new ServiceContext()
+        // https://cloud.google.com/error-reporting/reference/rest/v1beta1/ServiceContext
+        var assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+        var serviceContext = new ServiceContext()
         {
-            Service = "myapp",
-            Version = "1.1",
+            Service = assemblyName.Name,
+            Version = assemblyName.Version.ToString(),
         };
-        ReportedErrorEvent errorEvent = new ReportedErrorEvent()
+        // Add an error context to the report. For more details see:
+        // https://cloud.google.com/error-reporting/reference/rest/v1beta1/ErrorContext
+        var stackTrace = new System.Diagnostics.StackTrace(e, true);
+        var stackFrame = stackTrace.GetFrame(stackTrace.FrameCount - 1);
+        var errorContext = new ErrorContext()
+        {
+            ReportLocation = new SourceLocation()
+            {
+                FilePath = stackFrame.GetFileName(),
+                LineNumber = stackFrame.GetFileLineNumber(),
+                FunctionName = stackFrame.GetMethod().Name,
+            },
+        };
+        var errorEvent = new ReportedErrorEvent()
         {
             Message = e.ToString(),
             ServiceContext = serviceContext,
+            Context = errorContext,
         };
         reporter.ReportErrorEvent(projectName, errorEvent);
     }
