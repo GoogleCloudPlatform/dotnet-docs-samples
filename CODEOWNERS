@@ -33,3 +33,8 @@ run/                                             @meteatamel @jskeet @amanda-tar
 retail/ @chenlei1216 @amanda-tarafa @jskeet
 
 media/ @irataxy @amanda-tarafa @jskeet 
+
+logging/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
+monitoring/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
+error-reporting/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
+trace/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
