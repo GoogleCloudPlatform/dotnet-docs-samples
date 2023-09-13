@@ -33,7 +33,7 @@ public class ErrorReportingSample
     {
         try
         {
-            throw new Exception("Generic exception for testing Stackdriver Error Reporting");
+            throw new Exception("Something went wrong");
         }
         catch (Exception e)
         {
@@ -56,18 +56,48 @@ public class ErrorReportingSample
             Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"));
 
         // Add a service context to the report. For more details see:
-        // https://cloud.google.com/error-reporting/reference/rest/v1beta1/projects.events#ServiceContext
-        ServiceContext serviceContext = new ServiceContext()
+        // https://cloud.google.com/error-reporting/reference/rest/v1beta1/ServiceContext
+        var assemblyName = System.Reflection.Assembly.GetEntryAssembly().GetName();
+        var serviceContext = new ServiceContext()
         {
-            Service = "myapp",
-            Version = "1.1",
+            Service = assemblyName.Name,
+            Version = assemblyName.Version.ToString(),
         };
-        ReportedErrorEvent errorEvent = new ReportedErrorEvent()
+        var errorEvent = new ReportedErrorEvent()
         {
             Message = e.ToString(),
             ServiceContext = serviceContext,
+            Context = getErrorContext(e),
         };
         reporter.ReportErrorEvent(projectName, errorEvent);
+    }
+
+    /// <summary>
+    /// Capture the error context of the reported error. For more details about the context see:
+    /// https://cloud.google.com/error-reporting/reference/rest/v1beta1/ErrorContext
+    /// </summary>
+    private static ErrorContext getErrorContext(Exception e)
+    {
+        SourceLocation location;
+        var trace = new System.Diagnostics.StackTrace(e, true);
+        var frames = trace.GetFrames();
+        if (frames != null && frames.Length > 0)
+        {
+            var frame = frames[0];
+            location = new SourceLocation()
+            {
+                FilePath = frame.GetFileName() ?? "",
+                LineNumber = frame.GetFileLineNumber(),
+                FunctionName = frame.GetMethod()?.Name ?? "",
+            };
+        }
+        else
+        {
+            location = new SourceLocation();
+        }
+        return new ErrorContext {
+            ReportLocation = location,
+        };     
     }
 }
 // [END error_reporting_quickstart]
