@@ -25,6 +25,14 @@ assign_issues_by:
   - 'api: transcoder'
   to:
   - irataxy
+- labels:
+  - 'api: cloudtrace'
+  - 'api: container'
+  - 'api: logging'
+  - 'api: monitoring'
+  - 'api: clouderrorreporting'
+  to:
+  - GoogleCloudPlatform/googleapis-dlp
 
 assign_prs_by:
 - labels:
@@ -59,3 +67,11 @@ assign_prs_by:
   - 'api: transcoder'
   to:
   - irataxy
+- labels:
+  - 'api: cloudtrace'
+  - 'api: container'
+  - 'api: logging'
+  - 'api: monitoring'
+  - 'api: clouderrorreporting'
+  to:
+  - GoogleCloudPlatform/googleapis-dlp
