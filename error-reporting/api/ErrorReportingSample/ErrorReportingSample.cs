@@ -29,8 +29,20 @@ using System;
 
 public class ErrorReportingSample
 {
+    static String projectId;
+
     public static void Main(string[] args)
     {
+	    // Set your Google Cloud Platform project ID via environment or explicitly
+        if (args != null && args.Length > 0 && !String.IsNullOrEmpty(args[0]))
+        {
+            projectId = args[0];
+        }
+        else
+        {
+            projectId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_PROJECT");
+        }
+
         try
         {
             throw new Exception("Something went wrong");
@@ -50,10 +62,7 @@ public class ErrorReportingSample
     {
         // Create the report and execute the request.
         var reporter = ReportErrorsServiceClient.Create();
-
-        // Get the project ID from the environement variables.
-        var projectName = new ProjectName(
-            Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"));
+        var projectName = new ProjectName(projectId);
 
         // Add a service context to the report. For more details see:
         // https://cloud.google.com/error-reporting/reference/rest/v1beta1/ServiceContext
