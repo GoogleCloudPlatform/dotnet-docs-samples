@@ -32,7 +32,7 @@ assign_issues_by:
   - 'api: monitoring'
   - 'api: clouderrorreporting'
   to:
-  - GoogleCloudPlatform/googleapis-dlp
+  - GoogleCloudPlatform/dee-platform-ops
 
 assign_prs_by:
 - labels:
