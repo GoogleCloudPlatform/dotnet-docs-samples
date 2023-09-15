@@ -3,38 +3,40 @@
 #     and with what is stated in documentation. Some sample sets have specific owners that
 #     are in charge of this aspect.
 #   * The extent to which the sample is idiomatic C# and consistent with the rest of the samples in this repo.
-#     Currently @amanda-tarafa, @jskeet, in that order of availability, are in charge of this aspect.
+#     Currently @GoogleCloudPlatform/dotnet-samples-reviewers, are in charge of this aspect.
 # Any PR will require two reviewers, one for each of the aspects mentioned above. For those sample sets
 # that don't have a specific owner, idiomatic reviewers will do their best effort to either review this
 # aspect themselves or find someone who can.
+# Note that on the @GoogleCloudPlatform/dotnet-samples-reviewers group there might be some training reviewers.
+# Training reviewers' reviews are in turned review by established reviewers.
 
-*           @amanda-tarafa @jskeet
+*           @GoogleCloudPlatform/dotnet-samples-reviewers
 
-bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
-datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
-firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @amanda-tarafa @jskeet
+bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
+datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
+firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 
-cloud-sql/  @GoogleCloudPlatform/infra-db-sdk @amanda-tarafa @jskeet
+cloud-sql/  @GoogleCloudPlatform/infra-db-sdk @GoogleCloudPlatform/dotnet-samples-reviewers
 
-storage/    @GoogleCloudPlatform/cloud-storage-dpes @amanda-tarafa @jskeet
+storage/    @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 
-spanner/    @GoogleCloudPlatform/api-spanner-dotnet @amanda-tarafa @jskeet
+spanner/    @GoogleCloudPlatform/api-spanner-dotnet @GoogleCloudPlatform/dotnet-samples-reviewers
 
-dlp/        @GoogleCloudPlatform/googleapis-dlp @amanda-tarafa @jskeet
+dlp/        @GoogleCloudPlatform/googleapis-dlp @GoogleCloudPlatform/dotnet-samples-reviewers
 
-appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @amanda-tarafa @jskeet
+appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @GoogleCloudPlatform/dotnet-samples-reviewers
 
-kms/            @sethvargo @amanda-tarafa @jskeet
-secretmanager/  @sethvargo @amanda-tarafa @jskeet
+kms/            @sethvargo @GoogleCloudPlatform/dotnet-samples-reviewers
+secretmanager/  @sethvargo @GoogleCloudPlatform/dotnet-samples-reviewers
 
-applications/googlehome-meets-dotnetcontainers/  @meteatamel @amanda-tarafa @jskeet
-run/                                             @meteatamel @jskeet @amanda-tarafa
+applications/googlehome-meets-dotnetcontainers/  @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
+run/                                             @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 
-retail/ @chenlei1216 @amanda-tarafa @jskeet
+retail/ @chenlei1216 @GoogleCloudPlatform/dotnet-samples-reviewers
 
-media/ @irataxy @amanda-tarafa @jskeet 
+media/ @irataxy @GoogleCloudPlatform/dotnet-samples-reviewers
 
-logging/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
-monitoring/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
-error-reporting/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
-trace/ @GoogleCloudPlatform/dee-platform-ops @amanda-tarafa @jskeet
+logging/         @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
+monitoring/      @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
+error-reporting/ @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
+trace/           @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers

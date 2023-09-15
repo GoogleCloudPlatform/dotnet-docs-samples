@@ -34,6 +34,9 @@ assign_issues_by:
   to:
   - GoogleCloudPlatform/dee-platform-ops
 
+assign_prs_always:
+- GoogleCloudPlatform/dotnet-samples-reviewers
+
 assign_prs_by:
 - labels:
   - 'api: bigtable'
@@ -74,4 +77,4 @@ assign_prs_by:
   - 'api: monitoring'
   - 'api: clouderrorreporting'
   to:
-  - GoogleCloudPlatform/googleapis-dlp
+  - GoogleCloudPlatform/dee-platform-ops
