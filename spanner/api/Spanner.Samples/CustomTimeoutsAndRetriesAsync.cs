@@ -53,10 +53,10 @@ public class CustomTimeoutsAndRetriesAsyncSample
             .WithRetry(RetrySettings.FromExponentialBackoff(
                 maxAttempts: 12,
                 initialBackoff: TimeSpan.FromMilliseconds(500),
-                maxBackoff: TimeSpan.FromMilliseconds(6400),
+                maxBackoff: TimeSpan.FromSeconds(16),
                 backoffMultiplier: 1.5,
                 retryFilter: RetrySettings.FilterForStatusCodes(
-                    new StatusCode[] { StatusCode.Unavailable, StatusCode.DeadlineExceeded })));
+                    new StatusCode[] { StatusCode.Unavailable })));
 
         ResultSet result = await session.ExecuteSqlAsync(request, settings);
         await session.CommitAsync(new CommitRequest(), null);
