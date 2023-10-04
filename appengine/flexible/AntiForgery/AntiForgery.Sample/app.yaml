@@ -1,11 +1,12 @@
 runtime: aspnetcore
 env: flex
+service: jahoak
 
 runtime_config:
   operating_system: ubuntu22
 
 env_variables:
-  TEST_BUCKET: YOUR-BUCKET
+  TEST_BUCKET: jahoak-bucket
   TEST_OBJECT: DataProtectionProviderKeys.xml
-  TEST_KMS_KEY_NAME: projects/YOUR-PROJECT-ID/locations/global/keyRings/dataprotectionprovider/cryptoKeys/key
+  TEST_KMS_KEY_NAME: projects/jahoak-test/locations/global/keyRings/dataprotectionprovider/cryptoKeys/key
 
