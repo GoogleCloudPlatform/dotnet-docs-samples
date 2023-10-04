@@ -12,7 +12,7 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-// [START dlp_deindentify_table_primitive_bucketing]
+// [START dlp_deidentify_table_primitive_bucketing]
 
 using System;
 using Google.Api.Gax.ResourceNames;
@@ -132,4 +132,4 @@ public class DeidentifyTableWithPrimitiveBucketing
     }
 }
 
-// [END dlp_deindentify_table_primitive_bucketing]
+// [END dlp_deidentify_table_primitive_bucketing]
