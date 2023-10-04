@@ -1,0 +1,11 @@
+runtime: aspnetcore
+env: flex
+
+runtime_config:
+  operating_system: ubuntu22
+
+env_variables:
+  TEST_BUCKET: YOUR-BUCKET
+  TEST_OBJECT: DataProtectionProviderKeys.xml
+  TEST_KMS_KEY_NAME: projects/YOUR-PROJECT-ID/locations/global/keyRings/dataprotectionprovider/cryptoKeys/key
+
