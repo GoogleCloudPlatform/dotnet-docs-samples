@@ -32,11 +32,11 @@ public class RedactImage
                 MinLikelihood = Likelihood.Likely,
                 IncludeQuote = true,
                 InfoTypes =
-                    {
-                        new InfoType { Name = "PHONE_NUMBER" },
-                        new InfoType { Name = "EMAIL_ADDRESS" },
-                        new InfoType { Name = "CREDIT_CARD_NUMBER" }
-                    }
+                {
+                    new InfoType { Name = "PHONE_NUMBER" },
+                    new InfoType { Name = "EMAIL_ADDRESS" },
+                    new InfoType { Name = "CREDIT_CARD_NUMBER" }
+                }
             },
             ByteItem = new ByteContentItem
             {
