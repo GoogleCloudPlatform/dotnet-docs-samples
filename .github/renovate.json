@@ -5,8 +5,7 @@
     ],
     "ignorePaths": [
         "bigtable/api/**",
-        "endpoints/getting-started/**",
-        "applications/googlehome-meets-dotnetcontainers/**"
+        "endpoints/getting-started/**"
     ],
     "schedule": [
         "before 8am"
