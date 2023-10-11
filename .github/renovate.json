@@ -7,6 +7,15 @@
         "bigtable/api/**",
         "endpoints/getting-started/**"
     ],
+    "packageRules": [
+        {
+            "matchPackagePrefixes": [
+                "Microsoft.AspNetCore.",
+                "mcr.microsoft.com/dotnet/"
+            ],
+            "allowedVersions": "<7.0.0"
+        }
+    ],
     "schedule": [
         "before 8am"
     ],
