@@ -6,7 +6,7 @@ assign_issues_by:
   - 'api: storage'
   - 'api: spanner'
   to:
-  - gforgurups
+  - Rishabh-V
 - labels:
   - 'api: cloudsql'
   to:
@@ -33,6 +33,10 @@ assign_issues_by:
   - 'api: clouderrorreporting'
   to:
   - GoogleCloudPlatform/dee-platform-ops
+- labels:
+  - 'product: appengine flex'
+  to:
+  - GoogleCloudPlatform/serverless-runtimes
 
 assign_prs_always:
 - GoogleCloudPlatform/dotnet-samples-reviewers
@@ -78,3 +82,7 @@ assign_prs_by:
   - 'api: clouderrorreporting'
   to:
   - GoogleCloudPlatform/dee-platform-ops
+- labels:
+  - 'product: appengine flex'
+  to:
+  - GoogleCloudPlatform/serverless-runtimes
