@@ -10,7 +10,7 @@
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.4.0" />
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.1">
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
