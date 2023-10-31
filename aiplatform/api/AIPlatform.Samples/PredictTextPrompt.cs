@@ -21,7 +21,6 @@ using Google.Protobuf;
 using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 
 public class PredictTextPromptSample
 {
@@ -42,8 +41,6 @@ public class PredictTextPromptSample
 
         // Configure the parent resource
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model).ToString();
-
-        var jsonParser = JsonParser.Default;
 
         // Initialize request argument(s)
         var prompt = "Give me ten interview questions for the role of program manager.";
