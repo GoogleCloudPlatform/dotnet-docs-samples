@@ -14,22 +14,13 @@
  * limitations under the License.
  */
 
-
-using Google.Api.Gax.ResourceNames;
-using Google.Cloud.AIPlatform.V1;
-using Google.Protobuf.WellKnownTypes;
 using System;
-using System.Threading;
 using Xunit;
 
 [CollectionDefinition(nameof(AIPlatformFixture))]
 public class AIPlatformFixture : ICollectionFixture<AIPlatformFixture>
 {
     public string ProjectId { get; }
-    public string LocationId { get; }
-    public string Publisher { get; }
-    public string Model { get; }
-
 
     public AIPlatformFixture()
     {
@@ -38,9 +29,5 @@ public class AIPlatformFixture : ICollectionFixture<AIPlatformFixture>
         {
             throw new Exception("Missing GOOGLE_PROJECT_ID environment variable.");
         }
-
-        LocationId = "us-central1";
-        Publisher = "google";
-        Model = "text-bison@001";
     }
 }

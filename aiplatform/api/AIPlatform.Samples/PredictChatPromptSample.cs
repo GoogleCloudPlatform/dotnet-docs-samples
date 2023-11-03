@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-// [START aiplatform_sdk_ideation]
+// [START aiplatform_sdk_chat]
 
 using Google.Cloud.AIPlatform.V1;
-using Google.Protobuf;
 using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
-public class PredictTextPromptSample
+public class PredictChatPromptSample
 {
-    public PredictResponse PredictTextPrompt(
+    public PredictResponse PredictChatPrompt(
         string projectId = "your-project-id",
         string locationId = "us-central1",
         string publisher = "google",
-        string model = "text-bison@001"
+        string model = "chat-bison@001"
     )
     {
-        // Initialize client that will be used to send requests. 
+        // Initialize client that will be used to send requests.
         // This client only needs to be created
         // once, and can be reused for multiple requests.
         var client = new PredictionServiceClientBuilder
@@ -43,28 +43,44 @@ public class PredictTextPromptSample
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model).ToString();
 
         // Initialize request argument(s)
-        var prompt = "Give me ten interview questions for the role of program manager.";
+        var prompt = "How many planets are there in the solar system?";
 
-        var instanceValue = new wkt::Value
+        // TODO: Construct Protobuf directly
+        var instanceJson = JsonConvert.SerializeObject(new
         {
-            StructValue = new wkt::Struct
+            context = "My name is Miles. You are an astronomer, knowledgeable about the solar system.",
+            examples = new[]
             {
-                Fields =
+                new
                 {
-                    {
-                        "prompt", new wkt::Value
-                        {
-                            StringValue = prompt
-                        }
-                    }
+                    input = new { content = "How many moons does Mars have?" },
+                    output = new { content = "The planet Mars has two moons, Phobos and Deimos." }
+                }
+            },
+            messages = new[]
+            {
+                new
+                {
+                    author = "user",
+                    content = prompt
                 }
             }
-        };
+        });
+        var instance = wkt::Value.Parser.ParseJson(instanceJson);
 
         var instances = new List<wkt::Value>
         {
-            instanceValue
+            instance
         };
+
+        // var parametersJson = JsonConvert.SerializeObject(new
+        // {
+        //     temperature = 0.3,
+        //     maxDecodeSteps = 200,
+        //     topP = 0.8,
+        //     topK = 40
+        // });
+        // var parameters = wkt::Value.Parser.ParseJson(parametersJson);
 
         var parameters = new wkt::Value
         {
@@ -72,9 +88,9 @@ public class PredictTextPromptSample
             {
                 Fields =
                 {
-                    { "temperature", new wkt::Value { NumberValue = 0.2 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 256 } },
-                    { "topP", new wkt::Value { NumberValue = 0.95 } },
+                    { "temperature", new wkt::Value { NumberValue = 0.3 } },
+                    { "maxDecodeSteps", new wkt::Value { NumberValue = 200 } },
+                    { "topP", new wkt::Value { NumberValue = 0.8 } },
                     { "topK", new wkt::Value { NumberValue = 40 } }
                 }
             }
@@ -82,10 +98,12 @@ public class PredictTextPromptSample
 
         // Make the request
         var response = client.Predict(endpoint, instances, parameters);
-        Console.WriteLine("Predict Response");
-        Console.WriteLine(response);
+
+        // Parse and return the response
+        var content = response.Predictions[0].StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
+        Console.WriteLine($"Content: {content}");
         return response;
     }
 }
 
-// [END aiplatform_sdk_ideation]
+// [END aiplatform_sdk_chat]

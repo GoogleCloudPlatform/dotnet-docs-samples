@@ -17,24 +17,24 @@
 using Xunit;
 
 [Collection(nameof(AIPlatformFixture))]
-public class PredictTextPromptTest
+public class PredictChatPromptTest
 {
     private readonly AIPlatformFixture _fixture;
-    private readonly PredictTextPromptSample _sample;
+    private readonly PredictChatPromptSample _sample;
 
-    public PredictTextPromptTest(AIPlatformFixture fixture)
+    public PredictChatPromptTest(AIPlatformFixture fixture)
     {
         _fixture = fixture;
-        _sample = new PredictTextPromptSample();
+        _sample = new PredictChatPromptSample();
     }
 
     [Fact]
     public void Runs()
     {
-        var response = _sample.PredictTextPrompt(_fixture.ProjectId);
+        var response = _sample.PredictChatPrompt(_fixture.ProjectId);
         Assert.NotNull(response);
 
-        var content = response.Predictions[0].StructValue.Fields["content"].StringValue;
+        var content = response.Predictions[0].StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
         Assert.NotNull(content);
     }
 }
