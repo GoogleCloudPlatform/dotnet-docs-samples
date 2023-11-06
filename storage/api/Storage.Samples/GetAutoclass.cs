@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Google Inc.
+// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@ public class GetAutoclassSample
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
-        Console.WriteLine($"Autoclass enabled is set to {bucket.Autoclass.Enabled} for {bucketName} at {bucket.Autoclass.ToggleTime}.");
+        Console.WriteLine($"Autoclass enabled is set to {bucket.Autoclass.Enabled} for {bucketName} at {bucket.Autoclass.ToggleTimeDateTimeOffset}.");
+        Console.WriteLine($"Autoclass terminal storage class is set to {bucket.Autoclass.TerminalStorageClass} for {bucketName} at {bucket.Autoclass.TerminalStorageClassUpdateTimeDateTimeOffset}.");
         return bucket.Autoclass;
     }
 }
