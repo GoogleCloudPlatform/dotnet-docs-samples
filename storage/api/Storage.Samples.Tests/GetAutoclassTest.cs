@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Google Inc.
+// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ public class GetAutoclassTest
         _fixture.CreateBucket(bucketName, autoclassData: new AutoclassData { Enabled = true });
         var autoclassData = getAutoclassSample.GetAutoclass(bucketName);
         Assert.Equal(true, autoclassData.Enabled);
+        Assert.Equal("NEARLINE", autoclassData.TerminalStorageClass);
     }
 }
 
