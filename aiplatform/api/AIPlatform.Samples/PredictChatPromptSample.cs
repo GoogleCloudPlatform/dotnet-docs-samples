@@ -45,7 +45,7 @@ public class PredictChatPromptSample
         // Initialize request argument(s)
         var prompt = "How many planets are there in the solar system?";
 
-        // TODO: Construct Protobuf directly
+        // You can construct Protobuf from JSON
         var instanceJson = JsonConvert.SerializeObject(new
         {
             context = "My name is Miles. You are an astronomer, knowledgeable about the solar system.",
@@ -66,22 +66,64 @@ public class PredictChatPromptSample
                 }
             }
         });
-        var instance = wkt::Value.Parser.ParseJson(instanceJson);
+        //var instance = wkt::Value.Parser.ParseJson(instanceJson);
+
+        // Or, you can construct Protobuf directly
+        var instance = new wkt::Value
+        {
+            StructValue = new()
+            {
+                Fields =
+                {
+                    ["context"] = wkt::Value.ForString("My name is Miles. You are an astronomer, knowledgeable about the solar system."),
+                    ["examples"] = wkt::Value.ForList(wkt::Value.ForStruct(new()
+                    {
+                        Fields =
+                        {
+                            ["input"] = wkt::Value.ForStruct(new()
+                            {
+                                Fields =
+                                {
+                                    ["content"] = wkt::Value.ForString("How many moons does Mars have?")
+                                }
+                            }),
+                            ["output"] = wkt::Value.ForStruct(new()
+                            {
+                                Fields =
+                                {
+                                    ["content"] = wkt::Value.ForString("The planet Mars has two moons, Phobos and Deimos.")
+                                }
+                            })
+                        }
+                    })),
+                    ["messages"] = wkt::Value.ForList(wkt::Value.ForStruct(new()
+                    {
+                        Fields =
+                        {
+                            ["author"] = wkt::Value.ForString("user"),
+                            ["content"] = wkt::Value.ForString(prompt),
+                        }
+                    }))
+                }
+            }
+        };
 
         var instances = new List<wkt::Value>
         {
             instance
         };
 
-        // var parametersJson = JsonConvert.SerializeObject(new
-        // {
-        //     temperature = 0.3,
-        //     maxDecodeSteps = 200,
-        //     topP = 0.8,
-        //     topK = 40
-        // });
+        // You can construct Protobuf from JSON
+        var parametersJson = JsonConvert.SerializeObject(new
+        {
+            temperature = 0.3,
+            maxDecodeSteps = 200,
+            topP = 0.8,
+            topK = 40
+        });
         // var parameters = wkt::Value.Parser.ParseJson(parametersJson);
 
+        // Or, you can construct Protobuf directly
         var parameters = new wkt::Value
         {
             StructValue = new wkt::Struct
