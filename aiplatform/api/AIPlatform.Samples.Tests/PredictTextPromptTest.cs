@@ -33,8 +33,5 @@ public class PredictTextPromptTest
     {
         var response = _sample.PredictTextPrompt(_fixture.ProjectId);
         Assert.NotNull(response);
-
-        var content = response.Predictions[0].StructValue.Fields["content"].StringValue;
-        Assert.NotNull(content);
     }
 }

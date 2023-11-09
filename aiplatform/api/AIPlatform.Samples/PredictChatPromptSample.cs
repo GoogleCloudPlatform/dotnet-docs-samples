@@ -18,13 +18,13 @@
 
 using Google.Cloud.AIPlatform.V1;
 using wkt = Google.Protobuf.WellKnownTypes;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 public class PredictChatPromptSample
 {
-    public PredictResponse PredictChatPrompt(
+    public string PredictChatPrompt(
         string projectId = "your-project-id",
         string locationId = "us-central1",
         string publisher = "google",
@@ -32,20 +32,20 @@ public class PredictChatPromptSample
     )
     {
         // Initialize client that will be used to send requests.
-        // This client only needs to be created
-        // once, and can be reused for multiple requests.
+        // This client only needs to be created once,
+        // and can be reused for multiple requests.
         var client = new PredictionServiceClientBuilder
         {
             Endpoint = $"{locationId}-aiplatform.googleapis.com"
         }.Build();
 
-        // Configure the parent resource
-        var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model).ToString();
+        // Configure the parent resource.
+        var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
-        // Initialize request argument(s)
+        // Initialize request argument(s).
         var prompt = "How many planets are there in the solar system?";
 
-        // You can construct Protobuf from JSON
+        // You can construct Protobuf from JSON.
         var instanceJson = JsonConvert.SerializeObject(new
         {
             context = "My name is Miles. You are an astronomer, knowledgeable about the solar system.",
@@ -66,9 +66,9 @@ public class PredictChatPromptSample
                 }
             }
         });
-        //var instance = wkt::Value.Parser.ParseJson(instanceJson);
+        // var instance = wkt::Value.Parser.ParseJson(instanceJson);
 
-        // Or, you can construct Protobuf directly
+        // Or, you can construct Protobuf directly.
         var instance = new wkt::Value
         {
             StructValue = new()
@@ -113,7 +113,7 @@ public class PredictChatPromptSample
             instance
         };
 
-        // You can construct Protobuf from JSON
+        // You can construct Protobuf from JSON.
         var parametersJson = JsonConvert.SerializeObject(new
         {
             temperature = 0.3,
@@ -123,7 +123,7 @@ public class PredictChatPromptSample
         });
         // var parameters = wkt::Value.Parser.ParseJson(parametersJson);
 
-        // Or, you can construct Protobuf directly
+        // Or, you can construct Protobuf directly.
         var parameters = new wkt::Value
         {
             StructValue = new wkt::Struct
@@ -138,13 +138,13 @@ public class PredictChatPromptSample
             }
         };
 
-        // Make the request
+        // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
 
-        // Parse and return the response
+        // Parse the response and return the content.
         var content = response.Predictions[0].StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {content}");
-        return response;
+        return content;
     }
 }
 

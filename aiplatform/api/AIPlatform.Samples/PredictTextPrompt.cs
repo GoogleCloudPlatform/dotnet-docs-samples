@@ -23,7 +23,7 @@ using System.Collections.Generic;
 
 public class PredictTextPromptSample
 {
-    public PredictResponse PredictTextPrompt(
+    public string PredictTextPrompt(
         string projectId = "your-project-id",
         string locationId = "us-central1",
         string publisher = "google",
@@ -31,17 +31,17 @@ public class PredictTextPromptSample
     )
     {
         // Initialize client that will be used to send requests.
-        // This client only needs to be created
-        // once, and can be reused for multiple requests.
+        // This client only needs to be created once,
+        // and can be reused for multiple requests.
         var client = new PredictionServiceClientBuilder
         {
             Endpoint = $"{locationId}-aiplatform.googleapis.com"
         }.Build();
 
-        // Configure the parent resource
-        var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model).ToString();
+        // Configure the parent resource.
+        var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
-        // Initialize request argument(s)
+        // Initialize request argument(s).
         var prompt = "Give me ten interview questions for the role of program manager.";
 
         var instanceValue = new wkt::Value
@@ -79,13 +79,13 @@ public class PredictTextPromptSample
             }
         };
 
-        // Make the request
+        // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
 
-        // Parse and return the response
+        // Parse and return the response.
         var content = response.Predictions[0].StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {content}");
-        return response;
+        return content;
     }
 }
 

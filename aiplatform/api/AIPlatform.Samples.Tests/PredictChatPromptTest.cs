@@ -33,8 +33,5 @@ public class PredictChatPromptTest
     {
         var response = _sample.PredictChatPrompt(_fixture.ProjectId);
         Assert.NotNull(response);
-
-        var content = response.Predictions[0].StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
-        Assert.NotNull(content);
     }
 }
