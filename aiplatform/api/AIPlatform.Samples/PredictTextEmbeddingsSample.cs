@@ -20,9 +20,12 @@ using Google.Cloud.AIPlatform.V1;
 using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PredictTextEmbeddingsSample
 {
+    // For detailed documentation on text embeddings, see the following:
+    // https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text-embeddings
     public int PredictTextEmbeddings(
         string projectId = "your-project-id",
         string locationId = "us-central1",
@@ -53,25 +56,11 @@ public class PredictTextEmbeddingsSample
             })
         };
 
-        var parameters = new wkt::Value
-        {
-            StructValue = new wkt::Struct
-            {
-                Fields =
-                {
-                    { "temperature", new wkt::Value { NumberValue = 0.2 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 256 } },
-                    { "topP", new wkt::Value { NumberValue = 0.95 } },
-                    { "topK", new wkt::Value { NumberValue = 40 } }
-                }
-            }
-        };
-
         // Make the request.
-        var response = client.Predict(endpoint, instances, parameters);
+        var response = client.Predict(endpoint, instances, null);
 
         // Parse and return the embedding vector count.
-        var values = response.Predictions[0].StructValue.Fields["embeddings"].StructValue.Fields["values"].ListValue.Values;
+        var values = response.Predictions.First().StructValue.Fields["embeddings"].StructValue.Fields["values"].ListValue.Values;
         Console.WriteLine($"Length of embedding vector: {values.Count}");
         return values.Count;
     }
