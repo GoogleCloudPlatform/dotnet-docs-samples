@@ -20,6 +20,7 @@ using Google.Cloud.AIPlatform.V1;
 using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 public class PredictCodeCompletionCommentSample
 {
@@ -74,7 +75,7 @@ def reverse_string(s):
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse and return the content.
-        var content = response.Predictions[0].StructValue.Fields["content"].StringValue;
+        var content = response.Predictions.First().StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {content}");
         return content;
 
