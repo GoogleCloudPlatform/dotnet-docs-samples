@@ -17,7 +17,6 @@
 // [START aiplatform_sdk_code_generation_unittest]
 
 using Google.Cloud.AIPlatform.V1;
-using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,17 +82,14 @@ Write a unit test for this function:
             })
         };
 
-        var parameters = new Value
+        var parameters = Value.ForStruct(new()
         {
-            StructValue = new Struct
+            Fields =
             {
-                Fields =
-                {
-                    { "temperature", new Value { NumberValue = 0.5 } },
-                    { "maxOutputTokens", new Value { NumberValue = 256 } }
-                }
+                { "temperature", new Value { NumberValue = 0.5 } },
+                { "maxOutputTokens", new Value { NumberValue = 256 } }
             }
-        };
+        });
 
         // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
