@@ -17,9 +17,11 @@
 // [START aiplatform_sdk_code_chat]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictCodeChatSample
 {
@@ -41,54 +43,54 @@ public class PredictCodeChatSample
         // Configure the parent resource.
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
-        var instance = new wkt::Value
+        var instance = new Value
         {
             StructValue = new()
             {
                 Fields =
                 {
-                    ["messages"] = wkt::Value.ForList(
-                        wkt::Value.ForStruct(new()
+                    ["messages"] = Value.ForList(
+                        Value.ForStruct(new()
                         {
                             Fields =
                             {
-                                ["author"] = wkt::Value.ForString("user"),
-                                ["content"] = wkt::Value.ForString("Hi, how are you?"),
+                                ["author"] = Value.ForString("user"),
+                                ["content"] = Value.ForString("Hi, how are you?"),
                             }
                         }),
-                        wkt::Value.ForStruct(new()
+                        Value.ForStruct(new()
                         {
                             Fields =
                             {
-                                ["author"] = wkt::Value.ForString("system"),
-                                ["content"] = wkt::Value.ForString("I am doing good. What can I help you in the coding world?"),
+                                ["author"] = Value.ForString("system"),
+                                ["content"] = Value.ForString("I am doing good. What can I help you in the coding world?"),
                             }
                         }),
-                        wkt::Value.ForStruct(new()
+                        Value.ForStruct(new()
                         {
                             Fields =
                             {
-                                ["author"] = wkt::Value.ForString("user"),
-                                ["content"] = wkt::Value.ForString("Please help write a function to calculate the min of two numbers."),
+                                ["author"] = Value.ForString("user"),
+                                ["content"] = Value.ForString("Please help write a C# function to calculate the min of two numbers."),
                             }
                         }))
                 }
             }
         };
 
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
             instance
         };
 
-        var parameters = new wkt::Value
+        var parameters = new Value
         {
-            StructValue = new wkt::Struct
+            StructValue = new Struct
             {
                 Fields =
                 {
-                    { "temperature", new wkt::Value { NumberValue = 0.3 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 1024 } }
+                    { "temperature", new Value { NumberValue = 0.3 } },
+                    { "maxOutputTokens", new Value { NumberValue = 1024 } }
                 }
             }
         };
@@ -97,7 +99,7 @@ public class PredictCodeChatSample
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse and return the content.
-        var content = response.Predictions[0].StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
+        var content = response.Predictions.First().StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {content}");
         return content;
     }

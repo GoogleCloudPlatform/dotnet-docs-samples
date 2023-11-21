@@ -29,7 +29,7 @@ public class PredictCodeChatTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictCodeChat()
     {
         var response = _sample.PredictCodeChat(_fixture.ProjectId);
         Assert.NotNull(response);
