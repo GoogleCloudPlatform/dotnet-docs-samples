@@ -29,7 +29,7 @@ public class PredictCodeGenerationUnitTestTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictUnitTest()
     {
         var response = _sample.PredictUnitTest(_fixture.ProjectId);
         Assert.NotNull(response);

@@ -17,9 +17,11 @@
 // [START aiplatform_sdk_code_generation_unittest]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictCodeGenerationUnitTestSample
 {
@@ -44,37 +46,51 @@ public class PredictCodeGenerationUnitTestSample
         // https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-generation-prompts
         var prefix = @"
 Write a unit test for this function:
-    def is_leap_year(year):
-        if year % 4 == 0:
-            if year % 100 == 0:
-                if year % 400 == 0:
-                    return True
-                else:
-                    return False
-            else:
-                return True
-        else:
-            return False";
-
-        var instances = new List<wkt::Value>
+    public static bool IsLeapYear(int year)
+    {
+        if (year % 4 == 0)
         {
-            wkt::Value.ForStruct(new()
+            if (year % 100 == 0)
+            {
+                if (year % 400 == 0)
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+        else
+        {
+            return false;
+        }
+    }";
+
+        var instances = new List<Value>
+        {
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["prefix"] = wkt::Value.ForString(prefix),
+                    ["prefix"] = Value.ForString(prefix),
                 }
             })
         };
 
-        var parameters = new wkt::Value
+        var parameters = new Value
         {
-            StructValue = new wkt::Struct
+            StructValue = new Struct
             {
                 Fields =
                 {
-                    { "temperature", new wkt::Value { NumberValue = 0.5 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 256 } }
+                    { "temperature", new Value { NumberValue = 0.5 } },
+                    { "maxOutputTokens", new Value { NumberValue = 256 } }
                 }
             }
         };
@@ -83,7 +99,7 @@ Write a unit test for this function:
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse and return the content.
-        var content = response.Predictions[0].StructValue.Fields["content"].StringValue;
+        var content = response.Predictions.First().StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {content}");
         return content;
     }
