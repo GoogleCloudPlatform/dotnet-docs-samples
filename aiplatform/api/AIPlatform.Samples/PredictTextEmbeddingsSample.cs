@@ -17,15 +17,13 @@
 // [START aiplatform_sdk_embedding]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictTextEmbeddingsSample
 {
-    // For detailed documentation on text embeddings, see the following:
-    // https://cloud.google.com/vertex-ai/docs/generative-ai/model-reference/text-embeddings
     public int PredictTextEmbeddings(
         string projectId = "your-project-id",
         string locationId = "us-central1",
@@ -45,13 +43,13 @@ public class PredictTextEmbeddingsSample
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
         // Initialize request argument(s).
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
-            wkt::Value.ForStruct(new()
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["content"] = wkt::Value.ForString("What is life?"),
+                    ["content"] = Value.ForString("What is life?"),
                 }
             })
         };

@@ -29,7 +29,7 @@ public class PredictTextEmbeddingsTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictTextEmbeddings()
     {
         var count = _sample.PredictTextEmbeddings(_fixture.ProjectId);
         Assert.True(count > 0);
