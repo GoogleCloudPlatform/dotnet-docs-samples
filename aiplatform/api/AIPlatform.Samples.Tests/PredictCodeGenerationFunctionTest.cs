@@ -29,7 +29,7 @@ public class PredictCodeGenerationFunctionTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictFunction()
     {
         var response = _sample.PredictFunction(_fixture.ProjectId);
         Assert.NotNull(response);

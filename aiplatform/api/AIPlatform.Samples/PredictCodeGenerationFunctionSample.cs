@@ -17,10 +17,10 @@
 // [START aiplatform_sdk_code_generation_function]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictCodeGenerationFunctionSample
 {
@@ -41,30 +41,25 @@ public class PredictCodeGenerationFunctionSample
         // Configure the parent resource.
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
-        // Learn how to create prompts to work with a code model to generate code:
-        // https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-generation-prompts
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
-            wkt::Value.ForStruct(new()
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["prefix"] = wkt::Value.ForString("Write a function that checks if a year is a leap year."),
+                    ["prefix"] = Value.ForString("Write a C# function that checks if a year is a leap year."),
                 }
             })
         };
 
-        var parameters = new wkt::Value
+        var parameters = Value.ForStruct(new()
         {
-            StructValue = new wkt::Struct
+            Fields =
             {
-                Fields =
-                {
-                    { "temperature", new wkt::Value { NumberValue = 0.5 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 256 } }
-                }
+                { "temperature", new Value { NumberValue = 0.5 } },
+                { "maxOutputTokens", new Value { NumberValue = 256 } }
             }
-        };
+        });
 
         // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
