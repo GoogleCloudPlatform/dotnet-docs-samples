@@ -17,7 +17,6 @@
 // [START aiplatform_sdk_code_completion_comment]
 
 using Google.Cloud.AIPlatform.V1;
-using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,17 +61,14 @@ public static string ReverseString(string s)
             })
         };
 
-        var parameters = new Value
+        var parameters = Value.ForStruct(new()
         {
-            StructValue = new Struct
+            Fields =
             {
-                Fields =
-                {
-                    { "temperature", new Value { NumberValue = 0.2 } },
-                    { "maxOutputTokens", new Value { NumberValue = 64 } }
-                }
+                { "temperature", new Value { NumberValue = 0.2 } },
+                { "maxOutputTokens", new Value { NumberValue = 64 } }
             }
-        };
+        });
 
         // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
