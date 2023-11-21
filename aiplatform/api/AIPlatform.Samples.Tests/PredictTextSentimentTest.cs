@@ -29,7 +29,7 @@ public class PredictTextSentimentTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictTextSentiment()
     {
         var response = _sample.PredictTextSentiment(_fixture.ProjectId);
         Assert.NotNull(response);

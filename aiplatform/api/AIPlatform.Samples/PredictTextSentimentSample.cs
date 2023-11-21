@@ -17,9 +17,10 @@
 // [START aiplatform_sdk_sentiment_analysis]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 // Text sentiment analysis with a Large Language Model
 public class PredictTextSentimentSample
@@ -80,25 +81,25 @@ Tweet: The Pixel 7 Pro, is too big to fit in my jeans pocket, so I bought new
 jeans.
 Classify the sentiment of the message: ";
 
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
-            wkt::Value.ForStruct(new()
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["content"] = wkt::Value.ForString(content),
+                    ["content"] = Value.ForString(content),
                 }
             })
         };
 
-        var parameters = wkt::Value.ForStruct(new()
+        var parameters = Value.ForStruct(new()
         {
             Fields =
             {
-                { "temperature", new wkt::Value { NumberValue = 0 } },
-                { "maxDecodeSteps", new wkt::Value { NumberValue = 5 } },
-                { "topP", new wkt::Value { NumberValue = 0 } },
-                { "topK", new wkt::Value { NumberValue = 1 } }
+                { "temperature", new Value { NumberValue = 0 } },
+                { "maxDecodeSteps", new Value { NumberValue = 5 } },
+                { "topP", new Value { NumberValue = 0 } },
+                { "topK", new Value { NumberValue = 1 } }
             }
         });
 
@@ -106,7 +107,7 @@ Classify the sentiment of the message: ";
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse and return the content.
-        var responseContent = response.Predictions[0].StructValue.Fields["content"].StringValue;
+        var responseContent = response.Predictions.First().StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {responseContent}");
         return responseContent;
     }
