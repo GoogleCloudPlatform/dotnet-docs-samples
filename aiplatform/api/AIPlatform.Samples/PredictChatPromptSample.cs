@@ -17,10 +17,11 @@
 // [START aiplatform_sdk_chat]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictChatPromptSample
 {
@@ -66,49 +67,9 @@ public class PredictChatPromptSample
                 }
             }
         });
-        // var instance = wkt::Value.Parser.ParseJson(instanceJson);
+        var instance = Value.Parser.ParseJson(instanceJson);
 
-        // Or, you can construct Protobuf directly.
-        var instance = new wkt::Value
-        {
-            StructValue = new()
-            {
-                Fields =
-                {
-                    ["context"] = wkt::Value.ForString("My name is Miles. You are an astronomer, knowledgeable about the solar system."),
-                    ["examples"] = wkt::Value.ForList(wkt::Value.ForStruct(new()
-                    {
-                        Fields =
-                        {
-                            ["input"] = wkt::Value.ForStruct(new()
-                            {
-                                Fields =
-                                {
-                                    ["content"] = wkt::Value.ForString("How many moons does Mars have?")
-                                }
-                            }),
-                            ["output"] = wkt::Value.ForStruct(new()
-                            {
-                                Fields =
-                                {
-                                    ["content"] = wkt::Value.ForString("The planet Mars has two moons, Phobos and Deimos.")
-                                }
-                            })
-                        }
-                    })),
-                    ["messages"] = wkt::Value.ForList(wkt::Value.ForStruct(new()
-                    {
-                        Fields =
-                        {
-                            ["author"] = wkt::Value.ForString("user"),
-                            ["content"] = wkt::Value.ForString(prompt),
-                        }
-                    }))
-                }
-            }
-        };
-
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
             instance
         };
@@ -121,28 +82,13 @@ public class PredictChatPromptSample
             topP = 0.8,
             topK = 40
         });
-        // var parameters = wkt::Value.Parser.ParseJson(parametersJson);
-
-        // Or, you can construct Protobuf directly.
-        var parameters = new wkt::Value
-        {
-            StructValue = new wkt::Struct
-            {
-                Fields =
-                {
-                    { "temperature", new wkt::Value { NumberValue = 0.3 } },
-                    { "maxDecodeSteps", new wkt::Value { NumberValue = 200 } },
-                    { "topP", new wkt::Value { NumberValue = 0.8 } },
-                    { "topK", new wkt::Value { NumberValue = 40 } }
-                }
-            }
-        };
+        var parameters = Value.Parser.ParseJson(parametersJson);
 
         // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse the response and return the content.
-        var content = response.Predictions[0].StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
+        var content = response.Predictions.First().StructValue.Fields["candidates"].ListValue.Values[0].StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {content}");
         return content;
     }
