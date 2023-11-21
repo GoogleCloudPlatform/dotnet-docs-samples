@@ -29,7 +29,7 @@ public class PredictTextClassificationTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictTextClassification()
     {
         var response = _sample.PredictTextClassification(_fixture.ProjectId);
         Assert.NotNull(response);
