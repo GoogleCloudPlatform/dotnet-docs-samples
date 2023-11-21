@@ -17,9 +17,10 @@
 // [START aiplatform_sdk_extraction]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 // Extractive Question Answering with a Large Language Model
 public class PredictTextExtractionSample
@@ -80,25 +81,25 @@ A: Sediment deposits.
 Q: What has the lower rainfall in the Amazon during the LGM been attributed to?
 A:";
 
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
-            wkt::Value.ForStruct(new()
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["content"] = wkt::Value.ForString(content),
+                    ["content"] = Value.ForString(content),
                 }
             })
         };
 
-        var parameters = wkt::Value.ForStruct(new()
+        var parameters = Value.ForStruct(new()
         {
             Fields =
             {
-                { "temperature", new wkt::Value { NumberValue = 0 } },
-                { "maxDecodeSteps", new wkt::Value { NumberValue = 32 } },
-                { "topP", new wkt::Value { NumberValue = 0 } },
-                { "topK", new wkt::Value { NumberValue = 1 } }
+                { "temperature", new Value { NumberValue = 0 } },
+                { "maxDecodeSteps", new Value { NumberValue = 32 } },
+                { "topP", new Value { NumberValue = 0 } },
+                { "topK", new Value { NumberValue = 1 } }
             }
         });
 
@@ -106,7 +107,7 @@ A:";
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse and return the content.
-        var responseContent = response.Predictions[0].StructValue.Fields["content"].StringValue;
+        var responseContent = response.Predictions.First().StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {responseContent}");
         return responseContent;
     }

@@ -29,7 +29,7 @@ public class PredictTextExtractionTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictTextExtraction()
     {
         var response = _sample.PredictTextExtraction(_fixture.ProjectId);
         Assert.NotNull(response);
