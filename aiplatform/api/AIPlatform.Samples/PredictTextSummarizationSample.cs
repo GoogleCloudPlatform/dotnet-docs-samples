@@ -91,10 +91,10 @@ Summary:";
         {
             Fields =
             {
-                { "temperature", new Value { NumberValue = 0 } },
-                { "maxDecodeSteps", new Value { NumberValue = 32 } },
-                { "topP", new Value { NumberValue = 0 } },
-                { "topK", new Value { NumberValue = 1 } }
+                { "temperature", new Value { NumberValue = 0.2 } },
+                { "maxOutputTokens", new Value { NumberValue = 256 } },
+                { "topP", new Value { NumberValue = 0.95 } },
+                { "topK", new Value { NumberValue = 40 } }
             }
         });
 
