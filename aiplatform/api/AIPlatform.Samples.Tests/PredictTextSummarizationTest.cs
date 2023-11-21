@@ -29,7 +29,7 @@ public class PredictTextSummarizationTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictTextSummarization()
     {
         var response = _sample.PredictTextSummarization(_fixture.ProjectId);
         Assert.NotNull(response);

@@ -17,9 +17,10 @@
 // [START aiplatform_sdk_summarization]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 // Text Summarization with a Large Language Model
 public class PredictTextSummarizationSample
@@ -43,63 +44,57 @@ public class PredictTextSummarizationSample
 
         // Initialize request argument(s).
         var content = @"
-Background: There is evidence that there have been significant changes
-in Amazon rainforest vegetation over the last 21,000 years through the Last
-Glacial Maximum (LGM) and subsequent deglaciation. Analyses of sediment
-deposits from Amazon basin paleo lakes and from the Amazon Fan indicate that
-rainfall in the basin during the LGM was lower than for the present, and this
-was almost certainly associated with reduced moist tropical vegetation cover
-in the basin. There is debate, however, over how extensive this reduction
-was. Some scientists argue that the rainforest was reduced to small, isolated
-refugia separated by open forest and grassland; other scientists argue that
-the rainforest remained largely intact but extended less far to the north,
-south, and east than is seen today. This debate has proved difficult to
-resolve because the practical limitations of working in the rainforest mean
-that data sampling is biased away from the center of the Amazon basin, and
-both explanations are reasonably well supported by the available data.
+Provide a summary with about two sentences for the following article:
+The efficient-market hypothesis (EMH) is a hypothesis in financial
+economics that states that asset prices reflect all available
+information. A direct implication is that it is impossible to
+""beat the market"" consistently on a risk-adjusted basis since market
+prices should only react to new information. Because the EMH is
+formulated in terms of risk adjustment, it only makes testable
+predictions when coupled with a particular model of risk. As a
+result, research in financial economics since at least the 1990s has
+focused on market anomalies, that is, deviations from specific
+models of risk. The idea that financial market returns are difficult
+to predict goes back to Bachelier, Mandelbrot, and Samuelson, but
+is closely associated with Eugene Fama, in part due to his
+influential 1970 review of the theoretical and empirical research.
+The EMH provides the basic logic for modern risk-based theories of
+asset prices, and frameworks such as consumption-based asset pricing
+and intermediary asset pricing can be thought of as the combination
+of a model of risk with the EMH. Many decades of empirical research
+on return predictability has found mixed evidence. Research in the
+1950s and 1960s often found a lack of predictability (e.g. Ball and
+Brown 1968; Fama, Fisher, Jensen, and Roll 1969), yet the
+1980s-2000s saw an explosion of discovered return predictors (e.g.
+Rosenberg, Reid, and Lanstein 1985; Campbell and Shiller 1988;
+Jegadeesh and Titman 1993). Since the 2010s, studies have often
+found that return predictability has become more elusive, as
+predictability fails to work out-of-sample (Goyal and Welch 2008),
+or has been weakened by advances in trading technology and investor
+learning (Chordia, Subrahmanyam, and Tong 2014; McLean and Pontiff
+2016; Martineau 2021).
+Summary:";
 
-Q: What does LGM stands for?
-A: Last Glacial Maximum.
 
-Q: What did the analysis from the sediment deposits indicate?
-A: Rainfall in the basin during the LGM was lower than for the present.
-
-Q: What are some of scientists arguments?
-A: The rainforest was reduced to small, isolated refugia separated by open forest
-and grassland.
-
-Q: There have been major changes in Amazon rainforest vegetation over the last how
-many years?
-A: 21,000.
-
-Q: What caused changes in the Amazon rainforest vegetation?
-A: The Last Glacial Maximum (LGM) and subsequent deglaciation
-
-Q: What has been analyzed to compare Amazon rainfall in the past and present?
-A: Sediment deposits.
-
-Q: What has the lower rainfall in the Amazon during the LGM been attributed to?
-A:";
-
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
-            wkt::Value.ForStruct(new()
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["content"] = wkt::Value.ForString(content),
+                    ["content"] = Value.ForString(content),
                 }
             })
         };
 
-        var parameters = wkt::Value.ForStruct(new()
+        var parameters = Value.ForStruct(new()
         {
             Fields =
             {
-                { "temperature", new wkt::Value { NumberValue = 0 } },
-                { "maxDecodeSteps", new wkt::Value { NumberValue = 32 } },
-                { "topP", new wkt::Value { NumberValue = 0 } },
-                { "topK", new wkt::Value { NumberValue = 1 } }
+                { "temperature", new Value { NumberValue = 0 } },
+                { "maxDecodeSteps", new Value { NumberValue = 32 } },
+                { "topP", new Value { NumberValue = 0 } },
+                { "topK", new Value { NumberValue = 1 } }
             }
         });
 
@@ -107,7 +102,7 @@ A:";
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse and return the content
-        var responseContent = response.Predictions[0].StructValue.Fields["content"].StringValue;
+        var responseContent = response.Predictions.First().StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {responseContent}");
         return responseContent;
     }
