@@ -41,8 +41,6 @@ public class PredictCodeGenerationUnitTestSample
         // Configure the parent resource.
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
-        // Learn how to create prompts to work with a code model to generate code:
-        // https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-generation-prompts
         var prefix = @"
 Write a unit test for this function:
     public static bool IsLeapYear(int year)
