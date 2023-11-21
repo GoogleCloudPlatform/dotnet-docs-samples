@@ -17,7 +17,6 @@
 // [START aiplatform_sdk_code_chat]
 
 using Google.Cloud.AIPlatform.V1;
-using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,17 +82,14 @@ public class PredictCodeChatSample
             instance
         };
 
-        var parameters = new Value
+        var parameters = Value.ForStruct(new()
         {
-            StructValue = new Struct
+            Fields =
             {
-                Fields =
-                {
-                    { "temperature", new Value { NumberValue = 0.3 } },
-                    { "maxOutputTokens", new Value { NumberValue = 1024 } }
-                }
+                { "temperature", new Value { NumberValue = 0.3 } },
+                { "maxOutputTokens", new Value { NumberValue = 1024 } }
             }
-        };
+        });
 
         // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
