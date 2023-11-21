@@ -17,9 +17,10 @@
 // [START aiplatform_sdk_code_completion_test_function]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictCodeCompletionTestFunctionSample
 {
@@ -40,41 +41,41 @@ public class PredictCodeCompletionTestFunctionSample
         // Configure the parent resource.
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
-        // Learn how to create prompts to work with a code model to create code completion suggestions:
-        // https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-completion-prompts
         var prefix = @"
-def reverse_string(s):
-    return s[::-1]
-def test_empty_input_string()";
+public static string ReverseString(string s)
+{
+    char[] chars = s.ToCharArray();
+    Array.Reverse(chars);
+    return new string(chars);
+}
+public static void TestEmptyInputString()";
 
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
-            wkt::Value.ForStruct(new()
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["prefix"] = wkt::Value.ForString(prefix),
+                    ["prefix"] = Value.ForString(prefix),
                 }
             })
         };
 
-        var parameters = new wkt::Value
+        var parameters = Value.ForStruct(new()
         {
-            StructValue = new wkt::Struct
+            Fields =
             {
-                Fields =
-                {
-                    { "temperature", new wkt::Value { NumberValue = 0.2 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 64 } }
-                }
+                { "temperature", new Value { NumberValue = 0.2 } },
+                { "maxOutputTokens", new Value { NumberValue = 64 } }
             }
-        };
+        });
 
         // Make the request.
         var response = client.Predict(endpoint, instances, parameters);
 
         // Parse and return the content.
-        var content = response.Predictions[0].StructValue.Fields["content"].StringValue;
+        var content = response.Predictions.First().StructValue.Fields["content"].StringValue;
+        Console.WriteLine($"Content: {content}");
         return content;
     }
 }

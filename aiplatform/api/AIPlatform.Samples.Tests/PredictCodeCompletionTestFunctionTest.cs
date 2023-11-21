@@ -29,7 +29,7 @@ public class PredictCodeCompletionTestFunctionTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictTestFunction()
     {
         var response = _sample.PredictTestFunction(_fixture.ProjectId);
         Assert.NotNull(response);
