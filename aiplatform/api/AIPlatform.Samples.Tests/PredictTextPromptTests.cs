@@ -29,10 +29,9 @@ public class PredictTextPromptTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictTextPrompt()
     {
-        // Run the sample code.
-        var response = _sample.PredictTextPrompt(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, publisher: _fixture.Publisher, model: _fixture.Model);
+        var response = _sample.PredictTextPrompt(_fixture.ProjectId);
         Assert.NotNull(response);
     }
 }

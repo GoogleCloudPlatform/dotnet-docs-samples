@@ -17,21 +17,21 @@
 // [START aiplatform_sdk_ideation]
 
 using Google.Cloud.AIPlatform.V1;
-using Google.Protobuf;
-using wkt = Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictTextPromptSample
 {
-    public PredictResponse PredictTextPrompt(
+    public string PredictTextPrompt(
         string projectId = "your-project-id",
         string locationId = "us-central1",
         string publisher = "google",
         string model = "text-bison@001"
     )
     {
-        // Initialize client that will be used to send requests. 
+        // Initialize client that will be used to send requests.
         // This client only needs to be created
         // once, and can be reused for multiple requests.
         var client = new PredictionServiceClientBuilder
@@ -40,51 +40,42 @@ public class PredictTextPromptSample
         }.Build();
 
         // Configure the parent resource
-        var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model).ToString();
+        var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
         // Initialize request argument(s)
         var prompt = "Give me ten interview questions for the role of program manager.";
 
-        var instanceValue = new wkt::Value
+        var instanceValue = Value.ForStruct(new()
         {
-            StructValue = new wkt::Struct
+            Fields =
             {
-                Fields =
-                {
-                    {
-                        "prompt", new wkt::Value
-                        {
-                            StringValue = prompt
-                        }
-                    }
-                }
+                ["prompt"] = Value.ForString(prompt)
             }
-        };
+        });
 
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
             instanceValue
         };
 
-        var parameters = new wkt::Value
+        var parameters = Value.ForStruct(new()
         {
-            StructValue = new wkt::Struct
+            Fields =
             {
-                Fields =
-                {
-                    { "temperature", new wkt::Value { NumberValue = 0.2 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 256 } },
-                    { "topP", new wkt::Value { NumberValue = 0.95 } },
-                    { "topK", new wkt::Value { NumberValue = 40 } }
-                }
+                { "temperature", new Value { NumberValue = 0.2 } },
+                { "maxOutputTokens", new Value { NumberValue = 256 } },
+                { "topP", new Value { NumberValue = 0.95 } },
+                { "topK", new Value { NumberValue = 40 } }
             }
-        };
+        });
 
         // Make the request
         var response = client.Predict(endpoint, instances, parameters);
-        Console.WriteLine("Predict Response");
-        Console.WriteLine(response);
-        return response;
+
+        // Parse and return the content.
+        var content = response.Predictions.First().StructValue.Fields["content"].StringValue;
+        Console.WriteLine($"Content: {content}");
+        return content;
     }
 }
 
