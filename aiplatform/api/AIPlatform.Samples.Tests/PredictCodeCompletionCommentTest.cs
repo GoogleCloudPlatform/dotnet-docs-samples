@@ -29,7 +29,7 @@ public class PredictCodeCompletionCommentTest
     }
 
     [Fact]
-    public void Runs()
+    public void TestPredictComment()
     {
         var response = _sample.PredictComment(_fixture.ProjectId);
         Assert.NotNull(response);

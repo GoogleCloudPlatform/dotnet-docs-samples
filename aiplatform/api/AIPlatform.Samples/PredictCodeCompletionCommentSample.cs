@@ -17,10 +17,11 @@
 // [START aiplatform_sdk_code_completion_comment]
 
 using Google.Cloud.AIPlatform.V1;
-using wkt = Google.Protobuf.WellKnownTypes;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class PredictCodeCompletionCommentSample
 {
@@ -41,32 +42,34 @@ public class PredictCodeCompletionCommentSample
         // Configure the parent resource.
         var endpoint = EndpointName.FromProjectLocationPublisherModel(projectId, locationId, publisher, model);
 
-        // Learn how to create prompts to work with a code model to create code completion suggestions:
-        // https://cloud.google.com/vertex-ai/docs/generative-ai/code/code-completion-prompts
         var prefix = @"
-def reverse_string(s):
-    return s[::-1]
+public static string ReverseString(string s)
+{
+    char[] chars = s.ToCharArray();
+    Array.Reverse(chars);
+    return new string(chars);
+}
 #This function";
 
-        var instances = new List<wkt::Value>
+        var instances = new List<Value>
         {
-            wkt::Value.ForStruct(new()
+            Value.ForStruct(new()
             {
                 Fields =
                 {
-                    ["prefix"] = wkt::Value.ForString(prefix),
+                    ["prefix"] = Value.ForString(prefix),
                 }
             })
         };
 
-        var parameters = new wkt::Value
+        var parameters = new Value
         {
-            StructValue = new wkt::Struct
+            StructValue = new Struct
             {
                 Fields =
                 {
-                    { "temperature", new wkt::Value { NumberValue = 0.2 } },
-                    { "maxOutputTokens", new wkt::Value { NumberValue = 64 } }
+                    { "temperature", new Value { NumberValue = 0.2 } },
+                    { "maxOutputTokens", new Value { NumberValue = 64 } }
                 }
             }
         };
