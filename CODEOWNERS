@@ -31,6 +31,7 @@ secretmanager/  @GoogleCloudPlatform/dotnet-samples-reviewers
 
 applications/googlehome-meets-dotnetcontainers/  @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 run/                                             @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
+aiplatform/                                      @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 
 retail/ @chenlei1216 @GoogleCloudPlatform/dotnet-samples-reviewers
 
