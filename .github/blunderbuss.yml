@@ -37,6 +37,12 @@ assign_issues_by:
   - 'product: appengine flex'
   to:
   - GoogleCloudPlatform/serverless-runtimes
+- labels:
+  - 'aiplatform'
+  - 'api: aiplatform'
+  - 'api: vertex-ai'
+  to:
+  - meteatamel
 
 assign_prs_always:
 - GoogleCloudPlatform/dotnet-samples-reviewers
@@ -86,3 +92,9 @@ assign_prs_by:
   - 'product: appengine flex'
   to:
   - GoogleCloudPlatform/serverless-runtimes
+- labels:
+  - 'aiplatform'
+  - 'api: aiplatform'
+  - 'api: vertex-ai'
+  to:
+  - meteatamel
