@@ -4,6 +4,6 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Auth" Version="1.64.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.65.0" />
   </ItemGroup>
 </Project>
