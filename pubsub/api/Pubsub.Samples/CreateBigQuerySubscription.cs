@@ -24,15 +24,13 @@ public class CreateBigQuerySubscriptionSample
         TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
 
-        BigQueryConfig bigqueryConfig = new BigQueryConfig { Table = bigqueryTableId };
-
         var subscriptionRequest = new Subscription
         {
             SubscriptionName = subscriptionName,
             TopicAsTopicName = topicName,
             BigqueryConfig = new BigQueryConfig
             {
-              Table = bigqueryTableId
+                Table = bigqueryTableId
             }
         };
         var subscription = subscriber.CreateSubscription(subscriptionRequest);

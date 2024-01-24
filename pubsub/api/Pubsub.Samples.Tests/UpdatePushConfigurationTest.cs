@@ -19,8 +19,8 @@ public class UpdatePushConfigurationTest
 {
     private readonly PubsubFixture _pubsubFixture;
     private readonly CreatePushSubscriptionSample _createPushSubscriptionSample;
-    private UpdatePushConfigurationSample _updatePushConfigurationSample;
-    private ListSubscriptionsSample _listSubscriptionsSample;
+    private readonly UpdatePushConfigurationSample _updatePushConfigurationSample;
+    private readonly ListSubscriptionsSample _listSubscriptionsSample;
 
     public UpdatePushConfigurationTest(PubsubFixture pubsubFixture)
     {
