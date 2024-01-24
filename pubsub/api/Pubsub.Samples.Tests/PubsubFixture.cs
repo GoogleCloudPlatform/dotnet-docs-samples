@@ -13,8 +13,10 @@
 // limitations under the License.
 
 using Google.Apis.Bigquery.v2.Data;
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.BigQuery.V2;
 using Google.Cloud.PubSub.V1;
+using Google.Cloud.Storage.V1;
 using GoogleCloudSamples;
 using Grpc.Core;
 using System;
@@ -35,6 +37,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string BigQueryDatasetId { get; } = $"testDataSet{Guid.NewGuid().ToString().Substring(24)}";
     public string BigQueryTableId { get; } = $"testTable{Guid.NewGuid().ToString().Substring(24)}";
     public string BigQueryTableName { get; }
+    public string CloudStorageBucketName { get; }
 
     public RetryRobot Pull { get; } = new RetryRobot
     {
@@ -48,6 +51,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         CreateTopic(DeadLetterTopic);
         BigQueryTableName = CreateBigQueryTable();
+        CloudStorageBucketName = CreateCloudStorageBucket();
     }
 
     public void Dispose()
@@ -89,6 +93,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
             }
         }
         DeleteBigQueryTable();
+        DeleteCloudStorageBucket();
     }
 
     public Topic CreateTopic(string topicId)
@@ -163,14 +168,31 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return $"{ProjectId}.{BigQueryDatasetId}.{BigQueryTableId}";
     }
 
+    public string CreateCloudStorageBucket()
+    {
+        StorageClient client = StorageClient.Create();
+        Bucket bucket = client.CreateBucket(ProjectId, $"testbucket-{RandomName()}");
+        return bucket.Name;
+    }
+
     public void DeleteBigQueryTable()
     {
         BigQueryClient client = BigQueryClient.Create(ProjectId);
         DeleteDatasetOptions options = new DeleteDatasetOptions
         {
-          DeleteContents = true
+            DeleteContents = true
         };
         client.DeleteDataset(datasetId: BigQueryDatasetId, options);
+    }
+
+    public void DeleteCloudStorageBucket()
+    {
+        StorageClient client = StorageClient.Create();
+        DeleteBucketOptions options = new DeleteBucketOptions
+        {
+            DeleteObjects = true
+        };
+        client.DeleteBucket(CloudStorageBucketName, options);
     }
 
     public Topic GetTopic(string topicId)
