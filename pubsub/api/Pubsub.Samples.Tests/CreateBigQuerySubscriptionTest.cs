@@ -36,8 +36,8 @@ public class CreateBigQuerySubscriptionTest
 
         _pubsubFixture.CreateTopic(topicId);
 
-        var subscription = _createBigQuerySubscriptionSample.CreateBigQuerySubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, tablePath);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
+        var subscription = _createBigQuerySubscriptionSample.CreateBigQuerySubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, tablePath);
 
         Assert.Equal(subscription.BigqueryConfig.Table, tablePath);
     }
