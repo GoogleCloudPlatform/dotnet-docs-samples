@@ -36,7 +36,7 @@ public class RemoveDeadLetterPolicyTest
         string subscriptionId = $"testSubscriptionForRemoveDeadLetterPolicy{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
-        _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(_pubsubFixture.ProjectId, subscriptionId, topicId, _pubsubFixture.DeadLetterTopic);
+        _createSubscriptionWithDeadLetterPolicySample.CreateSubscriptionWithDeadLetterPolicy(_pubsubFixture.ProjectId, topicId, subscriptionId, _pubsubFixture.DeadLetterTopic);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
 
         _removeDeadLetterPolicySample.RemoveDeadLetterPolicy(_pubsubFixture.ProjectId, topicId, subscriptionId);

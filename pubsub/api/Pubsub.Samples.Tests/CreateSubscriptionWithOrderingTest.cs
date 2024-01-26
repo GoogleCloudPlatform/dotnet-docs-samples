@@ -34,7 +34,7 @@ public class CreateSubscriptionWithOrderingTest
         string subscriptionId = $"testSubscriptionForCreateSubscriptionWithOrdering{randomName}";
 
         _pubsubFixture.CreateTopic(topicId);
-        _createSubscriptionWithOrderingSample.CreateSubscriptionWithOrdering(_pubsubFixture.ProjectId, subscriptionId, topicId);
+        _createSubscriptionWithOrderingSample.CreateSubscriptionWithOrdering(_pubsubFixture.ProjectId, topicId, subscriptionId);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
         var subscription = _pubsubFixture.GetSubscription(subscriptionId);
 

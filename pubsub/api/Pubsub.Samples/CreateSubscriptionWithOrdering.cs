@@ -19,7 +19,7 @@ using Grpc.Core;
 
 public class CreateSubscriptionWithOrderingSample
 {
-    public Subscription CreateSubscriptionWithOrdering(string projectId, string subscriptionId, string topicId)
+    public Subscription CreateSubscriptionWithOrdering(string projectId, string topicId, string subscriptionId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
         var topicName = TopicName.FromProjectTopic(projectId, topicId);

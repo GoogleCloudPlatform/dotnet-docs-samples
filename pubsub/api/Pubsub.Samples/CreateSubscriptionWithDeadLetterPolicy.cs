@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ using System;
 
 public class CreateSubscriptionWithDeadLetterPolicySample
 {
-    public Subscription CreateSubscriptionWithDeadLetterPolicy(string projectId, string subscriptionId, string topicId, string deadLetterTopicId)
+    public Subscription CreateSubscriptionWithDeadLetterPolicy(string projectId, string topicId, string subscriptionId, string deadLetterTopicId)
     {
         SubscriberServiceApiClient subscriber = SubscriberServiceApiClient.Create();
         // This is the subscription you want to create with a dead letter policy.
