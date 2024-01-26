@@ -1,4 +1,4 @@
-// Copyright 2020 Google Inc.
+// Copyright 2024 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,28 +15,28 @@
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
-public class CreatePushSubscriptionTest
+public class CreateUnwrappedPushSubscriptionTest
 {
     private readonly PubsubFixture _pubsubFixture;
-    private readonly CreatePushSubscriptionSample _createPushSubscriptionSample;
+    private readonly CreateUnwrappedPushSubscriptionSample _createUnwrappedPushSubscriptionSample;
 
-    public CreatePushSubscriptionTest(PubsubFixture pubsubFixture)
+    public CreateUnwrappedPushSubscriptionTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
-        _createPushSubscriptionSample = new CreatePushSubscriptionSample();
+        _createUnwrappedPushSubscriptionSample = new CreateUnwrappedPushSubscriptionSample();
     }
 
     [Fact]
-    public void TestCreatePushSubscription()
+    public void TestCreateUnwrappedPushSubscription()
     {
         string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForCreatePushSubscription{randomName}";
-        string subscriptionId = $"testSubscriptionForCreatePushSubscription{randomName}";
+        string topicId = $"testTopicForCreateUnwrappedPushSubscription{randomName}";
+        string subscriptionId = $"testSubscriptionForUnwrappedCreatePushSubscription{randomName}";
         string pushEndpoint = "https://my-test-project.appspot.com/push";
 
         _pubsubFixture.CreateTopic(topicId);
 
-        var subscription = _createPushSubscriptionSample.CreatePushSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, pushEndpoint);
+        var subscription = _createUnwrappedPushSubscriptionSample.CreateUnwrappedPushSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, pushEndpoint);
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);
 
         Assert.Equal(subscription.PushConfig.PushEndpoint, pushEndpoint);
