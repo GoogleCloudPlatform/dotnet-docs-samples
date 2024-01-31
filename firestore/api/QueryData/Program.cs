@@ -120,8 +120,8 @@ Where command is one of
         private static async Task SimpleQueries(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_single_examples]
+            CollectionReference citiesRef = db.Collection("cities");
             Query stateQuery = citiesRef.WhereEqualTo("State", "CA");
             Query populationQuery = citiesRef.WhereGreaterThan("Population", 1000000);
             Query nameQuery = citiesRef.WhereGreaterThanOrEqualTo("Name", "San Francisco");
@@ -146,8 +146,8 @@ Where command is one of
         private static async Task ArrayContainsQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_array_contains]
+            CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.WhereArrayContains("Regions", "west_coast");
             // [END firestore_query_filter_array_contains]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
@@ -160,8 +160,8 @@ Where command is one of
         private static async Task ArrayContainsAnyQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_array_contains_any]
+            CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.WhereArrayContainsAny("Regions", new[] { "west_coast", "east_coast" });
             // [END firestore_query_filter_array_contains_any]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
@@ -174,8 +174,8 @@ Where command is one of
         private static async Task InQueryWithoutArray(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_in]
+            CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.WhereIn("Country", new[] { "USA", "Japan" });
             // [END firestore_query_filter_in]
             QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
@@ -188,8 +188,8 @@ Where command is one of
         private static async Task InQueryWithArray(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_in_with_array]
+            CollectionReference citiesRef = db.Collection("cities");
             Query query = citiesRef.WhereIn("Regions",
                 new[] { new[] { "west_coast" }, new[] { "east_coast" } });
             // [END firestore_query_filter_in_with_array]
@@ -203,8 +203,8 @@ Where command is one of
         private static async Task CollectionGroupQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_collection_group_dataset]
+            CollectionReference citiesRef = db.Collection("cities");
             await citiesRef.Document("SF").Collection("landmarks").Document()
                 .CreateAsync(new { Name = "Golden Gate Bridge", Type = "bridge" });
             await citiesRef.Document("SF").Collection("landmarks").Document()
@@ -238,8 +238,8 @@ Where command is one of
         private static async Task ChainedQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_compound_multi_eq]
+            CollectionReference citiesRef = db.Collection("cities");
             Query chainedQuery = citiesRef
                 .WhereEqualTo("State", "CA")
                 .WhereEqualTo("Name", "San Francisco");
@@ -254,8 +254,8 @@ Where command is one of
         private static async Task CompositeIndexChainedQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_compound_multi_eq_lt]
+            CollectionReference citiesRef = db.Collection("cities");
             Query chainedQuery = citiesRef
                 .WhereEqualTo("State", "CA")
                 .WhereLessThan("Population", 1000000);
@@ -270,8 +270,8 @@ Where command is one of
         private static async Task RangeQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_range_valid]
+            CollectionReference citiesRef = db.Collection("cities");
             Query rangeQuery = citiesRef
                 .WhereGreaterThanOrEqualTo("State", "CA")
                 .WhereLessThanOrEqualTo("State", "IN");
@@ -286,8 +286,8 @@ Where command is one of
         private static void InvalidRangeQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
             // [START firestore_query_filter_range_invalid]
+            CollectionReference citiesRef = db.Collection("cities");
             Query invalidRangeQuery = citiesRef
                 .WhereGreaterThanOrEqualTo("State", "CA")
                 .WhereGreaterThan("Population", 1000000);
