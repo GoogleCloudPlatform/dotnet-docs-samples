@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package utilities;
+option java_outer_classname = "StateProto";
+
+message State {
+  string name = 1;
+  // This schema has a comment which wasn't present before.
+  string post_abbr = 2;
+}
