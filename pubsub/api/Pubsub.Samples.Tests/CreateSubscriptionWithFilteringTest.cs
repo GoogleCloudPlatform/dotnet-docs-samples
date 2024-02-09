@@ -29,9 +29,7 @@ public class CreateSubscriptionWithFilteringTest
     [Fact]
     public void CreateSubscriptionWithFiltering()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForCreateSubscriptionWithFiltering{randomName}";
-        string subscriptionId = $"testSubscriptionForCreateSubscriptionWithFiltering{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         string filter = "attributes:domain";
 
         _pubsubFixture.CreateTopic(topicId);

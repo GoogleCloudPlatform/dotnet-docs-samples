@@ -29,7 +29,7 @@ public class ListTopicsTest
     [Fact]
     public void ListTopics()
     {
-        string topicId = "testTopicForListingTopics" + _pubsubFixture.RandomName();
+        string topicId = _pubsubFixture.RandomTopicId();
         _pubsubFixture.CreateTopic(topicId);
 
         var listProjectTopicsOutput = _listProjectTopicsSample.ListProjectTopics(_pubsubFixture.ProjectId);

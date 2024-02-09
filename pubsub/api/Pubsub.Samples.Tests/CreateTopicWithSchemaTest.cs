@@ -30,11 +30,11 @@ public class CreateTopicWithSchemaTest
     [Fact]
     public void CreateTopicWithSchema()
     {
-        string schemaId = "testSchemaForTopicCreationWithSchema" + _pubsubFixture.RandomName();
-        var schema = _pubsubFixture.CreateAvroSchema(schemaId);
+        string schemaId = _pubsubFixture.RandomSchemaId();
+        _pubsubFixture.CreateAvroSchema(schemaId);
 
-        string topicId = "testTopicForTopicCreationWithSchema" + _pubsubFixture.RandomName();
-        var newlyCreatedTopic = _createTopicWithSchemaSample.CreateTopicWithSchema(_pubsubFixture.ProjectId, topicId, schema.Name, Encoding.Json);
+        string topicId = _pubsubFixture.RandomTopicId();
+        var newlyCreatedTopic = _createTopicWithSchemaSample.CreateTopicWithSchema(_pubsubFixture.ProjectId, topicId, schemaId, Encoding.Json);
         _pubsubFixture.TempTopicIds.Add(topicId);
         var topic = _pubsubFixture.GetTopic(topicId);
         Assert.Equal(newlyCreatedTopic, topic);

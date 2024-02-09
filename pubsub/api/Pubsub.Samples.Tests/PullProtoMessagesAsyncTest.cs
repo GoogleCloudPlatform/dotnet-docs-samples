@@ -33,13 +33,10 @@ public class PullProtoMessagesAsyncTest
     [Fact]
     public async Task PullProtoBinaryMessagesAsync()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForProtoBinaryMessageAck{randomName}";
-        string subscriptionId = $"testSubscriptionForProtoBinaryMessageAck{randomName}";
-        string schemaId = $"testSchemaForProtoBinaryMessageAck{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateProtoSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Binary);
+        _pubsubFixture.CreateProtoSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Binary);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         await _publishProtoMessagesAsyncSample.PublishProtoMessagesAsync(_pubsubFixture.ProjectId, topicId, new Utilities.State[] { new Utilities.State { Name = "New York", PostAbbr = "NY" } });
@@ -59,13 +56,10 @@ public class PullProtoMessagesAsyncTest
     [Fact]
     public async Task PullProtoJsonMessagesAsync()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForProtoJsonMessageAck{randomName}";
-        string subscriptionId = $"testSubscriptionForProtoJsonMessageAck{randomName}";
-        string schemaId = $"testSchemaForProtoJsonMessageAck{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateProtoSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Json);
+        _pubsubFixture.CreateProtoSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Json);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         await _publishProtoMessagesAsyncSample.PublishProtoMessagesAsync(_pubsubFixture.ProjectId, topicId, new Utilities.State[] { new Utilities.State { Name = "New York", PostAbbr = "NY" } });

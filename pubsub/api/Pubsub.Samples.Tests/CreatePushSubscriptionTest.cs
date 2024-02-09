@@ -27,11 +27,9 @@ public class CreatePushSubscriptionTest
     }
 
     [Fact]
-    public void TestCreatePushSubscription()
+    public void CreatePushSubscription()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForCreatePushSubscription{randomName}";
-        string subscriptionId = $"testSubscriptionForCreatePushSubscription{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         string pushEndpoint = "https://my-test-project.appspot.com/push";
 
         _pubsubFixture.CreateTopic(topicId);

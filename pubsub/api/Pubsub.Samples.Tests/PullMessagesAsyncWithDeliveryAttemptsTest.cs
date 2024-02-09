@@ -35,9 +35,7 @@ public class PullMessagesAsyncWithDeliveryAttemptsTest
     [Fact]
     public async Task PullMessagesAsyncWithDeliveryAttempts()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForDeadLetterPolicyMessageSyncAck{randomName}";
-        string subscriptionId = $"testSubscriptionDeadLetterPolicyForMessageSyncAck{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);

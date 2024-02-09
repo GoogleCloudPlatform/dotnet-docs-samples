@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,9 +32,7 @@ public class PullMessagesAsyncTest
     [Fact]
     public async Task PullMessagesAsync()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForMessageAck{randomName}";
-        string subscriptionId = $"testSubscriptionForMessageAck{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         var message = _pubsubFixture.RandomName();
 
         _pubsubFixture.CreateTopic(topicId);

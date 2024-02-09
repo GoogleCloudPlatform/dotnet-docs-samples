@@ -27,11 +27,9 @@ public class CreateBigQuerySubscriptionTest
     }
 
     [Fact]
-    public void TestCreateBigQuerySubscription()
+    public void CreateBigQuerySubscription()
     {
-        string randomName = _pubsubFixture.RandomName().Replace("-", "_");
-        string topicId = $"testTopicForCreateBigQuerySubscription{randomName}";
-        string subscriptionId = $"testSubscriptionForCreateBigQuerySubscription{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         string tablePath = _pubsubFixture.BigQueryTableName;
 
         _pubsubFixture.CreateTopic(topicId);

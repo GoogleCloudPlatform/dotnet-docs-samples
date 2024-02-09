@@ -20,16 +20,16 @@ using System;
 
 public class CreateTopicWithSchemaSample
 {
-    public Topic CreateTopicWithSchema(string projectId, string topicId, string schemaName, Encoding encoding)
+    public Topic CreateTopicWithSchema(string projectId, string topicId, string schemaId, Encoding encoding)
     {
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         var topicName = TopicName.FromProjectTopic(projectId, topicId);
         Topic topic = new Topic
         {
-            Name = topicName.ToString(),
+            TopicName = topicName,
             SchemaSettings = new SchemaSettings
             {
-                Schema = schemaName,
+                SchemaAsSchemaName = SchemaName.FromProjectSchema(projectId, schemaId),
                 Encoding = encoding
             }
         };

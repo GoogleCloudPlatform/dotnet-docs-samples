@@ -33,9 +33,7 @@ public class PublishOrderedMessagesAsyncTest
     [Fact]
     public async Task PublishOrderedMessagesAsync()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForOrderedPublish{randomName}";
-        string subscriptionId = $"testSubscriptionForOrderedPublish{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);

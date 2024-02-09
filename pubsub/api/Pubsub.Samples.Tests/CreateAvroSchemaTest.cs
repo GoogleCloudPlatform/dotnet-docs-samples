@@ -29,7 +29,7 @@ public class CreateAvroSchemaTest
     [Fact]
     public void CreateAvroSchema()
     {
-        string schemaId = "testAvroSchemaForSchemaCreation" + _pubsubFixture.RandomName();
+        string schemaId = _pubsubFixture.RandomSchemaId();
         var newlyCreatedSchema = _createAvroSchemaSample.CreateAvroSchema(_pubsubFixture.ProjectId, schemaId, _pubsubFixture.AvroSchemaFile);
         _pubsubFixture.TempSchemaIds.Add(schemaId);
         var schema = _pubsubFixture.GetSchema(schemaId);

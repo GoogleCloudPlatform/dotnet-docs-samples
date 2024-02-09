@@ -14,6 +14,7 @@
 
 // [START pubsub_create_avro_schema]
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.PubSub.V1;
 using Grpc.Core;
 using System;
@@ -28,13 +29,13 @@ public class CreateAvroSchemaSample
         string schemaDefinition = File.ReadAllText(pathToDefinition);
         Schema schema = new Schema
         {
-            Name = schemaName.ToString(),
+            SchemaName = schemaName,
             Type = Schema.Types.Type.Avro,
             Definition = schemaDefinition
         };
         CreateSchemaRequest createSchemaRequest = new CreateSchemaRequest
         {
-            Parent = "projects/" + projectId,
+            ParentAsProjectName = ProjectName.FromProject(projectId),
             SchemaId = schemaId,
             Schema = schema
         };
