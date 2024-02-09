@@ -27,11 +27,9 @@ public class CreateUnwrappedPushSubscriptionTest
     }
 
     [Fact]
-    public void TestCreateUnwrappedPushSubscription()
+    public void CreateUnwrappedPushSubscription()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForCreateUnwrappedPushSubscription{randomName}";
-        string subscriptionId = $"testSubscriptionForUnwrappedCreatePushSubscription{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         string pushEndpoint = "https://my-test-project.appspot.com/push";
 
         _pubsubFixture.CreateTopic(topicId);

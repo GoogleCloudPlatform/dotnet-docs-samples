@@ -30,7 +30,7 @@ public class DeleteSchemaTest
     [Fact]
     public void DeleteSchema()
     {
-        string schemaId = "testSchemaForDeleteSchema" + _pubsubFixture.RandomName();
+        string schemaId = _pubsubFixture.RandomSchemaId();
 
         _pubsubFixture.CreateAvroSchema(schemaId);
         _deleteSchemaSample.DeleteSchema(_pubsubFixture.ProjectId, schemaId);

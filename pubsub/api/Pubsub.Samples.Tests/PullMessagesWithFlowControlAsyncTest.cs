@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ public class PullMessagesWithFlowControlAsyncTest
     [Fact]
     public async Task PullMessagesWithFlowControlAsync()
     {
-        string topicId = $"testTopicForMessageWithFlowControlAck{_pubsubFixture.RandomName()}";
+        string topicId = _pubsubFixture.RandomTopicId();
         _pubsubFixture.CreateTopic(topicId);
 
         // For this sample in particular, we need to retry the sbscription creation, the message publishing etc.
@@ -44,7 +44,7 @@ public class PullMessagesWithFlowControlAsyncTest
         // keep extending.
         await _pubsubFixture.Pull.Eventually(async () =>
         {
-            string subscriptionId = $"testSubscriptionForMessageWithFlowControlAck{_pubsubFixture.RandomName()}";
+            string subscriptionId = _pubsubFixture.RandomName("testSubscriptionForMessageWithFlowControlAck");
             _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
             var message = _pubsubFixture.RandomName();

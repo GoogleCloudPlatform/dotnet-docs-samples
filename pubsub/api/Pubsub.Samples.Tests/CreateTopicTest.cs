@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class CreateTopicTest
     [Fact]
     public void CreateTopic()
     {
-        string topicId = "testTopicForTopicCreation" + _pubsubFixture.RandomName();
+        string topicId = _pubsubFixture.RandomTopicId();
         var newlyCreatedTopic = _createTopicSample.CreateTopic(_pubsubFixture.ProjectId, topicId);
         _pubsubFixture.TempTopicIds.Add(topicId);
         var topic = _pubsubFixture.GetTopic(topicId);

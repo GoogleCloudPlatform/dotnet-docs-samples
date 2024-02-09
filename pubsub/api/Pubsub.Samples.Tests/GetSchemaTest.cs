@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -30,7 +29,7 @@ public class GetSchemaTest
     [Fact]
     public void GetSchema()
     {
-        string schemaId = "testSchemaForGetSchema" + _pubsubFixture.RandomName();
+        string schemaId = _pubsubFixture.RandomSchemaId();
 
         _pubsubFixture.CreateAvroSchema(schemaId);
         _pubsubFixture.GetSchema(schemaId);

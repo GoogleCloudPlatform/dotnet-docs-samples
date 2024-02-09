@@ -34,13 +34,10 @@ public class PublishAvroMessagesAsyncTest
     [Fact]
     public async Task PublishBinaryMessages()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicAvroBinaryMessageCreation{randomName}";
-        string subscriptionId = $"testSubscriptionAvroBinaryMessageCreation{randomName}";
-        string schemaId = $"testSchemaAvroBinaryMessageCreation{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateAvroSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Binary);
+        _pubsubFixture.CreateAvroSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Binary);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         List<AvroUtilities.State> messageTexts = new List<AvroUtilities.State> { new AvroUtilities.State { name = "New York", post_abbr = "NY" }, new AvroUtilities.State { name = "Pennsylvania", post_abbr = "PA" } };
@@ -59,13 +56,10 @@ public class PublishAvroMessagesAsyncTest
     [Fact]
     public async Task PublishJsonMessages()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForAvroJsonMessageCreation{randomName}";
-        string subscriptionId = $"testSubscriptionAvroJsonMessageCreation{randomName}";
-        string schemaId = $"testSchemaAvroJsonMessageCreation{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateAvroSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Json);
+        _pubsubFixture.CreateAvroSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Json);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         List<AvroUtilities.State> messageTexts = new List<AvroUtilities.State> { new AvroUtilities.State { name = "New York", post_abbr = "NY" }, new AvroUtilities.State { name = "Pennsylvania", post_abbr = "PA" } };

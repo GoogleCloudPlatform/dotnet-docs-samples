@@ -31,11 +31,9 @@ public class UpdatePushConfigurationTest
     }
 
     [Fact]
-    public void TestUpdatePushConfiguration()
+    public void UpdatePushConfiguration()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForUpdatePushConfiguration{randomName}";
-        string subscriptionId = $"testSubscriptionForUpdatePushConfiguration{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         _pubsubFixture.CreateTopic(topicId);
         _createPushSubscriptionSample.CreatePushSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId, "https://my-test-project.appspot.com/push");
         _pubsubFixture.TempSubscriptionIds.Add(subscriptionId);

@@ -34,13 +34,10 @@ public class PublishProtoMessagesAsyncTest
     [Fact]
     public async Task PublishBinaryMessages()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForProtoBinaryMessageCreation{randomName}";
-        string subscriptionId = $"testSubscriptionForProtoBinaryMessageCreation{randomName}";
-        string schemaId = $"testSchemaForProtoBinaryMessageCreation{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateProtoSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Binary);
+        _pubsubFixture.CreateProtoSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Binary);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         List<Utilities.State> messageTexts = new List<Utilities.State> { new Utilities.State { Name = "New York", PostAbbr = "NY" }, new Utilities.State { Name = "Pennsylvania", PostAbbr = "PA" } };
@@ -59,13 +56,10 @@ public class PublishProtoMessagesAsyncTest
     [Fact]
     public async Task PublishJsonMessages()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForProtoJsonMessageCreation{randomName}";
-        string subscriptionId = $"testSubscriptionForProtoJsonMessageCreation{randomName}";
-        string schemaId = $"testSchemaForProtoJsonMessageCreation{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateProtoSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Json);
+        _pubsubFixture.CreateProtoSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Json);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         List<Utilities.State> messageTexts = new List<Utilities.State> { new Utilities.State { Name = "New York", PostAbbr = "NY" }, new Utilities.State { Name = "Pennsylvania", PostAbbr = "PA" } };

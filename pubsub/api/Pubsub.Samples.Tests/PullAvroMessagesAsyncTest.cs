@@ -33,13 +33,10 @@ public class PullAvroMessagesAsyncTest
     [Fact]
     public async Task PullAvroBinaryMessagesAsync()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForAvroBinaryMessageAck{randomName}";
-        string subscriptionId = $"testSubscriptionForAvroBinaryMessageAck{randomName}";
-        string schemaId = $"testSchemaForAvroMessageBinaryAck{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateAvroSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Binary);
+        _pubsubFixture.CreateAvroSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Binary);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         await _publishAvroMessagesAsyncSample.PublishAvroMessagesAsync(_pubsubFixture.ProjectId, topicId, new AvroUtilities.State[] { new AvroUtilities.State { name = "New York", post_abbr = "NY" } });
@@ -59,13 +56,10 @@ public class PullAvroMessagesAsyncTest
     [Fact]
     public async Task PullAvroJsonMessagesAsync()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForAvroMessageJsonAck{randomName}";
-        string subscriptionId = $"testSubscriptionForAvroMessageJsonAck{randomName}";
-        string schemaId = $"testSchemaForAvroMessageJsonAck{randomName}";
+        var (topicId, subscriptionId, schemaId) = _pubsubFixture.RandomNameTopicSubscriptionSchemaId();
 
-        var schema = _pubsubFixture.CreateAvroSchema(schemaId);
-        _pubsubFixture.CreateTopicWithSchema(topicId, schema.Name.ToString(), Encoding.Json);
+        _pubsubFixture.CreateAvroSchema(schemaId);
+        _pubsubFixture.CreateTopicWithSchema(topicId, schemaId, Encoding.Json);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);
 
         await _publishAvroMessagesAsyncSample.PublishAvroMessagesAsync(_pubsubFixture.ProjectId, topicId, new AvroUtilities.State[] { new AvroUtilities.State { name = "New York", post_abbr = "NY" } });

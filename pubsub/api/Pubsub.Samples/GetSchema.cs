@@ -21,10 +21,9 @@ public class GetSchemaSample
     public Schema GetSchema(string projectId, string schemaId)
     {
         SchemaServiceClient schemaService = SchemaServiceClient.Create();
-        SchemaName schemaName = SchemaName.FromProjectSchema(projectId, schemaId);
         GetSchemaRequest request = new GetSchemaRequest
         {
-            Name = schemaName.ToString(),
+            SchemaName = SchemaName.FromProjectSchema(projectId, schemaId),
             View = SchemaView.Full
         };
 

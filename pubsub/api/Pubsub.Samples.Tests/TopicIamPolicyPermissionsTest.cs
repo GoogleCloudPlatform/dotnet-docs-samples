@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class TopicIamPolicyPermissionsTest
     [Fact]
     public void TopicIamPolicyPermissions()
     {
-        string topicId = "testTopicForTestTopicIamPolicy" + _pubsubFixture.RandomName();
+        string topicId = _pubsubFixture.RandomTopicId();
         string testRoleValueToConfirm = "pubsub.editor";
         string testMemberValueToConfirm = "group:cloud-logs@google.com";
 

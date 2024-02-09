@@ -33,9 +33,7 @@ public class ResumePublishTest
     [Fact]
     public async Task PublishMessage()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForResumePublish{randomName}";
-        string subscriptionId = $"testSubscriptionForResumePublish{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
 
         _pubsubFixture.CreateTopic(topicId);
         _pubsubFixture.CreateSubscription(topicId, subscriptionId);

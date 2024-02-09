@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,9 +29,7 @@ public class CreateSubscriptionTest
     [Fact]
     public void CreateSubscription()
     {
-        string randomName = _pubsubFixture.RandomName();
-        string topicId = $"testTopicForSubscriptionCreation{randomName}";
-        string subscriptionId = $"testSubscriptionForSubscriptionCreation{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
 
         _pubsubFixture.CreateTopic(topicId);
         var newlyCreatedSubscription = _createSubscriptionSample.CreateSubscription(_pubsubFixture.ProjectId, topicId, subscriptionId);

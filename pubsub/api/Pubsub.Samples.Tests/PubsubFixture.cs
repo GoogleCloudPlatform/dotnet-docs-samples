@@ -21,6 +21,7 @@ using GoogleCloudSamples;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Xunit;
 using Xunit.Sdk;
 
@@ -171,7 +172,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string CreateCloudStorageBucket()
     {
         StorageClient client = StorageClient.Create();
-        Bucket bucket = client.CreateBucket(ProjectId, $"testbucket-{RandomName()}");
+        Bucket bucket = client.CreateBucket(ProjectId, RandomName("testbucket-"));
         return bucket.Name;
     }
 
@@ -223,8 +224,25 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return schemaService.GetSchema(request);
     }
 
-    public string RandomName()
     {
-        return Guid.NewGuid().ToString().Substring(0, 18);
+
+    public string RandomName() => Guid.NewGuid().ToString().Substring(0, 18);
+
+    public string RandomName(string prefix) => prefix + RandomName();
+
+    public string RandomSchemaId([CallerMemberName] string caller = null) => RandomName($"test{caller}Schema");
+
+    public string RandomTopicId([CallerMemberName] string caller = null) => RandomName($"test{caller}Topic");
+
+    public (string topicId, string subscriptionId) RandomNameTopicSubscriptionId([CallerMemberName] string caller = null)
+    {
+        var randomName = RandomName();
+        return ($"test{caller}Topic{randomName}", $"test{caller}Subscription{randomName}");
+    }
+
+    public (string topicId, string subscriptionId, string schemaId) RandomNameTopicSubscriptionSchemaId([CallerMemberName] string caller = null)
+    {
+        var randomName = RandomName();
+        return ($"test{caller}Topic{randomName}", $"test{caller}Subscription{randomName}", $"test{caller}Schema{randomName}");
     }
 }

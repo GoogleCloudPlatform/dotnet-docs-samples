@@ -28,14 +28,12 @@ public class ListSchemasTest
     }
 
     [Fact]
-    public void TestListSchemas()
+    public void ListSchemas()
     {
-        string schemaId = "testSchemaForListSchemas" + _pubsubFixture.RandomName();
-
+        string schemaId = _pubsubFixture.RandomSchemaId();
         _pubsubFixture.CreateProtoSchema(schemaId);
 
         var schemas = _listSchemasSample.ListSchemas(_pubsubFixture.ProjectId);
-
         Assert.Contains(schemas.Select(s => s.SchemaName.SchemaId), c => c.Contains(schemaId));
     }
 }

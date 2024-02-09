@@ -29,7 +29,7 @@ public class CreateProtoSchemaTest
     [Fact]
     public void CreateProtoSchema()
     {
-        string schemaId = "testProtoSchemaForSchemaCreation" + _pubsubFixture.RandomName();
+        string schemaId = _pubsubFixture.RandomSchemaId();
         var newlyCreatedSchema = _createProtoSchemaSample.CreateProtoSchema(_pubsubFixture.ProjectId, schemaId, _pubsubFixture.ProtoSchemaFile);
         _pubsubFixture.TempSchemaIds.Add(schemaId);
         var schema = _pubsubFixture.GetSchema(schemaId);

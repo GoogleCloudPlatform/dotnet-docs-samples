@@ -28,11 +28,9 @@ public class CreateCloudStorageSubscriptionTest
     }
 
     [Fact]
-    public void TestCreateCloudStorageSubscription()
+    public void CreateCloudStorageSubscription()
     {
-        string randomName = _pubsubFixture.RandomName().Replace("-", "_");
-        string topicId = $"testTopicForCreateCloudStorageSubscription{randomName}";
-        string subscriptionId = $"testSubscriptionForCreateCloudStorageSubscription{randomName}";
+        var (topicId, subscriptionId) = _pubsubFixture.RandomNameTopicSubscriptionId();
         string bucket = _pubsubFixture.CloudStorageBucketName;
 
         _pubsubFixture.CreateTopic(topicId);
