@@ -22,6 +22,15 @@ using System.Collections.Generic;
 using Xunit;
 using Xunit.Sdk;
 
+public static class Global
+{
+    public static void SetTestEnvironment()
+    {
+        var googleProjectID = "my-project-id";
+        Environment.SetEnvironmentVariable("GOOGLE_PROJECT_ID", googleProjectID);
+    }
+}
+
 [CollectionDefinition(nameof(PubsubFixture))]
 public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
 {
@@ -45,6 +54,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
 
     public PubsubFixture()
     {
+        Global.SetTestEnvironment();
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         CreateTopic(DeadLetterTopic);
         BigQueryTableName = CreateBigQueryTable();
