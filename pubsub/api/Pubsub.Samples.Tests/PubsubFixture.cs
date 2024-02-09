@@ -21,6 +21,7 @@ using GoogleCloudSamples;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using Xunit;
 using Xunit.Sdk;
@@ -33,8 +34,12 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public List<string> TempSubscriptionIds { get; } = new List<string>();
     public List<string> TempSchemaIds { get; } = new List<string>();
     public string DeadLetterTopic { get; } = $"testDeadLetterTopic{Guid.NewGuid().ToString().Substring(0, 18)}";
-    public string AvroSchemaFile { get; } = $"Resources/us-states.avsc";
-    public string ProtoSchemaFile { get; } = $"Resources/us-states.proto";
+    public string AvroSchemaFile { get; } = "Resources/us-states.avsc";
+    // The schema to use when to update an Avro schema
+    public string NewAvroSchemaFile { get; } = "Resources/us-states-new.avsc";
+    public string ProtoSchemaFile { get; } = "Resources/us-states.proto";
+    // The schema to use when to update a proto schema
+    public string NewProtoSchemaFile { get; } = "Resources/us-states-new.proto";
     public string BigQueryDatasetId { get; } = $"testDataSet{Guid.NewGuid().ToString().Substring(24)}";
     public string BigQueryTableId { get; } = $"testTable{Guid.NewGuid().ToString().Substring(24)}";
     public string BigQueryTableName { get; }
@@ -224,7 +229,12 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return schemaService.GetSchema(request);
     }
 
+    public List<Schema> ListSchemaRevisions(string schemaId)
     {
+        SchemaServiceClient schemaService = SchemaServiceClient.Create();
+        SchemaName schemaName = SchemaName.FromProjectSchema(ProjectId, schemaId);
+        return schemaService.ListSchemaRevisions(schemaName).ToList();
+    }
 
     public string RandomName() => Guid.NewGuid().ToString().Substring(0, 18);
 
