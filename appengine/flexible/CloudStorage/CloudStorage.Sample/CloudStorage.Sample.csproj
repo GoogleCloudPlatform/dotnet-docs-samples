@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.7.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.8.0" />
   </ItemGroup>
 
 </Project>
