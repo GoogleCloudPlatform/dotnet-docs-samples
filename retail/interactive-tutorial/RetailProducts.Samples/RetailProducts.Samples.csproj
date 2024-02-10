@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.5.0" />
-    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.7.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.8.0" />
     <PackageReference Include="Google.Cloud.Retail.V2" Version="2.6.0" />
   </ItemGroup>
 
