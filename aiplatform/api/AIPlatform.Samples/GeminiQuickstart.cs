@@ -79,9 +79,8 @@ public class GeminiQuickstart
 
         // Read streaming responses from server until complete
         AsyncResponseStream<GenerateContentResponse> responseStream = response.GetResponseStream();
-        while (await responseStream.MoveNextAsync())
+        await foreach (GenerateContentResponse responseItem in responseStream)
         {
-            GenerateContentResponse responseItem = responseStream.Current;
             fullText.Append(responseItem.Candidates[0].Content.Parts[0].Text);
         }
 
