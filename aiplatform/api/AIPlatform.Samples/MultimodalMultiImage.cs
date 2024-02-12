@@ -24,7 +24,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-public class GeminiMultimodalMultiImage
+public class MultimodalMultiImage
 {
     public async Task<string> GenerateContent(
         string projectId = "your-project-id",
@@ -104,12 +104,10 @@ public class GeminiMultimodalMultiImage
 
         // Read streaming responses from server until complete
         AsyncResponseStream<GenerateContentResponse> responseStream = response.GetResponseStream();
-        while (await responseStream.MoveNextAsync())
+        await foreach (GenerateContentResponse responseItem in responseStream)
         {
-            GenerateContentResponse responseItem = responseStream.Current;
             fullText.Append(responseItem.Candidates[0].Content.Parts[0].Text);
         }
-
         return fullText.ToString();
     }
 
