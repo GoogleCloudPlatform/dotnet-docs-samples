@@ -54,7 +54,7 @@ public class PublishProtoMessagesAsyncSample
             }
             catch (Exception exception)
             {
-                Console.WriteLine($"An error ocurred when publishing message {state}: {exception.Message}");
+                Console.WriteLine($"An error occurred when publishing message {state}: {exception.Message}");
             }
         });
         await Task.WhenAll(publishTasks);
