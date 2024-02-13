@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ using Google.Cloud.PubSub.V1;
 using Grpc.Core;
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 public class PullMessagesSyncSample

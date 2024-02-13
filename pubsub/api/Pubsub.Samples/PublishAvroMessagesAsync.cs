@@ -17,7 +17,6 @@
 using Avro.IO;
 using Avro.Specific;
 using Google.Cloud.PubSub.V1;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
