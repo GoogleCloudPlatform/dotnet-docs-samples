@@ -17,7 +17,6 @@
 using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -41,7 +40,7 @@ public class PullMessagesWithFlowControlAsyncSample
         // threads to maximize throughput.
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
-            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
+            string text = message.Data.ToStringUtf8();
             Console.WriteLine($"Message {message.MessageId}: {text}");
             Interlocked.Increment(ref messageCount);
             return Task.FromResult(acknowledge ? SubscriberClient.Reply.Ack : SubscriberClient.Reply.Nack);

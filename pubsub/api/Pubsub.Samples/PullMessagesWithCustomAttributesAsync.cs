@@ -17,7 +17,6 @@
 using Google.Cloud.PubSub.V1;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -32,7 +31,7 @@ public class PullMessagesWithCustomAttributesAsyncSample
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             messages.Add(message);
-            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
+            string text = message.Data.ToStringUtf8();
             Console.WriteLine($"Message {message.MessageId}: {text}");
             if (message.Attributes != null)
             {

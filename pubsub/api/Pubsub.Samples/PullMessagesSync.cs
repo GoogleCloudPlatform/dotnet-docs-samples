@@ -35,7 +35,7 @@ public class PullMessagesSyncSample
             // Print out each received message.
             foreach (ReceivedMessage msg in response.ReceivedMessages)
             {
-                string text = System.Text.Encoding.UTF8.GetString(msg.Message.Data.ToArray());
+                string text = msg.Message.Data.ToStringUtf8();
                 Console.WriteLine($"Message {msg.Message.MessageId}: {text}");
                 Interlocked.Increment(ref messageCount);
             }

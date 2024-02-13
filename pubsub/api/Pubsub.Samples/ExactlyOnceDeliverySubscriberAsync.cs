@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Google Inc.
+// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ using Google.Cloud.PubSub.V1;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using static Google.Cloud.PubSub.V1.SubscriberClient;
@@ -57,7 +56,7 @@ public class ExactlyOnceDeliverySubscriberAsyncSample
         /// </summary>
         public override async Task<Reply> HandleMessage(PubsubMessage message, CancellationToken cancellationToken)
         {
-            string text = System.Text.Encoding.UTF8.GetString(message.Data.ToArray());
+            string text = message.Data.ToStringUtf8();
             Console.WriteLine($"Message {message.MessageId}: {text}");
             return await Task.FromResult(Reply.Ack);
         }

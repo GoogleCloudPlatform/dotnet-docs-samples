@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ using Google.Cloud.PubSub.V1;
 using Grpc.Core;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 public class PullMessageWithLeaseManagementSample
 {
@@ -36,7 +35,7 @@ public class PullMessageWithLeaseManagementSample
             foreach (ReceivedMessage msg in response.ReceivedMessages)
             {
                 ackIds.Add(msg.AckId);
-                string text = System.Text.Encoding.UTF8.GetString(msg.Message.Data.ToArray());
+                string text = msg.Message.Data.ToStringUtf8();
                 Console.WriteLine($"Message {msg.Message.MessageId}: {text}");
 
                 // Modify the ack deadline of each received message from the default 10 seconds to 30.
