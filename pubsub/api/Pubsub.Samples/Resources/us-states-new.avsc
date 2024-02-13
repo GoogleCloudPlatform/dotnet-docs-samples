@@ -13,6 +13,12 @@
       "name":"post_abbr",
       "type":"string",
       "doc":"The postal code abbreviation of the state, e.g. CA."
+    },
+    {
+      "name":"capital",
+      "type": ["null", "string"],
+      "default": null,
+      "doc":"The capital city of the state. (Optional.)"
     }
   ]
 }
