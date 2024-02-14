@@ -103,6 +103,15 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     }
 
     [Fact]
+    public void TestCreateTableRangePartitioned()
+    {
+        var snippet = new BigQueryCreateTableRangePartitioned();
+        string datasetId = CreateTempDataset();
+        BigQueryTable table = snippet.CreateTable(_projectId, datasetId, "partitioned-table");
+        Assert.NotNull(table.Resource.RangePartitioning);
+    }
+
+    [Fact]
     public void TestDeleteDataset()
     {
         var snippet = new BigQueryDeleteDataset();
@@ -316,6 +325,7 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
         snippet.LoadTableGcsCsv(_projectId, datasetId);
         return "us_states";  // The table ID defined in the snippet
     }
+
     public void Dispose()
     {
         foreach (BigQueryDataset dataset in _tempDatasets)
