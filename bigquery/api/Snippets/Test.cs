@@ -146,6 +146,34 @@ public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
     }
 
     [Fact]
+    public void TestExtractModel()
+    {
+        string datasetId = CreateTempDataset();
+        string modelId = TestUtil.RandomName();
+        string createModelSql = $@"
+CREATE MODEL {datasetId}.{modelId}
+OPTIONS
+  (model_type='linear_reg',
+    input_label_cols=['label'],
+    max_iteration = 1,
+    learn_rate=0.4,
+    learn_rate_strategy='constant') AS
+SELECT 'a' AS f1, 2.0 AS label
+UNION ALL
+SELECT 'b' AS f1, 3.8 AS label";
+
+        var createModelJob = _client.CreateQueryJob(createModelSql, null);
+        createModelJob.PollUntilCompleted().ThrowOnAnyError();
+        Assert.NotNull(_client.GetModel(datasetId, modelId));
+
+        var snippet = new BigQueryExtractModel();
+        snippet.ExtractModel(_projectId, datasetId, modelId, $"gs://{_bucketName}/model");
+        var modelFiles = _storage.ListObjects(_bucketName, "model/").ToList();
+        // We end up with multiple files for the model.
+        Assert.True(modelFiles.Count > 4);
+    }
+
+    [Fact]
     public void TestExtractTable()
     {
         var snippet = new BigQueryExtractTable();
