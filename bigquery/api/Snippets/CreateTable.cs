@@ -15,7 +15,6 @@
 // [START bigquery_create_table]
 
 using Google.Cloud.BigQuery.V2;
-using System;
 
 public class BigQueryCreateTable
 {

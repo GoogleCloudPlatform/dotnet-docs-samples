@@ -13,17 +13,16 @@
 // the License.
 //
 
+using Google.Apis.Bigquery.v2.Data;
+using Google.Cloud.BigQuery.V2;
+using Google.Cloud.Storage.V1;
+using GoogleCloudSamples;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Google.Cloud.BigQuery.V2;
-using Google.Cloud.Storage.V1;
-using Google.Apis.Storage.v1.Data;
-using GoogleCloudSamples;
-using Xunit;
-using System.Text.RegularExpressions;
 using System.Linq;
-using Google.Apis.Bigquery.v2.Data;
+using System.Text.RegularExpressions;
+using Xunit;
 
 public class BigQueryTest : IDisposable, IClassFixture<RandomBucketFixture>
 {
