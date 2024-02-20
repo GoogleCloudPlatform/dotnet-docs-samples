@@ -30,7 +30,7 @@ public class MultimodalMultiImage
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-pro-vision"
+        string model = "gemini-1.0-pro-vision"
     )
     {
         // Create client
