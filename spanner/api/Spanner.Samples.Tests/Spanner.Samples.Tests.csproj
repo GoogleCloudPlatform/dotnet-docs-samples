@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Kms.V1" Version="3.8.0" />
-    <PackageReference Include="Google.Apis.Iam.v1" Version="1.66.0.3304" />
+    <PackageReference Include="Google.Apis.Iam.v1" Version="1.67.0.3304" />
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="xunit" Version="2.7.0" />
