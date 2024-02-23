@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Auth" Version="1.66.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.67.0" />
   </ItemGroup>
 
 </Project>
