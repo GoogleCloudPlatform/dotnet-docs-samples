@@ -28,6 +28,9 @@ namespace GoogleCloudSamples
             var input = Path.Combine(_fixture.ResourcePath, "test.png");
             var result = InspectImageForSensitiveDataWithInfoTypes.InspectImage(_fixture.ProjectId, input);
             Assert.Equal(3, result.Result.Findings.Count);
+            Assert.Contains(result.Result.Findings, f => f.InfoType.Name == "PHONE_NUMBER" && f.Quote == "223-456-7890");
+            Assert.Contains(result.Result.Findings, f => f.InfoType.Name == "EMAIL_ADDRESS" && f.Quote == "gary@somedomain.com");
+            Assert.Contains(result.Result.Findings, f => f.InfoType.Name == "PERSON_NAME" && f.Quote == "gary");
         }
     }
 }

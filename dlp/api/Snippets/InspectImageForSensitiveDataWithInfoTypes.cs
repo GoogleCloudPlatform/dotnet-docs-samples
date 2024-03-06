@@ -44,7 +44,17 @@ public class InspectImageForSensitiveDataWithInfoTypes
         var request = new InspectContentRequest
         {
             ParentAsLocationName = new LocationName(projectId, "global"),
-            Item = contentItem
+            Item = contentItem,
+            InspectConfig = new InspectConfig
+            {
+                IncludeQuote = true,
+                InfoTypes =
+                    {
+                        new InfoType { Name = "PHONE_NUMBER" },
+                        new InfoType { Name = "EMAIL_ADDRESS" },
+                        new InfoType { Name = "PERSON_NAME" }
+                    }
+            }
         };
 
         // Call the API.
@@ -62,6 +72,7 @@ public class InspectImageForSensitiveDataWithInfoTypes
                        select new { b.Height, b.Width, b.Top, b.Left };
             Console.WriteLine("Info type: " + f.InfoType.Name);
             Console.WriteLine("\tImageLocations: " + string.Join(',', data));
+            Console.WriteLine("\tQuote: " + f.Quote);
             Console.WriteLine("\tLikelihood: " + f.Likelihood + "\n");
         }
 
