@@ -5,7 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.6.0" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.7.0" />
     <PackageReference Include="Google.Cloud.Functions.Hosting" Version="2.1.0" />
     <None Include="appsettings*.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
