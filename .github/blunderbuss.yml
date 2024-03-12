@@ -3,10 +3,12 @@ assign_issues_by:
   - 'api: bigtable'
   - 'api: datastore'
   - 'api: firestore'
+  to: 
+  - GoogleCloudPlatform/cloud-native-db-dpes
+- labels:  
   - 'api: storage'
-  - 'api: spanner'
   to:
-  - Rishabh-V
+  - GoogleCloudPlatform/cloud-storage-dpes
 - labels:
   - 'api: cloudsql'
   to:
@@ -43,6 +45,9 @@ assign_issues_by:
   - 'api: vertex-ai'
   to:
   - meteatamel
+  
+assign_issues:
+  - GoogleCloudPlatform/dotnet-samples-reviewers
 
 assign_prs_always:
 - GoogleCloudPlatform/dotnet-samples-reviewers
