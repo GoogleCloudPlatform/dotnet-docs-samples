@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,7 +37,8 @@ public class TransactionTagAsyncSample
             var updateCommand =
                 connection.CreateDmlCommand("UPDATE Venues SET Capacity = DIV(Capacity, 4) WHERE OutdoorVenue = false");
             updateCommand.Tag = "app=concert,env=dev,action=update";
-            await updateCommand.ExecuteNonQueryAsync();
+            updateCommand.Transaction = transaction;
+            int rowsModified = await updateCommand.ExecuteNonQueryAsync();
 
             var insertCommand = connection.CreateDmlCommand(
                 @"INSERT INTO Venues (VenueId, VenueName, Capacity, OutdoorVenue, LastUpdateTime)
@@ -53,7 +54,9 @@ public class TransactionTagAsyncSample
             // Sets the request tag to "app=concert,env=dev,action=insert".
             // This request tag will only be set on this request.
             insertCommand.Tag = "app=concert,env=dev,action=insert";
-            return await insertCommand.ExecuteNonQueryAsync();
+            insertCommand.Transaction = transaction;
+            rowsModified += await insertCommand.ExecuteNonQueryAsync();
+            return rowsModified;
         });
     }
 }

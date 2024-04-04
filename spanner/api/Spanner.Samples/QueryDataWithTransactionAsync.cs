@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,10 +37,9 @@ public class QueryDataWithTransactionAsyncSample
         using TransactionScope scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         using var connection = new SpannerConnection(connectionString);
 
-        // Open the connection, making the implicitly created
-        // transaction read only when it connects to the outer
-        // transaction scope.
-        await connection.OpenAsReadOnlyAsync();
+        // Opens the connection so that the Spanner transaction included in the TransactionScope
+        // is read-only TimestampBound.Strong.
+        await connection.OpenAsync(AmbientTransactionOptions.ForTimestampBoundReadOnly(), default);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
 
         // Read #1.
