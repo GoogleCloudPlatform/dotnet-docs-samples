@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ public class TransactionTagAsyncTest
     public async Task TestTransactionTagAsync()
     {
         var sample = new TransactionTagAsyncSample();
-        var insertCount = await sample.TransactionTagAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
+        var modifiedCount = await sample.TransactionTagAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
             _spannerFixture.DatabaseId);
-        Assert.Equal(1, insertCount);
+        // At least a row has been modified and a few may have been updated.
+        Assert.InRange(modifiedCount, 1, int.MaxValue);
     }
 }
