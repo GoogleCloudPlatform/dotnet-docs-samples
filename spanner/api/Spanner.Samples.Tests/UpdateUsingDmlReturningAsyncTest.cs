@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,13 +32,13 @@ public class UpdateUsingDmlReturningAsyncTest
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
             await CreateTableAndInsertData(databaseId);
-            FillMarketingBudgetsAsync(300000, 300000, databaseId);
+            await FillMarketingBudgetsAsync(databaseId);
 
             var sample = new UpdateUsingDmlReturningAsyncSample();
             var updatedMarketingBudgets = await sample.UpdateUsingDmlReturningAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-            Assert.Single(updatedMarketingBudgets);
-            Assert.Equal(600000, updatedMarketingBudgets[0]);
+            var updatedBudget = Assert.Single(updatedMarketingBudgets);
+            Assert.Equal(600000, updatedBudget);
         });
     }
 
@@ -49,21 +49,18 @@ public class UpdateUsingDmlReturningAsyncTest
         await insertDataAsyncSample.InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
     }
 
-    private async void FillMarketingBudgetsAsync(int firstAlbumBudget, int secondAlbumBudget, string databaseId)
+    private async Task FillMarketingBudgetsAsync(string databaseId)
     {
         var connection = new SpannerConnection($"Data Source=projects/{_spannerFixture.ProjectId}/instances/{_spannerFixture.InstanceId}/databases/{databaseId}");
 
-        for (int i = 1; i <= 2; ++i)
+        var spannerParameterCollection = new SpannerParameterCollection
         {
-            var spannerParameterCollection = new SpannerParameterCollection
-            {
-                { "SingerId", SpannerDbType.Int64, i },
-                { "AlbumId", SpannerDbType.Int64, i },
-                { "MarketingBudget", SpannerDbType.Int64, i == 1 ? firstAlbumBudget : secondAlbumBudget },
-            };
+            { "SingerId", SpannerDbType.Int64, 1 },
+            { "AlbumId", SpannerDbType.Int64, 1 },
+            { "MarketingBudget", SpannerDbType.Int64, 300000 },
+        };
 
-            using var cmd = connection.CreateUpdateCommand("Albums", spannerParameterCollection);
-            await cmd.ExecuteNonQueryAsync();
-        }
+        using var cmd = connection.CreateUpdateCommand("Albums", spannerParameterCollection);
+        await cmd.ExecuteNonQueryAsync();
     }
 }
