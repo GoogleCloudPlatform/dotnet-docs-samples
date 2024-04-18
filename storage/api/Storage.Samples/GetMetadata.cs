@@ -42,6 +42,7 @@ public class GetMetadataSample
         Console.WriteLine($"MediaLink:\t{storageObject.MediaLink}");
         Console.WriteLine($"Metageneration:\t{storageObject.Metageneration}");
         Console.WriteLine($"Name:\t{storageObject.Name}");
+        Console.WriteLine($"Retention:\t{storageObject.Retention}");
         Console.WriteLine($"Size:\t{storageObject.Size}");
         Console.WriteLine($"StorageClass:\t{storageObject.StorageClass}");
         Console.WriteLine($"TimeCreated:\t{storageObject.TimeCreated}");

@@ -42,6 +42,7 @@ public class GetBucketMetadataSample
         Console.WriteLine($"LocationType:\t{bucket.LocationType}");
         Console.WriteLine($"Logging:\t{bucket.Logging}");
         Console.WriteLine($"Metageneration:\t{bucket.Metageneration}");
+        Console.WriteLine($"ObjectRetention:\t{bucket.ObjectRetention}");
         Console.WriteLine($"Owner:\t{bucket.Owner}");
         Console.WriteLine($"ProjectNumber:\t{bucket.ProjectNumber}");
         Console.WriteLine($"RetentionPolicy:\t{bucket.RetentionPolicy}");
