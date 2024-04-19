@@ -27,11 +27,6 @@ public class SetObjectRetentionPolicySample
         var storage = StorageClient.Create();
         var file = storage.GetObject(bucketName, objectName);
 
-        if (file == null)
-        {
-            Console.WriteLine($"The object {objectName} was not found in bucket {bucketName}");
-            return null;
-        }
 
         file.Retention = new Object.RetentionData
         {
