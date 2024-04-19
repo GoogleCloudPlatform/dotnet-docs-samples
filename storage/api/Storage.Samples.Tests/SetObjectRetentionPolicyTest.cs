@@ -35,7 +35,6 @@ public class SetObjectRetentionPolicyTest
         UploadFileSample uploadFileSample = new UploadFileSample();
         SetObjectRetentionPolicySample setObjectRetentionPolicySample = new SetObjectRetentionPolicySample();
 
-
         var objectName = "HelloSetObjectMetadata.txt";
 
         var bucketName = Guid.NewGuid().ToString();
