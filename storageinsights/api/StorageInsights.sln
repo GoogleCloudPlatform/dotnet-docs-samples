@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageInsights.Samples", "StorageInsights.Samples\StorageInsights.Samples.csproj", "{DDBFEB4C-288C-40D4-9344-024DB20827B1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StorageInsights.Samples.Tests", "StorageInsights.Samples.Tests\StorageInsights.Samples.Tests.csproj", "{D43569BE-CD55-42B7-A096-EF61DB81AF6F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "testutil", "..\..\testutil\testutil.csproj", "{9714C126-DE7B-4DC5-95AD-A3B3665D1285}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DDBFEB4C-288C-40D4-9344-024DB20827B1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DDBFEB4C-288C-40D4-9344-024DB20827B1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DDBFEB4C-288C-40D4-9344-024DB20827B1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DDBFEB4C-288C-40D4-9344-024DB20827B1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D43569BE-CD55-42B7-A096-EF61DB81AF6F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D43569BE-CD55-42B7-A096-EF61DB81AF6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D43569BE-CD55-42B7-A096-EF61DB81AF6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D43569BE-CD55-42B7-A096-EF61DB81AF6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9714C126-DE7B-4DC5-95AD-A3B3665D1285}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9714C126-DE7B-4DC5-95AD-A3B3665D1285}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9714C126-DE7B-4DC5-95AD-A3B3665D1285}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9714C126-DE7B-4DC5-95AD-A3B3665D1285}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
