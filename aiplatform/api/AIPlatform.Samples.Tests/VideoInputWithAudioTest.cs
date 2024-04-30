@@ -31,7 +31,7 @@ public class VideoInputWithAudioTest
     }
 
     [Fact]
-    public async Task TestSummarizeAudio()
+    public async Task TestDescribeVideo()
     {
         var response = await _sample.DescribeVideo(_fixture.ProjectId);
         Assert.Contains("pixel", response, StringComparison.OrdinalIgnoreCase);
