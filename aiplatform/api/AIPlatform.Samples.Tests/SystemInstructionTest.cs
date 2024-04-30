@@ -31,7 +31,7 @@ public class SystemInstructionTest
     }
 
     [Fact]
-    public async Task TestSummarizeAudio()
+    public async Task TestSetSystemInstruction()
     {
         var response = await _sample.SetSystemInstruction(_fixture.ProjectId);
         Assert.NotNull(response);
