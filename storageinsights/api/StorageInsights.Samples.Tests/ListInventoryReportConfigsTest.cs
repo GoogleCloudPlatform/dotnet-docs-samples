@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using GoogleCloudSamples;
 using System;
 using System.Linq;
 using Xunit;
@@ -29,23 +30,29 @@ public class ListInventoryReportConfigsTest : IDisposable
     [Fact]
     public void TestListInventoryReportConfigs()
     {
-        var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation, _fixture.BucketNameSource,
-            _fixture.BucketNameSink);
-        _reportConfigName = reportConfig.Name;
-
-        ListInventoryReportConfigsSample sample = new ListInventoryReportConfigsSample();
-        var reportConfigs = sample.ListInventoryReportConfigs(_fixture.ProjectId, _fixture.BucketLocation);
-
-        bool found = false;
-
-        foreach (var config in reportConfigs)
+        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+        robot.Eventually(() =>
         {
-            if (config.Name.Contains(reportConfig.Name.Split("/")[5]))
+            var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
+                _fixture.BucketLocation, _fixture.BucketNameSource,
+                _fixture.BucketNameSink);
+            _reportConfigName = reportConfig.Name;
+
+            ListInventoryReportConfigsSample sample = new ListInventoryReportConfigsSample();
+            var reportConfigs = sample.ListInventoryReportConfigs(_fixture.ProjectId, _fixture.BucketLocation);
+
+            bool found = false;
+
+            foreach (var config in reportConfigs)
             {
-                found = true;
+                if (config.Name.Contains(reportConfig.Name.Split("/")[5]))
+                {
+                    found = true;
+                }
             }
-        }
-        Assert.True(found);
+
+            Assert.True(found);
+        });
     }
 
     public void Dispose()

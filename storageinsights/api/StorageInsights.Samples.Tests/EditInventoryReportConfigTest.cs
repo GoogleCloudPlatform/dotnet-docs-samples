@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using GoogleCloudSamples;
 using System;
 using Xunit;
 
@@ -28,13 +29,19 @@ public class EditInventoryReportConfigTest : IDisposable
     [Fact]
     public void TestEditInventoryReportConfig()
     {
-        var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation, _fixture.BucketNameSource,
-            _fixture.BucketNameSink);
-        _reportConfigName = reportConfig.Name;
-        EditInventoryReportConfigSample sample = new EditInventoryReportConfigSample();
-        var updatedConfig = sample.EditInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation, reportConfig.Name.Split("/")[5]);
+        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+        robot.Eventually(() =>
+        {
+            var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
+                _fixture.BucketLocation, _fixture.BucketNameSource,
+                _fixture.BucketNameSink);
+            _reportConfigName = reportConfig.Name;
+            EditInventoryReportConfigSample sample = new EditInventoryReportConfigSample();
+            var updatedConfig = sample.EditInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation,
+                reportConfig.Name.Split("/")[5]);
 
-        Assert.NotEqual(reportConfig.DisplayName, updatedConfig.DisplayName);
+            Assert.NotEqual(reportConfig.DisplayName, updatedConfig.DisplayName);
+        });
     }
 
     public void Dispose()

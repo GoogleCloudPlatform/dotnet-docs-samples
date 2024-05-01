@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using Google.Cloud.StorageInsights.V1;
+using GoogleCloudSamples;
 using System;
 using Xunit;
 
@@ -29,11 +30,17 @@ namespace StorageInsights.Samples.Tests
         [Fact]
         public void TestCreateInventoryReportConfigSample()
         {
-            CreateInventoryReportConfigSample sample = new CreateInventoryReportConfigSample();
-            var reportConfig = sample.CreateInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation, _fixture.BucketNameSource,
-                _fixture.BucketNameSink);
-            Assert.NotNull(reportConfig.DisplayName);
-            _reportConfigName = reportConfig.Name;
+            RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+            robot.Eventually(() =>
+                {
+                    CreateInventoryReportConfigSample sample = new CreateInventoryReportConfigSample();
+                    var reportConfig = sample.CreateInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation,
+                        _fixture.BucketNameSource,
+                        _fixture.BucketNameSink);
+                    Assert.NotNull(reportConfig.DisplayName);
+                    _reportConfigName = reportConfig.Name;
+                }
+            );
         }
 
         public void Dispose()

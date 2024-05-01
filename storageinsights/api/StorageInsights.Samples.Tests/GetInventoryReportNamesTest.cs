@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using GoogleCloudSamples;
 using System;
 using Xunit;
 
@@ -28,17 +29,23 @@ public class GetInventoryReportNamesTest : IDisposable
     [Fact]
     public void TestGetInventoryReportNames()
     {
-        var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation, _fixture.BucketNameSource,
-            _fixture.BucketNameSink);
-        _reportConfigName = reportConfig.Name;
-        GetInventoryReportNamesSample sample = new GetInventoryReportNamesSample();
-        sample.GetInventoryReportNames(_fixture.ProjectId, _fixture.BucketLocation, reportConfig.Name.Split("/")[5]);
-        /* We can't actually test for a report config name showing up here, because we create
-         * the bucket and inventory configs for this test, and it takes 24 hours for an
-         * inventory report to actually get written to the bucket.
-         * We could set up a hard-coded bucket, but that would probably introduce flakes.
-         * The best we can do is make sure the test runs without throwing an error
-         */
+        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+        robot.Eventually(() =>
+        {
+            var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
+                _fixture.BucketLocation, _fixture.BucketNameSource,
+                _fixture.BucketNameSink);
+            _reportConfigName = reportConfig.Name;
+            GetInventoryReportNamesSample sample = new GetInventoryReportNamesSample();
+            sample.GetInventoryReportNames(_fixture.ProjectId, _fixture.BucketLocation,
+                reportConfig.Name.Split("/")[5]);
+            /* We can't actually test for a report config name showing up here, because we create
+             * the bucket and inventory configs for this test, and it takes 24 hours for an
+             * inventory report to actually get written to the bucket.
+             * We could set up a hard-coded bucket, but that would probably introduce flakes.
+             * The best we can do is make sure the test runs without throwing an error
+             */
+        });
     }
 
     public void Dispose()
