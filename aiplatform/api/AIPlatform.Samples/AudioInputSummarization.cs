@@ -44,11 +44,14 @@ Do not make up any information that is not part of the audio and do not be verbo
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             },
-            new() {
-                FileData = new() {
+            new()
+            {
+                FileData = new()
+                {
                     MimeType = "audio/mp3",
                     FileUri = "gs://cloud-samples-data/generative-ai/audio/pixel.mp3"
                 }

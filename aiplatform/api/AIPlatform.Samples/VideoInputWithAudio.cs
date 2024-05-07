@@ -44,11 +44,14 @@ The description should also contain anything important which people say in the v
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             },
-            new() {
-                FileData = new() {
+            new()
+            {
+                FileData = new()
+                {
                     MimeType = "video/mp4",
                     FileUri = "gs://cloud-samples-data/generative-ai/video/pixel8.mp4"
                 }

@@ -50,16 +50,19 @@ public class MultimodalAllInput
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             },
-            new() {
+            new()
+            {
                 FileData = new() {
                     MimeType = "video/mp4",
                     FileUri = "gs://cloud-samples-data/generative-ai/video/behind_the_scenes_pixel.mp4"
                 }
             },
-            new() {
+            new()
+            {
                 FileData = new() {
                     MimeType = "image/png",
                     FileUri = "gs://cloud-samples-data/generative-ai/image/a-man-and-a-dog.png"

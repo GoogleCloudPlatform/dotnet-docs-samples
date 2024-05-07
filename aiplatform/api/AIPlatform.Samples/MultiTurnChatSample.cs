@@ -85,7 +85,8 @@ public class MultiTurnChatSample
             };
             content.Parts.AddRange(new List<Part>()
             {
-                new() {
+                new()
+                {
                     Text = prompt
                 }
             });
