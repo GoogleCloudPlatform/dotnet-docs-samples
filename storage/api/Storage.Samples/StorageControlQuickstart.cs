@@ -21,11 +21,10 @@ public class StorageControlQuickstartSample
     public StorageLayout StorageControlQuickstart(string bucketName = "your-unique-bucket-name")
     {
         StorageControlClient storageControl = StorageControlClient.Create();
-        GetStorageLayoutRequest request = new GetStorageLayoutRequest
-        {
-            Name = StorageLayoutName.Format("_", bucketName), // Set project to "_" for global bucket"
-        };
-        StorageLayout response = storageControl.GetStorageLayout(request);
+
+        // Using "_" for projectId means global bucket namespace
+        StorageLayout response = storageControl.GetStorageLayout(new StorageLayoutName("_", bucketName));
+
         Console.WriteLine($"Bucket {bucketName} has location type {response.LocationType}");
         return response;
     }
