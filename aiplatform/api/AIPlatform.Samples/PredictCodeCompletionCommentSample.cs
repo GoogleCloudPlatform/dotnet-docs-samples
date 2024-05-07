@@ -77,7 +77,6 @@ public static string ReverseString(string s)
         var content = response.Predictions.First().StructValue.Fields["content"].StringValue;
         Console.WriteLine($"Content: {content}");
         return content;
-
     }
 }
 

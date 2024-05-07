@@ -48,11 +48,14 @@ public class MultimodalVideoInput
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             },
-            new() {
-                FileData = new() {
+            new()
+            {
+                FileData = new()
+                {
                     MimeType = "video/mp4",
                     FileUri = videoUri
                 }

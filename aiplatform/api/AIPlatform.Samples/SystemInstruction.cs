@@ -44,7 +44,8 @@ Answer:";
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             }
         });
@@ -52,10 +53,12 @@ Answer:";
         var systemInstructionContent = new Content();
         systemInstructionContent.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = "You are a helpful language translator."
             },
-            new() {
+            new()
+            {
                 Text = "Your mission is to translate text in English to French."
             }
         });

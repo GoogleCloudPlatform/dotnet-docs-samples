@@ -44,11 +44,14 @@ Use speaker A, speaker B, etc. to identify speakers.";
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             },
-            new() {
-                FileData = new() {
+            new()
+            {
+                FileData = new()
+                {
                     MimeType = "audio/mp3",
                     FileUri = "gs://cloud-samples-data/generative-ai/audio/pixel.mp3"
                 }

@@ -44,10 +44,12 @@ Please summarize the given document.";
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             },
-            new() {
+            new()
+            {
                 FileData = new() {
                     MimeType = "application/pdf",
                     FileUri = "gs://cloud-samples-data/generative-ai/pdf/2403.05530.pdf"

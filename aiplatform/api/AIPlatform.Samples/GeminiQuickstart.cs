@@ -48,11 +48,14 @@ public class GeminiQuickstart
         };
         content.Parts.AddRange(new List<Part>()
         {
-            new() {
+            new()
+            {
                 Text = prompt
             },
-            new() {
-                FileData = new() {
+            new()
+            {
+                FileData = new()
+                {
                     MimeType = "image/png",
                     FileUri = imageUri
                 }
