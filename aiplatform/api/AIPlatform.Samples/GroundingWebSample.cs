@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class GroundingWebSample
@@ -42,28 +41,23 @@ public class GroundingWebSample
             GenerationConfig = new GenerationConfig
             {
                 Temperature = 0.0f
-            }
-        };
-
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
+            },
+            Contents =
             {
-                Text = "When is the next total solar eclipse in US?"
+                new Content
+                {
+                    Role = "USER",
+                    Parts = { new Part { Text = "When is the next total solar eclipse in US?" } }
+                }
+            },
+            Tools =
+            {
+                new Tool
+                {
+                    GoogleSearchRetrieval = new GoogleSearchRetrieval()
+                }
             }
-        });
-        generateContentRequest.Contents.Add(content);
-
-        var tool = new Tool
-        {
-            GoogleSearchRetrieval = new GoogleSearchRetrieval()
         };
-        generateContentRequest.Tools.Add(tool);
-
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 

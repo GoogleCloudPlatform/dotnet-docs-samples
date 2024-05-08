@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class GroundingVertexAiSearchSample
@@ -36,41 +35,35 @@ public class GroundingVertexAiSearchSample
             Endpoint = $"{location}-aiplatform.googleapis.com"
         }.Build();
 
-
         var generateContentRequest = new GenerateContentRequest
         {
             Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
             GenerationConfig = new GenerationConfig
             {
                 Temperature = 0.0f
-            }
-        };
-
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
+            },
+            Contents =
             {
-                Text = "How do I make an appointment to renew my driver's license?"
-            }
-        });
-        generateContentRequest.Contents.Add(content);
-
-        var tool = new Tool
-        {
-            Retrieval = new Retrieval
-            {
-                VertexAiSearch = new VertexAISearch
+                new Content
                 {
-                    Datastore = $"projects/{projectId}/locations/{dataStoreLocation}/collections/default_collection/dataStores/{dataStoreId}"
+                    Role = "USER",
+                    Parts = { new Part { Text = "How do I make an appointment to renew my driver's license?" } }
+                }
+            },
+            Tools =
+            {
+                new Tool
+                {
+                    Retrieval = new Retrieval
+                    {
+                        VertexAiSearch = new VertexAISearch
+                        {
+                            Datastore = $"projects/{projectId}/locations/{dataStoreLocation}/collections/default_collection/dataStores/{dataStoreId}"
+                        }
+                    }
                 }
             }
         };
-        generateContentRequest.Tools.Add(tool);
-
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 
