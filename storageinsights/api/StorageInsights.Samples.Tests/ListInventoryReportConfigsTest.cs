@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.StorageInsights.V1;
 using GoogleCloudSamples;
 using System;
 using System.Linq;
@@ -30,29 +31,20 @@ public class ListInventoryReportConfigsTest : IDisposable
     [Fact]
     public void TestListInventoryReportConfigs()
     {
-        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+        // The permissions the service account needs sometimes needs a few minutes to propagate, so retry permission issues
+        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => e.Message.Contains("PermissionDenied") };
+        ReportConfig reportConfig = null;
         robot.Eventually(() =>
         {
-            var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
+            reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
                 _fixture.BucketLocation, _fixture.BucketNameSource,
                 _fixture.BucketNameSink);
             _reportConfigName = reportConfig.Name;
-
-            ListInventoryReportConfigsSample sample = new ListInventoryReportConfigsSample();
-            var reportConfigs = sample.ListInventoryReportConfigs(_fixture.ProjectId, _fixture.BucketLocation);
-
-            bool found = false;
-
-            foreach (var config in reportConfigs)
-            {
-                if (config.Name.Contains(reportConfig.Name.Split("/")[5]))
-                {
-                    found = true;
-                }
-            }
-
-            Assert.True(found);
         });
+
+        ListInventoryReportConfigsSample sample = new ListInventoryReportConfigsSample();
+        var reportConfigs = sample.ListInventoryReportConfigs(_fixture.ProjectId, _fixture.BucketLocation);
+        Assert.Contains(reportConfigs, config => config.Name.Contains(reportConfig.ReportConfigName.ReportConfigId));
     }
 
     public void Dispose()

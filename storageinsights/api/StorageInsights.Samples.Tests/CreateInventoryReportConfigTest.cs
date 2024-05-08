@@ -30,7 +30,8 @@ namespace StorageInsights.Samples.Tests
         [Fact]
         public void TestCreateInventoryReportConfigSample()
         {
-            RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+            // The permissions the service account needs sometimes needs a few minutes to propagate, so retry permission issues
+            RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => e.Message.Contains("PermissionDenied") };
             robot.Eventually(() =>
                 {
                     CreateInventoryReportConfigSample sample = new CreateInventoryReportConfigSample();

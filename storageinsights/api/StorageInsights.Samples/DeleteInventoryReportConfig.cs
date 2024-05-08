@@ -13,25 +13,23 @@
 // limitations under the License.
 
 // [START storageinsights_delete_inventory_report_config]
+
 using Google.Cloud.StorageInsights.V1;
 using System;
 
-namespace StorageInsights.Samples
+public class DeleteInventoryReportConfigSample
 {
-    public class DeleteInventoryReportConfigSample
+    public void DeleteInventoryReportConfig(
+        string projectId = "your-project-id",
+        string bucketLocation = "us-west-1",
+        string inventoryReportConfigUuid = "2b90d21c-f2f4-40b5-9519-e29a78f2b09f")
     {
-        public void DeleteInventoryReportConfig(
-            string projectId = "your-project-id",
-            string bucketLocation = "us-west-1",
-            string inventoryReportConfigUuid = "2b90d21c-f2f4-40b5-9519-e29a78f2b09f")
-        {
-            StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
-            ReportConfigName reportConfigName =
-                new ReportConfigName(projectId, bucketLocation, inventoryReportConfigUuid);
-            storageInsightsClient.DeleteReportConfig(reportConfigName);
+        StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
+        ReportConfigName reportConfigName =
+            new ReportConfigName(projectId, bucketLocation, inventoryReportConfigUuid);
+        storageInsightsClient.DeleteReportConfig(reportConfigName);
 
-            Console.WriteLine($"Deleted inventory report config with name {reportConfigName}");
-        }
+        Console.WriteLine($"Deleted inventory report config with name {reportConfigName}");
     }
 }
 // [END storageinsights_delete_inventory_report_config]

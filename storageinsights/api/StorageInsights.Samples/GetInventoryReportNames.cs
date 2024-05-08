@@ -13,38 +13,33 @@
 // limitations under the License.
 
 // [START storageinsights_get_inventory_report_names]
+
 using Google.Cloud.StorageInsights.V1;
 using System;
 using System.Collections.Generic;
 
-namespace StorageInsights.Samples
+public class GetInventoryReportNamesSample
 {
-    public class GetInventoryReportNamesSample
+    public void GetInventoryReportNames(
+        string projectId = "your-project-id",
+        string bucketLocation = "us-west-1",
+        string inventoryReportConfigUuid = "2b90d21c-f2f4-40b5-9519-e29a78f2b09f")
     {
-        public IEnumerable<string> GetInventoryReportNames(
-            string projectId = "your-project-id",
-            string bucketLocation = "us-west-1",
-            string inventoryReportConfigUuid = "2b90d21c-f2f4-40b5-9519-e29a78f2b09f")
-        {
-            StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
-            ReportConfigName reportConfigName =
-                new ReportConfigName(projectId, bucketLocation, inventoryReportConfigUuid);
-            ReportConfig reportConfig = storageInsightsClient.GetReportConfig(reportConfigName);
-            string extension = reportConfig.CsvOptions == null ? "csv" : "parquet";
-            var reportNames = new List<string>();
+        StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
+        ReportConfigName reportConfigName =
+            new ReportConfigName(projectId, bucketLocation, inventoryReportConfigUuid);
+        ReportConfig reportConfig = storageInsightsClient.GetReportConfig(reportConfigName);
+        string extension = reportConfig.CsvOptions == null ? "csv" : "parquet";
 
-            Console.WriteLine("You can use the Google Cloud Storage Client to download the following objects from " +
-                              "Google Cloud Storage:");
-            foreach(ReportDetail reportDetail in storageInsightsClient.ListReportDetails(reportConfigName))
+        Console.WriteLine("You can use the Google Cloud Storage Client to download the following objects from " +
+                          "Google Cloud Storage:");
+        foreach (ReportDetail reportDetail in storageInsightsClient.ListReportDetails(reportConfigName))
+        {
+            for (long index = reportDetail.ShardsCount - 1; index >= 0; index--)
             {
-                for (long index = reportDetail.ShardsCount - 1; index >= 0; index--)
-                {
-                    String reportName = reportDetail.ReportPathPrefix + index + "." + extension;
-                    reportNames.Add(reportName);
-                    Console.WriteLine(reportName);
-                }
+                String reportName = reportDetail.ReportPathPrefix + index + "." + extension;
+                Console.WriteLine(reportName);
             }
-            return reportNames;
         }
     }
 }

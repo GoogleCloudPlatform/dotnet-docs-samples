@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.StorageInsights.V1;
 using GoogleCloudSamples;
 using System;
 using Xunit;
@@ -29,19 +30,21 @@ public class EditInventoryReportConfigTest : IDisposable
     [Fact]
     public void TestEditInventoryReportConfig()
     {
-        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+        ReportConfig reportConfig = null;
+        // The permissions the service account needs sometimes needs a few minutes to propagate, so retry permission issues
+        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => e.Message.Contains("PermissionDenied") };
         robot.Eventually(() =>
         {
-            var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
+            reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
                 _fixture.BucketLocation, _fixture.BucketNameSource,
                 _fixture.BucketNameSink);
             _reportConfigName = reportConfig.Name;
-            EditInventoryReportConfigSample sample = new EditInventoryReportConfigSample();
-            var updatedConfig = sample.EditInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation,
-                reportConfig.Name.Split("/")[5]);
-
-            Assert.NotEqual(reportConfig.DisplayName, updatedConfig.DisplayName);
         });
+        EditInventoryReportConfigSample sample = new EditInventoryReportConfigSample();
+        var updatedConfig = sample.EditInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation,
+            reportConfig.Name.Split("/")[5]);
+
+        Assert.NotEqual(reportConfig.DisplayName, updatedConfig.DisplayName);
     }
 
     public void Dispose()

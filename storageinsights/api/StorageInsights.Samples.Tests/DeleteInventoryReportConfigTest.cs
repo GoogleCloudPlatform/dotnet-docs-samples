@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.StorageInsights.V1;
 using GoogleCloudSamples;
@@ -29,21 +30,23 @@ public class DeleteInventoryReportConfigTest
     [Fact]
     public void TestDeleteInventoryReportConfig()
     {
-        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => true };
+        // The permissions the service account needs sometimes needs a few minutes to propagate, so retry permission issues
+        RetryRobot robot = new RetryRobot() { ShouldRetry = (e) => e.Message.Contains("PermissionDenied") };
+        ReportConfig reportConfig = null;
         robot.Eventually(() =>
         {
-            var reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
+            reportConfig = new CreateInventoryReportConfigSample().CreateInventoryReportConfig(_fixture.ProjectId,
                 _fixture.BucketLocation, _fixture.BucketNameSource,
                 _fixture.BucketNameSink);
-            DeleteInventoryReportConfigSample sample = new DeleteInventoryReportConfigSample();
-            sample.DeleteInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation,
-                reportConfig.Name.Split("/")[5]);
-
-            foreach (ReportConfig report in _fixture.StorageInsights.ListReportConfigs(
-                         LocationName.Format(_fixture.ProjectId, _fixture.BucketLocation)))
-            {
-                Assert.NotEqual(report.Name, reportConfig.Name);
-            }
         });
+
+        DeleteInventoryReportConfigSample sample = new DeleteInventoryReportConfigSample();
+        sample.DeleteInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation,
+            reportConfig.ReportConfigName.ReportConfigId);
+
+        PagedEnumerable<ListReportConfigsResponse, ReportConfig> reportConfigs = _fixture.StorageInsights.ListReportConfigs(
+            LocationName.Format(_fixture.ProjectId, _fixture.BucketLocation));
+
+        Assert.DoesNotContain(reportConfigs, config => config.Name.Equals(reportConfig.Name));
     }
 }

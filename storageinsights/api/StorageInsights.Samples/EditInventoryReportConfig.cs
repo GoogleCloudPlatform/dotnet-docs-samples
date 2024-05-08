@@ -13,40 +13,39 @@
 // limitations under the License.
 
 // [START storageinsights_edit_inventory_report_config]
+
 using Google.Cloud.StorageInsights.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Collections.Generic;
 
-namespace StorageInsights.Samples
+public class EditInventoryReportConfigSample
 {
-    public class EditInventoryReportConfigSample
+    public ReportConfig EditInventoryReportConfig(
+        string projectId = "your-project-id",
+        string bucketLocation = "us-west-1",
+        string inventoryReportConfigUuid = "2b90d21c-f2f4-40b5-9519-e29a78f2b09f")
     {
-        public ReportConfig EditInventoryReportConfig(
-            string projectId = "your-project-id",
-            string bucketLocation = "us-west-1",
-            string inventoryReportConfigUuid = "2b90d21c-f2f4-40b5-9519-e29a78f2b09f")
-        {
-            StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
-            ReportConfigName reportConfigName =
-                new ReportConfigName(projectId, bucketLocation, inventoryReportConfigUuid);
-            ReportConfig reportConfig = storageInsightsClient.GetReportConfig(reportConfigName);
+        StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
+        ReportConfigName reportConfigName =
+            new ReportConfigName(projectId, bucketLocation, inventoryReportConfigUuid);
+        ReportConfig reportConfig = storageInsightsClient.GetReportConfig(reportConfigName);
 
-            // Modify any field you want to update
-            reportConfig.DisplayName = "Updated display name";
+        // Modify any field you want to update
+        reportConfig.DisplayName = "Updated display name";
 
-            var fields = new List<string>()
-                // Add any other field you want to update to this list, in snake case
-                {
-                    "display_name"
-                };
+        var fields = new List<string>()
+            // Add any other field you want to update to this list, in snake case
+            {
+                "display_name"
+            };
 
-            var updatedConfig = storageInsightsClient.UpdateReportConfig(reportConfig, FieldMask.FromStringEnumerable<Empty>(fields));
+        var updatedConfig =
+            storageInsightsClient.UpdateReportConfig(reportConfig, FieldMask.FromStringEnumerable<Empty>(fields));
 
-            Console.WriteLine($"Edited report config with name {reportConfigName}");
+        Console.WriteLine($"Edited report config with name {reportConfigName}");
 
-            return updatedConfig;
-        }
+        return updatedConfig;
     }
 }
 // [END storageinsights_edit_inventory_report_config]

@@ -13,32 +13,29 @@
 // limitations under the License.
 
 // [START storageinsights_list_inventory_report_configs]
+
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.StorageInsights.V1;
 using System;
 using System.Collections.Generic;
 
-namespace StorageInsights.Samples
+public class ListInventoryReportConfigsSample
 {
-    public class ListInventoryReportConfigsSample
+    public IEnumerable<ReportConfig> ListInventoryReportConfigs(
+        string projectId = "your-project-id",
+        string bucketLocation = "us-west1")
     {
-        public IEnumerable<ReportConfig> ListInventoryReportConfigs(
-            string projectId = "your-project-id",
-            string bucketLocation = "us-west1")
+        StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
+        Console.WriteLine($"Listing Inventory report configs in project {projectId} in location {bucketLocation}:");
+
+        IEnumerable<ReportConfig> reportConfigs =
+            storageInsightsClient.ListReportConfigs(LocationName.Format(projectId, bucketLocation));
+        foreach (ReportConfig reportConfig in reportConfigs)
         {
-            StorageInsightsClient storageInsightsClient = StorageInsightsClient.Create();
-            Console.WriteLine($"Listing Inventory report configs in project {projectId} in location {bucketLocation}:");
-
-            IEnumerable<ReportConfig> reportConfigs =
-                storageInsightsClient.ListReportConfigs(LocationName.Format(projectId, bucketLocation));
-            foreach (ReportConfig reportConfig in reportConfigs)
-            {
-                Console.WriteLine(reportConfig.Name);
-            }
-
-            return reportConfigs;
+            Console.WriteLine(reportConfig.Name);
         }
+
+        return reportConfigs;
     }
 }
 // [END storageinsights_list_inventory_report_configs]
-

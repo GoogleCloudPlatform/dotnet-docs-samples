@@ -13,58 +13,52 @@
 // limitations under the License.
 
 // [START storageinsights_create_inventory_report_config]
+
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.StorageInsights.V1;
 using Google.Type;
 using System;
+using DateTime = System.DateTime;
 
-namespace StorageInsights.Samples
+public class CreateInventoryReportConfigSample
 {
-    public class CreateInventoryReportConfigSample
+    public ReportConfig CreateInventoryReportConfig(
+        string projectId = "your-project-id",
+        string bucketLocation = "us-west-1",
+        string sourceBucket = "your-gcs-source-bucket",
+        string destinationBucket = "your-gcs-destination-bucket")
     {
-        public ReportConfig CreateInventoryReportConfig(
-            string projectId = "your-project-id",
-            string bucketLocation = "us-west-1",
-            string sourceBucket = "your-gcs-source-bucket",
-            string destinationBucket = "your-gcs-destination-bucket")
+        ReportConfig reportConfig = new ReportConfig
         {
-            ReportConfig reportConfig = new ReportConfig
-            {
-                DisplayName = "Example inventory report configuration",
-                FrequencyOptions = new FrequencyOptions
+            DisplayName = "Example inventory report configuration",
+            FrequencyOptions =
+                new FrequencyOptions
                 {
                     Frequency = FrequencyOptions.Types.Frequency.Weekly,
-                    StartDate = new Date{ Year = 3022, Month = 11, Day = 15 },
-                    EndDate = new Date{ Year = 3022, Month = 12, Day = 15 }
+                    StartDate = Date.FromDateTime(DateTime.Now.AddDays(1)),
+                    EndDate = Date.FromDateTime(DateTime.Now.AddDays(2))
                 },
-                CsvOptions = new CSVOptions
-                {
-                    RecordSeparator = "\n",
-                    Delimiter = ",",
-                    HeaderRequired = true
-                },
-                ObjectMetadataReportOptions = new ObjectMetadataReportOptions
-                {
-                    MetadataFields = { "project", "name", "bucket" },
-                    StorageFilters = new CloudStorageFilters{Bucket = sourceBucket},
-                    StorageDestinationOptions = new CloudStorageDestinationOptions{Bucket = destinationBucket}
-                },
-            };
-
-            CreateReportConfigRequest request = new CreateReportConfigRequest
+            CsvOptions = new CSVOptions { RecordSeparator = "\n", Delimiter = ",", HeaderRequired = true },
+            ObjectMetadataReportOptions = new ObjectMetadataReportOptions
             {
-                Parent = new LocationName(projectId, bucketLocation).ToString(), ReportConfig = reportConfig
-            };
+                MetadataFields = { "project", "name", "bucket" },
+                StorageFilters = new CloudStorageFilters { Bucket = sourceBucket },
+                StorageDestinationOptions = new CloudStorageDestinationOptions { Bucket = destinationBucket }
+            },
+        };
 
-            StorageInsightsClient client = StorageInsightsClient.Create();
+        CreateReportConfigRequest request = new CreateReportConfigRequest
+        {
+            Parent = new LocationName(projectId, bucketLocation).ToString(), ReportConfig = reportConfig
+        };
 
-            ReportConfig response = client.CreateReportConfig(request);
+        StorageInsightsClient client = StorageInsightsClient.Create();
 
-            Console.WriteLine($"Created a new Inventory Report Config with name {response.Name}");
+        ReportConfig response = client.CreateReportConfig(request);
 
-            return response;
-        }
+        Console.WriteLine($"Created a new Inventory Report Config with name {response.Name}");
 
+        return response;
     }
 }
 // [END storageinsights_create_inventory_report_config]
