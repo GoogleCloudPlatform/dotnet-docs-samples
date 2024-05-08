@@ -23,7 +23,8 @@ public class StorageControlQuickstartSample
         StorageControlClient storageControl = StorageControlClient.Create();
 
         // Using "_" for projectId means global bucket namespace
-        StorageLayout response = storageControl.GetStorageLayout(new StorageLayoutName("_", bucketName));
+        var layoutName = new StorageLayoutName("_", bucketName);
+        StorageLayout response = storageControl.GetStorageLayout(layoutName);
 
         Console.WriteLine($"Bucket {bucketName} has location type {response.LocationType}");
         return response;
