@@ -35,10 +35,10 @@ public class EditInventoryReportConfigSample
         reportConfig.DisplayName = "Updated display name";
 
         var fields = new List<string>()
-            // Add any other field you want to update to this list, in snake case
-            {
-                "display_name"
-            };
+        // Add any other field you want to update to this list, in snake case
+        {
+            "display_name"
+        };
 
         var updatedConfig =
             storageInsightsClient.UpdateReportConfig(reportConfig, FieldMask.FromStringEnumerable<Empty>(fields));

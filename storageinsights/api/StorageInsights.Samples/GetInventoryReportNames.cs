@@ -29,7 +29,7 @@ public class GetInventoryReportNamesSample
         ReportConfigName reportConfigName =
             new ReportConfigName(projectId, bucketLocation, inventoryReportConfigUuid);
         ReportConfig reportConfig = storageInsightsClient.GetReportConfig(reportConfigName);
-        string extension = reportConfig.CsvOptions == null ? "csv" : "parquet";
+        string extension = reportConfig.CsvOptions is null ? "csv" : "parquet";
 
         Console.WriteLine("You can use the Google Cloud Storage Client to download the following objects from " +
                           "Google Cloud Storage:");

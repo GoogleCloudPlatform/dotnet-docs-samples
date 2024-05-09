@@ -31,13 +31,12 @@ public class CreateInventoryReportConfigSample
         ReportConfig reportConfig = new ReportConfig
         {
             DisplayName = "Example inventory report configuration",
-            FrequencyOptions =
-                new FrequencyOptions
-                {
-                    Frequency = FrequencyOptions.Types.Frequency.Weekly,
-                    StartDate = Date.FromDateTime(DateTime.Now.AddDays(1)),
-                    EndDate = Date.FromDateTime(DateTime.Now.AddDays(2))
-                },
+            FrequencyOptions = new FrequencyOptions
+            {
+                Frequency = FrequencyOptions.Types.Frequency.Weekly,
+                StartDate = Date.FromDateTime(DateTime.NowUtc.AddDays(1)),
+                EndDate = Date.FromDateTime(DateTime.NowUtc.AddDays(2))
+            },
             CsvOptions = new CSVOptions { RecordSeparator = "\n", Delimiter = ",", HeaderRequired = true },
             ObjectMetadataReportOptions = new ObjectMetadataReportOptions
             {
@@ -49,7 +48,7 @@ public class CreateInventoryReportConfigSample
 
         CreateReportConfigRequest request = new CreateReportConfigRequest
         {
-            Parent = new LocationName(projectId, bucketLocation).ToString(), ReportConfig = reportConfig
+            Parent = LocationName.Format(projectId, bucketLocation), ReportConfig = reportConfig
         };
 
         StorageInsightsClient client = StorageInsightsClient.Create();
