@@ -34,7 +34,7 @@ public class TextInputSample
         {
             Endpoint = $"{location}-aiplatform.googleapis.com"
         }.Build();
-	    // Does the returned sentiment score match the reviewer's movie rating?
+        // Does the returned sentiment score match the reviewer's movie rating?
         string prompt = @"Give a score from 1 - 10 to suggest if the following
             movie review is negative or positive (1 is most negative, 10 is
             most positive, 5 will be neutral). Include an explanation.
@@ -46,23 +46,21 @@ public class TextInputSample
             sharpest, most original animated film I have seen in years. I would
             give it 8 out of 10 stars.";
 
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            }
-        });
-
         var generateContentRequest = new GenerateContentRequest
         {
-            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}"
+            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = prompt }
+                    }
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 
