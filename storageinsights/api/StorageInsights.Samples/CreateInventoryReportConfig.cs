@@ -34,8 +34,8 @@ public class CreateInventoryReportConfigSample
             FrequencyOptions = new FrequencyOptions
             {
                 Frequency = FrequencyOptions.Types.Frequency.Weekly,
-                StartDate = Date.FromDateTime(DateTime.NowUtc.AddDays(1)),
-                EndDate = Date.FromDateTime(DateTime.NowUtc.AddDays(2))
+                StartDate = Date.FromDateTime(DateTime.UtcNow.AddDays(1)),
+                EndDate = Date.FromDateTime(DateTime.UtcNow.AddDays(2))
             },
             CsvOptions = new CSVOptions { RecordSeparator = "\n", Delimiter = ",", HeaderRequired = true },
             ObjectMetadataReportOptions = new ObjectMetadataReportOptions

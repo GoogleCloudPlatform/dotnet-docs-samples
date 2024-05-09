@@ -42,7 +42,7 @@ public class EditInventoryReportConfigTest : IDisposable
         });
         EditInventoryReportConfigSample sample = new EditInventoryReportConfigSample();
         var updatedConfig = sample.EditInventoryReportConfig(_fixture.ProjectId, _fixture.BucketLocation,
-            reportConfig.Name.Split("/")[5]);
+            reportConfig.ReportConfigName.ReportConfigId);
 
         Assert.NotEqual(reportConfig.DisplayName, updatedConfig.DisplayName);
     }
