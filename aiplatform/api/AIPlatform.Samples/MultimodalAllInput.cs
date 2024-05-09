@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class MultimodalAllInput
@@ -44,37 +43,23 @@ public class MultimodalAllInput
                   + "Provide a timestamp.\n"
                   + "- What is the context of the moment and what does the narrator say about it?";
 
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            },
-            new()
-            {
-                FileData = new() {
-                    MimeType = "video/mp4",
-                    FileUri = "gs://cloud-samples-data/generative-ai/video/behind_the_scenes_pixel.mp4"
-                }
-            },
-            new()
-            {
-                FileData = new() {
-                    MimeType = "image/png",
-                    FileUri = "gs://cloud-samples-data/generative-ai/image/a-man-and-a-dog.png"
-                }
-            }
-        });
-
         var generateContentRequest = new GenerateContentRequest
         {
-            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}"
+            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = prompt },
+                        new Part { FileData = new() { MimeType = "video/mp4", FileUri = "gs://cloud-samples-data/generative-ai/video/behind_the_scenes_pixel.mp4" } },
+                        new Part { FileData = new() { MimeType = "image/png", FileUri = "gs://cloud-samples-data/generative-ai/image/a-man-and-a-dog.png" } }
+                    }
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 

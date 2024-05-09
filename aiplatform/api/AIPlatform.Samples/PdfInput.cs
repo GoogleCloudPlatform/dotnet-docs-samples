@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class PdfInput
@@ -38,30 +37,22 @@ public class PdfInput
         string prompt = @"You are a very professional document summarization specialist.
 Please summarize the given document.";
 
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            },
-            new()
-            {
-                FileData = new() {
-                    MimeType = "application/pdf",
-                    FileUri = "gs://cloud-samples-data/generative-ai/pdf/2403.05530.pdf"
-                }
-            }
-        });
-
         var generateContentRequest = new GenerateContentRequest
         {
-            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}"
+            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = prompt },
+                        new Part { FileData = new() { MimeType = "application/pdf", FileUri = "gs://cloud-samples-data/generative-ai/pdf/2403.05530.pdf" }}
+                    }
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 
