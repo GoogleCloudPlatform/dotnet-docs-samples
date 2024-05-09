@@ -18,7 +18,6 @@
 
 using Google.Api.Gax.Grpc;
 using Google.Cloud.AIPlatform.V1;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -37,31 +36,7 @@ public class GeminiQuickstart
             Endpoint = $"{location}-aiplatform.googleapis.com"
         }.Build();
 
-        // Prompt
-        string prompt = "What's in this photo";
-        string imageUri = "gs://generativeai-downloads/images/scones.jpg";
-
-        // Initialize request argument(s)
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            },
-            new()
-            {
-                FileData = new()
-                {
-                    MimeType = "image/png",
-                    FileUri = imageUri
-                }
-            }
-        });
-
+        // Initialize content request
         var generateContentRequest = new GenerateContentRequest
         {
             Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
@@ -71,9 +46,20 @@ public class GeminiQuickstart
                 TopP = 1,
                 TopK = 32,
                 MaxOutputTokens = 2048
+            },
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = "What's in this photo?" },
+                        new Part { FileData = new() { MimeType = "image/png", FileUri = "gs://generativeai-downloads/images/scones.jpg" } }
+                    }
+                }
             }
         };
-        generateContentRequest.Contents.Add(content);
 
         // Make the request, returning a streaming response
         using PredictionServiceClient.StreamGenerateContentStream response = predictionServiceClient.StreamGenerateContent(generateContentRequest);

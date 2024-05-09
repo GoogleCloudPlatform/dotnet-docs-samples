@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class SystemInstruction
@@ -38,38 +37,29 @@ public class SystemInstruction
         string prompt = @"User input: I like bagels.
 Answer:";
 
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            }
-        });
-
-        var systemInstructionContent = new Content();
-        systemInstructionContent.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = "You are a helpful language translator."
-            },
-            new()
-            {
-                Text = "Your mission is to translate text in English to French."
-            }
-        });
-
-
         var generateContentRequest = new GenerateContentRequest
         {
             Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
-            SystemInstruction = systemInstructionContent
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = prompt },
+                    }
+                }
+            },
+            SystemInstruction = new()
+            {
+                Parts =
+                {
+                    new Part { Text = "You are a helpful assistant." },
+                    new Part { Text = "Your mission is to translate text in English to French." },
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 

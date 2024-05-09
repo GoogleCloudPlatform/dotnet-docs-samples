@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class AudioInputTranscription
@@ -38,31 +37,22 @@ public class AudioInputTranscription
         string prompt = @"Can you transcribe this interview, in the format of timecode, speaker, caption.
 Use speaker A, speaker B, etc. to identify speakers.";
 
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            },
-            new()
-            {
-                FileData = new()
-                {
-                    MimeType = "audio/mp3",
-                    FileUri = "gs://cloud-samples-data/generative-ai/audio/pixel.mp3"
-                }
-            }
-        });
-
         var generateContentRequest = new GenerateContentRequest
         {
-            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}"
+            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = prompt },
+                        new Part { FileData = new() { MimeType = "audio/mp3", FileUri = "gs://cloud-samples-data/generative-ai/audio/pixel.mp3" } }
+                    }
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 

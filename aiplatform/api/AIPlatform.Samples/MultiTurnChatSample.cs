@@ -65,7 +65,6 @@ public class MultiTurnChatSample
         {
             _modelPath = modelPath;
 
-            // Create a prediction service client.
             _predictionServiceClient = new PredictionServiceClientBuilder
             {
                 Endpoint = $"{location}-aiplatform.googleapis.com"
@@ -75,25 +74,18 @@ public class MultiTurnChatSample
             _contents = new List<Content>();
         }
 
-
         public async Task<string> SendMessageAsync(string prompt)
         {
-            // Initialize the content with the prompt.
             var content = new Content
             {
-                Role = "USER"
-            };
-            content.Parts.AddRange(new List<Part>()
-            {
-                new()
+                Role = "USER",
+                Parts =
                 {
-                    Text = prompt
+                    new Part { Text = prompt }
                 }
-            });
+            };
             _contents.Add(content);
 
-
-            // Create a request to generate content.
             var generateContentRequest = new GenerateContentRequest
             {
                 Model = _modelPath,
@@ -108,13 +100,10 @@ public class MultiTurnChatSample
             };
             generateContentRequest.Contents.AddRange(_contents);
 
-            // Make a non-streaming request, get a response.
             GenerateContentResponse response = await _predictionServiceClient.GenerateContentAsync(generateContentRequest);
 
-            // Save the content from the response.
             _contents.Add(response.Candidates[0].Content);
 
-            // Return the text
             return response.Candidates[0].Content.Parts[0].Text;
         }
     }

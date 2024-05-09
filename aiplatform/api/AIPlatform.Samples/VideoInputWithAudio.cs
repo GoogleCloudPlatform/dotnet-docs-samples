@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class VideoInputWithAudio
@@ -38,31 +37,22 @@ public class VideoInputWithAudio
         string prompt = @"Provide a description of the video.
 The description should also contain anything important which people say in the video.";
 
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            },
-            new()
-            {
-                FileData = new()
-                {
-                    MimeType = "video/mp4",
-                    FileUri = "gs://cloud-samples-data/generative-ai/video/pixel8.mp4"
-                }
-            }
-        });
-
         var generateContentRequest = new GenerateContentRequest
         {
-            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}"
+            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = prompt },
+                        new Part { FileData = new() { MimeType = "video/mp4", FileUri = "gs://cloud-samples-data/generative-ai/video/pixel8.mp4" }}
+                    }
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 

@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class AudioInputSummarization
@@ -38,31 +37,22 @@ public class AudioInputSummarization
 Provide chapter titles with timestamps, be concise and short, no need to provide chapter summaries.
 Do not make up any information that is not part of the audio and do not be verbose.";
 
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            },
-            new()
-            {
-                FileData = new()
-                {
-                    MimeType = "audio/mp3",
-                    FileUri = "gs://cloud-samples-data/generative-ai/audio/pixel.mp3"
-                }
-            }
-        });
-
         var generateContentRequest = new GenerateContentRequest
         {
-            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}"
+            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
+            Contents =
+            {
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = prompt },
+                        new Part { FileData = new() { MimeType = "audio/mp3", FileUri = "gs://cloud-samples-data/generative-ai/audio/pixel.mp3" } }
+                    }
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
 
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 

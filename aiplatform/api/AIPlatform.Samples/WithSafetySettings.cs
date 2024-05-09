@@ -18,7 +18,6 @@
 
 using Google.Api.Gax.Grpc;
 using Google.Cloud.AIPlatform.V1;
-using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using static Google.Cloud.AIPlatform.V1.SafetySetting.Types;
@@ -32,63 +31,45 @@ public class WithSafetySettings
         string model = "gemini-1.0-pro-vision"
     )
     {
-        // Create client
         var predictionServiceClient = new PredictionServiceClientBuilder
         {
             Endpoint = $"{location}-aiplatform.googleapis.com"
         }.Build();
 
 
-        // Prompt
-        string prompt = "Hello!";
-
-        // Initialize request argument(s)
-        var content = new Content
-        {
-            Role = "USER"
-        };
-        content.Parts.AddRange(new List<Part>()
-        {
-            new()
-            {
-                Text = prompt
-            }
-        });
-
-        var safetySettings = new List<SafetySetting>()
-        {
-            new()
-            {
-                Category = HarmCategory.HateSpeech,
-                Threshold = HarmBlockThreshold.BlockLowAndAbove
-            },
-            new()
-            {
-                Category = HarmCategory.DangerousContent,
-                Threshold = HarmBlockThreshold.BlockMediumAndAbove
-            }
-        };
-
         var generateContentRequest = new GenerateContentRequest
         {
             Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
-            GenerationConfig = new GenerationConfig
+            Contents =
             {
-                Temperature = 0.4f,
-                TopP = 1,
-                TopK = 32,
-                MaxOutputTokens = 2048
+                new Content
+                {
+                    Role = "USER",
+                    Parts =
+                    {
+                        new Part { Text = "Hello!" }
+                    }
+                }
             },
+            SafetySettings =
+            {
+                new SafetySetting
+                {
+                    Category = HarmCategory.HateSpeech,
+                    Threshold = HarmBlockThreshold.BlockLowAndAbove
+                },
+                new SafetySetting
+                {
+                    Category = HarmCategory.DangerousContent,
+                    Threshold = HarmBlockThreshold.BlockMediumAndAbove
+                }
+            }
         };
-        generateContentRequest.Contents.Add(content);
-        generateContentRequest.SafetySettings.AddRange(safetySettings);
 
-        // Make the request, returning a streaming response
         using PredictionServiceClient.StreamGenerateContentStream response = predictionServiceClient.StreamGenerateContent(generateContentRequest);
 
         StringBuilder fullText = new();
 
-        // Read streaming responses from server until complete
         AsyncResponseStream<GenerateContentResponse> responseStream = response.GetResponseStream();
         await foreach (GenerateContentResponse responseItem in responseStream)
         {
