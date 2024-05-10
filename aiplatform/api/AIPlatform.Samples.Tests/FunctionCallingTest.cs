@@ -30,7 +30,7 @@ public class FunctionCallingTest
     }
 
     [Fact]
-    public async Task TestGenerateContentAsync()
+    public async Task TestGenerateFunctionCall()
     {
         var response = await _sample.GenerateFunctionCall(_fixture.ProjectId);
         Assert.NotNull(response);
