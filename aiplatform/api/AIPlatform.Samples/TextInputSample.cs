@@ -18,7 +18,6 @@
 
 using Google.Cloud.AIPlatform.V1;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 public class TextInputSample
@@ -34,17 +33,7 @@ public class TextInputSample
         {
             Endpoint = $"{location}-aiplatform.googleapis.com"
         }.Build();
-        // Does the returned sentiment score match the reviewer's movie rating?
-        string prompt = @"Give a score from 1 - 10 to suggest if the following
-            movie review is negative or positive (1 is most negative, 10 is
-            most positive, 5 will be neutral). Include an explanation.
-
-            The movie takes some time to build, but that is part of its beauty.
-            By the time you are hooked, this tale of friendship and hope is
-            thrilling and affecting, until the very last scene. You will find
-            yourself rooting for the hero every step of the way. This is the
-            sharpest, most original animated film I have seen in years. I would
-            give it 8 out of 10 stars.";
+        string prompt = @"What's a good name for a flower shop that specializes in selling bouquets of dried flowers?";
 
         var generateContentRequest = new GenerateContentRequest
         {
