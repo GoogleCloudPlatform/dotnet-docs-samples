@@ -57,18 +57,16 @@ public class FunctionCalling
                 Type = Type.Object,
                 Properties =
                 {
-                    {"location", new()
-                        {
-                            Type = Type.String,
-                            Description = "Get the current weather in a given location"
-                        }
+                    ["location"] = new()
+                    {
+                        Type = Type.String,
+                        Description = "Get the current weather in a given location"
                     },
-                    {"unit", new()
-                        {
-                            Type = Type.String,
-                            Enum = { "celsius", "fahrenheit" },
-                            Description = "The unit of measurement for the temperature"
-                        }
+                    ["unit"] = new()
+                    {
+                        Type = Type.String,
+                        Description = "The unit of measurement for the temperature",
+                        Enum = {"celsius", "fahrenheit"}
                     }
                 },
                 Required = { "location" }
