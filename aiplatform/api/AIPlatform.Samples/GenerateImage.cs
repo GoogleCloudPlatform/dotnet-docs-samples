@@ -61,9 +61,9 @@ public class GenerateImage
         };
 
         PredictResponse response = await predictionServiceClient.PredictAsync(predictRequest);
-        byte[] bytesBase64Encoded = Convert.FromBase64String(response.Predictions.First().StructValue.Fields["bytesBase64Encoded"].StringValue);
+        byte[] imageBytes = Convert.FromBase64String(response.Predictions.First().StructValue.Fields["bytesBase64Encoded"].StringValue);
 
-        File.WriteAllBytes(outputFileName, bytesBase64Encoded);
+        File.WriteAllBytes(outputFileName, imageBytes);
         FileInfo fileInfo = new FileInfo(Path.GetFullPath(outputFileName));
 
         Console.WriteLine($"Created output image {fileInfo.FullName} with {fileInfo.Length} bytes");
