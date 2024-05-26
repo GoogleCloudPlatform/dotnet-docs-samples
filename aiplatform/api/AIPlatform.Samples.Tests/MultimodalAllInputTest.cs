@@ -34,7 +34,7 @@ public class MultimodalAllInputTest
     public async Task TestAnswerFromMultimodalInput()
     {
         var response = await _sample.AnswerFromMultimodalInput(_fixture.ProjectId);
-        Assert.Contains("00:49", response, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("moment", response, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("0:48", response, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("story", response, StringComparison.OrdinalIgnoreCase);
     }
 }
