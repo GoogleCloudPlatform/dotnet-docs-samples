@@ -49,11 +49,8 @@ public class GetTokenCount
         };
 
         var response = await client.CountTokensAsync(request);
-
         int tokenCount = response.TotalTokens;
-
         Console.WriteLine($"There are {tokenCount} tokens in the prompt.");
-
         return tokenCount;
     }
 }
