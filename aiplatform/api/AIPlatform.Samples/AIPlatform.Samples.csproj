@@ -4,6 +4,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.AIPlatform.V1" Version="2.28.0" />
+    <PackageReference Include="Google.Cloud.AIPlatform.V1" Version="3.0.0" />
   </ItemGroup>
 </Project>
