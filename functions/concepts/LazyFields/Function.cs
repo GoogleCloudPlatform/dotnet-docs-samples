@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,7 +40,8 @@ public class Function : IHttpFunction
         // and others that don't. The computation is only performed when necessary, and
         // only once per server.
         await context.Response.WriteAsync(
-            $"Lazy global: {LazyGlobal.Value}; non-lazy global: {NonLazyGlobal}");
+            $"Lazy global: {LazyGlobal.Value}; non-lazy global: {NonLazyGlobal}",
+            context.RequestAborted);
     }
 
     private static int FunctionSpecificComputation()

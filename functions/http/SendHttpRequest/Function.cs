@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,9 +49,11 @@ public class Function : IHttpFunction
     public async Task HandleAsync(HttpContext context)
     {
         string url = "http://example.com";
-        using (HttpResponseMessage clientResponse = await _httpClient.GetAsync(url))
+        using (HttpResponseMessage clientResponse = await _httpClient.GetAsync(url, context.RequestAborted))
         {
-            await context.Response.WriteAsync($"Received code '{(int) clientResponse.StatusCode}' from URL '{url}'.");
+            await context.Response.WriteAsync(
+                $"Received code '{(int) clientResponse.StatusCode}' from URL '{url}'.",
+                context.RequestAborted);
         }
     }
 }

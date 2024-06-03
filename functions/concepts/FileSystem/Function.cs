@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ public class Function : IHttpFunction
     {
         string[] files = Directory.GetFiles(".");
 
-        await context.Response.WriteAsync("Files:\n");
+        await context.Response.WriteAsync("Files:\n", context.RequestAborted);
         foreach (string file in files)
         {
-            await context.Response.WriteAsync($"\t{file}\n");
+            await context.Response.WriteAsync($"\t{file}\n", context.RequestAborted);
         }
     }
 }

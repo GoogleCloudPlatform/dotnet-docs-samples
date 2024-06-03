@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class Function : IHttpFunction
         _logger.LogInformation("I am an info log!");
         _logger.LogWarning("I am a warning log!");
 
-        await context.Response.WriteAsync("Messages successfully logged!");
+        await context.Response.WriteAsync("Messages successfully logged!", context.RequestAborted);
     }
 }
 // [END functions_log_helloworld]

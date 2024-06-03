@@ -21,6 +21,7 @@ using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SlackKnowledgeGraphSearch;
@@ -39,6 +40,7 @@ public class Function : IHttpFunction
     {
         var request = context.Request;
         var response = context.Response;
+        var cancellationToken = context.RequestAborted;
 
         // Validate request
         if (request.Method != "POST")
@@ -59,7 +61,7 @@ public class Function : IHttpFunction
         // and once to read the form content. We copy it into a memory stream,
         // so that we can rewind it after reading.
         var bodyCopy = new MemoryStream();
-        await request.Body.CopyToAsync(bodyCopy);
+        await request.Body.CopyToAsync(bodyCopy, cancellationToken);
         request.Body = bodyCopy;
         bodyCopy.Position = 0;
 
@@ -78,7 +80,7 @@ public class Function : IHttpFunction
             return;
         }
 
-        var kgResponse = await SearchKnowledgeGraphAsync(query);
+        var kgResponse = await SearchKnowledgeGraphAsync(query, cancellationToken);
         string formattedResponse = FormatSlackMessage(kgResponse, query);
         response.ContentType = "application/json";
         await response.WriteAsync(formattedResponse);
@@ -86,13 +88,13 @@ public class Function : IHttpFunction
     // [END functions_slack_search]
 
     // [START functions_slack_request]
-    private async Task<SearchResponse> SearchKnowledgeGraphAsync(string query)
+    private async Task<SearchResponse> SearchKnowledgeGraphAsync(string query, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Performing Knowledge Graph search for '{query}'", query);
         var request = _kgService.Entities.Search();
         request.Limit = 1;
         request.Query = query;
-        return await request.ExecuteAsync();
+        return await request.ExecuteAsync(cancellationToken);
     }
     // [END functions_slack_request]
 

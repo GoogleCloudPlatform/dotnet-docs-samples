@@ -23,7 +23,7 @@ public class Function : IHttpFunction
 {
     public async Task HandleAsync(HttpContext context)
     {
-        await context.Response.WriteAsync("Hello World!");
+        await context.Response.WriteAsync("Hello World!", context.RequestAborted);
     }
 }
 // [END functions_helloworld_get]

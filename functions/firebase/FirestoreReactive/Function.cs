@@ -76,7 +76,7 @@ public class Function : ICloudEventFunction<DocumentEventData>
         string documentPath = cloudEvent.Subject.Substring("documents/".Length);
 
         _logger.LogInformation("Replacing '{current}' with '{new}' in '{path}'", currentValue, newValue, documentPath);
-        await _firestoreDb.Document(documentPath).UpdateAsync("original", newValue);
+        await _firestoreDb.Document(documentPath).UpdateAsync("original", newValue, cancellationToken: cancellationToken);
     }
 }
 // [END functions_firebase_reactive]

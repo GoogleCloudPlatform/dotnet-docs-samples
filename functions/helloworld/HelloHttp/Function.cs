@@ -59,7 +59,7 @@ public class Function : IHttpFunction
             }
         }
 
-        await context.Response.WriteAsync($"Hello {name}!");
+        await context.Response.WriteAsync($"Hello {name}!", context.RequestAborted);
     }
 }
 // [END functions_helloworld_http]
