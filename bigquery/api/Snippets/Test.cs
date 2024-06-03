@@ -155,7 +155,7 @@ CREATE MODEL {datasetId}.{modelId}
 OPTIONS
   (model_type='linear_reg',
     input_label_cols=['label'],
-    max_iteration = 1,
+    max_iterations = 1,
     learn_rate=0.4,
     learn_rate_strategy='constant') AS
 SELECT 'a' AS f1, 2.0 AS label
