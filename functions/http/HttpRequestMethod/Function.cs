@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,15 +29,15 @@ public class Function : IHttpFunction
         {
             case "GET":
                 response.StatusCode = (int) HttpStatusCode.OK;
-                await response.WriteAsync("Hello world!");
+                await response.WriteAsync("Hello world!", context.RequestAborted);
                 break;
             case "PUT":
                 response.StatusCode = (int) HttpStatusCode.Forbidden;
-                await response.WriteAsync("Forbidden!");
+                await response.WriteAsync("Forbidden!", context.RequestAborted);
                 break;
             default:
                 response.StatusCode = (int) HttpStatusCode.MethodNotAllowed;
-                await response.WriteAsync("Something blew up!");
+                await response.WriteAsync("Something blew up!", context.RequestAborted);
                 break;
         }
     }

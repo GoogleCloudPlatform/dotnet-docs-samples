@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -37,7 +37,9 @@ public class Function : IHttpFunction
         // This computation runs every time this function is called.
         int functionVariable = LightComputation();
 
-        await context.Response.WriteAsync($"Global: {GlobalVariable}; function: {functionVariable}");
+        await context.Response.WriteAsync(
+            $"Global: {GlobalVariable}; function: {functionVariable}",
+            context.RequestAborted);
     }
 
     private static int LightComputation()

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class Function : IHttpFunction
         // Note: the total function invocation count across
         // all servers may not be equal to this value!
         int currentCount = Interlocked.Increment(ref _count);
-        await context.Response.WriteAsync($"Server execution count: {currentCount}");
+        await context.Response.WriteAsync($"Server execution count: {currentCount}", context.RequestAborted);
     }
 }
 // [END functions_concepts_stateless]

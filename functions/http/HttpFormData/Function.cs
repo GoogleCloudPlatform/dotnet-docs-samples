@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public class Function : IHttpFunction
             // Persistent files should be stored elsewhere, e.g. a Cloud Storage bucket.
             using (FileStream output = File.Create(outputPath))
             {
-                await file.CopyToAsync(output);
+                await file.CopyToAsync(output, context.RequestAborted);
             }
 
             // TODO(developer): process saved files here

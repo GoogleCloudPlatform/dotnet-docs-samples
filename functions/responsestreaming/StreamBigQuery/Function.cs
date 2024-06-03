@@ -33,12 +33,12 @@ public class Function : IHttpFunction
         // Example to retrieve a large payload from BigQuery public dataset.
         string query = "SELECT title FROM `bigquery-public-data.breathe.bioasq` LIMIT 1000";
         BigQueryParameter[] parameters = null;
-        BigQueryResults results = client.ExecuteQuery(query, parameters);
+        BigQueryResults results = await client.ExecuteQueryAsync(query, parameters, cancellationToken: context.RequestAborted);
 
         // Stream out the payload response by iterating rows.
         foreach (BigQueryRow row in results)
         {
-            await context.Response.WriteAsync($"{row["title"]}\n");
+            await context.Response.WriteAsync($"{row["title"]}\n", context.RequestAborted);
             // Artificially add a 50ms delay per line, just to make the streaming nature clearer
             // when viewing the results in a browser.
             await Task.Delay(50);
