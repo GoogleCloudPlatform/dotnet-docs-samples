@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// [START generativeaionvertexai_gemini_single_turn_video]
 // [START aiplatform_gemini_single_turn_video]
 
 using Google.Api.Gax.Grpc;
@@ -27,7 +28,7 @@ public class MultimodalVideoInput
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.0-pro-vision"
+        string model = "gemini-1.5-flash-001"
     )
     {
         var predictionServiceClient = new PredictionServiceClientBuilder
@@ -66,3 +67,4 @@ public class MultimodalVideoInput
 }
 
 // [END aiplatform_gemini_single_turn_video]
+// [END generativeaionvertexai_gemini_single_turn_video]

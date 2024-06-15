@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// [START generativeaionvertexai_gemini_image]
 // [START aiplatform_gemini_get_started]
 
 using Google.Api.Gax.Grpc;
@@ -78,3 +79,4 @@ public class GeminiQuickstart
 }
 
 // [END aiplatform_gemini_get_started]
+// [END generativeaionvertexai_gemini_image]
