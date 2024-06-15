@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// [START generativeaionvertexai_gemini_multiturn_chat]
 // [START aiplatform_gemini_multiturn_chat]
 
 using Google.Cloud.AIPlatform.V1;
@@ -27,7 +28,7 @@ public class MultiTurnChatSample
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.0-pro"
+        string model = "gemini-1.5-flash-001"
     )
     {
         // Create a chat session to keep track of the context
@@ -110,3 +111,4 @@ public class MultiTurnChatSample
 }
 
 // [END aiplatform_gemini_multiturn_chat]
+// [END generativeaionvertexai_gemini_multiturn_chat]
