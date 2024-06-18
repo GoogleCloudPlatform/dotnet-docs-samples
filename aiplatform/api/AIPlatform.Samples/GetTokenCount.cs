@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+// [START generativeaionvertexai_gemini_token_count]
 // [START aiplatform_gemini_token_count]
 
 using Google.Cloud.AIPlatform.V1;
@@ -56,3 +57,4 @@ public class GetTokenCount
 }
 
 // [END aiplatform_gemini_token_count]
+// [END generativeaionvertexai_gemini_token_count]
