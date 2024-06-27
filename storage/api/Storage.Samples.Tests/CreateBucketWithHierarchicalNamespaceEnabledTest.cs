@@ -36,6 +36,6 @@ public class CreateBucketWithHierarchicalNamespaceEnabledTest
         _fixture.SleepAfterBucketCreateUpdateDelete();
         _fixture.TempBucketNames.Add(bucket.Name);
 
-        Assert.Equal(true, bucket.HierarchicalNamespace.Enabled);
+        Assert.True(bucket.HierarchicalNamespace.Enabled);
     }
 }

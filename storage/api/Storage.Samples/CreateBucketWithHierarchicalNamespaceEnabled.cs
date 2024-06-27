@@ -25,14 +25,14 @@ public class CreateBucketWithHierarchicalNamespaceEnabledSample
     {
         var storage = StorageClient.Create();
         var bucket = storage.CreateBucket(projectId,
-            new Bucket {
+            new Bucket
+            {
                 Name = bucketName,
                 IamConfiguration = new Bucket.IamConfigurationData
                 {
                     UniformBucketLevelAccess = new Bucket.IamConfigurationData.UniformBucketLevelAccessData { Enabled = true }
                 },
                 HierarchicalNamespace = new Bucket.HierarchicalNamespaceData { Enabled = true }
-
             });
         Console.WriteLine($"Created {bucketName} with Hierarchical Namespace enabled.");
         return bucket;
