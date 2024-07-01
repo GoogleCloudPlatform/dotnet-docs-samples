@@ -30,7 +30,7 @@ public class StorageControlCreateFolderTest
     public void TestStorageControlCreateFolder()
     {
         StorageControlCreateFolderSample sample = new StorageControlCreateFolderSample();
-        var folder = sample.StorageControlCreateFolder(_fixture.BucketNameHns, "myFolder");
-        Assert.Contains("myFolder", folder.Name);
+        var folder = sample.StorageControlCreateFolder(_fixture.BucketNameHns, "createTestFolder");
+        Assert.Contains("createTestFolder", folder.Name);
     }
 }

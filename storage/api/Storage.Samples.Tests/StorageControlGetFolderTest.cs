@@ -30,10 +30,10 @@ public class StorageControlGetFolderTest
     public void TestStorageControlGetFolder()
     {
         StorageControlCreateFolderSample createFolderSample = new StorageControlCreateFolderSample();
-        createFolderSample.StorageControlCreateFolder(_fixture.BucketNameHns, "myFolder");
+        createFolderSample.StorageControlCreateFolder(_fixture.BucketNameHns, "getTestFolder");
 
         StorageControlGetFolderSample getFolderSample = new StorageControlGetFolderSample();
-        var folder = getFolderSample.StorageControlGetFolder(_fixture.BucketNameHns, "myFolder");
+        var folder = getFolderSample.StorageControlGetFolder(_fixture.BucketNameHns, "getTestFolder");
 
         Assert.Contains("myFolder", folder.Name);
     }

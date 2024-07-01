@@ -30,7 +30,7 @@ public class StorageControlListFoldersTest
     public void TestStorageControlListFolders()
     {
         StorageControlCreateFolderSample createSample = new StorageControlCreateFolderSample();
-        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, "myFolder");
+        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, "listTestFolder");
 
         StorageControlListFoldersSample listSample = new StorageControlListFoldersSample();
         var folders = listSample.StorageControlListFolders(_fixture.BucketNameHns);

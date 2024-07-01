@@ -30,10 +30,10 @@ public class StorageControlRenameFolderTest
     public void TestStorageControlRenameFolder()
     {
         StorageControlCreateFolderSample createSample = new StorageControlCreateFolderSample();
-        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, "myFolder");
+        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, "renameTestFolder");
 
         StorageControlRenameFolderSample renameSample = new StorageControlRenameFolderSample();
-        var renamedFolder = renameSample.StorageControlRenameFolder(_fixture.BucketNameHns, "myFolder", "renamedFolder");
+        var renamedFolder = renameSample.StorageControlRenameFolder(_fixture.BucketNameHns, "renameTestFolder", "renamedFolder");
         Assert.Contains("renamedFolder", renamedFolder.Name);
 
         StorageControlListFoldersSample listFoldersSample = new StorageControlListFoldersSample();

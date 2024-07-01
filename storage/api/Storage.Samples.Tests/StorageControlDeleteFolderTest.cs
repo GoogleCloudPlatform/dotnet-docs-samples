@@ -30,10 +30,10 @@ public class StorageControlDeleteFolderTest
     public void TestStorageControlDeleteFolder()
     {
         StorageControlCreateFolderSample createSample = new StorageControlCreateFolderSample();
-        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, "myFolder");
+        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, "deleteTestFolder");
 
         StorageControlDeleteFolderSample deleteSample = new StorageControlDeleteFolderSample();
-        deleteSample.StorageControlDeleteFolder(_fixture.BucketNameHns, "myFolder");
+        deleteSample.StorageControlDeleteFolder(_fixture.BucketNameHns, "deleteTestFolder");
 
         StorageControlListFoldersSample listFoldersSample = new StorageControlListFoldersSample();
         var folders = listFoldersSample.StorageControlListFolders(_fixture.BucketNameHns);
