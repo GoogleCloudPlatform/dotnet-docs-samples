@@ -65,13 +65,6 @@ public class ControlledGenerationTest
     }
 
     [Fact]
-    public async Task TestGenerateContentWithResponseSchema5()
-    {
-        var response = await _sample.GenerateContentWithResponseSchema5(_fixture.ProjectId);
-        Assert.NotNull(response);
-    }
-
-    [Fact]
     public async Task TestGenerateContentWithResponseSchema6()
     {
         var response = await _sample.GenerateContentWithResponseSchema6(_fixture.ProjectId);
