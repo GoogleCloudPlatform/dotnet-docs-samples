@@ -35,6 +35,7 @@ Where command is one of
     in-query
     in-query-array
     collection-group-query
+    subcollection-query
     chained-query
     composite-index-chained-query
     range-query
@@ -245,6 +246,19 @@ Where command is one of
             // [END firestore_query_collection_group_filter_eq]
         }
 
+        private static async Task SubcollectionQuery(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            // [START firestore_query_subcollection]
+            CollectionReference landmarks = db.Collection("cities").Document("SF").Collection("landmarks");
+            QuerySnapshot querySnapshot = await landmarks.GetSnapshotAsync();
+            foreach (DocumentSnapshot document in querySnapshot.Documents)
+            {
+                Console.WriteLine($"{document.Reference.Path}: {document.GetValue<string>("Name")}");
+            }
+            // [END firestore_query_subcollection]
+        }
+
         private static async Task ChainedQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
@@ -350,6 +364,10 @@ Where command is one of
 
                 case "collection-group-query":
                     CollectionGroupQuery(project).Wait();
+                    break;
+
+                case "subcollection-query":
+                    SubcollectionQuery(project).Wait();
                     break;
 
                 case "chained-query":

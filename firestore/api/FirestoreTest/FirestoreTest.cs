@@ -674,6 +674,15 @@ namespace GoogleCloudSamples
             var output = RunQueryData("invalid-range-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
         }
 
+        [Fact]
+        public void SubcollectionQueryTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunQueryData("subcollection-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+
+            Assert.Contains(": Golden Gate Bridge", output.Stdout);
+        }
+
         // ORDER LIMIT DATA TESTS
         [Fact]
         public void OrderByNameLimitQueryTest()
