@@ -51,7 +51,7 @@ Where command is one of
                 { "Country", "USA" },
                 { "Capital", false },
                 { "Population", 860000 },
-                { "Regions", new ArrayList{"west_coast", "norcal"} }
+                { "Regions", new[] {"west_coast", "norcal"} }
             });
             await citiesRef.Document("LA").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Los Angeles" },
@@ -59,7 +59,7 @@ Where command is one of
                 { "Country", "USA" },
                 { "Capital", false },
                 { "Population", 3900000 },
-                { "Regions", new ArrayList{"west_coast", "socal"} }
+                { "Regions", new[] {"west_coast", "socal"} }
             });
             await citiesRef.Document("DC").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Washington D.C." },
@@ -67,7 +67,7 @@ Where command is one of
                 { "Country", "USA" },
                 { "Capital", true },
                 { "Population", 680000 },
-                { "Regions", new ArrayList{"east_coast"} }
+                { "Regions", new[] {"east_coast"} }
             });
             await citiesRef.Document("TOK").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Tokyo" },
@@ -75,7 +75,7 @@ Where command is one of
                 { "Country", "Japan" },
                 { "Capital", true },
                 { "Population", 9000000 },
-                { "Regions", new ArrayList{"kanto", "honshu"} }
+                { "Regions", new[] {"kanto", "honshu"} }
             });
             await citiesRef.Document("BJ").SetAsync(new Dictionary<string, object>(){
                 { "Name", "Beijing" },
@@ -83,7 +83,7 @@ Where command is one of
                 { "Country", "China" },
                 { "Capital", true },
                 { "Population", 21500000 },
-                { "Regions", new ArrayList{"jingjinji", "hebei"} }
+                { "Regions", new[] {"jingjinji", "hebei"} }
             });
             Console.WriteLine("Added example cities data to the cities collection.");
             // [END firestore_query_filter_dataset]

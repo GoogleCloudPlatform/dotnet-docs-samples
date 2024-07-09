@@ -80,20 +80,14 @@ Where command is one of
                 { "booleanExample", false },
                 { "numberExample", 3.14159265 },
                 { "nullExample", null },
+                { "arrayExample", new object[] { 5, true, "Hello" } },
+                { "objectExample", new Dictionary<string, object>
+                    {
+                        { "a", 5 },
+                        { "b", true},
+                    }
+                }
             };
-
-            ArrayList arrayExample = new ArrayList();
-            arrayExample.Add(5);
-            arrayExample.Add(true);
-            arrayExample.Add("Hello");
-            docData.Add("arrayExample", arrayExample);
-
-            Dictionary<string, object> objectExample = new Dictionary<string, object>
-            {
-                { "a", 5 },
-                { "b", true },
-            };
-            docData.Add("objectExample", objectExample);
 
             await docRef.SetAsync(docData);
             // [END firestore_data_set_from_map_nested]
