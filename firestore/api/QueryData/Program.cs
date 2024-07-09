@@ -43,50 +43,82 @@ Where command is one of
         private static async Task QueryCreateExamples(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START firestore_query_filter_dataset]
-            CollectionReference citiesRef = db.Collection("cities");
-            await citiesRef.Document("SF").SetAsync(new Dictionary<string, object>(){
-                { "Name", "San Francisco" },
-                { "State", "CA" },
-                { "Country", "USA" },
-                { "Capital", false },
-                { "Population", 860000 },
-                { "Regions", new[] {"west_coast", "norcal"} }
-            });
-            await citiesRef.Document("LA").SetAsync(new Dictionary<string, object>(){
-                { "Name", "Los Angeles" },
-                { "State", "CA" },
-                { "Country", "USA" },
-                { "Capital", false },
-                { "Population", 3900000 },
-                { "Regions", new[] {"west_coast", "socal"} }
-            });
-            await citiesRef.Document("DC").SetAsync(new Dictionary<string, object>(){
-                { "Name", "Washington D.C." },
-                { "State", null },
-                { "Country", "USA" },
-                { "Capital", true },
-                { "Population", 680000 },
-                { "Regions", new[] {"east_coast"} }
-            });
-            await citiesRef.Document("TOK").SetAsync(new Dictionary<string, object>(){
-                { "Name", "Tokyo" },
-                { "State", null },
-                { "Country", "Japan" },
-                { "Capital", true },
-                { "Population", 9000000 },
-                { "Regions", new[] {"kanto", "honshu"} }
-            });
-            await citiesRef.Document("BJ").SetAsync(new Dictionary<string, object>(){
-                { "Name", "Beijing" },
-                { "State", null },
-                { "Country", "China" },
-                { "Capital", true },
-                { "Population", 21500000 },
-                { "Regions", new[] {"jingjinji", "hebei"} }
-            });
-            Console.WriteLine("Added example cities data to the cities collection.");
-            // [END firestore_query_filter_dataset]
+            // Note: the extra braces here are just to allow multiple citiesRef local variables.
+            {
+                // [START firestore_query_filter_dataset]
+                CollectionReference citiesRef = db.Collection("cities");
+                await citiesRef.Document("SF").SetAsync(new Dictionary<string, object>
+                {
+                    { "Name", "San Francisco" },
+                    { "State", "CA" },
+                    { "Country", "USA" },
+                    { "Capital", false },
+                    { "Population", 860000 },
+                    { "Regions", new[] {"west_coast", "norcal"} }
+                });
+                await citiesRef.Document("LA").SetAsync(new Dictionary<string, object>
+                {
+                    { "Name", "Los Angeles" },
+                        { "State", "CA" },
+                        { "Country", "USA" },
+                        { "Capital", false },
+                        { "Population", 3900000 },
+                        { "Regions", new[] {"west_coast", "socal"} }
+                });
+                await citiesRef.Document("DC").SetAsync(new Dictionary<string, object>
+                {
+                    { "Name", "Washington D.C." },
+                    { "State", null },
+                    { "Country", "USA" },
+                    { "Capital", true },
+                    { "Population", 680000 },
+                    { "Regions", new[] {"east_coast"} }
+                });
+                await citiesRef.Document("TOK").SetAsync(new Dictionary<string, object>
+                {
+                    { "Name", "Tokyo" },
+                    { "State", null },
+                    { "Country", "Japan" },
+                    { "Capital", true },
+                    { "Population", 9000000 },
+                    { "Regions", new[] {"kanto", "honshu"} }
+                });
+                await citiesRef.Document("BJ").SetAsync(new Dictionary<string, object>
+                {
+                    { "Name", "Beijing" },
+                    { "State", null },
+                    { "Country", "China" },
+                    { "Capital", true },
+                    { "Population", 21500000 },
+                    { "Regions", new[] {"jingjinji", "hebei"} }
+                });
+                Console.WriteLine("Added example cities data to the cities collection.");
+                // [END firestore_query_filter_dataset]
+            }
+
+            {
+                // [START firestore_query_collection_group_dataset]
+                CollectionReference citiesRef = db.Collection("cities");
+                await citiesRef.Document("SF").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "Golden Gate Bridge", Type = "bridge" });
+                await citiesRef.Document("SF").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "Legion of Honor", Type = "museum" });
+                await citiesRef.Document("LA").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "Griffith Park", Type = "park" });
+                await citiesRef.Document("DC").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "Lincoln Memorial", Type = "memorial" });
+                await citiesRef.Document("DC").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "National Air And Space Museum", Type = "museum" });
+                await citiesRef.Document("TOK").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "Ueno Park", Type = "park" });
+                await citiesRef.Document("TOK").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "National Museum of Nature and Science", Type = "museum" });
+                await citiesRef.Document("BJ").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "Jingshan Park", Type = "park" });
+                await citiesRef.Document("BJ").Collection("landmarks").Document()
+                    .SetAsync(new { Name = "Beijing Ancient Observatory", Type = "museum" });
+                // [END firestore_query_collection_group_dataset]
+            }
         }
 
         private static async Task CreateQueryState(string project)
@@ -203,28 +235,6 @@ Where command is one of
         private static async Task CollectionGroupQuery(string project)
         {
             FirestoreDb db = FirestoreDb.Create(project);
-            // [START firestore_query_collection_group_dataset]
-            CollectionReference citiesRef = db.Collection("cities");
-            await citiesRef.Document("SF").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "Golden Gate Bridge", Type = "bridge" });
-            await citiesRef.Document("SF").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "Legion of Honor", Type = "museum" });
-            await citiesRef.Document("LA").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "Griffith Park", Type = "park" });
-            await citiesRef.Document("DC").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "Lincoln Memorial", Type = "memorial" });
-            await citiesRef.Document("DC").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "National Air And Space Museum", Type = "museum" });
-            await citiesRef.Document("TOK").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "Ueno Park", Type = "park" });
-            await citiesRef.Document("TOK").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "National Museum of Nature and Science", Type = "museum" });
-            await citiesRef.Document("BJ").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "Jingshan Park", Type = "park" });
-            await citiesRef.Document("BJ").Collection("landmarks").Document()
-                .CreateAsync(new { Name = "Beijing Ancient Observatory", Type = "museum" });
-            // [END firestore_query_collection_group_dataset]
-
             // [START firestore_query_collection_group_filter_eq]
             Query museums = db.CollectionGroup("landmarks").WhereEqualTo("Type", "museum");
             QuerySnapshot querySnapshot = await museums.GetSnapshotAsync();
