@@ -357,105 +357,6 @@ public class ControlledGeneration
     }
     // [END generativeaionvertexai_gemini_controlled_generation_response_schema_4]
 
-    // [START generativeaionvertexai_gemini_controlled_generation_response_schema_5]
-    public async Task<string> GenerateContentWithResponseSchema5(
-        string projectId = "your-project-id",
-        string location = "us-central1",
-        string publisher = "google",
-        string model = "gemini-1.5-pro-001")
-    {
-
-        var predictionServiceClient = new PredictionServiceClientBuilder
-        {
-            Endpoint = $"{location}-aiplatform.googleapis.com"
-        }.Build();
-
-        var responseSchema = new OpenApiSchema
-        {
-            Type = Type.Array,
-            Items = new()
-            {
-                Type = Type.Object,
-                Properties =
-                {
-                    ["Announcement_Date"] = new() { Type = Type.String, Nullable = true },
-                    ["Author(s)"] = new()
-                    {
-                        Type = Type.Array,
-                        Nullable = true,
-                        Items = new() { Type = Type.String }
-                    },
-                    ["Journal_Ref"] = new() { Type = Type.String, Nullable = true },
-                    ["Keyword(s)"] = new()
-                    {
-                        Type = Type.Array,
-                        Nullable = true,
-                        Items = new() { Type = Type.String }
-                    },
-                    ["Subject(s)"] = new()
-                    {
-                        Type = Type.Array,
-                        Nullable = true,
-                        Items = new() { Type = Type.String }
-                    },
-                    ["Submission_Date"] = new() { Type = Type.String, Nullable = true },
-                    ["Title"] = new() { Type = Type.String, Nullable = true },
-                    ["Version"] = new()
-                    {
-                        Type = Type.String,
-                        Nullable = true,
-                        Enum =
-                        {
-                            "Dungeons & Dragons",
-                            "Duel Masters",
-                            "G.I. Joe",
-                            "Jem and The Holograms",
-                            "Littlest Pet Shop",
-                            "Magic: The Gathering",
-                            "Monopoly",
-                            "My Little Pony",
-                            "Nerf"
-                        }
-                    },
-                }
-            }
-        };
-
-        string prompt = @"
-            Hasbro stock slid 5.2% following a double-downgrade to “underperform” from “buy” at Bank of America.
-            BofA conducted a “deep dive” on trading card game. BofA said Hasbro has been overprinting cards and
-            destroying the long-term value of the business.";
-
-        var generateContentRequest = new GenerateContentRequest
-        {
-            Model = $"projects/{projectId}/locations/{location}/publishers/{publisher}/models/{model}",
-            Contents =
-            {
-                new Content
-                {
-                    Role = "USER",
-                    Parts =
-                    {
-                        new Part { Text = prompt }
-                    }
-                }
-            },
-            GenerationConfig = new GenerationConfig
-            {
-                ResponseMimeType = "application/json",
-                ResponseSchema = responseSchema
-            },
-        };
-
-        GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
-
-        string responseText = response.Candidates[0].Content.Parts[0].Text;
-        Console.WriteLine(responseText);
-
-        return responseText;
-    }
-    // [END generativeaionvertexai_gemini_controlled_generation_response_schema_5]
-
     // [START generativeaionvertexai_gemini_controlled_generation_response_schema_6]
     public async Task<string> GenerateContentWithResponseSchema6(
         string projectId = "your-project-id",
@@ -474,7 +375,7 @@ public class ControlledGeneration
             Type = Type.Object,
             Properties =
             {
-                ["playlist"] = new() 
+                ["playlist"] = new()
                 {
                     Type = Type.Array,
                     Items = new()
