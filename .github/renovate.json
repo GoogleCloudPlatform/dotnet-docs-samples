@@ -13,7 +13,7 @@
                 "Microsoft.AspNetCore.",
                 "mcr.microsoft.com/dotnet/"
             ],
-            "allowedVersions": "<7.0.0"
+            "allowedVersions": "<9.0.0"
         }
     ],
     "schedule": [
