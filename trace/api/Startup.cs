@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2017 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -42,12 +42,9 @@ namespace Trace
         {
             // [START configure_services_trace]
             // Add trace service.
-            services.AddGoogleTrace(options =>
-            {
-                options.ProjectId = Configuration["Trace:ProjectId"];
-            });
+            services.AddGoogleDiagnosticsForAspNetCore(projectId: Configuration["Trace:ProjectId"]);
             // [END configure_services_trace]
-            services.AddMvc();
+            services.AddMvc(options => options.EnableEndpointRouting = false);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -64,7 +61,7 @@ namespace Trace
 
             // [START configure_trace]
             // Configure trace service.
-            app.UseGoogleTrace();
+            // No op
             // [END configure_trace]
 
             app.UseStaticFiles();
