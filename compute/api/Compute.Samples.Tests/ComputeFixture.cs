@@ -35,7 +35,7 @@ namespace Compute.Samples.Tests
 
         public string MachineType => "n1-standard-1";
 
-        public string DiskImage => "projects/debian-cloud/global/images/family/debian-10";
+        public string DiskImage => "projects/debian-cloud/global/images/family/debian-12";
 
         public long DiskSizeGb => 10;
 

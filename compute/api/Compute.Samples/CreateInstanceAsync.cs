@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +28,7 @@ public class CreateInstanceAsyncSample
         string zone = "us-central1-a",
         string machineName = "test-machine",
         string machineType = "n1-standard-1",
-        string diskImage = "projects/debian-cloud/global/images/family/debian-10",
+        string diskImage = "projects/debian-cloud/global/images/family/debian-12",
         long diskSizeGb = 10,
         string networkName = "default")
     {
