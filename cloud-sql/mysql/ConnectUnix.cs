@@ -29,7 +29,7 @@ namespace CloudSql
             var connectionString = new MySqlConnectionStringBuilder()
             {
                 // The Cloud SQL proxy provides encryption between the proxy and instance.
-                SslMode = MySqlSslMode.None,
+                SslMode = MySqlSslMode.Disabled,
 
                 // Note: Saving credentials in environment variables is convenient, but not
                 // secure - consider a more secure solution such as
