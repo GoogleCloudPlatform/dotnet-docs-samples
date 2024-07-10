@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 Google LLC.
+// Copyright (c) 2020 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -19,6 +19,7 @@ using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
 using Snapshooter;
+using System.Threading.Tasks;
 
 namespace Filter
 {
@@ -104,94 +105,94 @@ namespace Filter
 
 
         [Fact]
-        public void TestFilterLimitRowSample()
+        public async Task TestFilterLimitRowSampleAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Assert.Contains("Reading data for", filterSnippets.filterLimitRowSample(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Assert.Contains("Reading data for", await filterSnippets.FilterLimitRowSample(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitRowRegex()
+        public async Task TestFilterLimitRowRegexAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitRowRegex(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitRowRegex(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitCellsPerCol()
+        public async Task TestFilterLimitCellsPerColAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitCellsPerCol(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitCellsPerCol(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitCellsPerRow()
+        public async Task TestFilterLimitCellsPerRowAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitCellsPerRow(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitCellsPerRow(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitColRange()
+        public async Task TestFilterLimitColRangeAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitColRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitColRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitValueRange()
+        public async Task TestFilterLimitValueRangeAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitValueRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitValueRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitValueRegex()
+        public async Task TestFilterLimitValueRegexAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitValueRegex(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitValueRegex(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitBlockAll()
+        public async Task TestFilterLimitBlockAllAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitBlockAll(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitBlockAll(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterLimitPassAll()
+        public async Task TestFilterLimitPassAllAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterLimitPassAll(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterLimitPassAll(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterModifyStripValue()
+        public async Task TestFilterModifyStripValueAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterModifyStripValue(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterModifyStripValue(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterModifyApplyLabel()
+        public async Task TestFilterModifyApplyLabelAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterModifyApplyLabel(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterModifyApplyLabel(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterComposingChain()
+        public async Task TestFilterComposingChainAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterComposingChain(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterComposingChain(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestFilterComposingCondition()
+        public async Task TestFilterComposingConditionAsync()
         {
             Filters.FilterSnippets filterSnippets = new Filters.FilterSnippets();
-            Snapshooter.Xunit.Snapshot.Match(filterSnippets.filterComposingCondition(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await filterSnippets.FilterComposingCondition(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
     }
 }

@@ -4,7 +4,6 @@
         ":disableDependencyDashboard"
     ],
     "ignorePaths": [
-        "bigtable/api/**",
         "endpoints/getting-started/**"
     ],
     "packageRules": [
