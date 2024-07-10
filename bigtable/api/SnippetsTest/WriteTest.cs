@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2018 Google LLC.
+// Copyright (c) 2018 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,7 @@ using System;
 using System.Linq;
 using Xunit;
 using Google.Cloud.Bigtable.Admin.V2;
+using Google.Cloud.Bigtable.Common.V2;
 
 namespace Writes
 {
@@ -63,21 +64,21 @@ namespace Writes
         [Fact]
         public void TestWriteSimpleIncrementConditional()
         {
-            Writes.WriteSimple writeSimple = new Writes.WriteSimple();
-            Assert.Contains("Successfully wrote row", writeSimple.writeSimple(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Writes.WriteSimpleSample writeSimple = new Writes.WriteSimpleSample();
+            Assert.Contains("Successfully wrote row", writeSimple.WriteSimple(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
 
-            Writes.WriteIncrement writeIncrement = new Writes.WriteIncrement();
-            Assert.Contains("Successfully updated row", writeIncrement.writeIncrement(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Writes.WriteIncrementSample writeIncrement = new Writes.WriteIncrementSample();
+            Assert.Contains("Successfully updated row", writeIncrement.WriteIncrement(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
 
-            Writes.WriteConditional writeConditional = new Writes.WriteConditional();
-            Assert.Contains("Successfully updated row's os_name: True", writeConditional.writeConditional(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Writes.WriteConditionalSample writeConditional = new Writes.WriteConditionalSample();
+            Assert.Contains("Successfully updated row's os_name: True", writeConditional.WriteConditional(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
         public void TestWriteBatch()
         {
-            Writes.WriteBatch writeBatch = new Writes.WriteBatch();
-            Assert.Contains("Successfully wrote 2 rows", writeBatch.writeBatch(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Writes.WriteBatchSample writeBatch = new Writes.WriteBatchSample();
+            Assert.Contains("Successfully wrote 2 rows", writeBatch.WriteBatch(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
     }
 }

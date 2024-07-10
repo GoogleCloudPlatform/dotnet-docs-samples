@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2020 Google LLC.
+// Copyright (c) 2020 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -19,6 +19,7 @@ using Google.Cloud.Bigtable.Common.V2;
 using Google.Cloud.Bigtable.V2;
 using Google.Cloud.Bigtable.Admin.V2;
 using Snapshooter;
+using System.Threading.Tasks;
 
 namespace Reads_
 {
@@ -99,7 +100,7 @@ namespace Reads_
         {
             Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
 
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRow(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(readSnippets.ReadRow(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
@@ -108,52 +109,52 @@ namespace Reads_
         {
             Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
 
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRowPartial(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(readSnippets.ReadRowPartial(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestReadRows()
+        public async Task TestReadRowsAsync()
 
         {
             Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
 
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRows(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await readSnippets.ReadRows(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestReadRowRange()
+        public async Task TestReadRowRangeAsync()
 
         {
             Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
 
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRowRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await readSnippets.ReadRowRange(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestReadRowRanges()
+        public async Task TestReadRowRangesAsync()
 
         {
             Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
 
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readRowRanges(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await readSnippets.ReadRowRanges(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestReadPrefix()
+        public async Task TestReadPrefixAsync()
 
         {
             Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
 
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readPrefix(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await readSnippets.ReadPrefix(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
 
         [Fact]
-        public void TestReadFilter()
+        public async Task TestReadFilter()
 
         {
             Reads.ReadSnippets readSnippets = new Reads.ReadSnippets();
 
-            Snapshooter.Xunit.Snapshot.Match(readSnippets.readFilter(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
+            Snapshooter.Xunit.Snapshot.Match(await readSnippets.ReadFilter(_fixture.projectId, _fixture.instanceId, _fixture.tableId));
         }
     }
 }

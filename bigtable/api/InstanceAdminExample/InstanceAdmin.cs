@@ -1,4 +1,4 @@
-﻿// Copyright 2018 Google Inc.
+// Copyright 2018 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 using CommandLine;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Bigtable.Admin.V2;
+using Google.Cloud.Bigtable.Common.V2;
 using Google.LongRunning;
 using System;
 using System.Linq;
