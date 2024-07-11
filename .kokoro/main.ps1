@@ -49,6 +49,7 @@ try {
     # For diagnosis purposes only
     Write-Output "Changed dirs: $changedDirs"
     Write-Output "Test dirs: $testDirs"
+    Write-Output "All dirs: $allDirs"
 
     # There are too many tests to run in a single Kokoro job.  So, we split
     # the tests into groups.  Each Kokoro job runs one group.
