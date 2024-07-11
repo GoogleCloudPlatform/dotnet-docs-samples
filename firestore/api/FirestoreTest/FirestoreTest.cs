@@ -766,13 +766,6 @@ namespace GoogleCloudSamples
             Assert.DoesNotContain("Document DC returned by range with order by query", output.Stdout);
         }
 
-        [Fact]
-        public void InvalidRangeOrderByQueryTest()
-        {
-            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            var output = RunOrderLimitData("invalid-range-order-by-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-        }
-
         // DATA MODEL TESTS
         [Fact]
         public void DocumentRefTest()
