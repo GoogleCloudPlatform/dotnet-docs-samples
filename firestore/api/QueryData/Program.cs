@@ -39,7 +39,6 @@ Where command is one of
     chained-query
     composite-index-chained-query
     range-query
-    invalid-range-query
 ";
         private static async Task QueryCreateExamples(string project)
         {
@@ -307,17 +306,6 @@ Where command is one of
             }
         }
 
-        private static void InvalidRangeQuery(string project)
-        {
-            FirestoreDb db = FirestoreDb.Create(project);
-            // [START firestore_query_filter_range_invalid]
-            CollectionReference citiesRef = db.Collection("cities");
-            Query invalidRangeQuery = citiesRef
-                .WhereGreaterThanOrEqualTo("State", "CA")
-                .WhereGreaterThan("Population", 1000000);
-            // [END firestore_query_filter_range_invalid]
-        }
-
         public static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -380,10 +368,6 @@ Where command is one of
 
                 case "range-query":
                     RangeQuery(project).Wait();
-                    break;
-
-                case "invalid-range-query":
-                    InvalidRangeQuery(project);
                     break;
 
                 default:
