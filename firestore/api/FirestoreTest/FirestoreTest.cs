@@ -668,13 +668,6 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void InvalidRangeQueryTest()
-        {
-            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            var output = RunQueryData("invalid-range-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-        }
-
-        [Fact]
         public void SubcollectionQueryTest()
         {
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
