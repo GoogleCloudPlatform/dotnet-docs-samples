@@ -57,7 +57,7 @@ try {
     $groups = @(
         $false,  # 0: Everything.
         $false,  # 1: Everything starting from a to e.
-        $false,  # 2: Everything starting from f to r, except for iot when on Linux because of the BouncyCastle and other dependencies.
+        $false,  # 2: Everything starting from f to r.
         $false   # 3: Everything starting from s to z.
     )
 

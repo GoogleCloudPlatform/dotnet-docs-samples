@@ -16,4 +16,6 @@ Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
 
 dotnet restore
 dotnet publish
-Deploy-CasperJsTest
+if ($IsRunningOnWindows) { # b/352406852
+    Deploy-CasperJsTest
+}

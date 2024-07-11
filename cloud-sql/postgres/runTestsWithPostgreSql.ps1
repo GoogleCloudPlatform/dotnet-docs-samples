@@ -14,38 +14,40 @@
 
 Import-Module -DisableNameChecking ..\..\BuildTools.psm1
 
-# Download and run the sql proxy.
-if (-not (Test-Path cloud_sql_proxy.exe)) {
-	if ($PSVersionTable.Platform -eq 'Unix') {
-		Invoke-WebRequest -Uri 'https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64' -OutFile cloud_sql_proxy.exe
-		chmod +x cloud_sql_proxy.exe
-	} else {
-		Invoke-WebRequest -Uri 'https://dl.google.com/cloudsql/cloud_sql_proxy_x64.exe' -OutFile cloud_sql_proxy.exe
-	}
-}
-$proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
-	Set-Location $args[0]
-	./cloud_sql_proxy.exe --instances=$env:TEST_CLOUDSQL2_POSTGRESQL_INSTANCE=tcp:5432 `
-		--credential_file=$GOOGLE_APPLICATION_CREDENTIALS
-}
-$env:INSTANCE_HOST=$env:TEST_CLOUDSQL2_HOST
-$env:DB_USER=$env:TEST_CLOUDSQL2_USER
-$env:DB_PASS=$env:TEST_CLOUDSQL2_VOTES_PASS
-$env:DB_NAME=$env:TEST_CLOUDSQL2_VOTES_NAME
-
-try {
-	dotnet restore --force
-	Receive-Job $proxy -ErrorAction 'Continue'
-	dotnet build --no-restore
-	Receive-Job $proxy -ErrorAction 'Continue'
-	try {
-		Run-KestrelTest 5567 -CasperJs11
-	} finally {
-		Move-TestResults PostgreSql
-	}
-
-} finally {
-	Stop-Job $proxy
-	Receive-Job $proxy -ErrorAction 'Continue'
-	Remove-Job $proxy
+if ($IsRunningOnWindows) { # b/352406852
+    # Download and run the sql proxy.
+    if (-not (Test-Path cloud_sql_proxy.exe)) {
+    	if ($PSVersionTable.Platform -eq 'Unix') {
+    		Invoke-WebRequest -Uri 'https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64' -OutFile cloud_sql_proxy.exe
+    		chmod +x cloud_sql_proxy.exe
+    	} else {
+    		Invoke-WebRequest -Uri 'https://dl.google.com/cloudsql/cloud_sql_proxy_x64.exe' -OutFile cloud_sql_proxy.exe
+    	}
+    }
+    $proxy = Start-Job -ArgumentList (Get-Location) -ScriptBlock {
+    	Set-Location $args[0]
+    	./cloud_sql_proxy.exe --instances=$env:TEST_CLOUDSQL2_POSTGRESQL_INSTANCE=tcp:5432 `
+    		--credential_file=$GOOGLE_APPLICATION_CREDENTIALS
+    }
+    $env:INSTANCE_HOST=$env:TEST_CLOUDSQL2_HOST
+    $env:DB_USER=$env:TEST_CLOUDSQL2_USER
+    $env:DB_PASS=$env:TEST_CLOUDSQL2_VOTES_PASS
+    $env:DB_NAME=$env:TEST_CLOUDSQL2_VOTES_NAME
+    
+    try {
+    	dotnet restore --force
+    	Receive-Job $proxy -ErrorAction 'Continue'
+    	dotnet build --no-restore
+    	Receive-Job $proxy -ErrorAction 'Continue'
+    	try {
+    		Run-KestrelTest 5567 -CasperJs11
+    	} finally {
+    		Move-TestResults PostgreSql
+    	}
+    
+    } finally {
+    	Stop-Job $proxy
+    	Receive-Job $proxy -ErrorAction 'Continue'
+    	Remove-Job $proxy
+    }
 }
