@@ -16,4 +16,6 @@ Import-Module -DisableNameChecking ..\..\BuildTools.psm1
 
 dotnet restore --force
 dotnet build --no-restore
-Run-KestrelTest 5569 -CasperJs11
+if ($IsRunningOnWindows) { # b/352406852
+    Run-KestrelTest 5569 -CasperJs11
+}
