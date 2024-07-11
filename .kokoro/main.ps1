@@ -48,6 +48,7 @@ try {
 
     # For diagnosis purposes only
     Write-Output "Changed dirs: $changedDirs"
+    Write-Output "Changed dirs count: $changedDirs.Count"
     Write-Output "Test dirs: $testDirs"
     Write-Output "All dirs: $allDirs"
 
