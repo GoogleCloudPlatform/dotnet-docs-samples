@@ -77,6 +77,12 @@ namespace Compute.Samples.Tests
                 && (rpcEx.StatusCode == StatusCode.NotFound || rpcEx.Message.Contains("resourceNotReady"))
         };
 
+        public RetryRobot FirewallRuleReady { get; } = new RetryRobot
+        {
+            ShouldRetry = (ex) => ex is RpcException rpcEx
+                && (rpcEx.StatusCode == StatusCode.InvalidArgument || rpcEx.Message.Contains("is not ready"))
+        };
+
         public ComputeFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
