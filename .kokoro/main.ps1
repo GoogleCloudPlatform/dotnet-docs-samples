@@ -33,11 +33,8 @@ try {
     git --git-dir="$currentDir/.git" --work-tree="$currentDir" config core.filemode false
     $changedDirs = ($(git --git-dir="$currentDir/.git" --work-tree="$currentDir" diff main --name-only | cut -d/ -f 1 | uniq))
 
-    # The list of all subdirectories.
-    $allDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
-
     # We run everything ...
-    $testDirs = $allDirs
+    $testDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
 
     # ... unless we detect changes to specific directories
     if ($changedDirs.Count -gt 0)
@@ -48,7 +45,6 @@ try {
     # For diagnosis purposes only
     Write-Output "Changed dirs: $changedDirs"
     Write-Output "Test dirs: $testDirs"
-    Write-Output "All dirs: $allDirs"
 
     # There are too many tests to run in a single Kokoro job.  So, we split
     # the tests into groups.  Each Kokoro job runs one group.
