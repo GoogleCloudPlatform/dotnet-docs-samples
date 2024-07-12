@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -33,12 +33,11 @@ namespace Compute.Samples.Tests
             string firewallRuleName = _fixture.GenerateFirewallRuleName();
 
             await _fixture.FirewallRuleCreated.Eventually(async () =>
-            {
                 await _sample.CreateFirewallRuleAsync(
-                    _fixture.ProjectId, firewallRuleName, _fixture.NetworkResourceUri);
+                    _fixture.ProjectId, firewallRuleName, _fixture.NetworkResourceUri));
 
-                Assert.NotNull(await _fixture.FirewallsClient.GetAsync(_fixture.ProjectId, firewallRuleName));
-            });
+            await _fixture.FirewallRuleReady.Eventually(async() =>
+                Assert.NotNull(await _fixture.FirewallsClient.GetAsync(_fixture.ProjectId, firewallRuleName)));
         }
     }
 }
