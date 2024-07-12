@@ -36,19 +36,17 @@ try {
     # The list of all subdirectories.
     $allDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
 
-    # If no dirs have changed we run everything since we are most likely on CI.
+    # We run everything ...
+    $testDirs = $allDirs
+
+    # ... unless we detect changes to specific directories
     if ($changedDirs.Count -gt 0)
     {
         $testDirs = $changedDirs
     }
-    else
-    {
-        $testDirs = $allDirs
-    }
 
     # For diagnosis purposes only
     Write-Output "Changed dirs: $changedDirs"
-    Write-Output "Changed dirs count: $changedDirs.Count"
     Write-Output "Test dirs: $testDirs"
     Write-Output "All dirs: $allDirs"
 
