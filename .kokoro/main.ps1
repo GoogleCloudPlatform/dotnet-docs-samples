@@ -58,9 +58,9 @@ try {
     )
 
     $groups[0] = $testDirs
-    $groups[1] = $testDirs | Where-Object { ($_.Lenght -gt 0) -and ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
-    $groups[2] = $testDirs | Where-Object { ($_.Lenght -gt 0) -and ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) }
-    $groups[3] = $testDirs | Where-Object { ($_.Lenght -gt 0) -and ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
+    $groups[1] = $testDirs | Where-Object { ($_.Length -gt 0) -and ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
+    $groups[2] = $testDirs | Where-Object { ($_.Length -gt 0) -and ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) }
+    $groups[3] = $testDirs | Where-Object { ($_.Length -gt 0) -and ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
     Write-Output "Shard: $GroupNumber"
