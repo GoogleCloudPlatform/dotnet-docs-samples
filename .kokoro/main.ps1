@@ -32,9 +32,13 @@ try {
     git config --global --add core.autocrlf input
     git --git-dir="$currentDir/.git" --work-tree="$currentDir" config core.filemode false
     $changedDirs = ($(git --git-dir="$currentDir/.git" --work-tree="$currentDir" diff main --name-only | cut -d/ -f 1 | uniq))
+    # On some environments we get empty folder names, remove those
+    $changedDirs = ($changedDirs | Where { $null -ne $_ -and $_.Length -gt 0})
 
     # We run everything ...
     $testDirs = Get-ChildItem | Where-Object {$_.PSIsContainer} | Select-Object -ExpandProperty Name
+    # On some environments we get empty folder names, remove those
+    $testDirs = ($testDirs | Where { $null -ne $_ -and $_.Length -gt 0})
 
     # ... unless we detect changes to specific directories
     if ($changedDirs.Count -gt 0)
@@ -58,9 +62,9 @@ try {
     )
 
     $groups[0] = $testDirs
-    $groups[1] = $testDirs | Where-Object { ($_.Length -gt 0) -and ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
-    $groups[2] = $testDirs | Where-Object { ($_.Length -gt 0) -and ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) }
-    $groups[3] = $testDirs | Where-Object { ($_.Length -gt 0) -and ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
+    $groups[1] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("a") -ge 0) -and ($_.Substring(0, 1).CompareTo("e") -le 0) }
+    $groups[2] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("f") -ge 0) -and ($_.Substring(0, 1).CompareTo("r") -le 0) }
+    $groups[3] = $testDirs | Where-Object { ($_.Substring(0, 1).CompareTo("s") -ge 0) -and ($_.Substring(0, 1).CompareTo("z") -le 0) }
     $dirs = $groups[$GroupNumber]
 
     Write-Output "Shard: $GroupNumber"
