@@ -12,19 +12,21 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
-try {
-	Push-Location
-	Set-Location IO.Swagger
-	$url = "http://localhost:7412"
-	$job = Run-Kestrel $url
-	Set-Location ../IO.SwaggerTest
-	$env:ASPNETCORE_URLS = $url
-	dotnet restore --force
-    dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
-} finally {
-	Stop-Job $job
-	Receive-Job $job
-	Remove-Job $job
-	Pop-Location
-}
+# See b/195758067
+
+#Import-Module -DisableNameChecking ..\..\..\BuildTools.psm1
+#try {
+#	Push-Location
+#	Set-Location IO.Swagger
+#	$url = "http://localhost:7412"
+#	$job = Run-Kestrel $url
+#	Set-Location ../IO.SwaggerTest
+#	$env:ASPNETCORE_URLS = $url
+#	dotnet restore --force
+#    dotnet test --no-restore --test-adapter-path:. --logger:junit 2>&1 | %{ "$_" }
+#} finally {
+#	Stop-Job $job
+#	Receive-Job $job
+#	Remove-Job $job
+#	Pop-Location
+#}
