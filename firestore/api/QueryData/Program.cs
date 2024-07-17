@@ -13,10 +13,14 @@
 // the License.
 
 using Google.Cloud.Firestore;
+using Google.Cloud.Firestore.Admin.V1;
+using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using static Google.Cloud.Firestore.Admin.V1.Index.Types;
 
 namespace GoogleCloudSamples
 {
@@ -40,6 +44,7 @@ Where command is one of
     composite-index-chained-query
     range-query
     invalid-range-query
+    multiple-inequalities
 ";
         private static async Task QueryCreateExamples(string project)
         {
@@ -55,16 +60,18 @@ Where command is one of
                     { "Country", "USA" },
                     { "Capital", false },
                     { "Population", 860000 },
+                    { "Density", 18000 },
                     { "Regions", new[] {"west_coast", "norcal"} }
                 });
                 await citiesRef.Document("LA").SetAsync(new Dictionary<string, object>
                 {
                     { "Name", "Los Angeles" },
-                        { "State", "CA" },
-                        { "Country", "USA" },
-                        { "Capital", false },
-                        { "Population", 3900000 },
-                        { "Regions", new[] {"west_coast", "socal"} }
+                    { "State", "CA" },
+                    { "Country", "USA" },
+                    { "Capital", false },
+                    { "Population", 3900000 },
+                    { "Density", 8300 },
+                    { "Regions", new[] {"west_coast", "socal"} }
                 });
                 await citiesRef.Document("DC").SetAsync(new Dictionary<string, object>
                 {
@@ -73,6 +80,7 @@ Where command is one of
                     { "Country", "USA" },
                     { "Capital", true },
                     { "Population", 680000 },
+                    { "Density", 11300 },
                     { "Regions", new[] {"east_coast"} }
                 });
                 await citiesRef.Document("TOK").SetAsync(new Dictionary<string, object>
@@ -82,6 +90,7 @@ Where command is one of
                     { "Country", "Japan" },
                     { "Capital", true },
                     { "Population", 9000000 },
+                    { "Density", 16000 },
                     { "Regions", new[] {"kanto", "honshu"} }
                 });
                 await citiesRef.Document("BJ").SetAsync(new Dictionary<string, object>
@@ -91,6 +100,7 @@ Where command is one of
                     { "Country", "China" },
                     { "Capital", true },
                     { "Population", 21500000 },
+                    { "Density", 3500 },
                     { "Regions", new[] {"jingjinji", "hebei"} }
                 });
                 Console.WriteLine("Added example cities data to the cities collection.");
@@ -318,6 +328,47 @@ Where command is one of
             // [END firestore_query_filter_range_invalid]
         }
 
+        private static async Task MultipleInequalitiesQuery(string project)
+        {
+            FirestoreDb db = FirestoreDb.Create(project);
+            FirestoreAdminClient adminClient = FirestoreAdminClient.Create();
+            var index = new Google.Cloud.Firestore.Admin.V1.Index
+            {
+                Fields =
+                {
+                    new IndexField { FieldPath = "Density", Order = IndexField.Types.Order.Ascending },
+                    new IndexField { FieldPath = "Population", Order = IndexField.Types.Order.Ascending }
+                },
+                QueryScope = QueryScope.Collection
+            };
+
+            // We speculatively try to create the index, and just ignore an error of it already existing.
+            try
+            {
+                var lro = await adminClient.CreateIndexAsync(new CollectionGroupName(db.ProjectId, db.DatabaseId, "cities"), index);
+                await lro.PollUntilCompletedAsync();
+            }
+            catch (RpcException ex) when (ex.StatusCode == StatusCode.AlreadyExists)
+            {
+                // Assume the index is okay.
+            }
+
+            // [START firestore_query_filter_compound_multi_ineq]
+            CollectionReference citiesRef = db.Collection("cities");
+            Query query = citiesRef
+                .WhereGreaterThan("Population", 1000000)
+                .WhereLessThan("Density", 10000);
+            QuerySnapshot querySnapshot = await query.GetSnapshotAsync();
+            foreach (DocumentSnapshot documentSnapshot in querySnapshot)
+            {
+                var name = documentSnapshot.GetValue<string>("Name");
+                var population = documentSnapshot.GetValue<int>("Population");
+                var density = documentSnapshot.GetValue<int>("Density");
+                Console.WriteLine($"City '{name}' returned by query. Population={population}; Density={density}");
+            }
+            // [END firestore_query_filter_compound_multi_ineq]
+        }
+
         public static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -384,6 +435,10 @@ Where command is one of
 
                 case "invalid-range-query":
                     InvalidRangeQuery(project);
+                    break;
+
+                case "multiple-inequalities":
+                    MultipleInequalitiesQuery(project).Wait();
                     break;
 
                 default:

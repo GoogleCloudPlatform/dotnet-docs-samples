@@ -683,6 +683,16 @@ namespace GoogleCloudSamples
             Assert.Contains(": Golden Gate Bridge", output.Stdout);
         }
 
+        [Fact]
+        public void MultipleInequalitiesQueryTest()
+        {
+            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+            var output = RunQueryData("multiple-inequalities", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
+
+            Assert.Contains("Los Angeles", output.Stdout);
+            Assert.Contains("Beijing", output.Stdout);
+        }
+
         // ORDER LIMIT DATA TESTS
         [Fact]
         public void OrderByNameLimitQueryTest()
