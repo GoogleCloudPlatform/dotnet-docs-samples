@@ -35,6 +35,6 @@ public class MultimodalAllInputTest
     {
         var response = await _sample.AnswerFromMultimodalInput(_fixture.ProjectId);
         Assert.Contains("0:48", response, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("story", response, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("blind", response, StringComparison.OrdinalIgnoreCase);
     }
 }
