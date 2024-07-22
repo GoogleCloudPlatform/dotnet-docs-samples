@@ -29,13 +29,11 @@ BackupAndEdit-TextFile "FirestoreTest.cs", "..\Quickstart\Program.cs", "..\AddDa
 "..\GetData\Program.cs", "..\ManageIndexes\Program.cs", "..\OrderLimitData\Program.cs", `
 "..\PaginateData\Program.cs", "..\QueryData\Program.cs", "..\SolutionCounter\Program.cs", "..\TransactionsAndBatchedWrites\Program.cs" `
 	@{'db.Collection("users")' = 'db.Collection("'+$usersCollection+'")';
-	  'db.Collection("cities")' = 'db.Collection("'+$citiesCollection+'")';
+	  '"cities"' = '"'+$citiesCollection+'"';
 	  'db.Collection("data")' = 'db.Collection("'+$dataCollection+'")';
 	  'DeleteCollection("users")' = 'DeleteCollection("'+$usersCollection+'")';
-	  'DeleteCollection("cities")' = 'DeleteCollection("'+$citiesCollection+'")';
 	  'DeleteCollection("data")' = 'DeleteCollection("'+$dataCollection+'")';
 	  'DeleteCollection("cities/SF/neighborhoods")' = 'DeleteCollection("'+$citiesCollection+'/SF/neighborhoods")';
-	  'DeleteIndexes("cities")' = 'DeleteIndexes("'+$citiesCollection+'")';
 	  'YOUR_COLLECTION_NAME' = $citiesCollection;
 	  } `
 {
