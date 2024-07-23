@@ -37,7 +37,7 @@ namespace Stitcher.Samples.Tests
             _listSample = new ListVodStitchDetailsSample();
 
             var session = _createSample.CreateVodSession(
-               _fixture.ProjectId, _fixture.LocationId, _fixture.VodSourceUri, _fixture.VodAdTagUri);
+               _fixture.ProjectId, _fixture.LocationId, _fixture.TestVodConfigId);
             _vodSessionId = session.VodSessionName.VodSessionId;
 
             var stitchDetails = _listSample.ListVodStitchDetails(_fixture.ProjectId, _fixture.LocationId, _vodSessionId);
