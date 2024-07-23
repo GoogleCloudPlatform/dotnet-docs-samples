@@ -33,10 +33,12 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     public string CloudCdnKeyIdPrefix { get; } = "cloud-cdn";
     public string MediaCdnKeyIdPrefix { get; } = "media-cdn";
     public string LiveConfigIdPrefix { get; } = "live-config";
+    public string VodConfigIdPrefix { get; } = "vod-config";
 
     public List<string> SlateIds { get; } = new List<string>();
     public List<string> CdnKeyIds { get; } = new List<string>();
     public List<string> LiveConfigIds { get; } = new List<string>();
+    public List<string> VodConfigIds { get; } = new List<string>();
 
     public Slate TestSlate { get; set; }
     public string TestSlateId { get; set; }
@@ -46,6 +48,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     public string TestSlateUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/ForBiggerEscapes.mp4";
     public string UpdateSlateUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/ForBiggerJoyrides.mp4";
     public string VodSourceUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/hls-vod/manifest.m3u8";
+    public string UpdateVodSourceUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/hls-vod/manifest.mpd";
     public string VodAdTagUri { get; } = "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/vmap_ad_samples&sz=640x480&cust_params=sample_ar%3Dpreonly&ciu_szs=300x250%2C728x90&gdfp_req=1&ad_rule=1&output=vmap&unviewed_position_start=1&env=vp&impl=s&correlator=";
     public string LiveSourceUri { get; } = "https://storage.googleapis.com/cloud-samples-data/media/hls-live/manifest.m3u8";
     public string LiveAdTagUri { get; } = "https://pubads.g.doubleclick.net/gampad/ads?iu=/21775744923/external/single_ad_samples&sz=640x480&cust_params=sample_ct%3Dlinear&ciu_szs=300x250%2C728x90&gdfp_req=1&output=vast&unviewed_position_start=1&env=vp&impl=s&correlator=";
@@ -69,6 +72,8 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
 
     public LiveConfig TestLiveConfig { get; set; }
     public string TestLiveConfigId { get; set; }
+    public VodConfig TestVodConfig { get; set; }
+    public string TestVodConfigId { get; set; }
 
     private readonly CreateSlateSample _createSlateSample = new CreateSlateSample();
     private readonly ListSlatesSample _listSlatesSample = new ListSlatesSample();
@@ -83,6 +88,9 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     private readonly ListLiveConfigsSample _listLiveConfigsSample = new ListLiveConfigsSample();
     private readonly DeleteLiveConfigSample _deleteLiveConfigSample = new DeleteLiveConfigSample();
 
+    private readonly CreateVodConfigSample _createVodConfigSample = new CreateVodConfigSample();
+    private readonly ListVodConfigsSample _listVodConfigsSample = new ListVodConfigsSample();
+    private readonly DeleteVodConfigSample _deleteVodConfigSample = new DeleteVodConfigSample();
 
     private HttpClient httpClient;
 
@@ -117,6 +125,10 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
         TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateForLiveConfigId);
+
+        TestVodConfigId = $"{VodConfigIdPrefix}-{RandomId()}-{TimestampId()}";
+        VodConfigIds.Add(TestVodConfigId);
+        TestVodConfig = await _createVodConfigSample.CreateVodConfigAsync(ProjectId, LocationId, TestVodConfigId, VodSourceUri, VodAdTagUri);
 
         httpClient = new HttpClient();
     }
@@ -188,6 +200,27 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
                 }
             }
         }
+        // VOD configs don't include creation time information, so encode it
+        // in the config name. VOD configs have a low quota limit, so we need to
+        // remove outdated ones before the test begins (and creates more).
+        var vodConfigs = _listVodConfigsSample.ListVodConfigs(ProjectId, LocationId);
+        foreach (VodConfig vodConfig in vodConfigs)
+        {
+            string id = vodConfig.VodConfigName.VodConfigId;
+            string[] subs = id.Split('-');
+            if (subs.Length > 0)
+            {
+                string temp = subs[(subs.Length - 1)];
+                bool success = long.TryParse(temp, out long creation);
+                if (success)
+                {
+                    if ((now - creation) >= TWO_HOURS_IN_SECS)
+                    {
+                        await DeleteVodConfig(id);
+                    }
+                }
+            }
+        }
     }
 
     public void Dispose()
@@ -210,6 +243,11 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         foreach (string id in LiveConfigIds)
         {
             await DeleteLiveConfig(id);
+        }
+
+        foreach (string id in VodConfigIds)
+        {
+            await DeleteVodConfig(id);
         }
     }
 
@@ -246,6 +284,18 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         catch (Exception e)
         {
             Console.WriteLine("Delete failed for live config: " + id + " with error: " + e.ToString());
+        }
+    }
+
+    public async Task DeleteVodConfig(string id)
+    {
+        try
+        {
+            await _deleteVodConfigSample.DeleteVodConfigAsync(ProjectId, LocationId, id);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine("Delete failed for VOD config: " + id + " with error: " + e.ToString());
         }
     }
 

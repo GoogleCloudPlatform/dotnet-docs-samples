@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,30 @@
  * limitations under the License.
  */
 
-// [START videostitcher_create_vod_session]
+// [START videostitcher_list_vod_configs]
 
+using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
 
-public class CreateVodSessionSample
+public class ListVodConfigsSample
 {
-    public VodSession CreateVodSession(
-        string projectId, string location, string vodConfigId)
+    public PagedEnumerable<ListVodConfigsResponse, VodConfig> ListVodConfigs(
+        string projectId, string regionId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        CreateVodSessionRequest request = new CreateVodSessionRequest
+        ListVodConfigsRequest request = new ListVodConfigsRequest
         {
-            ParentAsLocationName = LocationName.FromProjectLocation(projectId, location),
-            VodSession = new VodSession
-            {
-                VodConfig = VodConfigName.FormatProjectLocationVodConfig(projectId, location, vodConfigId),
-                AdTracking = AdTracking.Server
-            }
+            ParentAsLocationName = LocationName.FromProjectLocation(projectId, regionId)
         };
 
-        // Call the API.
-        VodSession session = client.CreateVodSession(request);
+        // Make the request.
+        PagedEnumerable<ListVodConfigsResponse, VodConfig> response = client.ListVodConfigs(request);
 
         // Return the result.
-        return session;
+        return response;
     }
 }
-// [END videostitcher_create_vod_session]
+// [END videostitcher_list_vod_configs]

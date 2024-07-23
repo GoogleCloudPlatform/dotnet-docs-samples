@@ -37,7 +37,7 @@ namespace Stitcher.Samples.Tests
             _listSample = new ListVodAdTagDetailsSample();
 
             var session = _createSample.CreateVodSession(
-               _fixture.ProjectId, _fixture.LocationId, _fixture.VodSourceUri, _fixture.VodAdTagUri);
+               _fixture.ProjectId, _fixture.LocationId, _fixture.TestVodConfigId);
             _vodSessionId = session.VodSessionName.VodSessionId;
 
             var adTagDetails = _listSample.ListVodAdTagDetails(_fixture.ProjectId, _fixture.LocationId, _vodSessionId);
