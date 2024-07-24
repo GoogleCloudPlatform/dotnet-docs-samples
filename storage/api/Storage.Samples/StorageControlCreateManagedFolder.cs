@@ -18,22 +18,19 @@ using System;
 
 public class StorageControlCreateManagedFolderSample
 {
-    public ManagedFolder StorageControlCreateManagedFolder(string bucketName = "your-unique-bucket-name",
+    public ManagedFolder StorageControlCreateManagedFolder(string bucketId = "your-unique-bucket-name",
         string managedFolderId = "your_managed_folder_id")
     {
         StorageControlClient storageControl = StorageControlClient.Create();
 
-        var request = new CreateManagedFolderRequest()
-        {
+        ManagedFolder managedFolder = storageControl.CreateManagedFolder(
             // Set project to "_" to signify globally scoped bucket
-            Parent = BucketName.FormatProjectBucket("_", bucketName),
-            ManagedFolder = new ManagedFolder(),
-            ManagedFolderId = managedFolderId
-        };
+            new BucketName("_", bucketId),
+            new ManagedFolder(),
+            managedFolderId
+        );
 
-        ManagedFolder managedFolder = storageControl.CreateManagedFolder(request);
-
-        Console.WriteLine($"Managed Folder {managedFolderId} created in bucket {bucketName}");
+        Console.WriteLine($"Managed Folder {managedFolderId} created in bucket {bucketId}");
         return managedFolder;
     }
 }

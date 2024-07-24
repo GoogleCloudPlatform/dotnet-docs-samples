@@ -18,14 +18,14 @@ using System;
 
 public class StorageControlGetManagedFolderSample
 {
-    public ManagedFolder StorageControlGetManagedFolder(string bucketName = "your-unique-bucket-name",
+    public ManagedFolder StorageControlGetManagedFolder(string bucketId = "your-unique-bucket-name",
         string managedFolderId = "your_managed_folder_Id")
     {
         StorageControlClient storageControl = StorageControlClient.Create();
 
-        string managedFolderResourceName =
+        ManagedFolderName managedFolderResourceName =
             // Set project to "_" to signify globally scoped bucket
-            ManagedFolderName.FormatProjectBucketManagedFolder("_", bucketName, managedFolderId);
+            new ManagedFolderName("_", bucketId, managedFolderId);
 
         ManagedFolder managedFolder = storageControl.GetManagedFolder(managedFolderResourceName);
 

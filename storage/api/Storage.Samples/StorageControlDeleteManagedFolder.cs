@@ -18,18 +18,18 @@ using System;
 
 public class StorageControlDeleteManagedFolderSample
 {
-    public void StorageControlDeleteManagedFolder(string bucketName = "your-unique-bucket-name",
+    public void StorageControlDeleteManagedFolder(string bucketId = "your-unique-bucket-name",
         string managedFolderId = "your_managed_folder_id")
     {
         StorageControlClient storageControl = StorageControlClient.Create();
 
-        string managedFolderResourceName =
+        ManagedFolderName managedFolderResourceName =
             // Set project to "_" to signify globally scoped bucket
-            ManagedFolderName.FormatProjectBucketManagedFolder("_", bucketName, managedFolderId);
+            new ManagedFolderName("_", bucketId, managedFolderId);
 
         storageControl.DeleteManagedFolder(managedFolderResourceName);
 
-        Console.WriteLine($"Deleted managed folder {managedFolderId} from bucket {bucketName}");
+        Console.WriteLine($"Deleted managed folder {managedFolderId} from bucket {bucketId}");
     }
 }
 // [END storage_control_managed_folder_delete]

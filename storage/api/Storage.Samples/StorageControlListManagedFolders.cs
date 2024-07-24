@@ -19,12 +19,12 @@ using System.Collections.Generic;
 
 public class StorageControlListManagedFoldersSample
 {
-    public IEnumerable<ManagedFolder> StorageControlListManagedFolders(string bucketName = "your-unique-bucket-name")
+    public IEnumerable<ManagedFolder> StorageControlListManagedFolders(string bucketId = "your-unique-bucket-name")
     {
         StorageControlClient storageControl = StorageControlClient.Create();
 
         // Use "_" for project ID to signify globally scoped bucket
-        string bucketResourceName = BucketName.FormatProjectBucket("_", bucketName);
+        BucketName bucketResourceName = new BucketName("_", bucketId);
         var managedFolders = storageControl.ListManagedFolders(bucketResourceName);
 
         foreach (var managedFolder in managedFolders)
