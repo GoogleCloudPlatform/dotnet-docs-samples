@@ -15,6 +15,7 @@
  */
 
 // [START aiplatform_sdk_chat]
+// [START generativeaionvertexai_sdk_chat]
 
 using Google.Cloud.AIPlatform.V1;
 using Newtonsoft.Json;
@@ -95,3 +96,4 @@ public class PredictChatPromptSample
 }
 
 // [END aiplatform_sdk_chat]
+// [END generativeaionvertexai_sdk_chat]

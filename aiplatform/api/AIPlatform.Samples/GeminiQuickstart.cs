@@ -16,6 +16,7 @@
 
 // [START generativeaionvertexai_gemini_image]
 // [START aiplatform_gemini_get_started]
+// [START generativeaionvertexai_gemini_get_started]
 
 using Google.Api.Gax.Grpc;
 using Google.Cloud.AIPlatform.V1;
@@ -79,4 +80,5 @@ public class GeminiQuickstart
 }
 
 // [END aiplatform_gemini_get_started]
+// [END generativeaionvertexai_gemini_get_started]
 // [END generativeaionvertexai_gemini_image]
