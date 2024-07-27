@@ -19,6 +19,7 @@
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
+using System;
 
 public class ListVodConfigsSample
 {
@@ -35,6 +36,10 @@ public class ListVodConfigsSample
 
         // Make the request.
         PagedEnumerable<ListVodConfigsResponse, VodConfig> response = client.ListVodConfigs(request);
+        foreach (VodConfig vodConfig in response)
+        {
+            Console.WriteLine($"{vodConfig.Name}");
+        }
 
         // Return the result.
         return response;
