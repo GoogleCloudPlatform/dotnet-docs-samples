@@ -18,6 +18,7 @@
 
 using Google.Api.Gax;
 using Google.Cloud.Video.Stitcher.V1;
+using System;
 
 public class ListVodStitchDetailsSample
 {
@@ -34,6 +35,10 @@ public class ListVodStitchDetailsSample
 
         // Make the request.
         PagedEnumerable<ListVodStitchDetailsResponse, VodStitchDetail> response = client.ListVodStitchDetails(request);
+        foreach (VodStitchDetail vodStitchDetail in response)
+        {
+            Console.WriteLine($"{vodStitchDetail.Name}");
+        }
 
         // Return the result.
         return response;
