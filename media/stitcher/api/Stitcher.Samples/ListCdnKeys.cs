@@ -19,6 +19,7 @@
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
+using System;
 
 public class ListCdnKeysSample
 {
@@ -35,6 +36,10 @@ public class ListCdnKeysSample
 
         // Make the request.
         PagedEnumerable<ListCdnKeysResponse, CdnKey> response = client.ListCdnKeys(request);
+        foreach (CdnKey cdnKey in response)
+        {
+            Console.WriteLine($"{cdnKey.Name}");
+        }
 
         // Return the result.
         return response;
