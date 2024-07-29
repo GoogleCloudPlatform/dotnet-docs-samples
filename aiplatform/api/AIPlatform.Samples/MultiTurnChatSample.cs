@@ -15,7 +15,6 @@
  */
 
 // [START generativeaionvertexai_gemini_multiturn_chat]
-// [START aiplatform_gemini_multiturn_chat]
 
 using Google.Cloud.AIPlatform.V1;
 using System;
@@ -110,5 +109,4 @@ public class MultiTurnChatSample
     }
 }
 
-// [END aiplatform_gemini_multiturn_chat]
 // [END generativeaionvertexai_gemini_multiturn_chat]
