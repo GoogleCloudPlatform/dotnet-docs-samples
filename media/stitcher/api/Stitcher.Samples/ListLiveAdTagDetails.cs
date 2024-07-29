@@ -18,6 +18,7 @@
 
 using Google.Api.Gax;
 using Google.Cloud.Video.Stitcher.V1;
+using System;
 
 public class ListLiveAdTagDetailsSample
 {
@@ -34,6 +35,10 @@ public class ListLiveAdTagDetailsSample
 
         // Make the request.
         PagedEnumerable<ListLiveAdTagDetailsResponse, LiveAdTagDetail> response = client.ListLiveAdTagDetails(request);
+        foreach (LiveAdTagDetail liveAdTagDetail in response)
+        {
+            Console.WriteLine($"{liveAdTagDetail.Name}");
+        }
 
         // Return the result.
         return response;

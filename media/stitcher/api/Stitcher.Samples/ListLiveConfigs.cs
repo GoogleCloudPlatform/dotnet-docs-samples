@@ -19,6 +19,7 @@
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
+using System;
 
 public class ListLiveConfigsSample
 {
@@ -35,6 +36,10 @@ public class ListLiveConfigsSample
 
         // Make the request.
         PagedEnumerable<ListLiveConfigsResponse, LiveConfig> response = client.ListLiveConfigs(request);
+        foreach (LiveConfig liveConfig in response)
+        {
+            Console.WriteLine($"{liveConfig.Name}");
+        }
 
         // Return the result.
         return response;

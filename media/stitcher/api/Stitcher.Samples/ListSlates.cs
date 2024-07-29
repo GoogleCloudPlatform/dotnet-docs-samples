@@ -19,6 +19,7 @@
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
+using System;
 
 public class ListSlatesSample
 {
@@ -35,6 +36,10 @@ public class ListSlatesSample
 
         // Make the request.
         PagedEnumerable<ListSlatesResponse, Slate> response = client.ListSlates(request);
+        foreach (Slate slate in response)
+        {
+            Console.WriteLine($"{slate.Name}");
+        }
 
         // Return the result.
         return response;
