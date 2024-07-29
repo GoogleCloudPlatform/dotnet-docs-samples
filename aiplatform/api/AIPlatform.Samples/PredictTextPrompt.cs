@@ -15,6 +15,7 @@
  */
 
 // [START aiplatform_sdk_ideation]
+// [START generativeaionvertexai_sdk_ideation]
 
 using Google.Cloud.AIPlatform.V1;
 using System;
@@ -80,3 +81,4 @@ public class PredictTextPromptSample
 }
 
 // [END aiplatform_sdk_ideation]
+// [END generativeaionvertexai_sdk_ideation]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,29 @@
  * limitations under the License.
  */
 
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateVodSessionTest
+    public class UpdateVodConfigAsyncTest
     {
         private StitcherFixture _fixture;
-        private readonly CreateVodSessionSample _createSample;
+        private readonly UpdateVodConfigSample _updateSample;
 
-        public CreateVodSessionTest(StitcherFixture fixture)
+        public UpdateVodConfigAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateVodSessionSample();
+            _updateSample = new UpdateVodConfigSample();
         }
 
         [Fact]
-        public void CreatesVodSession()
+        public async Task UpdatesVodConfigAsync()
         {
-            // Run the sample code.
-            var result = _createSample.CreateVodSession(
-                _fixture.ProjectId, _fixture.LocationId, _fixture.TestVodConfigId);
-
-            Assert.Equal(_fixture.LocationId, result.VodSessionName.LocationId);
-            Assert.Contains(_fixture.TestVodConfigId, result.VodConfigAsVodConfigName.VodConfigId);
+            var result = await _updateSample.UpdateVodConfigAsync(_fixture.ProjectId, _fixture.LocationId, _fixture.TestVodConfigId, _fixture.UpdateVodSourceUri);
+            Assert.Equal(_fixture.TestVodConfigId, result.VodConfigName.VodConfigId);
+            Assert.Equal(_fixture.UpdateVodSourceUri, result.SourceUri);
         }
     }
 }

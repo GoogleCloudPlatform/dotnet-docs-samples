@@ -1,5 +1,5 @@
 ﻿/*
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,34 +14,35 @@
  * limitations under the License.
  */
 
-// [START videostitcher_list_vod_ad_tag_details]
+// [START videostitcher_list_vod_configs]
 
 using Google.Api.Gax;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Video.Stitcher.V1;
 using System;
 
-public class ListVodAdTagDetailsSample
+public class ListVodConfigsSample
 {
-    public PagedEnumerable<ListVodAdTagDetailsResponse, VodAdTagDetail> ListVodAdTagDetails(
-        string projectId, string regionId, string sessionId)
+    public PagedEnumerable<ListVodConfigsResponse, VodConfig> ListVodConfigs(
+        string projectId, string regionId)
     {
         // Create the client.
         VideoStitcherServiceClient client = VideoStitcherServiceClient.Create();
 
-        ListVodAdTagDetailsRequest request = new ListVodAdTagDetailsRequest
+        ListVodConfigsRequest request = new ListVodConfigsRequest
         {
-            ParentAsVodSessionName = VodSessionName.FromProjectLocationVodSession(projectId, regionId, sessionId)
+            ParentAsLocationName = LocationName.FromProjectLocation(projectId, regionId)
         };
 
         // Make the request.
-        PagedEnumerable<ListVodAdTagDetailsResponse, VodAdTagDetail> response = client.ListVodAdTagDetails(request);
-        foreach (VodAdTagDetail vodAdTagDetail in response)
+        PagedEnumerable<ListVodConfigsResponse, VodConfig> response = client.ListVodConfigs(request);
+        foreach (VodConfig vodConfig in response)
         {
-            Console.WriteLine($"{vodAdTagDetail.Name}");
+            Console.WriteLine($"{vodConfig.Name}");
         }
 
         // Return the result.
         return response;
     }
 }
-// [END videostitcher_list_vod_ad_tag_details]
+// [END videostitcher_list_vod_configs]

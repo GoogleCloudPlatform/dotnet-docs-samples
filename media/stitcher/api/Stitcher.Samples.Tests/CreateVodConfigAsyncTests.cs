@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,35 @@
  * limitations under the License.
  */
 
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Stitcher.Samples.Tests
 {
     [Collection(nameof(StitcherFixture))]
-    public class CreateVodSessionTest
+    public class CreateVodConfigAsyncTest
     {
         private StitcherFixture _fixture;
-        private readonly CreateVodSessionSample _createSample;
+        private readonly CreateVodConfigSample _createSample;
 
-        public CreateVodSessionTest(StitcherFixture fixture)
+        private string _vodConfigId;
+
+        public CreateVodConfigAsyncTest(StitcherFixture fixture)
         {
             _fixture = fixture;
-            _createSample = new CreateVodSessionSample();
+            _createSample = new CreateVodConfigSample();
+            _vodConfigId = $"{_fixture.VodConfigIdPrefix}-{_fixture.RandomId()}-{_fixture.TimestampId()}";
         }
 
         [Fact]
-        public void CreatesVodSession()
+        public async Task CreatesVodConfigAsync()
         {
             // Run the sample code.
-            var result = _createSample.CreateVodSession(
-                _fixture.ProjectId, _fixture.LocationId, _fixture.TestVodConfigId);
+            _fixture.VodConfigIds.Add(_vodConfigId);
+            var result = await _createSample.CreateVodConfigAsync(
+                _fixture.ProjectId, _fixture.LocationId, _vodConfigId, _fixture.VodSourceUri, _fixture.VodAdTagUri);
 
-            Assert.Equal(_fixture.LocationId, result.VodSessionName.LocationId);
-            Assert.Contains(_fixture.TestVodConfigId, result.VodConfigAsVodConfigName.VodConfigId);
+            Assert.Equal(_vodConfigId, result.VodConfigName.VodConfigId);
         }
     }
 }
