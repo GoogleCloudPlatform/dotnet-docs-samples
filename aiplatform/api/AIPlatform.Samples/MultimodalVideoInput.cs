@@ -15,7 +15,6 @@
  */
 
 // [START generativeaionvertexai_gemini_single_turn_video]
-// [START aiplatform_gemini_single_turn_video]
 
 using Google.Api.Gax.Grpc;
 using Google.Cloud.AIPlatform.V1;
@@ -66,5 +65,4 @@ public class MultimodalVideoInput
     }
 }
 
-// [END aiplatform_gemini_single_turn_video]
 // [END generativeaionvertexai_gemini_single_turn_video]

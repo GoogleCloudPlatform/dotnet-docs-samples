@@ -15,7 +15,6 @@
  */
 
 // [START generativeaionvertexai_gemini_safety_settings]
-// [START aiplatform_gemini_safety_settings]
 
 using Google.Api.Gax.Grpc;
 using Google.Cloud.AIPlatform.V1;
@@ -90,5 +89,4 @@ public class WithSafetySettings
     }
 }
 
-// [END aiplatform_gemini_safety_settings]
 // [END generativeaionvertexai_gemini_safety_settings]

@@ -15,7 +15,6 @@
  */
 
 // [START generativeaionvertexai_gemini_single_turn_multi_image]
-// [START aiplatform_gemini_single_turn_multi_image]
 
 using Google.Api.Gax.Grpc;
 using Google.Cloud.AIPlatform.V1;
@@ -88,5 +87,4 @@ public class MultimodalMultiImage
     }
 }
 
-// [END aiplatform_gemini_single_turn_multi_image]
 // [END generativeaionvertexai_gemini_single_turn_multi_image]
