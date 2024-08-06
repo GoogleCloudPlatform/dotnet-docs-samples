@@ -54,7 +54,8 @@ public class InspectStringRep
             InspectConfig = inspectConfig
         };
 
-        var dlp = new DlpServiceClientBuilder{
+        var dlp = new DlpServiceClientBuilder
+        {
             Endpoint = $"dlp.{repLocation}.rep.googleapis.com"
         }.Build();
 
