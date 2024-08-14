@@ -22,7 +22,7 @@ using System.Threading.Tasks;
 
 public class UseContextCache
 {
-    public async Task<string> Use(string projectId, string cacheName)
+    public async Task<string> Use(string projectId, CachedContentName name)
     {
         var predictionServiceClient = new PredictionServiceClientBuilder
         {
@@ -31,7 +31,7 @@ public class UseContextCache
 
         var generateContentRequest = new GenerateContentRequest
         {
-            CachedContent = cacheName,
+            CachedContentAsCachedContentName = name,
             Model = $"projects/{projectId}/locations/us-central1/publishers/google/models/gemini-1.5-pro-001",
             Contents =
             {
@@ -49,7 +49,7 @@ public class UseContextCache
         GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
 
         string responseText = response.Candidates[0].Content.Parts[0].Text;
-        Console.WriteLine(responseText);
+        Console.WriteLine($"Response: {responseText}");
 
         return responseText;
     }

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+using Google.Cloud.AIPlatform.V1Beta1;
 using Google.Protobuf.WellKnownTypes;
 using System.Threading.Tasks;
 using Xunit;
@@ -44,22 +45,22 @@ public class ContextCacheTest
     public async Task TestContextCache()
     {
         // Create context cache
-        string cacheName = await _createSample.Create(_fixture.ProjectId);
-        Assert.NotNull(cacheName);
+        CachedContentName name = await _createSample.Create(_fixture.ProjectId);
+        Assert.NotNull(name);
 
         // Use context cache
-        string response = await _useSample.Use(_fixture.ProjectId, cacheName);
+        string response = await _useSample.Use(_fixture.ProjectId, name);
         Assert.NotNull(response);
 
         // Get context cache
-        var cache = await _getSample.Get(cacheName);
-        Assert.Equal(cacheName, cache.Name);
+        var cache = await _getSample.Get(name);
+        Assert.Equal(name, cache.CachedContentName);
 
         // Update context cache
-        Timestamp expireTime = await _updateSample.UpdateExpireTime(cacheName);
+        Timestamp expireTime = await _updateSample.UpdateExpireTime(name);
         Assert.NotEqual(cache.ExpireTime, expireTime);
 
         // Delete context cache
-        await _deleteSample.Delete(cacheName);
+        await _deleteSample.Delete(name);
     }
 }

@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 public class UpdateContextCache
 {
-    public async Task<Timestamp> UpdateExpireTime(string cacheName)
+    public async Task<Timestamp> UpdateExpireTime(CachedContentName name)
     {
         var client = await new GenAiCacheServiceClientBuilder
         {
@@ -32,7 +32,7 @@ public class UpdateContextCache
 
         var cachedContent = await client.GetCachedContentAsync(new GetCachedContentRequest
         {
-            Name = cacheName
+            CachedContentName = name
         });
         Console.WriteLine($"Original expire time: {cachedContent.ExpireTime}");
 

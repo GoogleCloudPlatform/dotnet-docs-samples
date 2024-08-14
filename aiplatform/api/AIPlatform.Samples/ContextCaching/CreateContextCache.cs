@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 public class CreateContextCache
 {
-    public async Task<string> Create(string projectId)
+    public async Task<CachedContentName> Create(string projectId)
     {
         var client = await new GenAiCacheServiceClientBuilder
         {
@@ -61,8 +61,8 @@ public class CreateContextCache
         };
 
         var cachedContent = await client.CreateCachedContentAsync(request);
-        Console.WriteLine($"Created cache: {cachedContent.Name}");
-        return cachedContent.Name;
+        Console.WriteLine($"Created cache: {cachedContent.CachedContentName}");
+        return cachedContent.CachedContentName;
     }
 }
 

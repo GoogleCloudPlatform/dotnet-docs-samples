@@ -22,15 +22,15 @@ using System.Threading.Tasks;
 
 public class DeleteContextCache
 {
-    public async Task Delete(string cacheName)
+    public async Task Delete(CachedContentName name)
     {
         var client = await new GenAiCacheServiceClientBuilder
         {
             Endpoint = "us-central1-aiplatform.googleapis.com"
         }.BuildAsync();
 
-        await client.DeleteCachedContentAsync(cacheName);
-        Console.WriteLine($"Deleted cache: {cacheName}");
+        await client.DeleteCachedContentAsync(name);
+        Console.WriteLine($"Deleted cache: {name}");
     }
 }
 
