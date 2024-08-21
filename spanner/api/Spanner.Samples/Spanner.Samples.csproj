@@ -2,11 +2,10 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
-    <!-- Update samples and restore this to true when 5.0.0 is released. See b/360755482 -->
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Spanner.Data" Version="5.0.0-beta04" />
+    <PackageReference Include="Google.Cloud.Spanner.Data" Version="5.0.0-beta03" />
   </ItemGroup>
 
 </Project>
