@@ -35,7 +35,7 @@ public class RestoreDatabaseWithMRCMEKAsyncSample
             EncryptionConfig = new RestoreDatabaseEncryptionConfig
             {
                 EncryptionType = RestoreDatabaseEncryptionConfig.Types.EncryptionType.CustomerManagedEncryption,
-                KmsKeyNamesAsCryptoKeyName = kmsKeyNames,
+                KmsKeyNamesAsCryptoKeyNames = kmsKeyNames,
             }
         };
         // Execute the RestoreDatabase request.
@@ -56,7 +56,7 @@ public class RestoreDatabaseWithMRCMEKAsyncSample
         Console.WriteLine($"Database {restoreInfo.BackupInfo.SourceDatabase} " +
             $"restored to {database.Name} " +
             $"from backup {restoreInfo.BackupInfo.Backup} " +
-            $"using encryption keys {}", string.Join(", ", kmsKeyNames));
+            $"using encryption keys {$0}", string.Join(", ", database.EncryptionConfig.KmsKeyNames));
         return database;
     }
 }
