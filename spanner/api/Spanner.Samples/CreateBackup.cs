@@ -58,7 +58,7 @@ public class CreateBackupSample
         Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes " +
                       $"was created at {backup.CreateTime} from {backup.Database} " +
                       $"and is in state {backup.State} " +
-                      $"and has version time {backup.VersionTime.ToDateTime()}");
+                      $"and has version time {backup.VersionTime}");
         return backup;
     }
 }

@@ -1,4 +1,4 @@
-// Copyright 2021 Google Inc.
+// Copyright 2024 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,16 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_create_database_with_encryption_key]
+// [START spanner_create_database_with_MR_CMEK]
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class CreateDatabaseWithEncryptionKeyAsyncSample
+public class CreateDatabaseWithMultiRegionEncryptionAsyncSample
 {
-    public async Task<Database> CreateDatabaseWithEncryptionKeyAsync(string projectId, string instanceId, string databaseId, CryptoKeyName kmsKeyName)
+    public async Task<Database> CreateDatabaseWithMultiRegionEncryptionAsync(string projectId, string instanceId, string databaseId, IEnumerable<CryptoKeyName> kmsKeyNames)
     {
         // Create a DatabaseAdminClient instance that can be used to execute a
         // CreateDatabaseRequest with custom encryption configuration options.
@@ -40,8 +41,8 @@ public class CreateDatabaseWithEncryptionKeyAsyncSample
                 SingerId INT64 NOT NULL,
                 AlbumId INT64 NOT NULL,
                 AlbumTitle STRING(MAX)
-            ) PRIMARY KEY (SingerId, AlbumId),
-            INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+             ) PRIMARY KEY (SingerId, AlbumId),
+             INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 
         // Create the CreateDatabase request with encryption configuration and execute it.
         var request = new CreateDatabaseRequest
@@ -51,7 +52,7 @@ public class CreateDatabaseWithEncryptionKeyAsyncSample
             ExtraStatements = { createSingersTable, createAlbumsTable },
             EncryptionConfig = new EncryptionConfig
             {
-                KmsKeyNameAsCryptoKeyName = kmsKeyName,
+                KmsKeyNamesAsCryptoKeyNames = { kmsKeyNames },
             },
         };
         var operation = await databaseAdminClient.CreateDatabaseAsync(request);
@@ -66,9 +67,9 @@ public class CreateDatabaseWithEncryptionKeyAsyncSample
         }
 
         var database = completedResponse.Result;
-        Console.WriteLine($"Database {database.Name} created with encryption key {database.EncryptionConfig.KmsKeyName}");
+        Console.WriteLine($"Database {database.Name} created with encryption keys {string.Join(", ", kmsKeyNames)}");
 
         return database;
     }
 }
-// [END spanner_create_database_with_encryption_key]
+// [END spanner_create_database_with_MR_CMEK]
