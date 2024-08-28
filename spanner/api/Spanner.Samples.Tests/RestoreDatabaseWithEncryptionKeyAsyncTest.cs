@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class RestoreDatabaseWithEncryptionKeyAsyncTest
     [SkippableFact]
     public async Task TestRestoreDatabaseWithEncryptionKeyAsync()
     {
-        Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
+        Skip.If(_fixture.SkipCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         var sample = new RestoreDatabaseWithEncryptionAsyncSample();
         var database = await sample.RestoreDatabaseWithEncryptionAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedRestoreDatabaseId, _fixture.FixedEncryptedBackupId, _fixture.KmsKeyName);
         Assert.Equal(_fixture.KmsKeyName, CryptoKeyName.Parse(database.EncryptionConfig.KmsKeyName));

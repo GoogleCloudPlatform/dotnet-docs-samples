@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,21 +27,21 @@ public class CreateDatabaseAsyncSample
         var createDatabase = $"CREATE DATABASE `{databaseId}`";
         // Define create table statement for table #1.
         var createSingersTable =
-        @"CREATE TABLE Singers (
-                     SingerId INT64 NOT NULL,
-                     FirstName STRING(1024),
-                     LastName STRING(1024),
-                     ComposerInfo BYTES(MAX),
-                     FullName STRING(2048) AS (ARRAY_TO_STRING([FirstName, LastName], "" "")) STORED
-                 ) PRIMARY KEY (SingerId)";
+            @"CREATE TABLE Singers (
+                SingerId INT64 NOT NULL,
+                FirstName STRING(1024),
+                LastName STRING(1024),
+                ComposerInfo BYTES(MAX),
+                FullName STRING(2048) AS (ARRAY_TO_STRING([FirstName, LastName], "" "")) STORED
+            ) PRIMARY KEY (SingerId)";
         // Define create table statement for table #2.
         var createAlbumsTable =
-        @"CREATE TABLE Albums (
-                     SingerId INT64 NOT NULL,
-                     AlbumId INT64 NOT NULL,
-                     AlbumTitle STRING(MAX)
-                 ) PRIMARY KEY (SingerId, AlbumId),
-                 INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+            @"CREATE TABLE Albums (
+                SingerId INT64 NOT NULL,
+                AlbumId INT64 NOT NULL,
+                AlbumTitle STRING(MAX)
+            ) PRIMARY KEY (SingerId, AlbumId),
+            INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 
         using var createDbCommand = connection.CreateDdlCommand(createDatabase, createSingersTable, createAlbumsTable);
         await createDbCommand.ExecuteNonQueryAsync();

@@ -1,4 +1,4 @@
-// Copyright 2022 Google Inc.
+// Copyright 2024 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,20 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_copy_backup]
+// [START spanner_copy_backup_with_MR_CMEK]
 
-using Google.Api.Gax;
 using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
-public class CopyBackupSample
+public class CopyBackupWithMultiRegionEncryptionAsyncSample
 {
-    public Backup CopyBackup(
+    public async Task<Backup> CopyBackupWithMultiRegionEncryptionAsync(
         string sourceProjectId, string sourceInstanceId, string sourceBackupId,
         string targetProjectId, string targetInstanceId, string targetBackupId,
-        DateTimeOffset expireTime)
+        DateTimeOffset expireTime, IEnumerable<CryptoKeyName> kmsKeyNames)
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
@@ -34,27 +35,36 @@ public class CopyBackupSample
             SourceBackupAsBackupName = new BackupName(sourceProjectId, sourceInstanceId, sourceBackupId),
             ParentAsInstanceName = new InstanceName(targetProjectId, targetInstanceId),
             BackupId = targetBackupId,
-            ExpireTime = Timestamp.FromDateTimeOffset(expireTime)
+            ExpireTime = Timestamp.FromDateTimeOffset(expireTime),
+            EncryptionConfig = new CopyBackupEncryptionConfig
+            {
+                EncryptionType = CopyBackupEncryptionConfig.Types.EncryptionType.CustomerManagedEncryption,
+                KmsKeyNamesAsCryptoKeyNames = { kmsKeyNames },
+            }
         };
 
-        var response = databaseAdminClient.CopyBackup(request);
+        // Execute the CopyBackup request.
+        var operation = await databaseAdminClient.CopyBackupAsync(request);
+
         Console.WriteLine("Waiting for the operation to finish.");
-        var completedResponse = response.PollUntilCompleted(new PollSettings(Expiration.FromTimeout(TimeSpan.FromMinutes(15)), TimeSpan.FromMinutes(2)));
+
+        // Poll until the returned long-running operation is complete.
+        var completedResponse = await operation.PollUntilCompletedAsync();
 
         if (completedResponse.IsFaulted)
         {
-            Console.WriteLine($"Error while creating backup: {completedResponse.Exception}");
+            Console.WriteLine($"Error while copying backup: {completedResponse.Exception}");
             throw completedResponse.Exception;
         }
 
         Backup backup = completedResponse.Result;
 
-        Console.WriteLine($"Backup created successfully.");
+        Console.WriteLine($"Backup copied successfully.");
         Console.WriteLine($"Backup with Id {sourceBackupId} has been copied from {sourceProjectId}/{sourceInstanceId} to {targetProjectId}/{targetInstanceId} Backup {targetBackupId}");
-        Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes was created at {backup.CreateTime} from {backup.Database} and is in state {backup.State} and has version time {backup.VersionTime}");
+        Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes was created with encryption keys {string.Join(", ", kmsKeyNames)} at {backup.CreateTime} from {backup.Database} and is in state {backup.State} and has version time {backup.VersionTime}");
 
         return backup;
     }
 }
 
-// [END spanner_copy_backup]
+// [END spanner_copy_backup_with_MR_CMEK]

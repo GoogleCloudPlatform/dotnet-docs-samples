@@ -60,23 +60,31 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string ToBeCancelledBackupId { get; } = GenerateId("my-backup-");
     public string RestoredDatabaseId { get; private set; }
 
-    public bool RunCmekBackupSampleTests { get; private set; }
+    public bool SkipCmekBackupSampleTests { get; private set; }
     public const string SkipCmekBackupSamplesMessage = "Spanner CMEK backup sample tests are disabled by default for performance reasons. Set the environment variable RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS=true to enable the test.";
 
     public string EncryptedDatabaseId { get; private set; }
     public string EncryptedBackupId { get; } = GenerateId("my-enc-backup-");
-    // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
     public string EncryptedRestoreDatabaseId { get; private set; }
 
     // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
+    public string MultiRegionEncryptedDatabaseId { get; private set; }
+    public string MultiRegionEncryptedBackupId { get; } = GenerateId("my-mr-enc-backup-");
+    public string MultiRegionEncryptedRestoreDatabaseId { get; private set; }
+
+    // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
+    public string FixedMultiRegionEncryptedDatabaseId { get; } = "fixed-mr-backup-db";
+    public string FixedMultiRegionEncryptedBackupId { get; } = "fixed-mr-backup";
+
     public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(
         Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
         Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1",
         Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring",
         Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key");
+    public CryptoKeyName[] KmsKeyNames { get; private set; }
 
     public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
     public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
@@ -103,6 +111,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         RestoredDatabaseId = GenerateTempDatabaseId("my-restore-db-");
         EncryptedDatabaseId = GenerateTempDatabaseId("my-enc-db-");
         EncryptedRestoreDatabaseId = GenerateTempDatabaseId("my-enc-r-db-");
+        MultiRegionEncryptedDatabaseId = GenerateTempDatabaseId("my-mr-db-");
+        MultiRegionEncryptedRestoreDatabaseId = GenerateTempDatabaseId("my-mr-r-db-");
+        KmsKeyNames = new CryptoKeyName[] { KmsKeyName };
 
         DatabaseAdminClient = await DatabaseAdminClient.CreateAsync();
         InstanceAdminClient = await InstanceAdminClient.CreateAsync();
@@ -111,7 +122,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         PgSpannerConnection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{PostgreSqlDatabaseId}");
 
         bool.TryParse(Environment.GetEnvironmentVariable("RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS"), out var runCmekBackupSampleTests);
-        RunCmekBackupSampleTests = runCmekBackupSampleTests;
+        SkipCmekBackupSampleTests = !runCmekBackupSampleTests;
 
         await MaybeInitializeTestInstanceAsync();
         await CreateInstanceWithMultiRegionAsync();
@@ -122,9 +133,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
         // Create encryption key for creating an encrypted database and optionally backing up and restoring an encrypted database.
         await InitializeEncryptionKeys();
-        if (RunCmekBackupSampleTests)
+        if (!SkipCmekBackupSampleTests)
         {
             await InitializeEncryptedBackupAsync();
+            await InitializeMultiRegionEncryptedBackupAsync();
         }
     }
 
@@ -138,9 +150,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 DeleteInstanceAsync(InstanceIdWithProcessingUnits),
                 DeleteInstanceAsync(InstanceIdWithInstancePartition),
                 DeleteBackupAsync(ToBeCancelledBackupId),
-                DeleteBackupAsync(EncryptedBackupId)
+                DeleteBackupAsync(EncryptedBackupId),
+                DeleteBackupAsync(MultiRegionEncryptedRestoreDatabaseId)
             };
-
             DeleteInstanceConfig(CreateCustomInstanceConfigId);
             DeleteInstanceConfig(UpdateCustomInstanceConfigId);
             DeleteInstanceConfig(DeleteCustomInstanceConfigId);
@@ -375,6 +387,38 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
             Console.WriteLine($"Backup {FixedEncryptedBackupId} already exists.");
+        }
+    }
+
+    private async Task InitializeMultiRegionEncryptedBackupAsync()
+    {
+        // Sample backup for MR CMEK restore test.
+        try
+        {
+            CreateDatabaseWithMultiRegionEncryptionAsyncSample createDatabaseAsyncSample = new CreateDatabaseWithMultiRegionEncryptionAsyncSample();
+            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+            await createDatabaseAsyncSample.CreateDatabaseWithMultiRegionEncryptionAsync(ProjectId, InstanceId, FixedMultiRegionEncryptedDatabaseId, KmsKeyNames);
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, FixedMultiRegionEncryptedDatabaseId);
+        }
+        catch (Exception e) when (e.ToString().Contains("Database already exists"))
+        {
+            // We intentionally keep an existing database around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Database {FixedMultiRegionEncryptedDatabaseId} already exists.");
+        }
+
+        try
+        {
+            CreateBackupWithMultiRegionEncryptionAsyncSample createBackupSample = new CreateBackupWithMultiRegionEncryptionAsyncSample();
+            await createBackupSample.CreateBackupWithMultiRegionEncryptionAsync(ProjectId, InstanceId, FixedMultiRegionEncryptedDatabaseId, FixedMultiRegionEncryptedBackupId, KmsKeyNames);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+        {
+            // We intentionally keep an existing backup around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Backup {FixedMultiRegionEncryptedBackupId} already exists.");
         }
     }
 
