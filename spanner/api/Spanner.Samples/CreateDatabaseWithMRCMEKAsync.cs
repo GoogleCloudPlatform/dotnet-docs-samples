@@ -19,9 +19,9 @@ using Google.Cloud.Spanner.Common.V1;
 using System;
 using System.Threading.Tasks;
 
-public class CreateDatabaseWithEncryptionKeyAsyncSample
+public class CreateDatabaseWithMRCMEKAsyncSample
 {
-    public async Task<Database> CreateDatabaseWithEncryptionKeyAsync(string projectId, string instanceId, string databaseId, CryptoKeyName[] kmsKeyNames)
+    public async Task<Database> CreateDatabaseWithMRCMEKAsync(string projectId, string instanceId, string databaseId, CryptoKeyName[] kmsKeyNames)
     {
         // Create a DatabaseAdminClient instance that can be used to execute a
         // CreateDatabaseRequest with custom encryption configuration options.
@@ -66,7 +66,7 @@ public class CreateDatabaseWithEncryptionKeyAsyncSample
         }
 
         var database = completedResponse.Result;
-        Console.WriteLine($"Database {database.Name} created with encryption key {0}", string.Join(", ", kmsKeyNames));
+        Console.WriteLine($"Database {database.Name} created with encryption keys {0}", string.Join(", ", kmsKeyNames));
 
         return database;
     }
