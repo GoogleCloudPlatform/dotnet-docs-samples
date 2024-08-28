@@ -66,7 +66,7 @@ public class CreateDatabaseWithMRCMEKAsyncSample
         }
 
         var database = completedResponse.Result;
-        Console.WriteLine($"Database {database.Name} created with encryption keys {0}", string.Join(", ", kmsKeyNames));
+        Console.WriteLine($"Database {database.Name} created with encryption keys {0}", string.Join(", ", database.EncryptionConfig.KmsKeyNames));
 
         return database;
     }
