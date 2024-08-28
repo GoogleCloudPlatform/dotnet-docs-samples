@@ -35,7 +35,7 @@ public class CreateDatabaseWithMRCMEKAsyncTest
         // Create a database with custom encryption keys.
         var sample = new CreateDatabaseWithMRCMEKAsyncSample();
         var database = await sample.CreateDatabaseWithMRCMEKAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedDatabaseId, _fixture.KmsKeyNames);
-        Assert.Equal(_fixture.KmsKeyName.Length, database.EncryptionConfig.KmsKeyNames.Length);
+        Assert.Equal(_fixture.KmsKeyNames.Length, database.EncryptionConfig.KmsKeyNames.Length);
         foreach (CryptoKeyName KmsKey in _fixture.KmsKeyNames)
         {
           Assert.True(database.EncryptionConfig.KmsKeyNames.contains(KmsKey));
