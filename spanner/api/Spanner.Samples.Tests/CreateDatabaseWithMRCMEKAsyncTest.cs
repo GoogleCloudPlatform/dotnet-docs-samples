@@ -36,9 +36,9 @@ public class CreateDatabaseWithMRCMEKAsyncTest
         var sample = new CreateDatabaseWithMRCMEKAsyncSample();
         var database = await sample.CreateDatabaseWithMRCMEKAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedDatabaseId, _fixture.KmsKeyNames);
         Assert.Equal(_fixture.KmsKeyNames.Length, database.EncryptionConfig.KmsKeyNames.Length);
-        foreach (CryptoKeyName KmsKey in _fixture.KmsKeyNames)
+        foreach (string KmsKey in database.EncryptionConfig.KmsKeyNames)
         {
-          Assert.True(database.EncryptionConfig.KmsKeyNames.contains(KmsKey));
+          Assert.True(_fixture.KmsKeyNames.contains(CryptoKeyName.Parse(KmsKey)));
         }
     }
 }
