@@ -72,11 +72,31 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
+    public string MRCMEKDatabaseId { get; private set; }
+    public string MRCMEKBackupId { get; } = GenerateId("my-mr-cmek-backup-");
+    // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
+    public string MRCMEKRestoreDatabaseId { get; private set; }
+
+    // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
+    public string FixedMRCMEKDatabaseId { get; } = "fixed-mr-cmek-backup-db";
+    public string FixedMRCMEKBackupId { get; } = "fixed-mr-cmek-backup";
+
     public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(
         Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
         Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1",
         Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring",
         Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key");
+    public CryptoKeyName KmsKeyName2 { get; } = new CryptoKeyName(
+        Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
+        Environment.GetEnvironmentVariable("spanner.test.key.location2") ?? "us-east1",
+        Environment.GetEnvironmentVariable("spanner.test.key.ring2") ?? "spanner-test-keyring2",
+        Environment.GetEnvironmentVariable("spanner.test.key.name2") ?? "spanner-test-key2");
+    public CryptoKeyName KmsKeyName3 { get; } = new CryptoKeyName(
+        Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
+        Environment.GetEnvironmentVariable("spanner.test.key.location3") ?? "us-east4",
+        Environment.GetEnvironmentVariable("spanner.test.key.ring3") ?? "spanner-test-keyring3",
+        Environment.GetEnvironmentVariable("spanner.test.key.name3") ?? "spanner-test-key3");
+    public CryptoKeyName[] KmsKeyNames = {KmsKeyName, KmsKeyName2, KmsKeyName3};
 
     public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
     public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
@@ -102,6 +122,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         RestoredDatabaseId = GenerateTempDatabaseId("my-restore-db-");
         EncryptedDatabaseId = GenerateTempDatabaseId("my-enc-db-");
         EncryptedRestoreDatabaseId = GenerateTempDatabaseId("my-enc-r-db-");
+        MRCMEKDatabaseId = GenerateTempDatabaseId("my-mr-cmek-db-");
+        MRCMEKRestoreDatabaseId = GenerateTempDatabaseId("my-mr-cmek-r-db-");
 
         DatabaseAdminClient = await DatabaseAdminClient.CreateAsync();
         InstanceAdminClient = await InstanceAdminClient.CreateAsync();
@@ -123,6 +145,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         if (RunCmekBackupSampleTests)
         {
             await InitializeEncryptedBackupAsync();
+            await InitializeMRCMEKBackupAsync();
         }
     }
 
@@ -137,6 +160,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
             cleanupTasks.Add(DeleteBackupAsync(ToBeCancelledBackupId));
             cleanupTasks.Add(DeleteBackupAsync(EncryptedBackupId));
+            cleanupTasks.Add(DeleteBackupAsync(MRCMEKBackupId));
 
             DeleteInstanceConfig(CreateCustomInstanceConfigId);
             DeleteInstanceConfig(UpdateCustomInstanceConfigId);
@@ -313,6 +337,34 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 KeyRing = new KeyRing(),
             });
         }
+        var keyRingName2 = KeyRingName.FromProjectLocationKeyRing(KmsKeyName2.ProjectId, KmsKeyName2.LocationId, KmsKeyName2.KeyRingId);
+        try
+        {
+            await client.GetKeyRingAsync(keyRingName2);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.NotFound)
+        {
+            await client.CreateKeyRingAsync(new CreateKeyRingRequest
+            {
+                ParentAsLocationName = LocationName.FromProjectLocation(keyRingName2.ProjectId, keyRingName2.LocationId),
+                KeyRingId = KmsKeyName2.KeyRingId,
+                KeyRing = new KeyRing(),
+            });
+        }
+        var keyRingName3 = KeyRingName.FromProjectLocationKeyRing(KmsKeyName3.ProjectId, KmsKeyName3.LocationId, KmsKeyName3.KeyRingId);
+        try
+        {
+            await client.GetKeyRingAsync(keyRingName3);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.NotFound)
+        {
+            await client.CreateKeyRingAsync(new CreateKeyRingRequest
+            {
+                ParentAsLocationName = LocationName.FromProjectLocation(keyRingName3.ProjectId, keyRingName3.LocationId),
+                KeyRingId = KmsKeyName3.KeyRingId,
+                KeyRing = new KeyRing(),
+            });
+        }
 
         var keyName = Google.Cloud.Kms.V1.CryptoKeyName.FromProjectLocationKeyRingCryptoKey(KmsKeyName.ProjectId, KmsKeyName.LocationId, KmsKeyName.KeyRingId, KmsKeyName.CryptoKeyId);
         try
@@ -325,6 +377,40 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             {
                 ParentAsKeyRingName = keyRingName,
                 CryptoKeyId = keyName.CryptoKeyId,
+                CryptoKey = new CryptoKey
+                {
+                    Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+                },
+            });
+        }
+        var keyName2 = Google.Cloud.Kms.V1.CryptoKeyName.FromProjectLocationKeyRingCryptoKey(KmsKeyName2.ProjectId, KmsKeyName2.LocationId, KmsKeyName2.KeyRingId, KmsKeyName2.CryptoKeyId);
+        try
+        {
+            await client.GetCryptoKeyAsync(keyName2);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.NotFound)
+        {
+            await client.CreateCryptoKeyAsync(new CreateCryptoKeyRequest
+            {
+                ParentAsKeyRingName = keyRingName2,
+                CryptoKeyId = keyName2.CryptoKeyId,
+                CryptoKey = new CryptoKey
+                {
+                    Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+                },
+            });
+        }
+        var keyName3 = Google.Cloud.Kms.V1.CryptoKeyName.FromProjectLocationKeyRingCryptoKey(KmsKeyName3.ProjectId, KmsKeyName3.LocationId, KmsKeyName3.KeyRingId, KmsKeyName3.CryptoKeyId);
+        try
+        {
+            await client.GetCryptoKeyAsync(keyName3);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.NotFound)
+        {
+            await client.CreateCryptoKeyAsync(new CreateCryptoKeyRequest
+            {
+                ParentAsKeyRingName = keyRingName3,
+                CryptoKeyId = keyName3.CryptoKeyId,
                 CryptoKey = new CryptoKey
                 {
                     Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
@@ -362,6 +448,38 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
             Console.WriteLine($"Backup {FixedEncryptedBackupId} already exists.");
+        }
+    }
+
+    private async Task InitializeMRCMEKBackupAsync()
+    {
+        // Sample backup for MR CMEK restore test.
+        try
+        {
+            CreateDatabaseWithMRCMEKAsyncSample createDatabaseAsyncSample = new CreateDatabaseWithMRCMEKAsyncSample();
+            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+            await createDatabaseAsyncSample.CreateDatabaseWithMRCMEKAsync(ProjectId, InstanceId, FixedMRCMEKDatabaseId, KmsKeyNames);
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, FixedMRCMEKDatabaseId);
+        }
+        catch (Exception e) when (e.ToString().Contains("Database already exists"))
+        {
+            // We intentionally keep an existing database around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Database {FixedMRCMEKDatabaseId} already exists.");
+        }
+
+        try
+        {
+            CreateBackupWithMRCMEKAsyncSample createBackupSample = new CreateBackupWithMRCMEKAsyncSample();
+            await createBackupSample.CreateBackupWithMRCMEKAsync(ProjectId, InstanceId, FixedMRCMEKDatabaseId, FixedMRCMEKBackupId, KmsKeyNames);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+        {
+            // We intentionally keep an existing backup around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Backup {FixedMRCMEKBackupId} already exists.");
         }
     }
 
