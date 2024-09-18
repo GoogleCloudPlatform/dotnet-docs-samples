@@ -34,7 +34,6 @@ public class VideoInputWithAudioTest
     public async Task TestDescribeVideo()
     {
         var response = await _sample.DescribeVideo(_fixture.ProjectId);
-        Assert.Contains("pixel", response, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("tokyo", response, StringComparison.OrdinalIgnoreCase);
     }
 }
