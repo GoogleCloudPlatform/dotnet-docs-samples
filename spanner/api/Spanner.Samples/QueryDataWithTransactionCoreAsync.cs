@@ -38,7 +38,7 @@ public class QueryDataWithTransactionCoreAsyncSample
         await connection.OpenAsync();
 
         // Open a new read only transaction.
-        using var transaction = await connection.BeginReadOnlyTransactionAsync();
+        using var transaction = await connection.BeginTransactionAsync(SpannerTransactionCreationOptions.ReadOnly, cancellationToken: default);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
         cmd.Transaction = transaction;
 

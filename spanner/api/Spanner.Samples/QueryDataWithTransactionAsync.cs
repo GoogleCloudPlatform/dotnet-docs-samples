@@ -39,7 +39,7 @@ public class QueryDataWithTransactionAsyncSample
 
         // Opens the connection so that the Spanner transaction included in the TransactionScope
         // is read-only TimestampBound.Strong.
-        await connection.OpenAsync(AmbientTransactionOptions.ForTimestampBoundReadOnly(), default);
+        await connection.OpenAsync(SpannerTransactionCreationOptions.ReadOnly, options: null, cancellationToken: default);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
 
         // Read #1.
