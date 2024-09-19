@@ -30,7 +30,7 @@ public class BatchReadRecordsAsyncSample
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
-        using var transaction = await connection.BeginReadOnlyTransactionAsync();
+        using var transaction = await connection.BeginTransactionAsync(SpannerTransactionCreationOptions.ReadOnly.WithIsDetached(true), cancellationToken: default);
         transaction.DisposeBehavior = DisposeBehavior.CloseResources;
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, FirstName, LastName FROM Singers");
         cmd.Transaction = transaction;
@@ -50,7 +50,7 @@ public class BatchReadRecordsAsyncSample
     {
         var localId = Interlocked.Increment(ref _partitionCount);
         using var connection = new SpannerConnection(id.ConnectionString);
-        using var transaction = connection.BeginReadOnlyTransaction(id);
+        using var transaction = await connection.BeginTransactionAsync(SpannerTransactionCreationOptions.FromReadOnlyTransactionId(id), cancellationToken: default);
         using var cmd = connection.CreateCommandWithPartition(readPartition, transaction);
         using var reader = await cmd.ExecuteReaderAsync();
         while (await reader.ReadAsync())
