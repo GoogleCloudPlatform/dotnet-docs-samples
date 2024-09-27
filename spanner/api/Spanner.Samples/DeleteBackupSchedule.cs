@@ -22,11 +22,7 @@ public class DeleteBackupScheduleSample
     {
         DatabaseAdminClient client = DatabaseAdminClient.Create();
 
-        client.DeleteBackupSchedule(
-            new DeleteBackupScheduleRequest
-            {
-                BackupScheduleName = BackupScheduleName.FromProjectInstanceDatabaseSchedule(projectId, instanceId, databaseId, scheduleId),
-            });
+        client.DeleteBackupSchedule(BackupScheduleName.FromProjectInstanceDatabaseSchedule(projectId, instanceId, databaseId, scheduleId));
 
         Console.WriteLine("Deleted backup schedule");
     }
