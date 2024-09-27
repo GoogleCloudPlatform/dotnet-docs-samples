@@ -22,11 +22,7 @@ public class GetBackupScheduleSample
     {
         DatabaseAdminClient client = DatabaseAdminClient.Create();
 
-        BackupSchedule response = client.GetBackupSchedule(
-            new GetBackupScheduleRequest
-            {
-                BackupScheduleName = BackupScheduleName.FromProjectInstanceDatabaseSchedule(projectId, instanceId, databaseId, scheduleId),
-            });
+        BackupSchedule response = client.GetBackupSchedule(BackupScheduleName.FromProjectInstanceDatabaseSchedule(projectId, instanceId, databaseId, scheduleId));
 
         Console.WriteLine($"Backup schedule: {response}");
         return response;
