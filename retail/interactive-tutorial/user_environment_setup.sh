@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Copyright 2022 Google Inc. All Rights Reserved.
+# Copyright 2022 Google Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ echo $email
 # Check if user has service account active
 if [ -z "$email" ]
 then
-	# Create a new service account 
+	# Create a new service account
     timestamp=$(date +%s)
     service_account_id="service-acc-$timestamp"
     echo "Service Account: $service_account_id"
@@ -69,7 +69,7 @@ then
         gcloud projects add-iam-policy-binding "$project_id" --member="serviceAccount:$service_account_id@$project_id.iam.gserviceaccount.com" --role=roles/"${role}"
     done
     echo "Wait ~60 seconds to be sure the appropriate roles have been assigned to your service account"
-    sleep 60   
+    sleep 60
 fi
 
 # Upload your service account key file.
