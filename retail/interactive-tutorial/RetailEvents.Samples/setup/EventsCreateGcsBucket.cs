@@ -1,4 +1,5 @@
-﻿// Copyright 2022 Google Inc. All Rights Reserved.
+﻿// Copyright 2022 Google Inc.
+
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +28,7 @@ public static class EventsCreateGcsBucket
     private static readonly string invalidEventsFilePath = Path.Combine(CreateTestResources.GetSolutionDirectoryFullName(), $"TestResourcesSetupCleanup/resources/{InvalidEventsFileName}");
     private static readonly string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     private static readonly string bucketName = $"{projectId}_events_{requestTimeStamp}";
-    
+
     /// <summary>
     /// Create events GCS bucket with data.
     /// </summary>

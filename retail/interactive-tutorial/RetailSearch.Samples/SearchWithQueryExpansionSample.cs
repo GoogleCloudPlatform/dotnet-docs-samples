@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC. All Rights Reserved.
+// Copyright 2022 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ using System.Linq;
 /// <summary>
 /// Search with query expansion sample class.
 /// </summary>
-public class SearchWithQueryExpansionSample 
+public class SearchWithQueryExpansionSample
 {
     /// <summary>
     /// Get search request.
@@ -33,7 +33,7 @@ public class SearchWithQueryExpansionSample
     /// <param name="projectId">The current project id.</param>
     /// <returns>The search request.</returns>
     private static SearchRequest GetSearchRequest(string query, SearchRequest.Types.QueryExpansionSpec.Types.Condition condition, string projectId)
-    { 
+    {
         string defaultSearchPlacement = $"projects/{projectId}/locations/global/catalogs/default_catalog/placements/default_search";
 
         var searchRequest = new SearchRequest()
