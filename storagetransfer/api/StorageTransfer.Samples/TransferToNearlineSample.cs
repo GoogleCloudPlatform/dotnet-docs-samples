@@ -48,7 +48,7 @@ namespace StorageTransfer.Samples
                     TransferOptions = new TransferOptions { DeleteObjectsFromSourceAfterTransfer = true },
                 },
                 Status = TransferJob.Types.Status.Enabled,
-                Schedule = new Schedule { ScheduleStartDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)) }
+                Schedule = new Schedule { ScheduleStartDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)), ScheduleEndDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)) }
             };
             // Create a Transfer Service client
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
@@ -60,7 +60,7 @@ namespace StorageTransfer.Samples
                 ProjectId = projectId
             });
 
-            Console.WriteLine($"Created transfer job from standard bucket {sourceBucket} to Nearline bucket {sinkBucket} with name {response.Name}");
+            Console.WriteLine($"Created one-off transfer job from standard bucket {sourceBucket} to Nearline bucket {sinkBucket} with name {response.Name}");
             return response;
         }
     }
