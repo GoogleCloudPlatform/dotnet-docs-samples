@@ -17,6 +17,7 @@ using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using System;
 using Xunit;
+using Xunit.Abstractions;
 
 namespace StorageTransfer.Samples.Tests;
 
@@ -25,15 +26,17 @@ public class TransferToNearlineTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
-    public TransferToNearlineTest(StorageFixture fixture)
+    private readonly ITestOutputHelper _outputHelper;
+    public TransferToNearlineTest(StorageFixture fixture, ITestOutputHelper outputHelper)
     {
         _fixture = fixture;
+        _outputHelper = outputHelper;
     }
 
     [Fact]
     public void TestTransferToNearline()
     {
-        TransferToNearlineSample transferToNearlineSample = new TransferToNearlineSample();
+        TransferToNearlineSample transferToNearlineSample = new TransferToNearlineSample(_outputHelper);
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(_fixture.BucketNameSink);
         string storageClass = StorageClasses.Nearline;
