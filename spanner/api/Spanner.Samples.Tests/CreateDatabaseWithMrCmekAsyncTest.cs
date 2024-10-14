@@ -20,21 +20,21 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 /// Tests creating a databases using MR CMEK.
 /// </summary>
 [Collection(nameof(SpannerFixture))]
-public class CreateDatabaseWithMRCMEKAsyncTest
+public class CreateDatabaseWithMrCmekAsyncTest
 {
     private readonly SpannerFixture _fixture;
 
-    public CreateDatabaseWithMRCMEKAsyncTest(SpannerFixture fixture)
+    public CreateDatabaseWithMrCmekAsyncTest(SpannerFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public async Task TestCreateDatabaseWithMRCMEKAsync()
+    public async Task TestCreateDatabaseWithMrCmekAsync()
     {
         // Create a database with custom encryption keys.
-        var sample = new CreateDatabaseWithMRCMEKAsyncSample();
-        var database = await sample.CreateDatabaseWithMRCMEKAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedDatabaseId, _fixture.KmsKeyNames);
+        var sample = new CreateDatabaseWithMrCmekAsyncSample();
+        var database = await sample.CreateDatabaseWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedDatabaseId, _fixture.KmsKeyNames);
         Assert.Equal(_fixture.KmsKeyNames.Length, database.EncryptionConfig.KmsKeyNames.Length);
         foreach (string KmsKey in database.EncryptionConfig.KmsKeyNames)
         {
