@@ -20,22 +20,22 @@ using Xunit;
 /// Tests creating a backup using MR CMEK.
 /// </summary>
 [Collection(nameof(SpannerFixture))]
-public class CreateBackupWithMRCMEKAsyncTest
+public class CreateBackupWithMrCmekAsyncTest
 {
     private readonly SpannerFixture _fixture;
 
-    public CreateBackupWithMRCMEKAsyncTest(SpannerFixture fixture)
+    public CreateBackupWithMrCmekAsyncTest(SpannerFixture fixture)
     {
         _fixture = fixture;
     }
 
     [SkippableFact]
-    public async Task TestCreatBackupWithMRCMEKAsync()
+    public async Task TestCreatBackupWithMrCmekAsync()
     {
         Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         // Create a backup with custom encryption keys.
-        var sample = new CreateBackupWithMRCMEKAsyncSample();
-        var backup = await sample.CreateBackupWithMRCMEKAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedEncryptedDatabaseId, _fixture.EncryptedBackupId, _fixture.KmsKeyNames);
+        var sample = new CreateBackupWithMrCmekAsyncSample();
+        var backup = await sample.CreateBackupWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedEncryptedDatabaseId, _fixture.EncryptedBackupId, _fixture.KmsKeyNames);
         Assert.Equal(_fixture.KmsKeyNames.Length, backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames.Length);
         foreach (CryptoKeyVersionName KmsKeyVersion in backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames)
         {
