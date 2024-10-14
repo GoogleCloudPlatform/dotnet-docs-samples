@@ -6,5 +6,6 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.StorageTransfer.V1" Version="2.7.0" />
+    <PackageReference Include="xunit.abstractions" Version="2.0.3" />
   </ItemGroup>
 </Project>

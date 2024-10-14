@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2021 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,11 +28,16 @@ namespace StorageTransfer.Samples.Tests
         public string ProjectId { get; }
         public string BucketNameSource { get; } = Guid.NewGuid().ToString();
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
+        public string JobName { get; }
         public StorageClient Storage { get; } = StorageClient.Create();
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
 
         public StorageFixture()
         {
+            // Instantiate random number generator 
+            Random random = new Random();
+            JobName =  "transferJobs/" + random.NextInt64(1000000000000000, 9223372036854775807) + " ";
+
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
