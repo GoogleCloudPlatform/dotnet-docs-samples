@@ -20,9 +20,9 @@ using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Threading.Tasks;
 
-public class CreateBackupWithMRCMEKAsyncSample
+public class CreateBackupWithMrCmekAsyncSample
 {
-    public async Task<Backup> CreateBackupWithMRCMEKAsync(string projectId, string instanceId, string databaseId, string backupId, CryptoKeyName[] kmsKeyNames)
+    public async Task<Backup> CreateBackupWithMrCmekAsync(string projectId, string instanceId, string databaseId, string backupId, CryptoKeyName[] kmsKeyNames)
     {
         // Create a DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
