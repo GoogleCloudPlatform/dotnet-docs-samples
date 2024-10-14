@@ -21,21 +21,21 @@ using Xunit;
 /// Tests restoring a databases using customer managed encryption.
 /// </summary>
 [Collection(nameof(SpannerFixture))]
-public class RestoreDatabaseWithMRCMEKAsyncTest
+public class RestoreDatabaseWithMrCmekAsyncTest
 {
     private readonly SpannerFixture _fixture;
 
-    public RestoreDatabaseWithMRCMEKAsyncTest(SpannerFixture fixture)
+    public RestoreDatabaseWithMrCmekAsyncTest(SpannerFixture fixture)
     {
         _fixture = fixture;
     }
 
     [SkippableFact]
-    public async Task TestRestoreDatabaseWithMRCMEKAsync()
+    public async Task TestRestoreDatabaseWithMrCmekAsync()
     {
         Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
-        var sample = new RestoreDatabaseWithMRCMEKAsyncSample();
-        var database = await sample.RestoreDatabaseWithMRCMEKAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedRestoreDatabaseId, _fixture.FixedEncryptedBackupId, _fixture.KmsKeyName);
+        var sample = new RestoreDatabaseWithMrCmekAsyncSample();
+        var database = await sample.RestoreDatabaseWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedRestoreDatabaseId, _fixture.FixedEncryptedBackupId, _fixture.KmsKeyName);
         Assert.Equal(_fixture.KmsKeyNames.Length, database.EncryptionConfig.KmsKeyNames.Length);
         foreach (string KmsKey in database.EncryptionConfig.KmsKeyNames)
         {
