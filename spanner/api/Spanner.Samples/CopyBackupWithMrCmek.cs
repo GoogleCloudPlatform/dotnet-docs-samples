@@ -20,9 +20,9 @@ using Google.Cloud.Spanner.Common.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-public class CopyBackupWithMRCMEKSample
+public class CopyBackupWithMrCmekSample
 {
-    public Backup CopyBackupWithMRCMEK(string sourceInstanceId, string sourceProjectId, string sourceBackupId, 
+    public Backup CopyBackupWithMrCmek(string sourceInstanceId, string sourceProjectId, string sourceBackupId, 
         string targetInstanceId, string targetProjectId, string targetBackupId, 
         DateTimeOffset expireTime, CryptoKeyName[] kmsKeyNames)
     {
