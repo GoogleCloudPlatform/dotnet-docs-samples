@@ -19,9 +19,9 @@ using Google.Cloud.Spanner.Common.V1;
 using System;
 using System.Threading.Tasks;
 
-public class CreateDatabaseWithMRCMEKAsyncSample
+public class CreateDatabaseWithMrCmekAsyncSample
 {
-    public async Task<Database> CreateDatabaseWithMRCMEKAsync(string projectId, string instanceId, string databaseId, CryptoKeyName[] kmsKeyNames)
+    public async Task<Database> CreateDatabaseWithMrCmekAsync(string projectId, string instanceId, string databaseId, CryptoKeyName[] kmsKeyNames)
     {
         // Create a DatabaseAdminClient instance that can be used to execute a
         // CreateDatabaseRequest with custom encryption configuration options.
