@@ -19,9 +19,9 @@ using Google.Cloud.Spanner.Common.V1;
 using System;
 using System.Threading.Tasks;
 
-public class RestoreDatabaseWithMRCMEKAsyncSample
+public class RestoreDatabaseWithMrCmekAsyncSample
 {
-    public async Task<Database> RestoreDatabaseWithMRCMEKAsync(string projectId, string instanceId, string databaseId, string backupId, CryptoKeyName[] kmsKeyNames)
+    public async Task<Database> RestoreDatabaseWithMrCmekAsync(string projectId, string instanceId, string databaseId, string backupId, CryptoKeyName[] kmsKeyNames)
     {
         // Create a DatabaseAdminClient instance.
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
