@@ -17,19 +17,19 @@ using System;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class CopyBackupWithMRCMEKTest
+public class CopyBackupWithMrCmekTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public CopyBackupWithMRCMEKTest(SpannerFixture spannerFixture)
+    public CopyBackupWithMrCmekTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public void CopyBackupWithMRCMEK()
+    public void CopyBackupWithMrCmek()
     {
-        CopyBackupWithMRCMEKSample copyBackupWithMRCMEKSample = new CopyBackupWithMRCMEKSample();
+        CopyBackupWithMrCmekSample copyBackupWithMrCmekSample = new CopyBackupWithMrCmekSample();
         string source_Project_id = _spannerFixture.ProjectId;
         string source_Instance_id = _spannerFixture.InstanceId;
         string source_backupId = _spannerFixture.BackupId;
@@ -39,7 +39,7 @@ public class CopyBackupWithMRCMEKTest
         DateTimeOffset expireTime = DateTimeOffset.UtcNow.AddHours(12);
         CryptoKeyName[] kmsKeyNames = _fixture.KmsKeyNames;
 
-        Backup backup = copyBackupWithMRCMEKSample.CopyBackupWithMRCMEK(source_Instance_id, source_Project_id, source_backupId, 
+        Backup backup = copyBackupWithMrCmekSample.CopyBackupWithMrCmek(source_Instance_id, source_Project_id, source_backupId, 
             target_Instance_id, target_Project_id, target_backupId, expireTime, kmsKeyNames);
 
         Assert.NotNull(backup);
