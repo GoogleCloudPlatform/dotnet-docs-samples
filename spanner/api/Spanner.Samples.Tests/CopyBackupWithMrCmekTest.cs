@@ -32,7 +32,7 @@ public class CopyBackupWithMrCmekTest
         CopyBackupWithMrCmekSample copyBackupWithMrCmekSample = new CopyBackupWithMrCmekSample();
         string source_Project_id = _spannerFixture.ProjectId;
         string source_Instance_id = _spannerFixture.InstanceId;
-        string source_backupId = _spannerFixture.BackupId;
+        string source_backupId = _spannerFixture.MrCmekBackupId;
         string target_Project_id = _spannerFixture.ProjectId;
         string target_Instance_id = _spannerFixture.InstanceId;
         string target_backupId = SpannerFixture.GenerateId("test_", 16);
