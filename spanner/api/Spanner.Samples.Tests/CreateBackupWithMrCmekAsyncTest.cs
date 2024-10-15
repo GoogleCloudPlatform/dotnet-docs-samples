@@ -36,10 +36,6 @@ public class CreateBackupWithMrCmekAsyncTest
         // Create a backup with custom encryption keys.
         var sample = new CreateBackupWithMrCmekAsyncSample();
         var backup = await sample.CreateBackupWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedMrCmekDatabaseId, _fixture.MrCmekBackupId, _fixture.KmsKeyNames);
-        Assert.Equal(_fixture.KmsKeyNames.Length, backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames.Length);
-        foreach (CryptoKeyVersionName KmsKeyVersion in backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames)
-        {
-          Assert.True(_fixture.KmsKeyNames.contains(KmsKeyVersion.CryptoKeyId));
-        }
+        Assert.All(backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames, keyName => _fixture.KmsKeyNames.Contains(keyName.CryptoKeyId));
     }
 }
