@@ -40,5 +40,6 @@ public class CreateDatabaseWithMrCmekAsyncTest
         {
           Assert.True(_fixture.KmsKeyNames.contains(CryptoKeyName.Parse(KmsKey)));
         }
+        Assert.All(database.EncryptionConfig.KmsKeyNames, keyName => _fixture.KmsKeyNames.Contains(CryptoKeyName.Parse(keyName)));
     }
 }
