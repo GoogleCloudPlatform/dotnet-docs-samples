@@ -35,11 +35,6 @@ public class CreateDatabaseWithMrCmekAsyncTest
         // Create a database with custom encryption keys.
         var sample = new CreateDatabaseWithMrCmekAsyncSample();
         var database = await sample.CreateDatabaseWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.MrCmekDatabaseId, _fixture.KmsKeyNames);
-        Assert.Equal(_fixture.KmsKeyNames.Length, database.EncryptionConfig.KmsKeyNames.Length);
-        foreach (string KmsKey in database.EncryptionConfig.KmsKeyNames)
-        {
-          Assert.True(_fixture.KmsKeyNames.contains(CryptoKeyName.Parse(KmsKey)));
-        }
         Assert.All(database.EncryptionConfig.KmsKeyNames, keyName => _fixture.KmsKeyNames.Contains(CryptoKeyName.Parse(keyName)));
     }
 }
