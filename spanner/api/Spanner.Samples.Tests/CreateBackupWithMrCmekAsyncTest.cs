@@ -35,7 +35,7 @@ public class CreateBackupWithMrCmekAsyncTest
         Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         // Create a backup with custom encryption keys.
         var sample = new CreateBackupWithMrCmekAsyncSample();
-        var backup = await sample.CreateBackupWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedEncryptedDatabaseId, _fixture.EncryptedBackupId, _fixture.KmsKeyNames);
+        var backup = await sample.CreateBackupWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedMrCmekDatabaseId, _fixture.MrCmekBackupId, _fixture.KmsKeyNames);
         Assert.Equal(_fixture.KmsKeyNames.Length, backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames.Length);
         foreach (CryptoKeyVersionName KmsKeyVersion in backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames)
         {
