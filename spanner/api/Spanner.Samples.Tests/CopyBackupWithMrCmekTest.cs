@@ -42,6 +42,6 @@ public class CopyBackupWithMrCmekTest
         Backup backup = copyBackupWithMrCmekSample.CopyBackupWithMrCmek(source_Instance_id, source_Project_id, source_backupId, 
             target_Instance_id, target_Project_id, target_backupId, expireTime, kmsKeyNames);
 
-        Assert.NotNull(backup);
+        Assert.All(backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames, keyName => _fixture.KmsKeyNames.Contains(keyName.CryptoKeyId));
     }
 }
