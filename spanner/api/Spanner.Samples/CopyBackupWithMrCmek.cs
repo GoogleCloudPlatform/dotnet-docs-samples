@@ -43,7 +43,7 @@ public class CopyBackupWithMrCmekSample
 
         var response = databaseAdminClient.CopyBackup(request);
         Console.WriteLine("Waiting for the operation to finish.");
-        var completedResponse = response.PollUntilCompleted(new PollSettings(Expiration.FromTimeout(TimeSpan.FromMinutes(15)), TimeSpan.FromMinutes(2)));
+        var completedResponse = await operation.PollUntilCompletedAsync();
 
         if (completedResponse.IsFaulted)
         {
