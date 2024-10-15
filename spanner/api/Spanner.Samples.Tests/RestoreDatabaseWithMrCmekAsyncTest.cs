@@ -35,7 +35,7 @@ public class RestoreDatabaseWithMrCmekAsyncTest
     {
         Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         var sample = new RestoreDatabaseWithMrCmekAsyncSample();
-        var database = await sample.RestoreDatabaseWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.EncryptedRestoreDatabaseId, _fixture.FixedEncryptedBackupId, _fixture.KmsKeyName);
+        var database = await sample.RestoreDatabaseWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.MrCmekRestoreDatabaseId, _fixture.FixedMrCmekBackupId, _fixture.KmsKeyNames);
         Assert.Equal(_fixture.KmsKeyNames.Length, database.EncryptionConfig.KmsKeyNames.Length);
         foreach (string KmsKey in database.EncryptionConfig.KmsKeyNames)
         {
