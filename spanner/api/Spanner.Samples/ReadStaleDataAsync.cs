@@ -36,7 +36,7 @@ public class ReadStaleDataAsyncSample
         await connection.OpenAsync();
 
         var staleness = TimestampBound.OfExactStaleness(TimeSpan.FromSeconds(15));
-        using var transaction = await connection.BeginReadOnlyTransactionAsync(staleness);
+        using var transaction = await connection.BeginTransactionAsync(SpannerTransactionCreationOptions.ForTimestampBoundReadOnly(staleness), cancellationToken: default);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, MarketingBudget FROM Albums");
         cmd.Transaction = transaction;
 

@@ -100,6 +100,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
     public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
+    public string InstanceIdWithInstancePartition { get; } = GenerateId("my-ins-prt-");
     public string InstanceConfigId { get; } = "nam6";
 
     private IList<string> TempDbIds { get; } = new List<string>();
@@ -153,14 +154,15 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     {
         try
         {
-            IList<Task> cleanupTasks = new List<Task>();
-
-            cleanupTasks.Add(DeleteInstanceAsync(InstanceIdWithMultiRegion));
-            cleanupTasks.Add(DeleteInstanceAsync(InstanceIdWithProcessingUnits));
-
-            cleanupTasks.Add(DeleteBackupAsync(ToBeCancelledBackupId));
-            cleanupTasks.Add(DeleteBackupAsync(EncryptedBackupId));
-            cleanupTasks.Add(DeleteBackupAsync(MrCmekBackupId));
+            IList<Task> cleanupTasks = new List<Task>
+            {
+                DeleteInstanceAsync(InstanceIdWithMultiRegion),
+                DeleteInstanceAsync(InstanceIdWithProcessingUnits),
+                DeleteInstanceAsync(InstanceIdWithInstancePartition),
+                DeleteBackupAsync(ToBeCancelledBackupId),
+                DeleteBackupAsync(EncryptedBackupId),
+                DeleteBackupAsync(MrCmekBackupId),
+            };
 
             DeleteInstanceConfig(CreateCustomInstanceConfigId);
             DeleteInstanceConfig(UpdateCustomInstanceConfigId);

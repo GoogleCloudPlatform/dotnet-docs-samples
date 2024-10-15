@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC. All Rights Reserved.
+// Copyright 2022 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ public class SearchSimpleQuerySample
         SearchRequest searchRequest = GetSearchRequest(query, projectId);
         IEnumerable<SearchResponse> searchResultPages = client.Search(searchRequest).AsRawResponses();
         SearchResponse firstPage = searchResultPages.First();
-        
+
         if (firstPage.TotalSize == 0)
         {
             Console.WriteLine("The search operation returned no matching results.");
