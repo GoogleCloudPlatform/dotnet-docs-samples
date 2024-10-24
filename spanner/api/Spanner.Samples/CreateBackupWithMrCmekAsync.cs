@@ -40,7 +40,7 @@ public class CreateBackupWithMrCmekAsyncSample
             EncryptionConfig = new CreateBackupEncryptionConfig
             {
                 EncryptionType = CreateBackupEncryptionConfig.Types.EncryptionType.CustomerManagedEncryption,
-                KmsKeyNamesAsCryptoKeyNames = kmsKeyNames,
+                KmsKeyNamesAsCryptoKeyNames = { kmsKeyNames },
             },
         };
         // Execute the CreateBackup request.
