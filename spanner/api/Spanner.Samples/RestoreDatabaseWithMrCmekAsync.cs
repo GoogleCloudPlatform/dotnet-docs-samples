@@ -53,7 +53,7 @@ public class RestoreDatabaseWithMrCmekAsyncSample
 
         var database = completedResponse.Result;
         var restoreInfo = database.RestoreInfo;
-        Console.WriteLine($"Database {restoreInfo.BackupInfo.SourceDatabase} restored to {database.Name} from backup {restoreInfo.BackupInfo.Backup} using encryption keys {string.Join(", ", kmsKeyNames)}" );
+        Console.WriteLine($"Database {restoreInfo.BackupInfo.SourceDatabase} restored to {database.Name} from backup {restoreInfo.BackupInfo.Backup} using encryption keys {string.Join(", ", (object[]) kmsKeyNames)}");
         return database;
     }
 }
