@@ -72,11 +72,21 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string FixedEncryptedDatabaseId { get; } = "fixed-enc-backup-db";
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
+    public string MrCmekDatabaseId { get; private set; }
+    public string MrCmekBackupId { get; } = GenerateId("my-mr-backup-");
+    // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
+    public string MrCmekRestoreDatabaseId { get; private set; }
+
+    // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
+    public string FixedMrCmekDatabaseId { get; } = "fixed-mr-backup-db";
+    public string FixedMrCmekBackupId { get; } = "fixed-mr-backup";
+
     public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(
         Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
         Environment.GetEnvironmentVariable("spanner.test.key.location") ?? "us-central1",
         Environment.GetEnvironmentVariable("spanner.test.key.ring") ?? "spanner-test-keyring",
         Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key");
+    public CryptoKeyName[] KmsKeyNames { get; private set; }
 
     public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
     public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
@@ -103,6 +113,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         RestoredDatabaseId = GenerateTempDatabaseId("my-restore-db-");
         EncryptedDatabaseId = GenerateTempDatabaseId("my-enc-db-");
         EncryptedRestoreDatabaseId = GenerateTempDatabaseId("my-enc-r-db-");
+        MrCmekDatabaseId = GenerateTempDatabaseId("my-mr-db-");
+        MrCmekRestoreDatabaseId = GenerateTempDatabaseId("my-mr-r-db-");
 
         DatabaseAdminClient = await DatabaseAdminClient.CreateAsync();
         InstanceAdminClient = await InstanceAdminClient.CreateAsync();
@@ -124,6 +136,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         if (RunCmekBackupSampleTests)
         {
             await InitializeEncryptedBackupAsync();
+            await InitializeMrCmekBackupAsync();
         }
     }
 
@@ -137,7 +150,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 DeleteInstanceAsync(InstanceIdWithProcessingUnits),
                 DeleteInstanceAsync(InstanceIdWithInstancePartition),
                 DeleteBackupAsync(ToBeCancelledBackupId),
-                DeleteBackupAsync(EncryptedBackupId)
+                DeleteBackupAsync(EncryptedBackupId),
+                DeleteBackupAsync(MrCmekBackupId),
             };
 
             DeleteInstanceConfig(CreateCustomInstanceConfigId);
@@ -364,6 +378,38 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
             Console.WriteLine($"Backup {FixedEncryptedBackupId} already exists.");
+        }
+    }
+
+    private async Task InitializeMrCmekBackupAsync()
+    {
+        // Sample backup for MR CMEK restore test.
+        try
+        {
+            CreateDatabaseWithMrCmekAsyncSample createDatabaseAsyncSample = new CreateDatabaseWithMrCmekAsyncSample();
+            InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
+            await createDatabaseAsyncSample.CreateDatabaseWithMrCmekAsync(ProjectId, InstanceId, FixedMrCmekDatabaseId, KmsKeyNames);
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, FixedMrCmekDatabaseId);
+        }
+        catch (Exception e) when (e.ToString().Contains("Database already exists"))
+        {
+            // We intentionally keep an existing database around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Database {FixedMrCmekDatabaseId} already exists.");
+        }
+
+        try
+        {
+            CreateBackupWithMrCmekAsyncSample createBackupSample = new CreateBackupWithMrCmekAsyncSample();
+            await createBackupSample.CreateBackupWithMrCmekAsync(ProjectId, InstanceId, FixedMrCmekDatabaseId, FixedMrCmekBackupId, KmsKeyNames);
+        }
+        catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
+        {
+            // We intentionally keep an existing backup around to reduce
+            // the likelihood of test timeouts when creating a backup so
+            // it's ok to get an AlreadyExists error.
+            Console.WriteLine($"Backup {FixedMrCmekBackupId} already exists.");
         }
     }
 
