@@ -14,22 +14,24 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class CopyBackupWithMrCmekTest
+public class CopyBackupWithMrCmekAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public CopyBackupWithMrCmekTest(SpannerFixture spannerFixture)
+    public CopyBackupWithMrCmekAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
-    [Fact]
-    public void CopyBackupWithMrCmek()
+    [SkippableFact]
+    public async Task TestCopyBackupWithMrCmekAsync()
     {
-        CopyBackupWithMrCmekSample copyBackupWithMrCmekSample = new CopyBackupWithMrCmekSample();
+        CopyBackupWithMrCmekAsyncSample copyBackupWithMrCmekAsyncSample = new CopyBackupWithMrCmekAsyncSample();
         string source_Project_id = _spannerFixture.ProjectId;
         string source_Instance_id = _spannerFixture.InstanceId;
         string source_backupId = _spannerFixture.MrCmekBackupId;
@@ -37,11 +39,11 @@ public class CopyBackupWithMrCmekTest
         string target_Instance_id = _spannerFixture.InstanceId;
         string target_backupId = SpannerFixture.GenerateId("test_", 16);
         DateTimeOffset expireTime = DateTimeOffset.UtcNow.AddHours(12);
-        CryptoKeyName[] kmsKeyNames = _fixture.KmsKeyNames;
+        CryptoKeyName[] kmsKeyNames = _spannerFixture.KmsKeyNames;
 
-        Backup backup = copyBackupWithMrCmekSample.CopyBackupWithMrCmek(source_Instance_id, source_Project_id, source_backupId, 
-            target_Instance_id, target_Project_id, target_backupId, expireTime, kmsKeyNames);
+        var backup = await copyBackupWithMrCmekAsyncSample.CopyBackupWithMrCmekAsync(source_Instance_id, source_Project_id, source_backupId,
+           target_Instance_id, target_Project_id, target_backupId, expireTime, kmsKeyNames);
 
-        Assert.All(backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames, keyName => _fixture.KmsKeyNames.Contains(keyName.CryptoKeyId));
+        Assert.All(backup.EncryptionInformation, encryptionInfo => _spannerFixture.KmsKeyNames.Contains(CryptoKeyName.Parse(encryptionInfo.KmsKeyVersionAsCryptoKeyVersionName.CryptoKeyId)));
     }
 }
