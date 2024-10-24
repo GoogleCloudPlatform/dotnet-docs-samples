@@ -66,7 +66,7 @@ public class CreateDatabaseWithMrCmekAsyncSample
         }
 
         var database = completedResponse.Result;
-        Console.WriteLine($"Database {database.Name} created with encryption keys {string.Join(", ", kmsKeyNames)}" );
+        Console.WriteLine($"Database {database.Name} created with encryption keys {string.Join(", ", (object[]) kmsKeyNames)}");
 
         return database;
     }
