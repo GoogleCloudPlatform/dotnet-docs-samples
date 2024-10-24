@@ -35,7 +35,7 @@ public class RestoreDatabaseWithMrCmekAsyncSample
             EncryptionConfig = new RestoreDatabaseEncryptionConfig
             {
                 EncryptionType = RestoreDatabaseEncryptionConfig.Types.EncryptionType.CustomerManagedEncryption,
-                KmsKeyNamesAsCryptoKeyNames = kmsKeyNames,
+                KmsKeyNamesAsCryptoKeyNames = { kmsKeyNames },
             }
         };
         // Execute the RestoreDatabase request.
