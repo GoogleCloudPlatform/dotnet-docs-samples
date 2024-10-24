@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Admin.Database.V1;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -36,6 +38,6 @@ public class CreateBackupWithMrCmekAsyncTest
         // Create a backup with custom encryption keys.
         var sample = new CreateBackupWithMrCmekAsyncSample();
         var backup = await sample.CreateBackupWithMrCmekAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedMrCmekDatabaseId, _fixture.MrCmekBackupId, _fixture.KmsKeyNames);
-        Assert.All(backup.EncryptionInfo.KmsKeyVersionsAsCryptoKeyVersionNames, keyName => _fixture.KmsKeyNames.Contains(keyName.CryptoKeyId));
+        Assert.All(backup.EncryptionInformation, encryptionInfo => _fixture.KmsKeyNames.Contains(CryptoKeyName.Parse(encryptionInfo.KmsKeyVersionAsCryptoKeyVersionName.CryptoKeyId)));
     }
 }
