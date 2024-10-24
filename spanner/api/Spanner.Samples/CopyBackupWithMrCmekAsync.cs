@@ -19,21 +19,22 @@ using Google.Cloud.Spanner.Admin.Database.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
+using System.Threading.Tasks;
 
-public class CopyBackupWithMrCmekSample
+public class CopyBackupWithMrCmekAsyncSample
 {
-    public Backup CopyBackupWithMrCmek(string sourceInstanceId, string sourceProjectId, string sourceBackupId, 
-        string targetInstanceId, string targetProjectId, string targetBackupId, 
+    public async Task<Backup> CopyBackupWithMrCmekAsync(string sourceInstanceId, string sourceProjectId, string sourceBackupId,
+        string targetInstanceId, string targetProjectId, string targetBackupId,
         DateTimeOffset expireTime, CryptoKeyName[] kmsKeyNames)
     {
         DatabaseAdminClient databaseAdminClient = DatabaseAdminClient.Create();
 
         var request = new CopyBackupRequest
         {
-            SourceBackupAsBackupName = new BackupName(sourceProjectId, sourceInstanceId, sourceBackupId), 
+            SourceBackupAsBackupName = new BackupName(sourceProjectId, sourceInstanceId, sourceBackupId),
             ParentAsInstanceName = new InstanceName(targetProjectId, targetInstanceId),
             BackupId = targetBackupId,
-            ExpireTime = Timestamp.FromDateTimeOffset(expireTime) ,
+            ExpireTime = Timestamp.FromDateTimeOffset(expireTime),
             EncryptionConfig = new CopyBackupEncryptionConfig
             {
                 EncryptionType = CopyBackupEncryptionConfig.Types.EncryptionType.CustomerManagedEncryption,
@@ -41,19 +42,23 @@ public class CopyBackupWithMrCmekSample
             }
         };
 
-        var response = databaseAdminClient.CopyBackup(request);
+        // Execute the CopyBackup request.
+        var operation = await databaseAdminClient.CopyBackupAsync(request);
+
         Console.WriteLine("Waiting for the operation to finish.");
+
+        // Poll until the returned long-running operation is complete.
         var completedResponse = await operation.PollUntilCompletedAsync();
 
         if (completedResponse.IsFaulted)
         {
-            Console.WriteLine($"Error while creating backup: {completedResponse.Exception}");
+            Console.WriteLine($"Error while copying backup: {completedResponse.Exception}");
             throw completedResponse.Exception;
         }
 
         Backup backup = completedResponse.Result;
 
-        Console.WriteLine($"Backup created successfully.");
+        Console.WriteLine($"Backup copied successfully.");
         Console.WriteLine($"Backup with Id {sourceBackupId} has been copied from {sourceProjectId}/{sourceInstanceId} to {targetProjectId}/{targetInstanceId} Backup {targetBackupId}");
         Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes was created with encryption keys {string.Join(", ", (object[]) kmsKeyNames)} at {backup.CreateTime} from {backup.Database} and is in state {backup.State} and has version time {backup.VersionTime.ToDateTime()}");
 
