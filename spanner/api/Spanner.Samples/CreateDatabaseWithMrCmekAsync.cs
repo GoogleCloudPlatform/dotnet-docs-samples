@@ -51,7 +51,7 @@ public class CreateDatabaseWithMrCmekAsyncSample
             ExtraStatements = { createSingersTable, createAlbumsTable },
             EncryptionConfig = new EncryptionConfig
             {
-                KmsKeyNamesAsCryptoKeyNames = kmsKeyNames,
+                KmsKeyNamesAsCryptoKeyNames = { kmsKeyNames },
             },
         };
         var operation = await databaseAdminClient.CreateDatabaseAsync(request);
