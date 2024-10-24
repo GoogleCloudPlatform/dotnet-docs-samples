@@ -96,7 +96,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         Environment.GetEnvironmentVariable("spanner.test.key.location3") ?? "us-east4",
         Environment.GetEnvironmentVariable("spanner.test.key.ring3") ?? "spanner-test-keyring3",
         Environment.GetEnvironmentVariable("spanner.test.key.name3") ?? "spanner-test-key3");
-    public CryptoKeyName[] KmsKeyNames = {KmsKeyName, KmsKeyName2, KmsKeyName3};
+    public CryptoKeyName[] KmsKeyNames { get; private set; }
 
     public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
     public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
@@ -143,6 +143,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
         // Create encryption key for creating an encrypted database and optionally backing up and restoring an encrypted database.
         await InitializeEncryptionKeys();
+        KmsKeyNames.Append(KmsKeyName);
+        KmsKeyNames.Append(KmsKeyName2);
+        KmsKeyNames.Append(KmsKeyName3);
         if (RunCmekBackupSampleTests)
         {
             await InitializeEncryptedBackupAsync();
