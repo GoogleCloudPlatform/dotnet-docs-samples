@@ -15,6 +15,7 @@
 using System.Threading.Tasks;
 using Xunit;
 using Google.Cloud.Spanner.Admin.Database.V1;
+using System.Linq;
 
 /// <summary>
 /// Tests creating a databases using MR CMEK.
