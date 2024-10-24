@@ -14,6 +14,7 @@
 
 using Google.Cloud.Spanner.Admin.Database.V1;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
