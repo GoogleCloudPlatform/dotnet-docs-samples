@@ -73,13 +73,13 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     public string FixedEncryptedBackupId { get; } = "fixed-enc-backup";
 
     public string MrCmekDatabaseId { get; private set; }
-    public string MrCmekBackupId { get; } = GenerateId("my-mr-cmek-backup-");
+    public string MrCmekBackupId { get; } = GenerateId("my-mr-backup-");
     // 'restore' is abbreviated to prevent the name from becoming longer than 30 characters.
     public string MrCmekRestoreDatabaseId { get; private set; }
 
     // These are intentionally kept on the instance to avoid the need to create a new encrypted database and backup for each run.
-    public string FixedMrCmekDatabaseId { get; } = "fixed-mr-cmek-backup-db";
-    public string FixedMrCmekBackupId { get; } = "fixed-mr-cmek-backup";
+    public string FixedMrCmekDatabaseId { get; } = "fixed-mr-backup-db";
+    public string FixedMrCmekBackupId { get; } = "fixed-mr-backup";
 
     public CryptoKeyName KmsKeyName { get; } = new CryptoKeyName(
         Environment.GetEnvironmentVariable("spanner.test.key.project") ?? Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID"),
@@ -123,8 +123,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         RestoredDatabaseId = GenerateTempDatabaseId("my-restore-db-");
         EncryptedDatabaseId = GenerateTempDatabaseId("my-enc-db-");
         EncryptedRestoreDatabaseId = GenerateTempDatabaseId("my-enc-r-db-");
-        MrCmekDatabaseId = GenerateTempDatabaseId("my-mr-cmek-db-");
-        MrCmekRestoreDatabaseId = GenerateTempDatabaseId("my-mr-cmek-r-db-");
+        MrCmekDatabaseId = GenerateTempDatabaseId("my-mr-db-");
+        MrCmekRestoreDatabaseId = GenerateTempDatabaseId("my-mr-r-db-");
 
         DatabaseAdminClient = await DatabaseAdminClient.CreateAsync();
         InstanceAdminClient = await InstanceAdminClient.CreateAsync();
@@ -460,8 +460,8 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         {
             CreateDatabaseWithMrCmekAsyncSample createDatabaseAsyncSample = new CreateDatabaseWithMrCmekAsyncSample();
             InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
-            await createDatabaseAsyncSample.CreateDatabaseWithMrCmekAsync(ProjectId, InstanceId, FixedMrCmekDatabaseId, KmsKeyNames);
-            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceId, FixedMrCmekDatabaseId);
+            await createDatabaseAsyncSample.CreateDatabaseWithMrCmekAsync(ProjectId, InstanceIdWithMultiRegion, FixedMrCmekDatabaseId, KmsKeyNames);
+            await insertDataAsyncSample.InsertDataAsync(ProjectId, InstanceIdWithMultiRegion, FixedMrCmekDatabaseId);
         }
         catch (Exception e) when (e.ToString().Contains("Database already exists"))
         {
@@ -474,7 +474,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         try
         {
             CreateBackupWithMrCmekAsyncSample createBackupSample = new CreateBackupWithMrCmekAsyncSample();
-            await createBackupSample.CreateBackupWithMrCmekAsync(ProjectId, InstanceId, FixedMrCmekDatabaseId, FixedMrCmekBackupId, KmsKeyNames);
+            await createBackupSample.CreateBackupWithMrCmekAsync(ProjectId, InstanceIdWithMultiRegion, FixedMrCmekDatabaseId, FixedMrCmekBackupId, KmsKeyNames);
         }
         catch (RpcException e) when (e.StatusCode == StatusCode.AlreadyExists)
         {
