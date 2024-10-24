@@ -37,7 +37,7 @@ public class CopyBackupWithMrCmekSample
             EncryptionConfig = new CopyBackupEncryptionConfig
             {
                 EncryptionType = CopyBackupEncryptionConfig.Types.EncryptionType.CustomerManagedEncryption,
-                KmsKeyNamesAsCryptoKeyNames = kmsKeyNames,
+                KmsKeyNamesAsCryptoKeyNames = { kmsKeyNames },
             }
         };
 
