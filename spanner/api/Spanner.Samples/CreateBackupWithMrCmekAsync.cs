@@ -57,7 +57,7 @@ public class CreateBackupWithMrCmekAsyncSample
         }
 
         var backup = completedResponse.Result;
-        Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes was created with encryption keys {string.Join(", ", kmsKeyNames)} at {backup.CreateTime}" );
+        Console.WriteLine($"Backup {backup.Name} of size {backup.SizeBytes} bytes was created with encryption keys {string.Join(", ", (object[]) kmsKeyNames)} at {backup.CreateTime}");
         return backup;
     }
 }
