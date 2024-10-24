@@ -32,7 +32,7 @@ public class CreateBackupWithMrCmekAsyncTest
     }
 
     [SkippableFact]
-    public async Task TestCreatBackupWithMrCmekAsync()
+    public async Task TestCreateBackupWithMrCmekAsync()
     {
         Skip.If(!_fixture.RunCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
         // Create a backup with custom encryption keys.
