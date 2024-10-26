@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,22 +17,22 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class CreateInstanceTest
+public class CreateInstanceAsyncTest
 {
     private readonly SpannerFixture _spannerFixture;
 
-    public CreateInstanceTest(SpannerFixture spannerFixture)
+    public CreateInstanceAsyncTest(SpannerFixture spannerFixture)
     {
         _spannerFixture = spannerFixture;
     }
 
     [Fact]
-    public async Task TestCreateInstance()
+    public async Task TestCreateInstanceAsync()
     {
-        CreateInstanceSample createInstanceSample = new CreateInstanceSample();
+        CreateInstanceAsyncSample createInstanceSample = new CreateInstanceAsyncSample();
 
-        RpcException exception = await Assert.ThrowsAsync<RpcException>(() => _spannerFixture.SafeCreateInstanceAsync(() =>
-            Task.FromResult(createInstanceSample.CreateInstance(_spannerFixture.ProjectId, _spannerFixture.InstanceId))));
+        RpcException exception = await Assert.ThrowsAsync<RpcException>(() => _spannerFixture.SafeAdminAsync(() =>
+            createInstanceSample.CreateInstanceAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId)));
 
         Assert.Equal(StatusCode.AlreadyExists, exception.StatusCode);
     }

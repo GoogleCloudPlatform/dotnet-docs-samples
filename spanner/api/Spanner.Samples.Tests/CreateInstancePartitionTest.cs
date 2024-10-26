@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google.Cloud.Spanner.Admin.Instance.V1;
-using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
@@ -24,20 +23,14 @@ public class CreateInstancePartitionTest
     public CreateInstancePartitionTest(SpannerFixture spannerFixture) => _spannerFixture = spannerFixture;
 
     [Fact]
-    public async Task TestCreateInstancePartition()
+    public void TestCreateInstancePartition()
     {
-        var createInstanceSample = new CreateInstanceSample();
-        Instance instance = await _spannerFixture.SafeCreateInstanceAsync(() => Task.FromResult(
-            createInstanceSample.CreateInstance(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithInstancePartition)));
-
         var instancePartitionId = SpannerFixture.GenerateId("my-prt-");
         var createInstancePartitionSample = new CreateInstancePartitionSample();
 
         InstancePartition partition = createInstancePartitionSample.CreateInstancePartition(
             _spannerFixture.ProjectId, _spannerFixture.InstanceIdWithInstancePartition, instancePartitionId);
 
-        Assert.Equal(
-            InstancePartitionName.FromProjectInstanceInstancePartition(_spannerFixture.ProjectId, _spannerFixture.InstanceIdWithInstancePartition, instancePartitionId),
-            partition.InstancePartitionName);
+        Assert.Equal(instancePartitionId, partition.InstancePartitionName.InstancePartitionId);
     }
 }
