@@ -19,13 +19,17 @@ using Google.Cloud.Spanner.Admin.Instance.V1;
 using Google.Cloud.Spanner.Common.V1;
 using Google.LongRunning;
 using System;
+using System.Threading.Tasks;
 
-public class CreateInstanceSample
+public class CreateInstanceAsyncSample
 {
-    public Instance CreateInstance(string projectId, string instanceId)
+    public async Task<Instance> CreateInstanceAsync(
+        string projectId,
+        string instanceId,
+        Instance.Types.Edition edition = Instance.Types.Edition.Standard)
     {
         // Create the InstanceAdminClient instance.
-        InstanceAdminClient instanceAdminClient = InstanceAdminClient.Create();
+        InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
 
         // Initialize request parameters.
         Instance instance = new Instance
@@ -37,17 +41,18 @@ public class CreateInstanceSample
             Labels =
             {
                 { "cloud_spanner_samples", "true" },
-            }
+            },
+            Edition = edition,
         };
         ProjectName projectName = ProjectName.FromProject(projectId);
 
         // Make the CreateInstance request.
-        Operation<Instance, CreateInstanceMetadata> response = instanceAdminClient.CreateInstance(projectName, instanceId, instance);
+        Operation<Instance, CreateInstanceMetadata> response = await instanceAdminClient.CreateInstanceAsync(projectName, instanceId, instance);
 
         Console.WriteLine("Waiting for the operation to finish.");
 
         // Poll until the returned long-running operation is complete.
-        Operation<Instance, CreateInstanceMetadata> completedResponse = response.PollUntilCompleted();
+        Operation<Instance, CreateInstanceMetadata> completedResponse = await response.PollUntilCompletedAsync();
 
         if (completedResponse.IsFaulted)
         {

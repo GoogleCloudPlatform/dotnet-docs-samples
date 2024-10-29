@@ -113,8 +113,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         bool.TryParse(Environment.GetEnvironmentVariable("RUN_SPANNER_CMEK_BACKUP_SAMPLES_TESTS"), out var runCmekBackupSampleTests);
         RunCmekBackupSampleTests = runCmekBackupSampleTests;
 
-        await InitializeInstanceAsync();
+        await MaybeInitializeTestInstanceAsync();
         await CreateInstanceWithMultiRegionAsync();
+        await InitializeInstanceAsync(InstanceIdWithInstancePartition);
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
         await InitializePostgreSqlDatabaseAsync();
@@ -177,20 +178,29 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         }
     }
 
-    private async Task<bool> InitializeInstanceAsync()
+    private async Task<bool> MaybeInitializeTestInstanceAsync()
     {
         InstanceName instanceName = InstanceName.FromProjectInstance(ProjectId, InstanceId);
         try
         {
-            Instance response = await InstanceAdminClient.GetInstanceAsync(instanceName);
+            Instance instance = await InstanceAdminClient.GetInstanceAsync(instanceName);
+            if (instance.Edition != Instance.Types.Edition.EnterprisePlus)
+            {
+                throw new InvalidOperationException($"Test instance with name {instanceName} must be {Instance.Types.Edition.EnterprisePlus}.");
+            }
             return true;
         }
         catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
-            CreateInstanceSample createInstanceSample = new CreateInstanceSample();
-            await SafeCreateInstanceAsync(() => Task.FromResult(createInstanceSample.CreateInstance(ProjectId, InstanceId)));
+            await InitializeInstanceAsync(InstanceId);
             return false;
         }
+    }
+
+    private async Task InitializeInstanceAsync(string instanceId)
+    {
+        CreateInstanceAsyncSample createInstanceSample = new CreateInstanceAsyncSample();
+        await SafeAdminAsync(() => createInstanceSample.CreateInstanceAsync(ProjectId, instanceId, Instance.Types.Edition.EnterprisePlus));
     }
 
     private async Task CreateInstanceWithMultiRegionAsync()
@@ -202,9 +212,10 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
             InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
             NodeCount = 1,
+            Edition = Instance.Types.Edition.EnterprisePlus,
         };
 
-        await SafeCreateInstanceAsync(async () =>
+        await SafeAdminAsync(async () =>
         {
             var response = await InstanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
             // Poll until the returned long-running operation is complete
@@ -427,7 +438,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     }
 
     private static readonly string s_retryInfoMetadataKey = RetryInfo.Descriptor.FullName + "-bin";
-    public async Task<T> SafeCreateInstanceAsync<T>(Func<Task<T>> createInstanceAsync)
+    public async Task<T> SafeAdminAsync<T>(Func<Task<T>> adminRequestAsync)
     {
         int attempt = 0;
         do
@@ -435,7 +446,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             try
             {
                 attempt++;
-                return await createInstanceAsync();
+                return await adminRequestAsync();
             }
             catch (RpcException ex) when (attempt <= 10)
             {

@@ -5,8 +5,10 @@ assign_issues_by:
   - 'api: firestore'
   to: 
   - GoogleCloudPlatform/cloud-native-db-dpes
-- labels:  
+- labels:
   - 'api: storage'
+  - 'api: storagetransfer'
+  - 'api: storageinsights'
   to:
   - GoogleCloudPlatform/cloud-storage-dpes
 - labels:
@@ -65,6 +67,8 @@ assign_prs_by:
   - GoogleCloudPlatform/infra-db-sdk
 - labels:
   - 'api: storage'
+  - 'api: storagetransfer'
+  - 'api: storageinsights'
   to:
   - GoogleCloudPlatform/cloud-storage-dpes
 - labels:

@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ public class ImportEntitiesSample
 {
     public bool ImportEntities(
         string projectId = "your-project-id",
-        string inputUrl = "gs://datastore-admin-bucket/data_to_import",
+        // For information on accepted input URL formats, see
+        // https://cloud.google.com/datastore/docs/reference/admin/rpc/google.datastore.admin.v1#google.datastore.admin.v1.ImportEntitiesRequest
+        string inputUrl = "[URL to file containing data]",
         string kind = "Task",
         string namespaceId = "default")
     {

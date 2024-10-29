@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class CreateInstanceWithProcessingUnitsTest
     {
         var createInstanceWithProcessingUnitsSample = new CreateInstanceWithProcessingUnitsSample();
 
-        Instance instance = await _spannerFixture.SafeCreateInstanceAsync(() => Task.FromResult(
+        Instance instance = await _spannerFixture.SafeAdminAsync(() => Task.FromResult(
             createInstanceWithProcessingUnitsSample.CreateInstanceWithProcessingUnits(
                 _spannerFixture.ProjectId, _spannerFixture.InstanceIdWithProcessingUnits)));
 
