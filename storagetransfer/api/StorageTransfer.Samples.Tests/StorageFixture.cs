@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google Inc.
+ * Copyright 2024 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,16 +29,19 @@ namespace StorageTransfer.Samples.Tests
         public string BucketNameSource { get; } = Guid.NewGuid().ToString();
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
         public string JobName { get; }
+        public string SourceAgentPoolName { get; }
+        public string RootDirectory { get; } = "/tmp/uploads";
         public StorageClient Storage { get; } = StorageClient.Create();
+        public string ManifestObjectName { get; } = "manifest.csv";
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
 
         public StorageFixture()
         {
             // Instantiate random number generator 
             Random random = new Random();
-            JobName =  "transferJobs/" + random.NextInt64(1000000000000000, 9223372036854775807) + " ";
-
+            JobName = "transferJobs/" + random.NextInt64(1000000000000000, 9223372036854775807) + " ";
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/test_dotnet";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
                 throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
@@ -102,7 +105,12 @@ namespace StorageTransfer.Samples.Tests
             }
             catch (Exception)
             {
-                // Do nothing, we delete on a best effort basis.
+                // If bucket is not empty, we delete on a best effort basis.
+                foreach (var storageObject in Storage.ListObjects(BucketNameSink, ""))
+                {
+                    Storage.DeleteObject(BucketNameSink, storageObject.Name);
+                }
+                Storage.DeleteBucket(BucketNameSink);
             }
             try
             {
@@ -110,7 +118,12 @@ namespace StorageTransfer.Samples.Tests
             }
             catch (Exception)
             {
-                // Do nothing, we delete on a best effort basis.
+                // If bucket is not empty, we delete on a best effort basis.
+                foreach (var storageObject in Storage.ListObjects(BucketNameSource, ""))
+                {
+                    Storage.DeleteObject(BucketNameSource, storageObject.Name);
+                }
+                Storage.DeleteBucket(BucketNameSource);
             }
         }
     }
