@@ -13,11 +13,6 @@
 // limitations under the License.
 // [START storagetransfer_manifest_request]
 using Google.Cloud.StorageTransfer.V1;
-using Google.Protobuf.WellKnownTypes;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
 using Xunit.Abstractions;
 
 

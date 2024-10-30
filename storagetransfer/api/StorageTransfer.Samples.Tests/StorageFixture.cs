@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google Inc.
+ * Copyright 2024 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,10 +39,9 @@ namespace StorageTransfer.Samples.Tests
         {
             // Instantiate random number generator 
             Random random = new Random();
-            JobName =  "transferJobs/" + random.NextInt64(1000000000000000, 9223372036854775807) + " ";
-            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/test_dotnet";
-
+            JobName = "transferJobs/" + random.NextInt64(1000000000000000, 9223372036854775807) + " ";
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/test_dotnet";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
                 throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
@@ -110,7 +109,6 @@ namespace StorageTransfer.Samples.Tests
                 foreach (var storageObject in Storage.ListObjects(BucketNameSink, ""))
                 {
                     Storage.DeleteObject(BucketNameSink, storageObject.Name);
-
                 }
                 Storage.DeleteBucket(BucketNameSink);
             }
@@ -124,7 +122,6 @@ namespace StorageTransfer.Samples.Tests
                 foreach (var storageObject in Storage.ListObjects(BucketNameSource, ""))
                 {
                     Storage.DeleteObject(BucketNameSource, storageObject.Name);
-
                 }
                 Storage.DeleteBucket(BucketNameSource);
             }
