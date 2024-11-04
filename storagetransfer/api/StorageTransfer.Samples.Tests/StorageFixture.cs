@@ -30,6 +30,8 @@ namespace StorageTransfer.Samples.Tests
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
         public string JobName { get; }
         public string SourceAgentPoolName { get; }
+        public string SinkAgentPoolName { get; }
+        public string GcsSourcePath { get;}
         public string RootDirectory { get; } = "/tmp/uploads";
         public StorageClient Storage { get; } = StorageClient.Create();
         public string ManifestObjectName { get; } = "manifest.csv";
@@ -41,7 +43,9 @@ namespace StorageTransfer.Samples.Tests
             Random random = new Random();
             JobName = "transferJobs/" + random.NextInt64(1000000000000000, 9223372036854775807) + " ";
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/test_dotnet";
+            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/source_test_dotnet";
+            SinkAgentPoolName = "projects/" + ProjectId + "/agentPools/sink_test_dotnet";
+            GcsSourcePath = "foo/bar/";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
                 throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
