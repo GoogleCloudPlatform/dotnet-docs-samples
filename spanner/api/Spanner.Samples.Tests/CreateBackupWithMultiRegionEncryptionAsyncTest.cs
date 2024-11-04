@@ -1,4 +1,4 @@
-// Copyright 2021 Google Inc.
+// Copyright 2024 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,30 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.Spanner.Admin.Database.V1;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 /// <summary>
-/// Tests creating a backup using customer managed encryption.
+/// Tests creating a backup using MR CMEK.
 /// </summary>
 [Collection(nameof(SpannerFixture))]
-public class CreateBackupWithEncryptionKeyAsyncTest
+public class CreateBackupWithMultiRegionEncryptionAsyncTest
 {
     private readonly SpannerFixture _fixture;
 
-    public CreateBackupWithEncryptionKeyAsyncTest(SpannerFixture fixture)
+    public CreateBackupWithMultiRegionEncryptionAsyncTest(SpannerFixture fixture)
     {
         _fixture = fixture;
     }
 
     [SkippableFact]
-    public async Task TestCreatBackupWithEncryptionKeyAsync()
+    public async Task TestCreateBackupWithMultiRegionEncryptionAsync()
     {
         Skip.If(_fixture.SkipCmekBackupSampleTests, SpannerFixture.SkipCmekBackupSamplesMessage);
-        // Create a backup with a custom encryption key.
-        var sample = new CreateBackupWithEncryptionKeyAsyncSample();
-        var backup = await sample.CreateBackupWithEncryptionKeyAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedEncryptedDatabaseId, _fixture.EncryptedBackupId, _fixture.KmsKeyName);
-        Assert.Equal(_fixture.KmsKeyName.CryptoKeyId, backup.EncryptionInfo.KmsKeyVersionAsCryptoKeyVersionName.CryptoKeyId);
+        // Create a backup with custom encryption keys.
+        var sample = new CreateBackupWithMultiRegionEncryptionAsyncSample();
+        var backup = await sample.CreateBackupWithMultiRegionEncryptionAsync(_fixture.ProjectId, _fixture.InstanceId, _fixture.FixedMultiRegionEncryptedBackupId, _fixture.MultiRegionEncryptedBackupId, _fixture.KmsKeyNames);
+        Assert.All(backup.EncryptionInformation, encryptionInfo => _fixture.KmsKeyNames.Any(keyName => encryptionInfo.KmsKeyVersion.StartsWith(keyName.ToString())));
     }
 }

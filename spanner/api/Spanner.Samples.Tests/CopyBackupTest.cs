@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Google Inc.
+// Copyright 2022 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,16 +30,11 @@ public class CopyBackupTest
     public void CopyBackup()
     {
         CopyBackupSample copyBackupSample = new CopyBackupSample();
-        string source_Project_id = _spannerFixture.ProjectId;
-        string source_Instance_id = _spannerFixture.InstanceId;
-        string source_backupId = _spannerFixture.BackupId;
-        string target_Project_id = _spannerFixture.ProjectId;
-        string target_Instance_id = _spannerFixture.InstanceId;
-        string target_backupId = SpannerFixture.GenerateId("test_", 16);
-        DateTimeOffset expireTime = DateTimeOffset.UtcNow.AddHours(12);
 
-        Backup backup = copyBackupSample.CopyBackup(source_Instance_id, source_Project_id, source_backupId, 
-            target_Instance_id, target_Project_id, target_backupId, expireTime);
+        Backup backup = copyBackupSample.CopyBackup(
+            sourceProjectId: _spannerFixture.ProjectId, sourceInstanceId: _spannerFixture.InstanceId, sourceBackupId: _spannerFixture.BackupId,
+            targetProjectId: _spannerFixture.ProjectId, targetInstanceId: _spannerFixture.InstanceId, targetBackupId: SpannerFixture.GenerateId("test_", 16),
+            expireTime: DateTimeOffset.UtcNow.AddHours(6));
 
         Assert.NotNull(backup);
     }

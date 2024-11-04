@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,20 +26,20 @@ public class CreateDatabaseWithDefaultLeaderAsyncSample
         DatabaseAdminClient databaseAdminClient = await DatabaseAdminClient.CreateAsync();
         // Define create table statement for table #1.
         var createSingersTable =
-        @"CREATE TABLE Singers (
-                     SingerId INT64 NOT NULL,
-                     FirstName STRING(1024),
-                     LastName STRING(1024),
-                     ComposerInfo BYTES(MAX)
-                 ) PRIMARY KEY (SingerId)";
+            @"CREATE TABLE Singers (
+                SingerId INT64 NOT NULL,
+                FirstName STRING(1024),
+                LastName STRING(1024),
+                ComposerInfo BYTES(MAX)
+            ) PRIMARY KEY (SingerId)";
         // Define create table statement for table #2.
         var createAlbumsTable =
-        @"CREATE TABLE Albums (
-                     SingerId INT64 NOT NULL,
-                     AlbumId INT64 NOT NULL,
-                     AlbumTitle STRING(MAX)
-                 ) PRIMARY KEY (SingerId, AlbumId),
-                 INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+            @"CREATE TABLE Albums (
+                SingerId INT64 NOT NULL,
+                AlbumId INT64 NOT NULL,
+                AlbumTitle STRING(MAX)
+            ) PRIMARY KEY (SingerId, AlbumId),
+            INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
 
         // Define alter database statement to set default leader.
         var alterDatabaseStatement = @$"ALTER DATABASE `{databaseId}` SET OPTIONS (default_leader = '{defaultLeader}')";
