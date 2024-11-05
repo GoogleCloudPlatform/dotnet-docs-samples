@@ -16,6 +16,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
@@ -32,7 +33,8 @@ namespace StorageTransfer.Samples.Tests
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
         public string GcsSourcePath { get;}
-        public string RootDirectory { get; } = "/tmp/uploads";
+        public string RootDirectory { get; } = System.IO.Path.GetTempPath();
+        public string TempDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         public StorageClient Storage { get; } = StorageClient.Create();
         public string ManifestObjectName { get; } = "manifest.csv";
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
@@ -43,8 +45,8 @@ namespace StorageTransfer.Samples.Tests
             Random random = new Random();
             JobName = "transferJobs/" + random.NextInt64(1000000000000000, 9223372036854775807) + " ";
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/source_test_dotnet";
-            SinkAgentPoolName = "projects/" + ProjectId + "/agentPools/sink_test_dotnet";
+            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/transfer_service_default";
+            SinkAgentPoolName = "projects/" + ProjectId + "/agentPools/transfer_service_default";
             GcsSourcePath = "foo/bar/";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
