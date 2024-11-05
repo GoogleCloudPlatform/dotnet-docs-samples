@@ -41,6 +41,7 @@ public class SecurityCenterTests
         string configId = _fixture.RandomId();
 
         CreateNotificationConfigSnippets.CreateNotificationConfig(_fixture.OrganizationId, configId, _fixture.ProjectId, _fixture.Topic);
+        _fixture.MarkForDeletion(configId);
 
         Assert.True(DeleteNotificationConfigSnippets.DeleteNotificationConfig(_fixture.OrganizationId, configId));
     }
