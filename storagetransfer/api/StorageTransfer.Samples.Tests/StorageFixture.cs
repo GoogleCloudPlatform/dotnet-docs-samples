@@ -34,7 +34,9 @@ namespace StorageTransfer.Samples.Tests
         public string SinkAgentPoolName { get; }
         public string GcsSourcePath { get;}
         public string RootDirectory { get; } = System.IO.Path.GetTempPath();
+        public string DestinationDirectory { get; } = System.IO.Path.GetTempPath();
         public string TempDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        public string TempDestinationDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         public StorageClient Storage { get; } = StorageClient.Create();
         public string ManifestObjectName { get; } = "manifest.csv";
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
