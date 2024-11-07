@@ -54,13 +54,15 @@ public class TransferBetweenPosixTest : IDisposable
         var storage = StorageClient.Create();
         var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId,_fixture.SourceAgentPoolName,_fixture.SinkAgentPoolName,_fixture.TempDirectory,_fixture.TempDestinationDirectory,_fixture.BucketNameSource);
         Assert.Contains("transferJobs/", transferJob.Name);
+        _transferJobName = transferJob.Name;
         Assert.True(Directory.Exists(_fixture.TempDirectory));
         Assert.True(Directory.Exists(_fixture.TempDestinationDirectory));
         Assert.True(File.Exists(txtList[0]));
+        string sourceFilePath = txtList[0].Replace(_fixture.RootDirectory.Substring(0,_fixture.RootDirectory.Length - 1),_fixture.TempDirectory);
+        Assert.True(File.Exists(sourceFilePath));
         System.Threading.Thread.Sleep(TimeSpan.FromSeconds(45));
         string destinationFilePath = txtList[0].Replace(_fixture.RootDirectory.Substring(0,_fixture.RootDirectory.Length - 1),_fixture.TempDestinationDirectory);
         Assert.True(File.Exists(destinationFilePath));
-        _transferJobName = transferJob.Name;
     }
 
     public void Dispose()
