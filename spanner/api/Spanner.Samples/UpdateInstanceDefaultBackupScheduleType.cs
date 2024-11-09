@@ -50,8 +50,7 @@ public class UpdateInstanceDefaultBackupScheduleTypeAsyncSample
       throw completedResponse.Exception;
     }
 
-    Console.WriteLine(
-        $"Instance updated successfully.");
+    Console.WriteLine($"Instance updated successfully.");
 
     return completedResponse.Result;
   }
