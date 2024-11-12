@@ -40,7 +40,7 @@ public class CreateInstanceWithoutDefaultBackupSchedulesAsyncSample
             {
                 { "cloud_spanner_samples", "true" },
             },
-                DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.None,
+            DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.None,
         };
         ProjectName projectName = ProjectName.FromProject(projectId);
 

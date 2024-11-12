@@ -44,8 +44,7 @@ public class UpdateInstanceDefaultBackupScheduleTypeTest
         Instance updatedInstance = await sample.UpdateInstanceDefaultBackupScheduleTypeAsync(
             _spannerFixture.ProjectId, instanceId);
 
-        Assert.Equal(Instance.Types.DefaultBackupScheduleType.Automatic,
-                     updatedInstance.DefaultBackupScheduleType);
+        Assert.Equal(Instance.Types.DefaultBackupScheduleType.Automatic, updatedInstance.DefaultBackupScheduleType);
         
         await _spannerFixture.InstanceAdminClient.DeleteInstanceAsync(
             InstanceName.FromProjectInstance(_spannerFixture.ProjectId, instanceId));
