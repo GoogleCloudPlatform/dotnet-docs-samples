@@ -23,22 +23,23 @@ using System.Threading.Tasks;
 
 public class CreateInstanceWithoutDefaultBackupSchedulesAsyncSample
 {
-  public async Task<Instance> CreateInstanceWithoutDefaultBackupSchedulesAsync(string projectId,
-                                                                               string instanceId) {
+  public async Task<Instance> CreateInstanceWithoutDefaultBackupSchedulesAsync(string projectId, string instanceId)
+  {
     // Create the InstanceAdminClient instance.
     InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
 
     // Initialize request parameters.
-    Instance instance = new Instance {
+    Instance instance = new Instance
+    {
       InstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
       ConfigAsInstanceConfigName =
           InstanceConfigName.FromProjectInstanceConfig(projectId, "regional-me-central2"),
       DisplayName = "This is a display name.",
       NodeCount = 1,
       Labels =
-          {
-            { "cloud_spanner_samples", "true" },
-          },
+      {
+          { "cloud_spanner_samples", "true" },
+      },
       DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.None,
     };
     ProjectName projectName = ProjectName.FromProject(projectId);
@@ -53,9 +54,10 @@ public class CreateInstanceWithoutDefaultBackupSchedulesAsyncSample
     Operation<Instance, CreateInstanceMetadata> completedResponse =
         await response.PollUntilCompletedAsync();
 
-    if (completedResponse.IsFaulted) {
-      Console.WriteLine($"Error while creating instance: {completedResponse.Exception}");
-      throw completedResponse.Exception;
+    if (completedResponse.IsFaulted)
+    {
+        Console.WriteLine($"Error while creating instance: {completedResponse.Exception}");
+        throw completedResponse.Exception;
     }
 
     Console.WriteLine($"Instance created successfully.");
