@@ -22,32 +22,32 @@ namespace Spanner.Samples.Tests;
 [Collection(nameof(SpannerFixture))]
 public class UpdateInstanceDefaultBackupScheduleTypeTest
 {
-  private readonly SpannerFixture _spannerFixture;
+    private readonly SpannerFixture _spannerFixture;
+    
+    public UpdateInstanceDefaultBackupScheduleTypeTest(SpannerFixture spannerFixture) =>
+        _spannerFixture = spannerFixture;
+    
+    [Fact]
+    public async Task TestUpdateInstanceAsync()
+    {
+        CreateInstanceWithoutDefaultBackupSchedulesAsyncSample createInstanceSample =
+            new CreateInstanceWithoutDefaultBackupSchedulesAsyncSample();
+        
+        var instanceId = SpannerFixture.GenerateId("default-schedule-test-");
+        Instance instance = await createInstanceSample.CreateInstanceWithoutDefaultBackupSchedulesAsync(
+            _spannerFixture.ProjectId, instanceId);
+        
+        Assert.NotNull(instance);
+        
+        UpdateInstanceDefaultBackupScheduleTypeAsyncSample sample =
+            new UpdateInstanceDefaultBackupScheduleTypeAsyncSample();
+        Instance updatedInstance = await sample.UpdateInstanceDefaultBackupScheduleTypeAsync(
+            _spannerFixture.ProjectId, instanceId);
 
-  public UpdateInstanceDefaultBackupScheduleTypeTest(SpannerFixture spannerFixture) =>
-      _spannerFixture = spannerFixture;
-
-  [Fact]
-  public async Task TestUpdateInstanceAsync()
-  {
-    CreateInstanceWithoutDefaultBackupSchedulesAsyncSample createInstanceSample =
-        new CreateInstanceWithoutDefaultBackupSchedulesAsyncSample();
-
-    var instanceId = SpannerFixture.GenerateId("default-schedule-test-");
-    Instance instance = await createInstanceSample.CreateInstanceWithoutDefaultBackupSchedulesAsync(
-        _spannerFixture.ProjectId, instanceId);
-
-    Assert.NotNull(instance);
-
-    UpdateInstanceDefaultBackupScheduleTypeAsyncSample sample =
-        new UpdateInstanceDefaultBackupScheduleTypeAsyncSample();
-    Instance updatedInstance = await sample.UpdateInstanceDefaultBackupScheduleTypeAsync(
-        _spannerFixture.ProjectId, instanceId);
-
-    Assert.Equal(Instance.Types.DefaultBackupScheduleType.Automatic,
-                 updatedInstance.DefaultBackupScheduleType);
-
-    await _spannerFixture.InstanceAdminClient.DeleteInstanceAsync(
-        InstanceName.FromProjectInstance(_spannerFixture.ProjectId, instanceId));
-  }
+        Assert.Equal(Instance.Types.DefaultBackupScheduleType.Automatic,
+                     updatedInstance.DefaultBackupScheduleType);
+        
+        await _spannerFixture.InstanceAdminClient.DeleteInstanceAsync(
+            InstanceName.FromProjectInstance(_spannerFixture.ProjectId, instanceId));
+    }
 }
