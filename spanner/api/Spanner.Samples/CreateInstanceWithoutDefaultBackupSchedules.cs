@@ -23,46 +23,45 @@ using System.Threading.Tasks;
 
 public class CreateInstanceWithoutDefaultBackupSchedulesAsyncSample
 {
-  public async Task<Instance> CreateInstanceWithoutDefaultBackupSchedulesAsync(string projectId, string instanceId)
-  {
-    // Create the InstanceAdminClient instance.
-    InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
-
-    // Initialize request parameters.
-    Instance instance = new Instance
+    public async Task<Instance> CreateInstanceWithoutDefaultBackupSchedulesAsync(string projectId, string instanceId)
     {
-      InstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
-      ConfigAsInstanceConfigName =
-          InstanceConfigName.FromProjectInstanceConfig(projectId, "regional-me-central2"),
-      DisplayName = "This is a display name.",
-      NodeCount = 1,
-      Labels =
-      {
-          { "cloud_spanner_samples", "true" },
-      },
-      DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.None,
-    };
-    ProjectName projectName = ProjectName.FromProject(projectId);
+        // Create the InstanceAdminClient instance.
+        InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
 
-    // Make the CreateInstance request.
-    Operation<Instance, CreateInstanceMetadata> response =
-        await instanceAdminClient.CreateInstanceAsync(projectName, instanceId, instance);
+        // Initialize request parameters.
+        Instance instance = new Instance
+        {
+            InstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
+            ConfigAsInstanceConfigName =
+                InstanceConfigName.FromProjectInstanceConfig(projectId, "regional-me-central2"),
+            DisplayName = "This is a display name.",
+            NodeCount = 1,
+            Labels =
+            {
+                { "cloud_spanner_samples", "true" },
+            },
+                DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.None,
+        };
+        ProjectName projectName = ProjectName.FromProject(projectId);
 
-    Console.WriteLine("Waiting for the operation to finish.");
+        // Make the CreateInstance request.
+        Operation<Instance, CreateInstanceMetadata> response =
+            await instanceAdminClient.CreateInstanceAsync(projectName, instanceId, instance);
 
-    // Poll until the returned long-running operation is complete.
-    Operation<Instance, CreateInstanceMetadata> completedResponse =
-        await response.PollUntilCompletedAsync();
+        Console.WriteLine("Waiting for the operation to finish.");
 
-    if (completedResponse.IsFaulted)
-    {
-        Console.WriteLine($"Error while creating instance: {completedResponse.Exception}");
-        throw completedResponse.Exception;
+        // Poll until the returned long-running operation is complete.
+        Operation<Instance, CreateInstanceMetadata> completedResponse =
+            await response.PollUntilCompletedAsync();
+
+        if (completedResponse.IsFaulted)
+        {
+            Console.WriteLine($"Error while creating instance: {completedResponse.Exception}");
+            throw completedResponse.Exception;
+        }
+
+        Console.WriteLine($"Instance created successfully.");
+        return completedResponse.Result;
     }
-
-    Console.WriteLine($"Instance created successfully.");
-
-    return completedResponse.Result;
-  }
 }
 // [END spanner_create_instance_without_default_backup_schedule]
