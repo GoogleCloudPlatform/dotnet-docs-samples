@@ -23,42 +23,41 @@ using System.Threading.Tasks;
 
 public class UpdateInstanceDefaultBackupScheduleTypeAsyncSample
 {
-  public async Task<Instance> UpdateInstanceDefaultBackupScheduleTypeAsync(string projectId, string instanceId)
-  {
-    // Create the InstanceAdminClient instance.
-    InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
-
-    // Initialize request parameters.
-    Instance instance = new Instance
+    public async Task<Instance> UpdateInstanceDefaultBackupScheduleTypeAsync(string projectId, string instanceId)
     {
-      InstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
-      DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.Automatic,
-    };
-    FieldMask mask = new FieldMask 
-    {
-      Paths = { "default_backup_schedule_type" }
-    };
+        // Create the InstanceAdminClient instance.
+        InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
+        
+        // Initialize request parameters.
+        Instance instance = new Instance
+        {
+            InstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
+            DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.Automatic,
+        };
+        FieldMask mask = new FieldMask 
+        {
+            Paths = { "default_backup_schedule_type" }
+        };
 
-    // Make the CreateInstance request.
-    Operation<Instance, UpdateInstanceMetadata> response =
-        await instanceAdminClient.UpdateInstanceAsync(instance, mask);
+        // Make the CreateInstance request.
+        Operation<Instance, UpdateInstanceMetadata> response =
+            await instanceAdminClient.UpdateInstanceAsync(instance, mask);
 
-    Console.WriteLine("Waiting for the operation to finish.");
+        Console.WriteLine("Waiting for the operation to finish.");
 
-    // Poll until the returned long-running operation is complete.
-    Operation<Instance, UpdateInstanceMetadata> completedResponse =
-        await response.PollUntilCompletedAsync();
+        // Poll until the returned long-running operation is complete.
+        Operation<Instance, UpdateInstanceMetadata> completedResponse =
+            await response.PollUntilCompletedAsync();
 
-    if (completedResponse.IsFaulted)
-    {
-      Console.WriteLine($"Error while updating instance: {completedResponse.Exception}");
-      throw completedResponse.Exception;
+        if (completedResponse.IsFaulted)
+        {
+            Console.WriteLine($"Error while updating instance: {completedResponse.Exception}");
+            throw completedResponse.Exception;
+        }
+
+        Console.WriteLine($"Instance updated successfully.");
+        return completedResponse.Result;
     }
-
-    Console.WriteLine($"Instance updated successfully.");
-
-    return completedResponse.Result;
-  }
 }
 
 // [END spanner_update_instance_default_backup_schedule_type]
