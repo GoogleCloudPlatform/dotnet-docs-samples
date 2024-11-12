@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 using Xunit;
-using Xunit.Abstractions;
 
 namespace StorageTransfer.Samples.Tests;
 
@@ -22,18 +21,16 @@ public class CheckLatestTransferOperationTest
 
     private readonly StorageFixture _fixture;
     private string _jobName;
-    private readonly ITestOutputHelper _outputHelper;
-    public CheckLatestTransferOperationTest(StorageFixture fixture, ITestOutputHelper outputHelper)
+    public CheckLatestTransferOperationTest(StorageFixture fixture)
     {
-        _outputHelper = outputHelper;
         _fixture = fixture;
     }
 
     [Fact]
     public void CheckLatestTransferOperation()
     {
-        CheckLatestTransferOperationSample checkLatestTransferOperationSample = new CheckLatestTransferOperationSample(_outputHelper);
-        var transferJob = checkLatestTransferOperationSample.CheckLatestTransferOperation(_fixture.ProjectId,_fixture.JobName);
+        CheckLatestTransferOperationSample checkLatestTransferOperationSample = new CheckLatestTransferOperationSample();
+        var transferJob = checkLatestTransferOperationSample.CheckLatestTransferOperation(_fixture.ProjectId, _fixture.JobName);
         Assert.Contains("transferJobs/", transferJob.Name);
         _jobName = transferJob.Name;
     }

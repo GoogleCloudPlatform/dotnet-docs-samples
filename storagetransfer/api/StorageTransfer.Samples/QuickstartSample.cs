@@ -16,17 +16,12 @@
 
 // [START storagetransfer_quickstart]
 using Google.Cloud.StorageTransfer.V1;
-using Xunit.Abstractions;
+using System;
 
 namespace StorageTransfer.Samples
 {
     public class QuickstartSample
     {
-        private readonly ITestOutputHelper _output;
-        public QuickstartSample(ITestOutputHelper output)
-        {
-            _output = output;
-        }   
         public TransferJob Quickstart(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -54,7 +49,7 @@ namespace StorageTransfer.Samples
                 ProjectId = projectId
             });
 
-            _output.WriteLine($"Created and ran transfer job from {sourceBucket} to {sinkBucket} with name {response.Name}");
+            Console.WriteLine($"Created and ran transfer job from {sourceBucket} to {sinkBucket} with name {response.Name}");
 
             return response;
         }

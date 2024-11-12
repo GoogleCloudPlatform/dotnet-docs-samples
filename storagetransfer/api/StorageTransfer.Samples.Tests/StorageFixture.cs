@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
+using Google.Apis.Storage.v1.Data;
+using Google.Cloud.PubSub.V1;
+using Google.Cloud.Storage.V1;
+using Google.Cloud.StorageTransfer.V1;
+using Grpc.Core;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
-using Google.Cloud.StorageTransfer.V1;
 using Xunit;
-using Google.Cloud.PubSub.V1;
-using Grpc.Core;
+
 namespace StorageTransfer.Samples.Tests
 {
     [CollectionDefinition(nameof(StorageFixture))]
     public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
-    {       
+    {
         public string ProjectId { get; }
         public string BucketNameSource { get; } = Guid.NewGuid().ToString();
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
@@ -45,9 +46,9 @@ namespace StorageTransfer.Samples.Tests
         public string SubscriptionId { get; } = "DotNetSubscription" + Guid.NewGuid().ToString();
         public string PubSubId { get; }
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
-        
+
         public SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
-        
+
         public PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
 
         public StorageFixture()
@@ -65,14 +66,16 @@ namespace StorageTransfer.Samples.Tests
             CreateBucketAndGrantStsPermissions(BucketNameSink);
             CreateBucketAndGrantStsPermissions(BucketNameSource);
             // Initialize request argument(s)
-            TransferJob transferJob = new TransferJob{   
-                 ProjectId = ProjectId,
-                 TransferSpec = new TransferSpec
+            TransferJob transferJob = new TransferJob
+            {
+                ProjectId = ProjectId,
+                TransferSpec = new TransferSpec
                 {
                     GcsDataSink = new GcsData { BucketName = BucketNameSource },
                     GcsDataSource = new GcsData { BucketName = BucketNameSink }
                 },
-                 Status = TransferJob.Types.Status.Enabled};
+                Status = TransferJob.Types.Status.Enabled
+            };
             CreateTransferJobRequest request = new CreateTransferJobRequest
             {
                 TransferJob = transferJob
@@ -124,7 +127,7 @@ namespace StorageTransfer.Samples.Tests
             string objectViewer = "roles/storage.objectViewer";
             string bucketReader = "roles/storage.legacyBucketReader";
             string bucketWriter = "roles/storage.legacyBucketWriter";
-            
+
             var policy = Storage.GetBucketIamPolicy(bucketName, new GetBucketIamPolicyOptions
             {
                 RequestedPolicyVersion = 3
@@ -147,14 +150,14 @@ namespace StorageTransfer.Samples.Tests
                 Role = bucketWriter,
                 Members = new List<string> { member }
             };
-            
+
 
             policy.Bindings.Add(objectViewerBinding);
             policy.Bindings.Add(bucketReaderBinding);
             policy.Bindings.Add(bucketWriterBinding);
 
             Storage.SetBucketIamPolicy(bucketName, policy);
-            
+
         }
 
         public void Dispose()
@@ -185,15 +188,15 @@ namespace StorageTransfer.Samples.Tests
                 }
                 Storage.DeleteBucket(BucketNameSource);
             }
-            
+
             try
             {
-                TopicName topicName = TopicName.FromProjectTopic(ProjectId,TopicId);
+                TopicName topicName = TopicName.FromProjectTopic(ProjectId, TopicId);
                 PublisherClient.DeleteTopic(topicName);
             }
             catch (RpcException ex)
             {
-                throw new Exception ($"Exception occur while deleting Topic {TopicId} Exception: {ex}");
+                throw new Exception($"Exception occur while deleting Topic {TopicId} Exception: {ex}");
             }
 
             try
@@ -205,7 +208,7 @@ namespace StorageTransfer.Samples.Tests
             {
                 throw new Exception($"Exception occur while deleting subscription {SubscriptionId} Exception: {ex}");
             }
-            
+
         }
     }
 }

@@ -13,19 +13,13 @@
 // limitations under the License.
 // [START storagetransfer_transfer_posix_to_posix]
 using Google.Cloud.StorageTransfer.V1;
-using Xunit.Abstractions;
-
+using System;
 
 namespace StorageTransfer.Samples
 {
     public class TransferBetweenPosixSample
     {
         /*Creates a transfer between POSIX file systems.*/
-        private readonly ITestOutputHelper _output;
-        public TransferBetweenPosixSample(ITestOutputHelper output)
-        {
-            _output = output;
-        }
         public TransferJob TransferBetweenPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -40,7 +34,7 @@ namespace StorageTransfer.Samples
             // The name of GCS bucket for intermediate storage
             string intermediate_bucket = "my-intermediate-bucket")
         {
-            // # A useful description for your transfer job
+            //  A useful description for your transfer job
             string jobDescription = $"Transfer objects from {rootDirectory} to the {destinationDirectory} between POSIX file system";
 
             TransferJob transferJob = new TransferJob
@@ -71,7 +65,7 @@ namespace StorageTransfer.Samples
                 ProjectId = projectId
             });
 
-            _output.WriteLine($"Created and ran transfer job from {rootDirectory} to {destinationDirectory} with the name {response.Name}");
+            Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {destinationDirectory} with the name {response.Name}");
             return response;
 
         }

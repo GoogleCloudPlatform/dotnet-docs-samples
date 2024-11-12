@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace StorageTransfer.Samples.Tests
 {
@@ -26,18 +25,15 @@ namespace StorageTransfer.Samples.Tests
     {
         private readonly StorageFixture _fixture;
         private string _transferJobName;
-        private readonly ITestOutputHelper _outputHelper;
-
-        public QuickstartTest(StorageFixture fixture , ITestOutputHelper outputHelper)
+        public QuickstartTest(StorageFixture fixture)
         {
             _fixture = fixture;
-            _outputHelper = outputHelper;
         }
 
         [Fact]
         public void TestQuickstart()
         {
-            QuickstartSample quickstartSample = new QuickstartSample(_outputHelper);
+            QuickstartSample quickstartSample = new QuickstartSample();
             var transferJob = quickstartSample.Quickstart(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink);
             Assert.Contains("transferJobs/", transferJob.Name);
             _transferJobName = transferJob.Name;

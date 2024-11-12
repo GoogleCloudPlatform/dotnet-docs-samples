@@ -13,19 +13,13 @@
 // limitations under the License.
 // [START storagetransfer_transfer_from_posix]
 using Google.Cloud.StorageTransfer.V1;
-using Xunit.Abstractions;
-
+using System;
 
 namespace StorageTransfer.Samples
 {
     public class TransferFromPosixSample
     {
         /*Create a transfer from a POSIX file system to a GCS sink bucket*/
-        private readonly ITestOutputHelper _output;
-        public TransferFromPosixSample(ITestOutputHelper output)
-        {
-            _output = output;
-        }
         public TransferJob TransferFromPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -36,8 +30,8 @@ namespace StorageTransfer.Samples
             // The GCS bucket to transfer data to
             string sinkBucket = "my-sink-bucket")
         {
-            
-            // # A useful description for your transfer job
+
+            //  A useful description for your transfer job
             string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket})";
 
             TransferJob transferJob = new TransferJob
@@ -66,7 +60,7 @@ namespace StorageTransfer.Samples
                 ProjectId = projectId
             });
 
-            _output.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} with the name {response.Name}");
+            Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} with the name {response.Name}");
             return response;
 
 

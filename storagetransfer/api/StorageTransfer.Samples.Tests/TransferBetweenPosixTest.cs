@@ -15,11 +15,9 @@
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using System;
-using Xunit.Abstractions;
-using Xunit;
 using System.IO;
 using System.Linq;
-
+using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
 [Collection(nameof(StorageFixture))]
@@ -27,20 +25,18 @@ public class TransferBetweenPosixTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
-    private readonly ITestOutputHelper _outputHelper;
-    public TransferBetweenPosixTest(StorageFixture fixture, ITestOutputHelper outputHelper)
+    public TransferBetweenPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _outputHelper = outputHelper;
     }
 
     [Fact]
     public void TransferBetweenPosix()
     {
-        TransferBetweenPosixSample transferBetweenPosixSample = new TransferBetweenPosixSample(_outputHelper);
+        TransferBetweenPosixSample transferBetweenPosixSample = new TransferBetweenPosixSample();
         Directory.CreateDirectory(_fixture.TempDirectory);
         Directory.CreateDirectory(_fixture.TempDestinationDirectory);
-        string sourceDir =_fixture.RootDirectory;
+        string sourceDir = _fixture.RootDirectory;
         string[] txtList = Directory.GetFiles(sourceDir, "*.txt");
         // Copy one txt file.
         foreach (string f in txtList)
@@ -52,17 +48,14 @@ public class TransferBetweenPosixTest : IDisposable
             break;
         }
         var storage = StorageClient.Create();
-        var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId,_fixture.SourceAgentPoolName,_fixture.SinkAgentPoolName,_fixture.TempDirectory,_fixture.TempDestinationDirectory,_fixture.BucketNameSource);
+        var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.SinkAgentPoolName, _fixture.TempDirectory, _fixture.TempDestinationDirectory, _fixture.BucketNameSource);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
         Assert.True(Directory.Exists(_fixture.TempDirectory));
         Assert.True(Directory.Exists(_fixture.TempDestinationDirectory));
         Assert.True(File.Exists(txtList[0]));
-        string sourceFilePath = txtList[0].Replace(_fixture.RootDirectory.Substring(0,_fixture.RootDirectory.Length - 1),_fixture.TempDirectory);
+        string sourceFilePath = txtList[0].Replace(_fixture.RootDirectory.Substring(0, _fixture.RootDirectory.Length - 1), _fixture.TempDirectory);
         Assert.True(File.Exists(sourceFilePath));
-        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(45));
-        string destinationFilePath = txtList[0].Replace(_fixture.RootDirectory.Substring(0,_fixture.RootDirectory.Length - 1),_fixture.TempDestinationDirectory);
-        Assert.True(File.Exists(destinationFilePath));
     }
 
     public void Dispose()

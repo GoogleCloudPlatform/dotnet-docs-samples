@@ -15,26 +15,19 @@
 
 using Google.Cloud.StorageTransfer.V1;
 using System;
-using Xunit.Abstractions;
 
 namespace StorageTransfer.Samples
 {
     public class CheckLatestTransferOperationSample
     {
-        private readonly ITestOutputHelper _output;
-        public CheckLatestTransferOperationSample(ITestOutputHelper output)
+        //Checks the latest transfer operation for a given transfer job.
+        public TransferJob CheckLatestTransferOperation(
+             // Your Google Cloud Project ID
+             string projectId = "my-project-id",
+             // The name of the job to check
+             string jobName = "transferJobs/1234567890")
         {
-            _output = output;
-
-        }
-         //Checks the latest transfer operation for a given transfer job.
-       public TransferJob CheckLatestTransferOperation(
-           // Your Google Cloud Project ID
-            string projectId = "my-project-id",
-            // The name of the job to check
-            string jobName = "transferJobs/1234567890")
-        {
-            if(string.IsNullOrEmpty(jobName))
+            if (string.IsNullOrEmpty(jobName))
             {
                 throw new Exception("JobName can not be null or empty");
             }
@@ -46,23 +39,23 @@ namespace StorageTransfer.Samples
             {
                 // Get Transfer job
                 TransferJob transferJob = storageTransfer.GetTransferJob(getTransferJobRequest);
-                // Get Latest operation name from tranfer job
+                // Get Latest operation name from transfer job
                 string latestOperationName = transferJob.LatestOperationName;
 
-                
+
                 if (!string.IsNullOrEmpty(latestOperationName))
                 {
-                    _output.WriteLine("The latest operation for transfer job " +jobName+ " is: " +latestOperationName+ "");
+                    Console.WriteLine("The latest operation for transfer job " + jobName + " is: " + latestOperationName + "");
                 }
                 else
                 {
-                    _output.WriteLine("Transfer job "+ jobName +" hasn't run yet, try again once after job started running.");
+                    Console.WriteLine("Transfer job " + jobName + " hasn't run yet, try again after the job has started running.");
                 }
                 return transferJob;
             }
             catch (Exception)
             {
-                throw new Exception("Failed to get transfer job "+ jobName + "");
+                throw new Exception("Failed to get transfer job " + jobName + "");
             }
         }
     }

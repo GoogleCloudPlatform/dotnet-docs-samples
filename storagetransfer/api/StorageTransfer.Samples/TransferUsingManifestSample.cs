@@ -13,8 +13,7 @@
 // limitations under the License.
 // [START storagetransfer_manifest_request]
 using Google.Cloud.StorageTransfer.V1;
-using Xunit.Abstractions;
-
+using System;
 
 namespace StorageTransfer.Samples
 {
@@ -22,11 +21,6 @@ namespace StorageTransfer.Samples
     {
         /*Create a transfer from a POSIX file system to a GCS bucket using
         a manifest file*/
-        private readonly ITestOutputHelper _output;
-        public TransferUsingManifestSample(ITestOutputHelper output)
-        {
-            _output = output;
-        }
         public TransferJob TransferUsingManifest(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -43,7 +37,7 @@ namespace StorageTransfer.Samples
         {
             string manifestLocation = "gs://" + manifestBucket + "/" + manifestObjectName;
 
-            // # A useful description for your transfer job
+            // A useful description for your transfer job
             string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket}) using manifest file";
 
             TransferJob transferJob = new TransferJob
@@ -74,7 +68,7 @@ namespace StorageTransfer.Samples
                 ProjectId = projectId
             });
 
-            _output.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} using manifest file {manifestLocation} with the name {response.Name}");
+            Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} using manifest file {manifestLocation} with the name {response.Name}");
             return response;
 
 

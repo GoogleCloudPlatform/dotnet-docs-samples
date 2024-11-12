@@ -15,9 +15,7 @@
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using System;
-using Xunit.Abstractions;
 using Xunit;
-
 
 namespace StorageTransfer.Samples.Tests;
 [Collection(nameof(StorageFixture))]
@@ -25,18 +23,16 @@ public class TransferFromPosixTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
-    private readonly ITestOutputHelper _outputHelper;
-    public TransferFromPosixTest(StorageFixture fixture, ITestOutputHelper outputHelper)
+    public TransferFromPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _outputHelper = outputHelper;
     }
 
     [Fact]
     public void TransferFromPosix()
     {
-        TransferFromPosixSample transferFromPosixSample = new TransferFromPosixSample(_outputHelper);
-        var transferJob = transferFromPosixSample.TransferFromPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.RootDirectory,_fixture.BucketNameSink);
+        TransferFromPosixSample transferFromPosixSample = new TransferFromPosixSample();
+        var transferJob = transferFromPosixSample.TransferFromPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.RootDirectory, _fixture.BucketNameSink);
         var storage = StorageClient.Create();
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;

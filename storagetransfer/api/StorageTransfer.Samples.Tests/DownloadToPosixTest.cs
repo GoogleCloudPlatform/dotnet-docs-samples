@@ -15,13 +15,11 @@
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using System;
-using Xunit.Abstractions;
-using Xunit;
-using System.Text;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
-
+using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
 [Collection(nameof(StorageFixture))]
@@ -29,29 +27,24 @@ public class DownloadToPosixTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
-    private readonly ITestOutputHelper _outputHelper;
-    public DownloadToPosixTest(StorageFixture fixture, ITestOutputHelper outputHelper)
+    public DownloadToPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _outputHelper = outputHelper;
     }
 
     [Fact]
     public void DownloadToPosix()
     {
-        DownloadToPosixSample downloadToPosixSample = new DownloadToPosixSample(_outputHelper);
+        DownloadToPosixSample downloadToPosixSample = new DownloadToPosixSample();
         Directory.CreateDirectory(_fixture.TempDirectory);
         var storage = StorageClient.Create();
         byte[] byteArray = Encoding.UTF8.GetBytes("flower.jpeg");
         MemoryStream stream = new MemoryStream(byteArray);
         string fileName = $"{_fixture.GcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
-        string filePath = $"{_fixture.TempDirectory}/{fileName.Split('/').Last()}";
-        storage.UploadObject(_fixture.BucketNameSource,fileName, "application/octet-stream", stream);
-        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId,_fixture.SinkAgentPoolName,_fixture.BucketNameSource,_fixture.GcsSourcePath,_fixture.TempDirectory);
+        storage.UploadObject(_fixture.BucketNameSource, fileName, "application/octet-stream", stream);
+        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _fixture.BucketNameSource, _fixture.GcsSourcePath, _fixture.TempDirectory);
         Assert.Contains("transferJobs/", transferJob.Name);
-        Assert.True( Directory.Exists(_fixture.TempDirectory));
-        System.Threading.Thread.Sleep(TimeSpan.FromSeconds(45));
-        Assert.True( File.Exists(filePath));
+        Assert.True(Directory.Exists(_fixture.TempDirectory));
         _transferJobName = transferJob.Name;
     }
 

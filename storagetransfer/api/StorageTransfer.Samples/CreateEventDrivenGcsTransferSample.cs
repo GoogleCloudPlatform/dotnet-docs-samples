@@ -15,17 +15,13 @@
  */
 // [START storagetransfer_create_event_driven_gcs_transfer]
 using Google.Cloud.StorageTransfer.V1;
-using Xunit.Abstractions;
+using System;
 
 namespace StorageTransfer.Samples
 {
     public class CreateEventDrivenGcsTransferSample
     {
-        private readonly ITestOutputHelper _output;
-        public CreateEventDrivenGcsTransferSample(ITestOutputHelper output)
-        {
-            _output = output;
-        }   
+
         public TransferJob CreateEventDrivenGcsTransfer(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -36,7 +32,7 @@ namespace StorageTransfer.Samples
             // The subscription ID to a Pubsub queue to track
             string pubSubId = "projects/PROJECT_NAME/subscriptions/SUBSCRIPTION_ID")
         {
-            // # A useful description for your transfer job
+            // A useful description for your transfer job
             string jobDescription = $"Event driven gcs data transfer from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} ";
 
             TransferJob transferJob = new TransferJob
@@ -47,7 +43,7 @@ namespace StorageTransfer.Samples
                 {
                     GcsDataSink = new GcsData { BucketName = sinkBucket },
                     GcsDataSource = new GcsData { BucketName = sourceBucket },
-                    
+
                 },
                 Status = TransferJob.Types.Status.Enabled,
                 EventStream = new EventStream { Name = pubSubId }
@@ -55,7 +51,7 @@ namespace StorageTransfer.Samples
 
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
             TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-            _output.WriteLine($"Created an event driven transfer job from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} with name {response.Name}");
+            Console.WriteLine($"Created an event driven transfer job from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} with name {response.Name}");
 
             return response;
         }

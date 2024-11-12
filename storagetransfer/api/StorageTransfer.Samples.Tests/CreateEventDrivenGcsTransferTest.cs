@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 using Xunit;
-using Xunit.Abstractions;
 
 namespace StorageTransfer.Samples.Tests
 {
@@ -26,18 +25,15 @@ namespace StorageTransfer.Samples.Tests
     {
         private readonly StorageFixture _fixture;
         private string _transferJobName;
-        private readonly ITestOutputHelper _outputHelper;
-
-        public CreateEventDrivenGcsTransferTest(StorageFixture fixture , ITestOutputHelper outputHelper)
+        public CreateEventDrivenGcsTransferTest(StorageFixture fixture)
         {
             _fixture = fixture;
-            _outputHelper = outputHelper;
         }
 
         [Fact]
         public void CreateEventDrivenGcsTransfer()
         {
-            CreateEventDrivenGcsTransferSample createEventDrivenGcsTransferSample = new CreateEventDrivenGcsTransferSample(_outputHelper);
+            CreateEventDrivenGcsTransferSample createEventDrivenGcsTransferSample = new CreateEventDrivenGcsTransferSample();
             var transferJob = createEventDrivenGcsTransferSample.CreateEventDrivenGcsTransfer(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink, _fixture.PubSubId);
             Assert.Contains("transferJobs/", transferJob.Name);
             _transferJobName = transferJob.Name;

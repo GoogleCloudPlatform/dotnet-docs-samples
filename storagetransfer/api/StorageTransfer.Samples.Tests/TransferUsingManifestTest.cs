@@ -15,10 +15,9 @@
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using System;
-using System.Text;
-using Xunit.Abstractions;
-using Xunit;
 using System.IO;
+using System.Text;
+using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
 [Collection(nameof(StorageFixture))]
@@ -26,17 +25,15 @@ public class TransferUsingManifestTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
-    private readonly ITestOutputHelper _outputHelper;
-    public TransferUsingManifestTest(StorageFixture fixture, ITestOutputHelper outputHelper)
+    public TransferUsingManifestTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _outputHelper = outputHelper;
     }
 
     [Fact]
     public void TransferUsingManifest()
     {
-        TransferUsingManifestSample transferUsingManifestSample = new TransferUsingManifestSample(_outputHelper);
+        TransferUsingManifestSample transferUsingManifestSample = new TransferUsingManifestSample();
         var storage = StorageClient.Create();
         byte[] byteArray = Encoding.UTF8.GetBytes("flower.jpeg");
         MemoryStream stream = new MemoryStream(byteArray);
