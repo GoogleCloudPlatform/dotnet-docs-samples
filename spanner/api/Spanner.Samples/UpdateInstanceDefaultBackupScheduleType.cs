@@ -23,17 +23,21 @@ using System.Threading.Tasks;
 
 public class UpdateInstanceDefaultBackupScheduleTypeAsyncSample
 {
-  public async Task<Instance> UpdateInstanceDefaultBackupScheduleTypeAsync(string projectId,
-                                                                           string instanceId) {
+  public async Task<Instance> UpdateInstanceDefaultBackupScheduleTypeAsync(string projectId, string instanceId)
+  {
     // Create the InstanceAdminClient instance.
     InstanceAdminClient instanceAdminClient = await InstanceAdminClient.CreateAsync();
 
     // Initialize request parameters.
-    Instance instance = new Instance {
+    Instance instance = new Instance
+    {
       InstanceName = InstanceName.FromProjectInstance(projectId, instanceId),
       DefaultBackupScheduleType = Instance.Types.DefaultBackupScheduleType.Automatic,
     };
-    FieldMask mask = new FieldMask { Paths = { "default_backup_schedule_type" } };
+    FieldMask mask = new FieldMask 
+    {
+      Paths = { "default_backup_schedule_type" }
+    };
 
     // Make the CreateInstance request.
     Operation<Instance, UpdateInstanceMetadata> response =
@@ -45,7 +49,8 @@ public class UpdateInstanceDefaultBackupScheduleTypeAsyncSample
     Operation<Instance, UpdateInstanceMetadata> completedResponse =
         await response.PollUntilCompletedAsync();
 
-    if (completedResponse.IsFaulted) {
+    if (completedResponse.IsFaulted)
+    {
       Console.WriteLine($"Error while updating instance: {completedResponse.Exception}");
       throw completedResponse.Exception;
     }

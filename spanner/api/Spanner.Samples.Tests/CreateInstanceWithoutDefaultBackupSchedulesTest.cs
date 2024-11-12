@@ -18,15 +18,18 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(SpannerFixture))]
-public class CreateInstanceWithoutDefaultBackupSchedulesTest {
+public class CreateInstanceWithoutDefaultBackupSchedulesTest
+{
   private readonly SpannerFixture _spannerFixture;
 
-  public CreateInstanceWithoutDefaultBackupSchedulesTest(SpannerFixture spannerFixture) {
+  public CreateInstanceWithoutDefaultBackupSchedulesTest(SpannerFixture spannerFixture)
+  {
     _spannerFixture = spannerFixture;
   }
 
   [Fact]
-  public async Task TestCreateInstanceAsync() {
+  public async Task TestCreateInstanceAsync()
+  {
     CreateInstanceWithoutDefaultBackupSchedulesAsyncSample createInstanceSample =
         new CreateInstanceWithoutDefaultBackupSchedulesAsyncSample();
 
