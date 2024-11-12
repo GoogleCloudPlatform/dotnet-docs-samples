@@ -20,14 +20,16 @@ using Xunit;
 namespace Spanner.Samples.Tests;
 
 [Collection(nameof(SpannerFixture))]
-public class UpdateInstanceDefaultBackupScheduleTypeTest{
+public class UpdateInstanceDefaultBackupScheduleTypeTest
+{
   private readonly SpannerFixture _spannerFixture;
 
   public UpdateInstanceDefaultBackupScheduleTypeTest(SpannerFixture spannerFixture) =>
       _spannerFixture = spannerFixture;
 
   [Fact]
-  public async Task TestUpdateInstanceAsync() {
+  public async Task TestUpdateInstanceAsync()
+  {
     CreateInstanceWithoutDefaultBackupSchedulesAsyncSample createInstanceSample =
         new CreateInstanceWithoutDefaultBackupSchedulesAsyncSample();
 
