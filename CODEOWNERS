@@ -29,7 +29,7 @@ dlp/        @GoogleCloudPlatform/googleapis-dlp @GoogleCloudPlatform/dotnet-samp
 appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @GoogleCloudPlatform/dotnet-samples-reviewers
 
 kms/            @GoogleCloudPlatform/dotnet-samples-reviewers
-secretmanager/  @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-samples-reviewers @GoogleCloudPlatform/cloud-secrets-team
+secretmanager/  @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-secrets-team
 
 applications/googlehome-meets-dotnetcontainers/  @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 run/                                             @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
