@@ -1,5 +1,5 @@
-﻿/**
- * Copyright 2021 Google Inc.
+/**
+ * Copyright 2024 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-
 // [START storagetransfer_quickstart]
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 namespace StorageTransfer.Samples
 {
@@ -36,8 +35,8 @@ namespace StorageTransfer.Samples
                 ProjectId = projectId,
                 TransferSpec = new TransferSpec
                 {
-                    GcsDataSink = new GcsData { BucketName = sourceBucket },
-                    GcsDataSource = new GcsData { BucketName = sinkBucket }
+                    GcsDataSink = new GcsData { BucketName = sinkBucket },
+                    GcsDataSource = new GcsData { BucketName = sourceBucket }
                 },
                 Status = TransferJob.Types.Status.Enabled
             };
