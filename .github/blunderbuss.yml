@@ -3,7 +3,7 @@ assign_issues_by:
   - 'api: bigtable'
   - 'api: datastore'
   - 'api: firestore'
-  to: 
+  to:
   - GoogleCloudPlatform/cloud-native-db-dpes
 - labels:
   - 'api: storage'
@@ -47,7 +47,11 @@ assign_issues_by:
   - 'api: vertex-ai'
   to:
   - meteatamel
-  
+- labels:
+  - 'api: secretmanager'
+  to:
+  - GoogleCloudPlatform/cloud-secrets-team
+
 assign_issues:
   - GoogleCloudPlatform/dotnet-samples-reviewers
 
@@ -107,3 +111,7 @@ assign_prs_by:
   - 'api: vertex-ai'
   to:
   - meteatamel
+- labels:
+  - 'api: secretmanager'
+  to:
+  - GoogleCloudPlatform/cloud-secrets-team
