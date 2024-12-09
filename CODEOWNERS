@@ -37,8 +37,6 @@ aiplatform/                                      @meteatamel @GoogleCloudPlatfor
 
 retail/ @chenlei1216 @GoogleCloudPlatform/dotnet-samples-reviewers
 
-media/ @irataxy @GoogleCloudPlatform/dotnet-samples-reviewers
-
 logging/         @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
 monitoring/      @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
 error-reporting/ @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
