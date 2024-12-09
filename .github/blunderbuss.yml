@@ -24,12 +24,6 @@ assign_issues_by:
   to:
   - chenlei1216
 - labels:
-  - 'api: videostitcher'
-  - 'api: livestream'
-  - 'api: transcoder'
-  to:
-  - irataxy
-- labels:
   - 'api: cloudtrace'
   - 'api: container'
   - 'api: logging'
@@ -87,12 +81,6 @@ assign_prs_by:
   - 'api: retail'
   to:
   - chenlei1216
-- labels:
-  - 'api: videostitcher'
-  - 'api: livestream'
-  - 'api: transcoder'
-  to:
-  - irataxy
 - labels:
   - 'api: cloudtrace'
   - 'api: container'
