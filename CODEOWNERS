@@ -16,7 +16,7 @@ bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotne
 datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 
-cloud-sql/  @GoogleCloudPlatform/infra-db-sdk @GoogleCloudPlatform/dotnet-samples-reviewers
+cloud-sql/  @GoogleCloudPlatform/cloud-sql-connectors @GoogleCloudPlatform/dotnet-samples-reviewers
 
 storage/          @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 storageinsights/  @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
