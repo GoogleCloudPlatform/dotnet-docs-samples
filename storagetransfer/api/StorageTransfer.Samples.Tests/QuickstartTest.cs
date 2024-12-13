@@ -1,5 +1,5 @@
-﻿/**
- * Copyright 2021 Google Inc.
+/**
+ * Copyright 2024 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests
@@ -25,7 +25,6 @@ namespace StorageTransfer.Samples.Tests
     {
         private readonly StorageFixture _fixture;
         private string _transferJobName;
-
         public QuickstartTest(StorageFixture fixture)
         {
             _fixture = fixture;
