@@ -13,8 +13,6 @@
 // limitations under the License.
 
 using System;
-using System.IO;
-using System.Text;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
@@ -35,11 +33,7 @@ public class TransferUsingManifestTest : IDisposable
     public void TransferUsingManifest()
     {
         TransferUsingManifestSample transferUsingManifestSample = new TransferUsingManifestSample();
-        var storage = StorageClient.Create();
-        byte[] byteArray = Encoding.UTF8.GetBytes("flower.jpeg");
-        MemoryStream stream = new MemoryStream(byteArray);
-        storage.UploadObject(_fixture.BucketNameSource, _fixture.ManifestObjectName, "application/octet-stream", stream);
-        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.RootDirectory, _fixture.BucketNameSource, _fixture.BucketNameSink, _fixture.ManifestObjectName);
+        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.RootDirectory, _fixture.BucketNameManifestSource, _fixture.BucketNameSink, _fixture.ManifestObjectName);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }

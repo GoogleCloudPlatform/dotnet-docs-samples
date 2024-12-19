@@ -15,6 +15,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
@@ -37,25 +38,22 @@ public class TransferBetweenPosixTest : IDisposable
         Directory.CreateDirectory(_fixture.TempDirectory);
         Directory.CreateDirectory(_fixture.TempDestinationDirectory);
         string sourceDir = _fixture.RootDirectory;
-        string[] txtList = Directory.GetFiles(sourceDir, "*.txt");
-        // Copy one txt file.
-        foreach (string f in txtList)
+        string fileName = Path.Combine(_fixture.TempDirectory, "test.txt");
+        // Check if file already exists. If yes, delete it.
+        if (File.Exists(fileName))
         {
-            // Remove path from the file name.
-            string fName = f.Split('/').Last();
-            // Copy only one file from source directory to temp source directory. Will overwrite if the destination file already exists.
-            File.Copy(Path.Combine(sourceDir, fName), Path.Combine(_fixture.TempDirectory, fName), true);
-            break;
+            File.Delete(fileName);
         }
-        var storage = StorageClient.Create();
+        using (StreamWriter sw = new StreamWriter(fileName))
+        {
+            sw.WriteLine("test message");
+        }
         var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.SinkAgentPoolName, _fixture.TempDirectory, _fixture.TempDestinationDirectory, _fixture.BucketNameSource);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
         Assert.True(Directory.Exists(_fixture.TempDirectory));
         Assert.True(Directory.Exists(_fixture.TempDestinationDirectory));
-        Assert.True(File.Exists(txtList[0]));
-        string sourceFilePath = txtList[0].Replace(_fixture.RootDirectory.Substring(0, _fixture.RootDirectory.Length - 1), _fixture.TempDirectory);
-        Assert.True(File.Exists(sourceFilePath));
+        Assert.True(File.Exists(fileName));
     }
 
     public void Dispose()

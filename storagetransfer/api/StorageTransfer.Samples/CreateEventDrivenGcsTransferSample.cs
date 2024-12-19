@@ -18,8 +18,6 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-namespace StorageTransfer.Samples
-{
     public class CreateEventDrivenGcsTransferSample
     {
 
@@ -57,6 +55,6 @@ namespace StorageTransfer.Samples
             return response;
         }
     }
-}
+
 // [END storagetransfer_create_event_driven_gcs_transfer]
 

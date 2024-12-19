@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.PubSub.V1;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Grpc.Core;
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests
@@ -32,6 +32,8 @@ namespace StorageTransfer.Samples.Tests
         public string ProjectId { get; }
         public string BucketNameSource { get; } = Guid.NewGuid().ToString();
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
+        public string BucketNameManifestSource { get; } = Guid.NewGuid().ToString();
+        public string BucketNamePosixSource { get; } = Guid.NewGuid().ToString();
         public string JobName { get; }
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
@@ -54,9 +56,9 @@ namespace StorageTransfer.Samples.Tests
         public StorageFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-            SourceAgentPoolName = "projects/" + ProjectId + "/agentPools/transfer_service_default";
-            SinkAgentPoolName = "projects/" + ProjectId + "/agentPools/transfer_service_default";
-            PubSubId = "projects/" + ProjectId + "/subscriptions/" + SubscriptionId + "";
+            SourceAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
+            SinkAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
+            PubSubId = $"projects/{ProjectId}/subscriptions/{SubscriptionId}";
             GcsSourcePath = "foo/bar/";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
@@ -65,6 +67,10 @@ namespace StorageTransfer.Samples.Tests
 
             CreateBucketAndGrantStsPermissions(BucketNameSink);
             CreateBucketAndGrantStsPermissions(BucketNameSource);
+            CreateBucketAndGrantStsPermissions(BucketNameManifestSource);
+            CreateBucketAndGrantStsPermissions(BucketNamePosixSource);
+            UploadObjectToManifestBucket(BucketNameManifestSource);
+            UploadObjectToPosixBucket(BucketNamePosixSource);
             // Initialize request argument(s)
             TransferJob transferJob = new TransferJob
             {
@@ -154,6 +160,23 @@ namespace StorageTransfer.Samples.Tests
             policy.Bindings.Add(bucketReaderBinding);
             policy.Bindings.Add(bucketWriterBinding);
             Storage.SetBucketIamPolicy(bucketName, policy);
+        }
+
+        private void UploadObjectToManifestBucket(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
+            MemoryStream stream = new MemoryStream(byteArray);
+            storage.UploadObject(bucketName,ManifestObjectName, "application/octet-stream", stream);
+        }
+
+        private void UploadObjectToPosixBucket(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
+            MemoryStream stream = new MemoryStream(byteArray);
+            string fileName = $"{GcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
+            storage.UploadObject(bucketName, fileName, "application/octet-stream", stream);
         }
 
         public void Dispose()

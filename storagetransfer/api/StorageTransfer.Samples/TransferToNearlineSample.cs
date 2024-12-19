@@ -17,13 +17,10 @@ using System;
 using Google.Cloud.StorageTransfer.V1;
 using Google.Protobuf.WellKnownTypes;
 
-namespace StorageTransfer.Samples
-{
-
     public class TransferToNearlineSample
     {
-        /*Creates a one-off transfer job that transfers objects from a standard GCS bucket that are more
-         than 30 days old to a Nearline GCS bucket.*/
+        //Creates a one-off transfer job that transfers objects from a standard GCS bucket that are more
+        // than 30 days old to a Nearline GCS bucket.
         public TransferJob TransferToNearline(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -63,5 +60,5 @@ namespace StorageTransfer.Samples
             return response;
         }
     }
-}
+
 // [END storagetransfer_transfer_to_nearline]

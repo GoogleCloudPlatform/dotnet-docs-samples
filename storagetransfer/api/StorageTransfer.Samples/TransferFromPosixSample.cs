@@ -16,11 +16,9 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-namespace StorageTransfer.Samples
-{
     public class TransferFromPosixSample
     {
-        /*Create a transfer from a POSIX file system to a GCS sink bucket*/
+         // Create a transfer from a POSIX file system to a GCS sink bucket
         public TransferJob TransferFromPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -67,7 +65,7 @@ namespace StorageTransfer.Samples
 
         }
     }
-}
+
 // [END storagetransfer_transfer_from_posix]
 
 

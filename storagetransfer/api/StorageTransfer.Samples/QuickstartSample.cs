@@ -18,9 +18,6 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-
-namespace StorageTransfer.Samples
-{
     public class QuickstartSample
     {
         public TransferJob Quickstart(
@@ -55,5 +52,5 @@ namespace StorageTransfer.Samples
             return response;
         }
     }
-}
+
 // [END storagetransfer_quickstart]

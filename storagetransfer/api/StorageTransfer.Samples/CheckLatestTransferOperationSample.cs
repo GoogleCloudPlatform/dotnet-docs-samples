@@ -16,8 +16,6 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-namespace StorageTransfer.Samples
-{
     public class CheckLatestTransferOperationSample
     {
         //Checks the latest transfer operation for a given transfer job.
@@ -59,5 +57,5 @@ namespace StorageTransfer.Samples
             }
         }
     }
-}
+
 // [END storagetransfer_get_latest_transfer_operation]
