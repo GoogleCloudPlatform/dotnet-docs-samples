@@ -20,6 +20,7 @@ using System.Text;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
+
 [Collection(nameof(StorageFixture))]
 public class TransferUsingManifestTest : IDisposable
 {
