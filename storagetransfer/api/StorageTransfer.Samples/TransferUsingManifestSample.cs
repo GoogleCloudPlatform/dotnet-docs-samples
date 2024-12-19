@@ -12,8 +12,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 // [START storagetransfer_manifest_request]
-using Google.Cloud.StorageTransfer.V1;
+
 using System;
+using Google.Cloud.StorageTransfer.V1;
 
 namespace StorageTransfer.Samples
 {
@@ -35,7 +36,7 @@ namespace StorageTransfer.Samples
             // The name of the manifest file in manifestBucket that specifies which objects to transfer
             string manifestObjectName = "path/to/manifest.csv")
         {
-            string manifestLocation = "gs://" + manifestBucket + "/" + manifestObjectName;
+            string manifestLocation = $"gs://{manifestBucket}/{manifestObjectName}";
 
             // A useful description for your transfer job
             string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket}) using manifest file";

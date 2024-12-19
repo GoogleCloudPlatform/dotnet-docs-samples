@@ -150,53 +150,40 @@ namespace StorageTransfer.Samples.Tests
                 Role = bucketWriter,
                 Members = new List<string> { member }
             };
-
-
             policy.Bindings.Add(objectViewerBinding);
             policy.Bindings.Add(bucketReaderBinding);
             policy.Bindings.Add(bucketWriterBinding);
-
             Storage.SetBucketIamPolicy(bucketName, policy);
-
         }
 
         public void Dispose()
         {
             try
             {
-                Storage.DeleteBucket(BucketNameSink);
+                Storage.DeleteBucket(BucketNameSink, new DeleteBucketOptions { DeleteObjects = true });
             }
             catch (Exception)
             {
-                // If bucket is not empty, we delete on a best effort basis.
-                foreach (var storageObject in Storage.ListObjects(BucketNameSink, ""))
-                {
-                    Storage.DeleteObject(BucketNameSink, storageObject.Name);
-                }
-                Storage.DeleteBucket(BucketNameSink);
+                // Do nothing, we delete on a best effort basis.
+
             }
             try
             {
-                Storage.DeleteBucket(BucketNameSource);
+                Storage.DeleteBucket(BucketNameSource, new DeleteBucketOptions { DeleteObjects = true });
             }
             catch (Exception)
             {
-                // If bucket is not empty, we delete on a best effort basis.
-                foreach (var storageObject in Storage.ListObjects(BucketNameSource, ""))
-                {
-                    Storage.DeleteObject(BucketNameSource, storageObject.Name);
-                }
-                Storage.DeleteBucket(BucketNameSource);
-            }
+                // Do nothing, we delete on a best effort basis.
 
+            }
             try
             {
                 TopicName topicName = TopicName.FromProjectTopic(ProjectId, TopicId);
                 PublisherClient.DeleteTopic(topicName);
             }
-            catch (RpcException ex)
+            catch (RpcException)
             {
-                throw new Exception($"Exception occur while deleting Topic {TopicId} Exception: {ex}");
+                // Do nothing, we delete on a best effort basis.
             }
 
             try
@@ -204,9 +191,9 @@ namespace StorageTransfer.Samples.Tests
                 SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(ProjectId, SubscriptionId);
                 SubscriberClient.DeleteSubscription(subscriptionName);
             }
-            catch (RpcException ex)
+            catch (RpcException)
             {
-                throw new Exception($"Exception occur while deleting subscription {SubscriptionId} Exception: {ex}");
+                // Do nothing, we delete on a best effort basis.
             }
 
         }

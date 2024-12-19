@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Google.Cloud.StorageTransfer.V1;
 using System;
+using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests

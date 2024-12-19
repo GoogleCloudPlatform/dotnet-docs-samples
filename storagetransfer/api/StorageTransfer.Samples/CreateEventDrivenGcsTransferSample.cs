@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 // [START storagetransfer_create_event_driven_gcs_transfer]
-using Google.Cloud.StorageTransfer.V1;
+
 using System;
+using Google.Cloud.StorageTransfer.V1;
 
 namespace StorageTransfer.Samples
 {

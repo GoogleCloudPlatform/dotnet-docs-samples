@@ -12,11 +12,11 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 
-using Google.Cloud.Storage.V1;
-using Google.Cloud.StorageTransfer.V1;
 using System;
 using System.IO;
 using System.Linq;
+using Google.Cloud.Storage.V1;
+using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;

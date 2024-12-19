@@ -13,8 +13,8 @@
 // limitations under the License.
 // [START storagetransfer_get_latest_transfer_operation]
 
-using Google.Cloud.StorageTransfer.V1;
 using System;
+using Google.Cloud.StorageTransfer.V1;
 
 namespace StorageTransfer.Samples
 {

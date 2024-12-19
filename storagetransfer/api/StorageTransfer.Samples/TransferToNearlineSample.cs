@@ -13,9 +13,9 @@
 // limitations under the License.
 // [START storagetransfer_transfer_to_nearline]
 
+using System;
 using Google.Cloud.StorageTransfer.V1;
 using Google.Protobuf.WellKnownTypes;
-using System;
 
 namespace StorageTransfer.Samples
 {
