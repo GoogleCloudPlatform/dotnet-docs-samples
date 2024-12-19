@@ -20,6 +20,7 @@ using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
+
 [Collection(nameof(StorageFixture))]
 public class TransferUsingManifestTest : IDisposable
 {
