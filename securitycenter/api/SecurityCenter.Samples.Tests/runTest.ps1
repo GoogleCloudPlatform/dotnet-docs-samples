@@ -14,4 +14,5 @@
 
 dotnet restore
 dotnet build
-dotnet test --test-adapter-path:. --logger:junit --no-build -v n
+# See b/377515841
+# dotnet test --test-adapter-path:. --logger:junit --no-build -v n

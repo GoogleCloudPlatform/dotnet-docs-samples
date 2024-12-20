@@ -1,17 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\SecretManager.Samples\SecretManager.Samples.csproj" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.19.0" />
+    <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
+    <ProjectReference Include="..\SecurityCenter.Samples\SecurityCenter.Samples.csproj" />
   </ItemGroup>
 </Project>

@@ -16,7 +16,7 @@ bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotne
 datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 
-cloud-sql/  @GoogleCloudPlatform/infra-db-sdk @GoogleCloudPlatform/dotnet-samples-reviewers
+cloud-sql/  @GoogleCloudPlatform/cloud-sql-connectors @GoogleCloudPlatform/dotnet-samples-reviewers
 
 storage/          @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 storageinsights/  @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
@@ -29,15 +29,13 @@ dlp/        @GoogleCloudPlatform/googleapis-dlp @GoogleCloudPlatform/dotnet-samp
 appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @GoogleCloudPlatform/dotnet-samples-reviewers
 
 kms/            @GoogleCloudPlatform/dotnet-samples-reviewers
-secretmanager/  @GoogleCloudPlatform/dotnet-samples-reviewers
+secretmanager/  @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-secrets-team
 
 applications/googlehome-meets-dotnetcontainers/  @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 run/                                             @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 aiplatform/                                      @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 
 retail/ @chenlei1216 @GoogleCloudPlatform/dotnet-samples-reviewers
-
-media/ @irataxy @GoogleCloudPlatform/dotnet-samples-reviewers
 
 logging/         @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
 monitoring/      @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers

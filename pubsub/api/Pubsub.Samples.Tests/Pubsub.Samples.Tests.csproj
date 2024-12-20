@@ -9,9 +9,9 @@
   <ItemGroup>
     <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.10.0" />
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
     <PackageReference Include="xunit" Version="2.9.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.0.0" />
   </ItemGroup>
 
   <ItemGroup>
