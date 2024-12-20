@@ -28,18 +28,19 @@ public class QuickStart
     {
         // TODO: Replace with your project ID
         var projectId = "your-project";
-        // TODO: Replace with the ID of your member in the form "user:member@example.com"
-        var member = "your-member";
+        // TODO: Replace with the ID of your principal.
+        // For examples, see https://cloud.google.com/iam/docs/principal-identifiers
+        var member = "your-principal";
         // Role to be granted
         var role = "roles/logging.logWriter";
 
         // Initialize service
         CloudResourceManagerService crmService = InitializeService();
 
-        // Grant your member the "Log Writer" role for your project
+        // Grant your principal the "Log Writer" role for your project
         AddBinding(crmService, projectId, member, role);
 
-        // Get the project's policy and print all members with the the "Log Writer" role
+        // Get the project's policy and print all principals with the the "Log Writer" role
         var policy = GetPolicy(crmService, projectId);
         var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
         Console.WriteLine("Role: " + binding.Role);
@@ -50,7 +51,7 @@ public class QuickStart
         }
         Console.WriteLine();
 
-        // Remove member from the "Log Writer" role
+        // Remove principal from the "Log Writer" role
         RemoveMember(crmService, projectId, member, role);
     }
 
@@ -103,7 +104,7 @@ public class QuickStart
         // Find binding in policy
         var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
 
-        // If binding already exists, add member to binding
+        // If binding already exists, add principal to binding
         if (binding != null)
         {
             binding.Members.Add(member);
@@ -132,7 +133,7 @@ public class QuickStart
         // Get the project's policy 
         var policy = GetPolicy(crmService, projectId);
 
-        // Remove the member from the role
+        // Remove the principal from the role
         var binding = policy.Bindings.FirstOrDefault(x => x.Role == role);
         if (binding == null)
         {
