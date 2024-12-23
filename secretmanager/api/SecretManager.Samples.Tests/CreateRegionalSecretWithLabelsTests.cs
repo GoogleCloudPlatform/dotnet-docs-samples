@@ -51,7 +51,7 @@ public class CreateRegionalSecretWithLabelsTests
         // Assert that the label value matches with the expected value.
         Assert.Equal(result.Labels[labelKey], labelValue);
 
-        // Clean the created resources.
+        // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }
 }

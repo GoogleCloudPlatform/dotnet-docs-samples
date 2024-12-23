@@ -38,7 +38,7 @@ public class UpdateRegionalSecretWithEtagTests
         SecretVersion secretVersion = _fixture.AddSecretVersion(secret);
 
         // Get the etag associated with secret version.
-        string etag = _fixture.client.GetSecret(secretName).Etag;
+        string etag = _fixture.Client.GetSecret(secretName).Etag;
 
         // Run the code sample.
         Secret result = _sample.UpdateRegionalSecretWithEtag(
@@ -51,7 +51,7 @@ public class UpdateRegionalSecretWithEtagTests
         // Assert that the secret label was correctly updated.
         Assert.Equal("stones", result.Labels["secretmanager"]);
 
-        // Clean the created resources
+        // Clean the created secret
         _fixture.DeleteSecret(secretName);
     }
 }

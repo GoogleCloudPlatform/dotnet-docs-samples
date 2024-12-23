@@ -37,7 +37,7 @@ public class CreateRegionalSecretSample
         LocationName location = new LocationName(projectId, locationId);
 
         // Build the secret.
-        Secret secret = new Secret { };
+        Secret secret = new Secret();
 
         // Call the API.
         Secret createdSecret = client.CreateSecret(location, secretId, secret);
