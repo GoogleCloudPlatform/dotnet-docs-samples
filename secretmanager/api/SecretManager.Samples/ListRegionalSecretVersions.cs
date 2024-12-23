@@ -18,10 +18,15 @@
 
 using Google.Cloud.SecretManager.V1;
 using System;
+<<<<<<< HEAD
+=======
+using System.Collections.Generic;
+using System.Linq;
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
 public class ListRegionalSecretVersionsSample
 {
-    public void ListRegionalSecretVersions(
+    public List<SecretVersion> ListRegionalSecretVersions(
       string projectId = "my-project",
       string locationId = "my-location",
       string secretId = "my-secret"
@@ -37,10 +42,15 @@ public class ListRegionalSecretVersionsSample
         SecretName secretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId);
 
         // Call the API.
-        foreach (SecretVersion secretVersion in client.ListSecretVersions(secretName))
+        List<SecretVersion> secretVersions = client.ListSecretVersions(secretName).ToList();
+
+        // Traverse the secret versions list.
+        foreach (SecretVersion secretVersion in secretVersions)
         {
             Console.WriteLine($"Got regional secret version : {secretVersion.Name}");
         }
+
+        return secretVersions;
     }
 }
 // [END secretmanager_list_regional_secret_versions]

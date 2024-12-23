@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,23 +14,21 @@
  * limitations under the License.
  */
 
-// [START secretmanager_list_regional_secret_versions_with_filter]
+// [START secretmanager_view_regional_secret_annotations]
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
+using Google.Protobuf.Collections;
+using Google.Protobuf.WellKnownTypes;
 using System;
-<<<<<<< HEAD
-=======
-using System.Collections.Generic;
-using System.Linq;
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
-public class ListRegionalSecretVersionsWithFilterSample
+
+public class ViewRegionalSecretAnnotationsSample
 {
-    public List<SecretVersion> ListRegionalSecretVersionsWithFilter(
+    public Secret ViewRegionalSecretAnnotations(
       string projectId = "my-project",
       string locationId = "my-location",
-      string secretId = "my-secret",
-      string filter = "create_time>2024-01-01T00:00:00Z"
+      string secretId = "my-secret"
     )
     {
         // Create the Regional Secret Manager Client.
@@ -42,22 +40,19 @@ public class ListRegionalSecretVersionsWithFilterSample
         // Build the resource name.
         SecretName secretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId);
 
-        ListSecretVersionsRequest request = new ListSecretVersionsRequest
-        {
-            Parent = secretName.ToString(),
-            Filter = filter
-        };
+        // Get the secret.
+        Secret secret = client.GetSecret(secretName);
 
-        // Call the API.
-        List<SecretVersion> secretVersions = client.ListSecretVersions(request).ToList();
+        // Get the secret's annotations.
+        MapField<string, string> secretAnnotations = secret.Annotations;
 
-        // Traverse the secret versions list.
-        foreach (SecretVersion secretVersion in secretVersions)
+        // Print the annotations.
+        foreach (var annotation in secret.Annotations)
         {
-            Console.WriteLine($"Got regional secret version : {secretVersion.Name}");
+            Console.WriteLine($"Annotation Key: {annotation.Key}, Annotation Value: {annotation.Value}");
         }
 
-        return secretVersions;
+        return secret;
     }
 }
-// [END secretmanager_list_regional_secret_versions_with_filter]
+// [END secretmanager_view_regional_secret_annotations]

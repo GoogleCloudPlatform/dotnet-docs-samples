@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-// [START secretmanager_list_regional_secrets_with_filter]
+// [START secretmanager_create_regional_secret_with_labels]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
-using System;
-<<<<<<< HEAD
-=======
 using System.Collections.Generic;
-using System.Linq;
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
-public class ListRegionalSecretsWithFilterSample
+public class CreateRegionalSecretWithLabelsSample
 {
-    public List<Secret> ListRegionalSecretsWithFilter(
-      string projectId = "my-project", string locationId = "my-location", string filter = "create_time>2024-01-01T00:00:00Z"
+    public Secret CreateRegionalSecretWithLabels(
+      string projectId = "my-project",
+      string locationId = "my-location",
+      string secretId = "my-secret",
+      string labelKey = "my-label-key",
+      string labelValue = "my-label-value"
     )
     {
         // Create the Regional Secret Manager Client.
@@ -38,24 +37,20 @@ public class ListRegionalSecretsWithFilterSample
         }.Build();
 
         // Build the parent resource name.
-        LocationName locationName = new LocationName(projectId, locationId);
+        LocationName location = new LocationName(projectId, locationId);
 
-        ListSecretsRequest request = new ListSecretsRequest
+        // Build the secret.
+        Secret secret = new Secret
         {
-            Parent = locationName.ToString(),
-            Filter = filter,
+            Labels =
+          {
+              { labelKey, labelValue }
+          },
         };
 
         // Call the API.
-        List<Secret> secrets = client.ListSecrets(request).ToList();
-
-        // Traverse the secret list.
-        foreach (Secret secret in secrets)
-        {
-            Console.WriteLine($"Got regional secret : {secret.Name}");
-        }
-
-        return secrets;
+        Secret createdSecret = client.CreateSecret(location, secretId, secret);
+        return createdSecret;
     }
 }
-// [END secretmanager_list_regional_secrets_with_filter]
+// [END secretmanager_create_regional_secret_with_labels]

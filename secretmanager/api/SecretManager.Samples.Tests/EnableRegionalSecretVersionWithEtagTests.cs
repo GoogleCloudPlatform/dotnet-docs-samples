@@ -32,18 +32,26 @@ public class EnableRegionalSecretVersionWithEtagTests
     [Fact]
     public void EnablesRegionalSecretVersionsWithEtag()
     {
-        SecretName secretName = _fixture.SecretWithVersions.SecretName;
-        SecretVersionName secretVersionName = _fixture.SecretVersionToEnable.SecretVersionName;
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+        SecretVersion addSecretVersion = _fixture.AddSecretVersion(secret);
+        SecretVersionName secretVersionName = addSecretVersion.SecretVersionName;
 
+<<<<<<< HEAD
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
         }.Build();
+=======
+        // Disable the secret version.
+        SecretVersion disabledSecretVersion = _fixture.DisableSecretVersion(addSecretVersion);
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
-        SecretVersion disabledSecretVersion = client.DisableSecretVersion(secretVersionName);
+        // Get the updated etag associated with the secret version.
         string updatedEtag = disabledSecretVersion.Etag;
 
+        // Run the code sample.
         SecretVersion secretVersion = _sample.EnableRegionalSecretVersionWithEtag(
           projectId: secretVersionName.ProjectId,
           locationId: secretVersionName.LocationId,
@@ -51,6 +59,14 @@ public class EnableRegionalSecretVersionWithEtagTests
           secretVersionId: secretVersionName.SecretVersionId,
           etag: updatedEtag
         );
+<<<<<<< HEAD
+=======
+
+        // Assert that the secret version is in enabled state.
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(SecretVersion.Types.State.Enabled, secretVersion.State);
+
+        // Clean the created resources.
+        _fixture.DeleteSecret(secret.SecretName);
     }
 }
