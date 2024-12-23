@@ -32,11 +32,15 @@ public class DestroyRegionalSecretVersionWithEtagTests
     [Fact]
     public void DestroysRegionalSecretVersionsWithEtag()
     {
-        SecretName secretName = _fixture.SecretWithVersions.SecretName;
-        SecretVersionName secretVersionName = _fixture.SecretVersionToDestroyWithEtag.SecretVersionName;
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+        SecretVersion addSecretVersion = _fixture.AddSecretVersion(secret);
+        SecretVersionName secretVersionName = addSecretVersion.SecretVersionName;
 
-        string etag = _fixture.SecretVersionToDestroyWithEtag.Etag;
+        // Get the etag associated with secret version.
+        string etag = addSecretVersion.Etag;
 
+        // Run the code sample.
         SecretVersion secretVersion = _sample.DestroyRegionalSecretVersionWithEtag(
           projectId: secretVersionName.ProjectId,
           locationId: secretVersionName.LocationId,
@@ -44,6 +48,14 @@ public class DestroyRegionalSecretVersionWithEtagTests
           secretVersionId: secretVersionName.SecretVersionId,
           etag: etag
         );
+<<<<<<< HEAD
+=======
+
+        // Assert that the secret version state is set to destroyed.
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(SecretVersion.Types.State.Destroyed, secretVersion.State);
+
+        // Clean the created resources.
+        _fixture.DeleteSecret(secret.SecretName);
     }
 }

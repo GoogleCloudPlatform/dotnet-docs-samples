@@ -32,9 +32,14 @@ public class GetRegionalSecretTests
     [Fact]
     public void GetsRegionalSecrets()
     {
+        // Get the secret name.
         SecretName secretName = _fixture.Secret.SecretName;
+
+        // Run the code sample.
         Secret result = _sample.GetRegionalSecret(
           projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId);
+
+        // Assert that the secret id is same as expected.
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
     }
 }
