@@ -33,10 +33,15 @@ public class IamRegionalGrantAccessTests
     [Fact]
     public void GrantsAccess()
     {
+        // Get the secret name.
         SecretName secretName = _fixture.SecretToCreateName;
+
+        // Run the code sample.
         Policy result = _sample.IamRegionalGrantAccess(
           projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId,
           member: "group:test@google.com");
+
+        // Assert th binding contains the expected role and members.
         Assert.Contains(result.Bindings,
             binding => binding.Role == "roles/secretmanager.secretAccessor" && binding.Members.Contains("group:test@google.com"));
     }

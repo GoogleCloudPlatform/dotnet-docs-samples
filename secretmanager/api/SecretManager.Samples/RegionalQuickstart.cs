@@ -41,8 +41,6 @@ public class RegionalQuickstartSample
 
         // Build the secret to create.
         Secret secret = new Secret { };
-
-
         Secret createdSecret = client.CreateSecret(locationName, secretId, secret);
 
         // Build a payload.

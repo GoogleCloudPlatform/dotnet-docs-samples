@@ -19,10 +19,15 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
 using System;
+<<<<<<< HEAD
+=======
+using System.Collections.Generic;
+using System.Linq;
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
 public class ListRegionalSecretsSample
 {
-    public void ListRegionalSecrets(string projectId = "my-project", string locationId = "my-location")
+    public List<Secret> ListRegionalSecrets(string projectId = "my-project", string locationId = "my-location")
     {
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
@@ -34,10 +39,15 @@ public class ListRegionalSecretsSample
         LocationName locationName = new LocationName(projectId, locationId);
 
         // Call the API.
-        foreach (Secret secret in client.ListSecrets(locationName))
+        List<Secret> secrets = client.ListSecrets(locationName).ToList();
+
+        // Traversing the secret list.
+        foreach (Secret secret in secrets)
         {
             Console.WriteLine($"Got regional secret : {secret.Name}");
         }
+
+        return secrets;
     }
 }
 // [END secretmanager_list_regional_secrets]

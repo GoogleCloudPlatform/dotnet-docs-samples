@@ -32,13 +32,26 @@ public class EnableRegionalSecretVersionTests
     [Fact]
     public void EnablesRegionalSecretVersions()
     {
-        SecretVersionName secretVersionName = _fixture.SecretVersionToEnable.SecretVersionName;
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+        SecretVersion addSecretVersion = _fixture.AddSecretVersion(secret);
+        SecretVersionName secretVersionName = addSecretVersion.SecretVersionName;
+
+        // Run the code sample.
         SecretVersion secretVersion = _sample.EnableRegionalSecretVersion(
           projectId: secretVersionName.ProjectId,
           locationId: secretVersionName.LocationId,
           secretId: secretVersionName.SecretId,
           secretVersionId: secretVersionName.SecretVersionId
         );
+<<<<<<< HEAD
+=======
+
+        // Assert that the secret version is in enabled state.
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(SecretVersion.Types.State.Enabled, secretVersion.State);
+
+        // Clean the created resources.
+        _fixture.DeleteSecret(secret.SecretName);
     }
 }

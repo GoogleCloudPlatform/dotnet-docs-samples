@@ -33,7 +33,10 @@ public class AddRegionalSecretVersionTests
     public void AddsRegionalSecretVersions()
     {
         string data = "my secret data";
-        SecretName secretName = _fixture.Secret.SecretName;
+
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+        SecretName secretName = secret.SecretName;
         SecretVersion secretVersion = _sample.AddRegionalSecretVersion(
           projectId: secretName.ProjectId,
           locationId: secretName.LocationId,
@@ -41,13 +44,21 @@ public class AddRegionalSecretVersionTests
           data: data
         );
 
+<<<<<<< HEAD
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
         }.Build();
+=======
+        // Access the secret version.
+        AccessSecretVersionResponse result = _fixture.client.AccessSecretVersion(secretVersion.SecretVersionName);
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
-        AccessSecretVersionResponse result = client.AccessSecretVersion(secretVersion.SecretVersionName);
+        // Assert that the secret version was added with the correct data.
         Assert.Equal(data, result.Payload.Data.ToStringUtf8());
+
+        // Clean the created resources.
+        _fixture.DeleteSecret(secret.SecretName);
     }
 }

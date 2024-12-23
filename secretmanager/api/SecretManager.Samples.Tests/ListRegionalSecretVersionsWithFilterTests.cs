@@ -15,8 +15,12 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+<<<<<<< HEAD
 using System;
 using System.IO;
+=======
+using System.Collections.Generic;
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 using Xunit;
 
 [Collection(nameof(RegionalSecretManagerFixture))]
@@ -34,6 +38,7 @@ public class ListRegionalSecretVersionsWithFilterTests
     [Fact]
     public void ListsRegionalSecretVersions()
     {
+<<<<<<< HEAD
         // Redirect console output to a StringWriter
         StringWriter stringWriter = new StringWriter();
         Console.SetOut(stringWriter);
@@ -52,5 +57,34 @@ public class ListRegionalSecretVersionsWithFilterTests
 
         // Assert that the output matches the pattern.
         Assert.Matches(pattern, output);
+=======
+        string filter = "name:csharp";
+
+        // Get the secret name.
+        SecretName secretName = _fixture.Secret.SecretName;
+
+        // Run the code sample.
+        List<SecretVersion> result = _sample.ListRegionalSecretVersionsWithFilter(
+            projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId, filter: filter);
+
+        // Assert that the result is not empty.
+        Assert.NotEmpty(result);
+    }
+
+    [Fact]
+    public void ListsRegionalSecretVersions_Empty()
+    {
+        string filter = "name:dotnet";
+
+        // Get the secret name.
+        SecretName secretName = _fixture.Secret.SecretName;
+
+        // Run the code sample.
+        List<SecretVersion> result = _sample.ListRegionalSecretVersionsWithFilter(
+            projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId, filter: filter);
+
+        // Assert that the result is empty.
+        Assert.Empty(result);
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }

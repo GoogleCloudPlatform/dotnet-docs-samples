@@ -32,8 +32,12 @@ public class UpdateRegionalSecretWithEtagTests
     [Fact]
     public void UpdatesRegionalSecretsWithEtag()
     {
-        SecretName secretName = _fixture.Secret.SecretName;
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+        SecretName secretName = secret.SecretName;
+        SecretVersion secretVersion = _fixture.AddSecretVersion(secret);
 
+<<<<<<< HEAD
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
@@ -50,5 +54,23 @@ public class UpdateRegionalSecretWithEtagTests
           etag: etag
         );
         Assert.Equal("rocks", result.Labels["secretmanager"]);
+=======
+        // Get the etag associated with secret version.
+        string etag = _fixture.client.GetSecret(secretName).Etag;
+
+        // Run the code sample.
+        Secret result = _sample.UpdateRegionalSecretWithEtag(
+          projectId: secretName.ProjectId,
+          locationId: secretName.LocationId,
+          secretId: secretName.SecretId,
+          etag: etag
+        );
+
+        // Assert that the secret label was correctly updated.
+        Assert.Equal("stones", result.Labels["secretmanager"]);
+
+        // Clean the created resources
+        _fixture.DeleteSecret(secretName);
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }

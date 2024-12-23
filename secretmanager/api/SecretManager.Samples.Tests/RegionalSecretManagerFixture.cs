@@ -22,24 +22,24 @@ using Xunit;
 [CollectionDefinition(nameof(RegionalSecretManagerFixture))]
 public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<RegionalSecretManagerFixture>
 {
+    public readonly SecretManagerServiceClient client;
     public string ProjectId { get; }
     public string LocationId { get; }
+    public string AnnotationKey { get; }
+    public string AnnotationValue { get; }
+    public string LabelKey { get; }
+    public string LabelValue { get; }
     public Secret Secret { get; }
-    public Secret SecretToDelete { get; }
-    public Secret SecretToDeleteWithEtag { get; }
-    public Secret SecretWithVersions { get; }
-    public SecretName SecretForQuickstartName { get; }
     public SecretName SecretToCreateName { get; }
     public SecretVersion SecretVersion { get; }
-    public SecretVersion SecretVersionToDelete { get; }
-    public SecretVersion SecretVersionToDeleteWithEtag { get; }
-    public SecretVersion SecretVersionToDestroyWithEtag { get; }
-    public SecretVersion SecretVersionToDestroy { get; }
-    public SecretVersion SecretVersionToDisable { get; }
-    public SecretVersion SecretVersionToEnable { get; }
+
 
     public RegionalSecretManagerFixture()
     {
+<<<<<<< HEAD
+=======
+        // Get the Google Cloud ProjectId
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (String.IsNullOrEmpty(ProjectId))
         {
@@ -49,35 +49,36 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         // Get LocationId (e.g., "us-west1")
         LocationId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_LOCATION") ?? "us-west1";
 
+        // Create the Regional Secret Manager Client
+        client = new SecretManagerServiceClientBuilder
+        {
+            Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
+        }.Build();
+
+        // Setting the AnnotationKey and AnnotationValue
+        AnnotationKey = "my-annotation-key";
+        AnnotationValue = "my-annotation-value";
+
+        // Setting the LabelKey and LabelValue
+        LabelKey = "my-label-key";
+        LabelValue = "my-label-value";
+
         // Required for testing regional samples
         Secret = CreateSecret(RandomId());
-        SecretToDelete = CreateSecret(RandomId());
-        SecretToDeleteWithEtag = CreateSecret(RandomId());
-        SecretWithVersions = CreateSecret(RandomId());
-        SecretForQuickstartName = SecretName.FromProjectLocationSecret(ProjectId, LocationId, RandomId());
+        SecretVersion = AddSecretVersion(Secret);
         SecretToCreateName = SecretName.FromProjectLocationSecret(ProjectId, LocationId, RandomId());
-
-        SecretVersionToDelete = AddSecretVersion(SecretToDelete);
-        SecretVersionToDeleteWithEtag = AddSecretVersion(SecretToDeleteWithEtag);
-
-        SecretVersion = AddSecretVersion(SecretWithVersions);
-        SecretVersionToDestroy = AddSecretVersion(SecretWithVersions);
-        SecretVersionToDestroyWithEtag = AddSecretVersion(SecretWithVersions);
-        SecretVersionToDisable = AddSecretVersion(SecretWithVersions);
-        SecretVersionToEnable = AddSecretVersion(SecretWithVersions);
-        DisableSecretVersion(SecretVersionToEnable);
-
-        // Required for regional samples
     }
 
     public void Dispose()
     {
         DeleteSecret(Secret.SecretName);
-        DeleteSecret(SecretForQuickstartName);
         DeleteSecret(SecretToCreateName);
+<<<<<<< HEAD
         DeleteSecret(SecretToDelete.SecretName);
         DeleteSecret(SecretToDeleteWithEtag.SecretName);
         DeleteSecret(SecretWithVersions.SecretName);
+=======
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 
     public String RandomId()
@@ -87,27 +88,41 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public Secret CreateSecret(string secretId)
     {
+<<<<<<< HEAD
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
         }.Build();
 
+=======
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         LocationName locationName = new LocationName(ProjectId, LocationId);
 
-        Secret secret = new Secret { };
-
+        Secret secret = new Secret
+        {
+            Labels =
+          {
+              { LabelKey, LabelValue }
+          },
+            Annotations = {
+            { AnnotationKey, AnnotationValue }
+          }
+        };
         return client.CreateSecret(locationName, secretId, secret);
     }
 
-    private SecretVersion AddSecretVersion(Secret secret)
+    public SecretVersion AddSecretVersion(Secret secret)
     {
+<<<<<<< HEAD
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
         }.Build();
 
+=======
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         SecretPayload payload = new SecretPayload
         {
             Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
@@ -116,14 +131,17 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         return client.AddSecretVersion(secret.SecretName, payload);
     }
 
-    private void DeleteSecret(SecretName name)
+    public void DeleteSecret(SecretName name)
     {
+<<<<<<< HEAD
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
         }.Build();
 
+=======
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         try
         {
             client.DeleteSecret(name);
@@ -135,8 +153,9 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         }
     }
 
-    private void DisableSecretVersion(SecretVersion version)
+    public SecretVersion DisableSecretVersion(SecretVersion version)
     {
+<<<<<<< HEAD
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
@@ -144,5 +163,8 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         }.Build();
 
         client.DisableSecretVersion(version.SecretVersionName);
+=======
+        return client.DisableSecretVersion(version.SecretVersionName);
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }

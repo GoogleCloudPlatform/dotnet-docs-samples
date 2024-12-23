@@ -32,6 +32,7 @@ public class DeleteRegionalSecretTests
     [Fact]
     public void DeletesRegionalSecrets()
     {
+<<<<<<< HEAD
         SecretName secretName = _fixture.SecretToDelete.SecretName;
         sss_sample.DeleteRegionalSecret(
           projectId: secretName.ProjectId,
@@ -44,7 +45,22 @@ public class DeleteRegionalSecretTests
         {
             Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
         }.Build();
+=======
+        // Create the secret.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
 
-        Assert.Throws<Grpc.Core.RpcException>(() => client.GetSecret(secretName));
+        // Get the secretName from the created secret.
+        SecretName secretName = secret.SecretName;
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
+
+        // Run the sample.
+        _sample.DeleteRegionalSecret(
+          projectId: secretName.ProjectId,
+          locationId: secretName.LocationId,
+          secretId: secretName.SecretId
+        );
+
+        // Assert that the secret was deleted.
+        Assert.Throws<Grpc.Core.RpcException>(() => _fixture.client.GetSecret(secretName));
     }
 }

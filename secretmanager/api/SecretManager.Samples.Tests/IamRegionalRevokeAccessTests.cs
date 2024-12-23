@@ -33,10 +33,28 @@ public class IamRegionalRevokeAccessTests
     [Fact]
     public void GrantsAccess()
     {
+        string member = "group:test@google.com";
+        // Get the secret name.
         SecretName secretName = _fixture.SecretToCreateName;
+
+        // Update the policy to add the user to the binding's list.
+        Policy policy = _fixture.client.GetIamPolicy(new GetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+        });
+        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
+        policy = _fixture.client.SetIamPolicy(new SetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+            Policy = policy,
+        });
+
+        // Run the code sample.
         Policy result = _sample.IamRegionalRevokeAccess(
           projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId,
-          member: "group:test@google.com");
+          member: member);
+
+        // Assert that the binding does not contain the expected role and members.
         Assert.DoesNotContain(result.Bindings,
             binding => binding.Role == "roles/secretmanager.secretAccessor" && binding.Members.Contains("group:test@google.com"));
     }
