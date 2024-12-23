@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ public class AccessRegionalSecretVersionSample
       string secretVersionId = "123"
     )
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"

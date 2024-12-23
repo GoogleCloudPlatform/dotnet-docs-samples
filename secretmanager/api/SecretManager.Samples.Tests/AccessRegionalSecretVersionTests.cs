@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,11 @@ public class AccessRegionalSecretVersionTests
     {
         SecretVersionName secretVersionName = _fixture.SecretVersion.SecretVersionName;
         string result = _sample.AccessRegionalSecretVersion(
-          projectId: secretVersionName.ProjectId, locationId: secretVersionName.LocationId, secretId: secretVersionName.SecretId, secretVersionId: secretVersionName.SecretVersionId);
+          projectId: secretVersionName.ProjectId,
+          locationId: secretVersionName.LocationId,
+          secretId: secretVersionName.SecretId,
+          secretVersionId: secretVersionName.SecretVersionId
+        );
         Assert.Equal("my super secret data", result);
     }
 }

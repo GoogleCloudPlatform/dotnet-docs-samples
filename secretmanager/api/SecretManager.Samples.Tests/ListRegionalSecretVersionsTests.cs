@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+using System;
+using System.IO;
 using Xunit;
 
 [Collection(nameof(RegionalSecretManagerFixture))]
@@ -32,8 +34,22 @@ public class ListRegionalSecretVersionsTests
     [Fact]
     public void ListsRegionalSecretVersions()
     {
+        // Redirect console output to a StringWriter
+        StringWriter stringWriter = new StringWriter();
+        Console.SetOut(stringWriter);
+
         SecretName secretName = _fixture.Secret.SecretName;
         _sample.ListRegionalSecretVersions(
             projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId);
+
+        // Get the console output and restore the original console output stream
+        string output = stringWriter.ToString();
+        Console.SetOut(new StreamWriter(Console.OpenStandardOutput()));
+
+        // Construct the expected regex pattern.
+        string pattern = $@"Got regional secret version : projects\/{secretName.ProjectId}\/locations\/{secretName.LocationId}\/secrets\/[\w-]+";
+
+        // Assert that the output matches the pattern.
+        Assert.Matches(pattern, output);
     }
 }
