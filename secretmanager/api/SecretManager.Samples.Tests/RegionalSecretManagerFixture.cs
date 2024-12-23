@@ -36,10 +36,7 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public RegionalSecretManagerFixture()
     {
-<<<<<<< HEAD
-=======
         // Get the Google Cloud ProjectId
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (String.IsNullOrEmpty(ProjectId))
         {
@@ -73,12 +70,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
     {
         DeleteSecret(Secret.SecretName);
         DeleteSecret(SecretToCreateName);
-<<<<<<< HEAD
-        DeleteSecret(SecretToDelete.SecretName);
-        DeleteSecret(SecretToDeleteWithEtag.SecretName);
-        DeleteSecret(SecretWithVersions.SecretName);
-=======
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 
     public String RandomId()
@@ -88,15 +79,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public Secret CreateSecret(string secretId)
     {
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
-        }.Build();
-
-=======
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         LocationName locationName = new LocationName(ProjectId, LocationId);
 
         Secret secret = new Secret
@@ -114,15 +96,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public SecretVersion AddSecretVersion(Secret secret)
     {
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
-        }.Build();
-
-=======
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         SecretPayload payload = new SecretPayload
         {
             Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
@@ -133,15 +106,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public void DeleteSecret(SecretName name)
     {
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
-        }.Build();
-
-=======
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         try
         {
             client.DeleteSecret(name);
@@ -155,16 +119,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public SecretVersion DisableSecretVersion(SecretVersion version)
     {
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
-        }.Build();
-
-        client.DisableSecretVersion(version.SecretVersionName);
-=======
         return client.DisableSecretVersion(version.SecretVersionName);
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }

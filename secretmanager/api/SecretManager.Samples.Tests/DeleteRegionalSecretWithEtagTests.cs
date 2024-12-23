@@ -35,31 +35,14 @@ public class DeleteRegionalSecretWithEtagTests
         // Create the secret.
         Secret secret = _fixture.CreateSecret(_fixture.RandomId());
 
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
-        }.Build();
-=======
         // Get the secret name.
         SecretName secretName = secret.SecretName;
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
         // Get the secret from the cloud.
         Secret secretFetched = _fixture.client.GetSecret(secretName);
 
-<<<<<<< HEAD
-        _sample.DeleteRegionalSecretWithEtag(
-          projectId: secretName.ProjectId,
-          locationId: secretName.LocationId,
-          secretId: secretName.SecretId,
-          etag: updatedEtag
-        );
-=======
         // Set the updated etag fetched.
         string updatedEtag = secretFetched.Etag;
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
         // Run the sample to delete the secret with etag.
         _sample.DeleteRegionalSecretWithEtag(
