@@ -19,11 +19,8 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
 using System;
-<<<<<<< HEAD
-=======
 using System.Collections.Generic;
 using System.Linq;
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
 public class ListRegionalSecretsWithFilterSample
 {
