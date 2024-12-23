@@ -46,6 +46,6 @@ public class DeleteRegionalSecretTests
         );
 
         // Assert that the secret was deleted.
-        Assert.Throws<Grpc.Core.RpcException>(() => _fixture.client.GetSecret(secretName));
+        Assert.Throws<Grpc.Core.RpcException>(() => _fixture.Client.GetSecret(secretName));
     }
 }

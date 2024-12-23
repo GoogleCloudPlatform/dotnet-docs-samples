@@ -22,7 +22,7 @@ using Xunit;
 [CollectionDefinition(nameof(RegionalSecretManagerFixture))]
 public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<RegionalSecretManagerFixture>
 {
-    public readonly SecretManagerServiceClient client;
+    public SecretManagerServiceClient Client { get; }
     public string ProjectId { get; }
     public string LocationId { get; }
     public string AnnotationKey { get; }
@@ -32,8 +32,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
     public Secret Secret { get; }
     public SecretName SecretToCreateName { get; }
     public SecretVersion SecretVersion { get; }
-
-
     public RegionalSecretManagerFixture()
     {
         // Get the Google Cloud ProjectId
@@ -47,7 +45,7 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         LocationId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_LOCATION") ?? "us-west1";
 
         // Create the Regional Secret Manager Client
-        client = new SecretManagerServiceClientBuilder
+        Client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
         }.Build();
@@ -84,14 +82,15 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         Secret secret = new Secret
         {
             Labels =
-          {
-              { LabelKey, LabelValue }
-          },
-            Annotations = {
-            { AnnotationKey, AnnotationValue }
-          }
+            {
+                { LabelKey, LabelValue }
+            },
+            Annotations =
+            {
+              { AnnotationKey, AnnotationValue }
+            }
         };
-        return client.CreateSecret(locationName, secretId, secret);
+        return Client.CreateSecret(locationName, secretId, secret);
     }
 
     public SecretVersion AddSecretVersion(Secret secret)
@@ -101,14 +100,14 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
             Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
         };
 
-        return client.AddSecretVersion(secret.SecretName, payload);
+        return Client.AddSecretVersion(secret.SecretName, payload);
     }
 
     public void DeleteSecret(SecretName name)
     {
         try
         {
-            client.DeleteSecret(name);
+            Client.DeleteSecret(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -119,6 +118,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public SecretVersion DisableSecretVersion(SecretVersion version)
     {
-        return client.DisableSecretVersion(version.SecretVersionName);
+        return Client.DisableSecretVersion(version.SecretVersionName);
     }
 }

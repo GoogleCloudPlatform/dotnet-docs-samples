@@ -39,7 +39,7 @@ public class DeleteRegionalSecretWithEtagTests
         SecretName secretName = secret.SecretName;
 
         // Get the secret from the cloud.
-        Secret secretFetched = _fixture.client.GetSecret(secretName);
+        Secret secretFetched = _fixture.Client.GetSecret(secretName);
 
         // Set the updated etag fetched.
         string updatedEtag = secretFetched.Etag;
@@ -53,6 +53,6 @@ public class DeleteRegionalSecretWithEtagTests
         );
 
         // Assert that the secret was deleted and not found.
-        Assert.Throws<Grpc.Core.RpcException>(() => _fixture.client.GetSecret(secretName));
+        Assert.Throws<Grpc.Core.RpcException>(() => _fixture.Client.GetSecret(secretName));
     }
 }

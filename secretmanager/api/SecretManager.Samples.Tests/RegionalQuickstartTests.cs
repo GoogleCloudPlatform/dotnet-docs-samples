@@ -38,7 +38,7 @@ public class RegionalQuickstartTests
         // Run the code sample.
         _sample.RegionalQuickstart(projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId);
 
-        // Clean the created resources.
+        // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }
 }

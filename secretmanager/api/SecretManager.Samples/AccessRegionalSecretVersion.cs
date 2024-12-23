@@ -25,8 +25,7 @@ public class AccessRegionalSecretVersionSample
       string projectId = "my-project",
       string locationId = "my-location",
       string secretId = "my-secret",
-      string secretVersionId = "123"
-    )
+      string secretVersionId = "123")
     {
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder

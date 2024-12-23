@@ -44,26 +44,15 @@ public class EditRegionalSecretAnnotationsSample
         // Get the exisitng secret.
         Secret existingSecret = client.GetSecret(secretName);
 
-        // Get the secret annotations.
-        MapField<string, string> secretAnnotations = existingSecret.Annotations;
-
         // Add the mapping to the secret's annotations
-        secretAnnotations[annotationKey] = annotationValue;
-
-        // Build the secret with updated fields.
-        Secret secret = new Secret
-        {
-            SecretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId),
-            Annotations = {
-              secretAnnotations
-            }
-        };
+        existingSecret.Annotations[annotationKey] = annotationValue;
 
         // Build the field mask.
         FieldMask fieldMask = FieldMask.FromString("annotations");
 
         // Call the update secret API.
-        Secret updatedSecret = client.UpdateSecret(secret, fieldMask);
+        Secret updatedSecret = client.UpdateSecret(existingSecret, fieldMask);
+
         return updatedSecret;
 
     }

@@ -34,7 +34,7 @@ public class IamRegionalGrantAccessTests
     public void GrantsAccess()
     {
         // Get the secret name.
-        SecretName secretName = _fixture.SecretToCreateName;
+        SecretName secretName = _fixture.Secret.SecretName;
 
         // Run the code sample.
         Policy result = _sample.IamRegionalGrantAccess(

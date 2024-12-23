@@ -35,15 +35,15 @@ public class IamRegionalRevokeAccessTests
     {
         string member = "group:test@google.com";
         // Get the secret name.
-        SecretName secretName = _fixture.SecretToCreateName;
+        SecretName secretName = _fixture.Secret.SecretName;
 
         // Update the policy to add the user to the binding's list.
-        Policy policy = _fixture.client.GetIamPolicy(new GetIamPolicyRequest
+        Policy policy = _fixture.Client.GetIamPolicy(new GetIamPolicyRequest
         {
             ResourceAsResourceName = secretName,
         });
         policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
-        policy = _fixture.client.SetIamPolicy(new SetIamPolicyRequest
+        policy = _fixture.Client.SetIamPolicy(new SetIamPolicyRequest
         {
             ResourceAsResourceName = secretName,
             Policy = policy,

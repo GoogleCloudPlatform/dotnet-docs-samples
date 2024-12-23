@@ -55,7 +55,7 @@ public class EnableRegionalSecretVersionWithEtagTests
         // Assert that the secret version is in enabled state.
         Assert.Equal(SecretVersion.Types.State.Enabled, secretVersion.State);
 
-        // Clean the created resources.
+        // Clean the created secret.
         _fixture.DeleteSecret(secret.SecretName);
     }
 }
