@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
+using System;
 
 public class ListRegionalSecretsWithFilterSample
 {
@@ -25,7 +26,7 @@ public class ListRegionalSecretsWithFilterSample
       string projectId = "my-project", string locationId = "my-location", string filter = "create_time>2024-01-01T00:00:00Z"
     )
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
@@ -43,7 +44,7 @@ public class ListRegionalSecretsWithFilterSample
         // Call the API.
         foreach (Secret secret in client.ListSecrets(request))
         {
-            // ...
+            Console.WriteLine($"Got regional secret : {secret.Name}");
         }
     }
 }

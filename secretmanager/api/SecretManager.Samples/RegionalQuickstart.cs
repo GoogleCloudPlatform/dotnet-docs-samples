@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public class RegionalQuickstartSample
       string secretId = "my-secret"
     )
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
@@ -58,7 +58,6 @@ public class RegionalQuickstartSample
         AccessSecretVersionResponse result = client.AccessSecretVersion(createdVersion.SecretVersionName);
 
         // Print the results
-        //
         // WARNING: Do not print secrets in production environments. This
         // snippet is for demonstration purposes only.
         string data = result.Payload.Data.ToStringUtf8();
