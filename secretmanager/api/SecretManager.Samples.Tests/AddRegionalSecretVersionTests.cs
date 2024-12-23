@@ -44,16 +44,8 @@ public class AddRegionalSecretVersionTests
           data: data
         );
 
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
-        }.Build();
-=======
         // Access the secret version.
         AccessSecretVersionResponse result = _fixture.client.AccessSecretVersion(secretVersion.SecretVersionName);
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
         // Assert that the secret version was added with the correct data.
         Assert.Equal(data, result.Payload.Data.ToStringUtf8());
