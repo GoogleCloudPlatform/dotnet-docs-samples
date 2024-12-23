@@ -44,11 +44,8 @@ public class DestroyRegionalSecretVersionTests
           secretId: secretVersionName.SecretId,
           secretVersionId: secretVersionName.SecretVersionId
         );
-<<<<<<< HEAD
-=======
 
         // Assert that the secret version state is set to destroyed.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(SecretVersion.Types.State.Destroyed, secretVersion.State);
 
         // Clean the created resources.

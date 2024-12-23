@@ -42,11 +42,8 @@ public class GetRegionalSecretVersionTests
           secretId: secretVersionName.SecretId,
           secretVersionId: secretVersionName.SecretVersionId
         );
-<<<<<<< HEAD
-=======
 
         // Assert that the secretversion id is equal to expected value.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(result.SecretVersionName.SecretVersionId, secretVersionName.SecretVersionId);
     }
 }

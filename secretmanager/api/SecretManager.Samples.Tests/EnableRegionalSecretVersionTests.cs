@@ -44,11 +44,8 @@ public class EnableRegionalSecretVersionTests
           secretId: secretVersionName.SecretId,
           secretVersionId: secretVersionName.SecretVersionId
         );
-<<<<<<< HEAD
-=======
 
         // Assert that the secret version is in enabled state.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(SecretVersion.Types.State.Enabled, secretVersion.State);
 
         // Clean the created resources.
