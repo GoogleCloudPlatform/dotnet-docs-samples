@@ -50,7 +50,7 @@ public class AddRegionalSecretVersionTests
         // Assert that the secret version was added with the correct data.
         Assert.Equal(data, result.Payload.Data.ToStringUtf8());
 
-        // Clean the created resources.
+        // Clean the created secret.
         _fixture.DeleteSecret(secret.SecretName);
     }
 }

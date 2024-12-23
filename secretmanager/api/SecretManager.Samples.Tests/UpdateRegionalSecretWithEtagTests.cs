@@ -51,7 +51,7 @@ public class UpdateRegionalSecretWithEtagTests
         // Assert that the secret label was correctly updated.
         Assert.Equal("stones", result.Labels["secretmanager"]);
 
-        // Clean the created resources
+        // Clean the created secret
         _fixture.DeleteSecret(secretName);
     }
 }
