@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class DeleteRegionalSecretWithEtagTests
     {
         SecretName secretName = _fixture.SecretToDeleteWithEtag.SecretName;
 
-        // Create the client settings using the channel.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
@@ -43,7 +43,12 @@ public class DeleteRegionalSecretWithEtagTests
         Secret secret = client.GetSecret(secretName);
         string updatedEtag = secret.Etag;
 
-        _sample.DeleteRegionalSecretWithEtag(projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId, etag: updatedEtag);
+        _sample.DeleteRegionalSecretWithEtag(
+          projectId: secretName.ProjectId,
+          locationId: secretName.LocationId,
+          secretId: secretName.SecretId,
+          etag: updatedEtag
+        );
 
         Assert.Throws<Grpc.Core.RpcException>(() => client.GetSecret(secretName));
     }

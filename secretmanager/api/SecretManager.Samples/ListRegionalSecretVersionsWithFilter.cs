@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 // [START secretmanager_list_regional_secret_versions_with_filter]
 
 using Google.Cloud.SecretManager.V1;
+using System;
 
 public class ListRegionalSecretVersionsWithFilterSample
 {
@@ -27,7 +28,7 @@ public class ListRegionalSecretVersionsWithFilterSample
       string filter = "create_time>2024-01-01T00:00:00Z"
     )
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
@@ -45,7 +46,7 @@ public class ListRegionalSecretVersionsWithFilterSample
         // Call the API.
         foreach (SecretVersion secretVersion in client.ListSecretVersions(request))
         {
-            // ...
+            Console.WriteLine($"Got regional secret version : {secretVersion.Name}");
         }
     }
 }

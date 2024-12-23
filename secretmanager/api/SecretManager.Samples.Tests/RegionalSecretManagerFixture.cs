@@ -1,4 +1,4 @@
-// Copyright(c) 2020 Google Inc.
+// Copyright(c) 2024 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -40,14 +40,13 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public RegionalSecretManagerFixture()
     {
-        Console.WriteLine("Hello World!");
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (String.IsNullOrEmpty(ProjectId))
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
 
-        // Get LocationId (e.g., "us-central1")
+        // Get LocationId (e.g., "us-west1")
         LocationId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_LOCATION") ?? "us-west1";
 
         // Required for testing regional samples
@@ -77,6 +76,7 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         DeleteSecret(SecretForQuickstartName);
         DeleteSecret(SecretToCreateName);
         DeleteSecret(SecretToDelete.SecretName);
+        DeleteSecret(SecretToDeleteWithEtag.SecretName);
         DeleteSecret(SecretWithVersions.SecretName);
     }
 
@@ -87,7 +87,7 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     public Secret CreateSecret(string secretId)
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
@@ -102,7 +102,7 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     private SecretVersion AddSecretVersion(Secret secret)
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
@@ -118,7 +118,7 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     private void DeleteSecret(SecretName name)
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"
@@ -130,13 +130,14 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
-            // Ignore error - secret was already deleted
+            // Ignore error - secret was already deleted.
+            Console.Error.WriteLine($"Error deleting secret: {e.Message}");
         }
     }
 
     private void DisableSecretVersion(SecretVersion version)
     {
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{LocationId}.rep.googleapis.com"

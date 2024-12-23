@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,16 +34,21 @@ public class UpdateRegionalSecretWithEtagTests
     {
         SecretName secretName = _fixture.Secret.SecretName;
 
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
         }.Build();
 
         Secret secret = client.GetSecret(secretName);
-        string updatedEtag = secret.Etag;
+        string etag = secret.Etag;
 
-        Secret result = _sample.UpdateRegionalSecretWithEtag(projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId, etag: updatedEtag);
+        Secret result = _sample.UpdateRegionalSecretWithEtag(
+          projectId: secretName.ProjectId,
+          locationId: secretName.LocationId,
+          secretId: secretName.SecretId,
+          etag: etag
+        );
         Assert.Equal("rocks", result.Labels["secretmanager"]);
     }
 }

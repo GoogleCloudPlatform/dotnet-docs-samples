@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2024 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,9 +33,13 @@ public class DeleteRegionalSecretTests
     public void DeletesRegionalSecrets()
     {
         SecretName secretName = _fixture.SecretToDelete.SecretName;
-        _sample.DeleteRegionalSecret(projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId);
+        sss_sample.DeleteRegionalSecret(
+          projectId: secretName.ProjectId,
+          locationId: secretName.LocationId,
+          secretId: secretName.SecretId
+        );
 
-        // Create the Secret Manager Client with the regional endpoint.
+        // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
         {
             Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
