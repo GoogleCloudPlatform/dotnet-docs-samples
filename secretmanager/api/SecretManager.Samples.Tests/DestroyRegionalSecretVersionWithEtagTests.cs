@@ -52,7 +52,7 @@ public class DestroyRegionalSecretVersionWithEtagTests
         // Assert that the secret version state is set to destroyed.
         Assert.Equal(SecretVersion.Types.State.Destroyed, secretVersion.State);
 
-        // Clean the created resources.
+        // Clean the created secret.
         _fixture.DeleteSecret(secret.SecretName);
     }
 }

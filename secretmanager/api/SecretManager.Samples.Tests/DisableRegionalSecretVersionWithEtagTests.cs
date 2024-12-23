@@ -52,7 +52,7 @@ public class DisableRegionalSecretVersionWithEtagTests
         // Assert that the secret version is in disabled state.
         Assert.Equal(SecretVersion.Types.State.Disabled, secretVersion.State);
 
-        // Clean the created resources.
+        // Clean the created secret.
         _fixture.DeleteSecret(secret.SecretName);
     }
 }
