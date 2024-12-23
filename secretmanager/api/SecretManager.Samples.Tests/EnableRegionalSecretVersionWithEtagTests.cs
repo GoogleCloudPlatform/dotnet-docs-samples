@@ -37,16 +37,8 @@ public class EnableRegionalSecretVersionWithEtagTests
         SecretVersion addSecretVersion = _fixture.AddSecretVersion(secret);
         SecretVersionName secretVersionName = addSecretVersion.SecretVersionName;
 
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
-        }.Build();
-=======
         // Disable the secret version.
         SecretVersion disabledSecretVersion = _fixture.DisableSecretVersion(addSecretVersion);
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 
         // Get the updated etag associated with the secret version.
         string updatedEtag = disabledSecretVersion.Etag;
@@ -59,11 +51,8 @@ public class EnableRegionalSecretVersionWithEtagTests
           secretVersionId: secretVersionName.SecretVersionId,
           etag: updatedEtag
         );
-<<<<<<< HEAD
-=======
 
         // Assert that the secret version is in enabled state.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(SecretVersion.Types.State.Enabled, secretVersion.State);
 
         // Clean the created resources.

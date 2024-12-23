@@ -15,12 +15,7 @@
  */
 
 using Google.Cloud.SecretManager.V1;
-<<<<<<< HEAD
-using System;
-using System.IO;
-=======
 using System.Collections.Generic;
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 using Xunit;
 
 [Collection(nameof(RegionalSecretManagerFixture))]
@@ -38,33 +33,14 @@ public class ListRegionalSecretVersionsTests
     [Fact]
     public void ListsRegionalSecretVersions()
     {
-<<<<<<< HEAD
-        // Redirect console output to a StringWriter
-        StringWriter stringWriter = new StringWriter();
-        Console.SetOut(stringWriter);
-
-=======
         // Get the secret name.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         SecretName secretName = _fixture.Secret.SecretName;
 
         // Run the code sample.
         List<SecretVersion> result = _sample.ListRegionalSecretVersions(
             projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId);
 
-<<<<<<< HEAD
-        // Get the console output and restore the original console output stream
-        string output = stringWriter.ToString();
-        Console.SetOut(new StreamWriter(Console.OpenStandardOutput()));
-
-        // Construct the expected regex pattern.
-        string pattern = $@"Got regional secret version : projects\/{secretName.ProjectId}\/locations\/{secretName.LocationId}\/secrets\/[\w-]+";
-
-        // Assert that the output matches the pattern.
-        Assert.Matches(pattern, output);
-=======
         // Assert that the secret list is not empty.
         Assert.NotEmpty(result);
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }

@@ -37,24 +37,6 @@ public class UpdateRegionalSecretWithEtagTests
         SecretName secretName = secret.SecretName;
         SecretVersion secretVersion = _fixture.AddSecretVersion(secret);
 
-<<<<<<< HEAD
-        // Create the Regional Secret Manager Client.
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = $"secretmanager.{secretName.LocationId}.rep.googleapis.com"
-        }.Build();
-
-        Secret secret = client.GetSecret(secretName);
-        string etag = secret.Etag;
-
-        Secret result = _sample.UpdateRegionalSecretWithEtag(
-          projectId: secretName.ProjectId,
-          locationId: secretName.LocationId,
-          secretId: secretName.SecretId,
-          etag: etag
-        );
-        Assert.Equal("rocks", result.Labels["secretmanager"]);
-=======
         // Get the etag associated with secret version.
         string etag = _fixture.client.GetSecret(secretName).Etag;
 
@@ -71,6 +53,5 @@ public class UpdateRegionalSecretWithEtagTests
 
         // Clean the created resources
         _fixture.DeleteSecret(secretName);
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }

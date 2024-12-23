@@ -34,21 +34,15 @@ public class UpdateRegionalSecretWithAliasTests
     {
         // Get the secret name.
         SecretName secretName = _fixture.Secret.SecretName;
-<<<<<<< HEAD
-=======
 
         // Run the code sample.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Secret result = _sample.UpdateRegionalSecretWithAlias(
           projectId: secretName.ProjectId,
           locationId: secretName.LocationId,
           secretId: secretName.SecretId
         );
-<<<<<<< HEAD
-=======
 
         // Assert that the secret alias was correctly set to the secret version.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(1, result.VersionAliases["test"]);
     }
 }

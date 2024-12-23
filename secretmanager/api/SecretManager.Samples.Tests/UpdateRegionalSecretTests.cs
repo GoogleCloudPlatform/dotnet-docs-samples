@@ -32,24 +32,17 @@ public class UpdateRegionalSecretTests
     [Fact]
     public void UpdatesRegionalSecrets()
     {
-<<<<<<< HEAD
-        SecretName secretName = _fixture.Secret.SecretName;
-=======
         // Get the secret name.
         SecretName secretName = _fixture.CreateSecret(_fixture.RandomId()).SecretName;
 
         // Run the code sample.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Secret result = _sample.UpdateRegionalSecret(
           projectId: secretName.ProjectId,
           locationId: secretName.LocationId,
           secretId: secretName.SecretId
         );
-<<<<<<< HEAD
-=======
 
         // Assert that the secret labels was correctly updated.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal("rocks", result.Labels["secretmanager"]);
 
         // Clean the created resource.

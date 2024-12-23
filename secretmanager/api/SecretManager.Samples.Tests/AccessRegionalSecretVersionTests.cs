@@ -42,11 +42,8 @@ public class AccessRegionalSecretVersionTests
           secretId: secretVersionName.SecretId,
           secretVersionId: secretVersionName.SecretVersionId
         );
-<<<<<<< HEAD
-=======
 
         // Assert that the secret was created with the correct value.
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal("my super secret data", result);
     }
 }

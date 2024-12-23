@@ -15,12 +15,7 @@
  */
 
 using Google.Cloud.SecretManager.V1;
-<<<<<<< HEAD
-using System;
-using System.IO;
-=======
 using System.Collections.Generic;
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 using Xunit;
 
 [Collection(nameof(RegionalSecretManagerFixture))]
@@ -38,25 +33,6 @@ public class ListRegionalSecretsWithFilterTests
     [Fact]
     public void ListsRegionalSecretsWithFilter()
     {
-<<<<<<< HEAD
-        // Redirect console output to a StringWriter
-        StringWriter stringWriter = new StringWriter();
-        Console.SetOut(stringWriter);
-
-        SecretName secretName = _fixture.Secret.SecretName;
-        string filter = "name:csharp";
-        _sample.ListRegionalSecretsWithFilter(projectId: secretName.ProjectId, locationId: secretName.LocationId, filter: filter);
-
-        // Get the console output and restore the original console output stream
-        string output = stringWriter.ToString();
-        Console.SetOut(new StreamWriter(Console.OpenStandardOutput()));
-
-        // Construct the expected regex pattern.
-        string pattern = $@"Got regional secret : projects\/{secretName.ProjectId}\/locations\/{secretName.LocationId}\/secrets\/[\w-]+";
-
-        // Assert that the output matches the pattern.
-        Assert.Matches(pattern, output);
-=======
         string filter = "name:csharp";
 
         // Get the secret name.
@@ -82,6 +58,5 @@ public class ListRegionalSecretsWithFilterTests
 
         // Assert that the result is empty.
         Assert.Empty(result);
->>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }
