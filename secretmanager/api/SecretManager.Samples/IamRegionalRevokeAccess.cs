@@ -43,7 +43,7 @@ public class IamRegionalRevokeAccessSample
             ResourceAsResourceName = secretName,
         });
 
-        // Remove the user to the list of bindings.
+        // Remove the user from the list of bindings.
         policy.RemoveRoleMember("roles/secretmanager.secretAccessor", member);
 
         // Save the updated policy.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-// [START secretmanager_update_regional_secret_with_etag]
+// [START secretmanager_edit_regional_secret_annotations]
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
+using Google.Protobuf.Collections;
 using Google.Protobuf.WellKnownTypes;
 
-public class UpdateRegionalSecretWithEtagSample
+
+public class EditRegionalSecretAnnotationsSample
 {
-    public Secret UpdateRegionalSecretWithEtag(
+    public Secret EditRegionalSecretAnnotations(
       string projectId = "my-project",
       string locationId = "my-location",
       string secretId = "my-secret",
-      string etag = "\"1234\""
+      string annotationKey = "my-annotation-key",
+      string annotationValue = "my-annotation-value"
     )
     {
         // Create the Regional Secret Manager Client.
@@ -34,20 +38,34 @@ public class UpdateRegionalSecretWithEtagSample
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
         }.Build();
 
+        // Build the resource name.
+        SecretName secretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId);
+
+        // Get the exisitng secret.
+        Secret existingSecret = client.GetSecret(secretName);
+
+        // Get the secret annotations.
+        MapField<string, string> secretAnnotations = existingSecret.Annotations;
+
+        // Add the mapping to the secret's annotations
+        secretAnnotations[annotationKey] = annotationValue;
+
         // Build the secret with updated fields.
         Secret secret = new Secret
         {
             SecretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId),
-            Etag = etag
+            Annotations = {
+              secretAnnotations
+            }
         };
-        secret.Labels["secretmanager"] = "stones";
 
         // Build the field mask.
-        FieldMask fieldMask = FieldMask.FromString("labels");
+        FieldMask fieldMask = FieldMask.FromString("annotations");
 
-        // Call the API.
+        // Call the update secret API.
         Secret updatedSecret = client.UpdateSecret(secret, fieldMask);
         return updatedSecret;
+
     }
 }
-// [END secretmanager_update_regional_secret_with_etag]
+// [END secretmanager_edit_regional_secret_annotations]

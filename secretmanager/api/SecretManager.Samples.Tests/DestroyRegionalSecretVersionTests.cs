@@ -32,13 +32,26 @@ public class DestroyRegionalSecretVersionTests
     [Fact]
     public void DestroysRegionalSecretVersions()
     {
-        SecretVersionName secretVersionName = _fixture.SecretVersionToDestroy.SecretVersionName;
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+        SecretVersion addSecretVersion = _fixture.AddSecretVersion(secret);
+        SecretVersionName secretVersionName = addSecretVersion.SecretVersionName;
+
+        // Run the sample.
         SecretVersion secretVersion = _sample.DestroyRegionalSecretVersion(
           projectId: secretVersionName.ProjectId,
           locationId: secretVersionName.LocationId,
           secretId: secretVersionName.SecretId,
           secretVersionId: secretVersionName.SecretVersionId
         );
+<<<<<<< HEAD
+=======
+
+        // Assert that the secret version state is set to destroyed.
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(SecretVersion.Types.State.Destroyed, secretVersion.State);
+
+        // Clean the created resources.
+        _fixture.DeleteSecret(secret.SecretName);
     }
 }

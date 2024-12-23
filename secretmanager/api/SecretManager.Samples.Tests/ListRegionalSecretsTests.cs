@@ -15,8 +15,12 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+<<<<<<< HEAD
 using System;
 using System.IO;
+=======
+using System.Collections.Generic;
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
 using Xunit;
 
 [Collection(nameof(RegionalSecretManagerFixture))]
@@ -34,6 +38,7 @@ public class ListRegionalSecretsTests
     [Fact]
     public void ListsRegionalSecrets()
     {
+<<<<<<< HEAD
         // Redirect console output to a StringWriter
         StringWriter stringWriter = new StringWriter();
         Console.SetOut(stringWriter);
@@ -50,5 +55,16 @@ public class ListRegionalSecretsTests
 
         // Assert that the output matches the pattern.
         Assert.Matches(pattern, output);
+=======
+        // Get the secret name.
+        SecretName secretName = _fixture.Secret.SecretName;
+
+        // Run the code sample.
+        List<Secret> result = _sample.ListRegionalSecrets(projectId: secretName.ProjectId, locationId: secretName.LocationId);
+
+        // Assert that the fetched list is not empty.
+        Assert.NotEmpty(result);
+
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
     }
 }

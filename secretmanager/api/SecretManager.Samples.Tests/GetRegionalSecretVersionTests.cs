@@ -32,13 +32,21 @@ public class GetRegionalSecretVersionTests
     [Fact]
     public void GetsRegionalSecretVersions()
     {
+        // Get the secret version name.
         SecretVersionName secretVersionName = _fixture.SecretVersion.SecretVersionName;
+
+        // Run the code sample.
         SecretVersion result = _sample.GetRegionalSecretVersion(
           projectId: secretVersionName.ProjectId,
           locationId: secretVersionName.LocationId,
           secretId: secretVersionName.SecretId,
           secretVersionId: secretVersionName.SecretVersionId
         );
+<<<<<<< HEAD
+=======
+
+        // Assert that the secretversion id is equal to expected value.
+>>>>>>> 95d07aff (chore: Add SecretManager service regional code samples)
         Assert.Equal(result.SecretVersionName.SecretVersionId, secretVersionName.SecretVersionId);
     }
 }

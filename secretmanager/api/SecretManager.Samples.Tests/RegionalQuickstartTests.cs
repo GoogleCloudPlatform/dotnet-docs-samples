@@ -32,7 +32,13 @@ public class RegionalQuickstartTests
     [Fact]
     public void Runs()
     {
-        SecretName secretName = _fixture.SecretForQuickstartName;
+        // Get the secret name.
+        SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId()); ;
+
+        // Run the code sample.
         _sample.RegionalQuickstart(projectId: secretName.ProjectId, locationId: secretName.LocationId, secretId: secretName.SecretId);
+
+        // Clean the created resources.
+        _fixture.DeleteSecret(secretName);
     }
 }
