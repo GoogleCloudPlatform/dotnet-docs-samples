@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 // [START storagetransfer_create_event_driven_gcs_transfer]
 
 using System;
@@ -20,7 +21,6 @@ using Google.Cloud.StorageTransfer.V1;
 
     public class CreateEventDrivenGcsTransferSample
     {
-
         public TransferJob CreateEventDrivenGcsTransfer(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -42,7 +42,6 @@ using Google.Cloud.StorageTransfer.V1;
                 {
                     GcsDataSink = new GcsData { BucketName = sinkBucket },
                     GcsDataSource = new GcsData { BucketName = sourceBucket },
-
                 },
                 Status = TransferJob.Types.Status.Enabled,
                 EventStream = new EventStream { Name = pubSubId }
@@ -51,10 +50,8 @@ using Google.Cloud.StorageTransfer.V1;
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
             TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
             Console.WriteLine($"Created an event driven transfer job from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} with name {response.Name}");
-
             return response;
         }
     }
-
 // [END storagetransfer_create_event_driven_gcs_transfer]
 

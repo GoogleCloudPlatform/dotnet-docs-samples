@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 // [START storagetransfer_quickstart]
 
 using System;
@@ -48,9 +49,7 @@ using Google.Cloud.StorageTransfer.V1;
             });
 
             Console.WriteLine($"Created and ran transfer job from {sourceBucket} to {sinkBucket} with name {response.Name}");
-
             return response;
         }
     }
-
 // [END storagetransfer_quickstart]

@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 // [START storagetransfer_transfer_to_nearline]
 
 using System;
@@ -19,8 +20,8 @@ using Google.Protobuf.WellKnownTypes;
 
     public class TransferToNearlineSample
     {
-        //Creates a one-off transfer job that transfers objects from a standard GCS bucket that are more
-        // than 30 days old to a Nearline GCS bucket.
+            // Creates a one-off transfer job that transfers objects from a standard GCS bucket that are more
+            // than 30 days old to a Nearline GCS bucket
         public TransferJob TransferToNearline(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -46,8 +47,10 @@ using Google.Protobuf.WellKnownTypes;
                 Status = TransferJob.Types.Status.Enabled,
                 Schedule = new Schedule { ScheduleStartDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)), ScheduleEndDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)) }
             };
+
             // Create a Transfer Service client
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
+
             // Create a Transfer job
             TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
             client.RunTransferJob(new RunTransferJobRequest
@@ -60,5 +63,4 @@ using Google.Protobuf.WellKnownTypes;
             return response;
         }
     }
-
 // [END storagetransfer_transfer_to_nearline]

@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 // [START storagetransfer_download_to_posix]
 
 using System;
@@ -18,7 +19,7 @@ using Google.Cloud.StorageTransfer.V1;
 
     public class DownloadToPosixSample
     {
-           // Create a transfer from a GCS bucket to a POSIX file system.
+             // Create a transfer from a GCS bucket to a POSIX file system
         public TransferJob DownloadToPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -47,7 +48,6 @@ using Google.Cloud.StorageTransfer.V1;
                 Status = TransferJob.Types.Status.Enabled,
             };
 
-
             // Create a Transfer Service client
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
 
@@ -62,11 +62,8 @@ using Google.Cloud.StorageTransfer.V1;
 
             Console.WriteLine($"Created and ran transfer job from ({gcsSourceBucket}/{gcsSourcePath}) to {rootDirectory} with the name {response.Name}");
             return response;
-
-
         }
     }
-
 //[END storagetransfer_download_to_posix]
 
 

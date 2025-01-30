@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 // [START storagetransfer_transfer_posix_to_posix]
 
 using System;
@@ -18,7 +19,7 @@ using Google.Cloud.StorageTransfer.V1;
 
     public class TransferBetweenPosixSample
     {
-          // Creates a transfer between POSIX file systems.
+            // Creates a transfer between POSIX file systems
         public TransferJob TransferBetweenPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -51,7 +52,6 @@ using Google.Cloud.StorageTransfer.V1;
                 Status = TransferJob.Types.Status.Enabled,
             };
 
-
             // Create a Transfer Service client
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
 
@@ -66,10 +66,8 @@ using Google.Cloud.StorageTransfer.V1;
 
             Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {destinationDirectory} with the name {response.Name}");
             return response;
-
         }
     }
-
 //[END storagetransfer_transfer_posix_to_posix]
 
 

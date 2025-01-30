@@ -11,6 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and 
 // limitations under the License.
+
 // [START storagetransfer_get_latest_transfer_operation]
 
 using System;
@@ -18,7 +19,7 @@ using Google.Cloud.StorageTransfer.V1;
 
     public class CheckLatestTransferOperationSample
     {
-        //Checks the latest transfer operation for a given transfer job.
+             // Checks the latest transfer operation for a given transfer job
         public TransferJob CheckLatestTransferOperation(
              // Your Google Cloud Project ID
              string projectId = "my-project-id",
@@ -29,9 +30,9 @@ using Google.Cloud.StorageTransfer.V1;
             {
                 throw new Exception("JobName can not be null or empty");
             }
+
             // Create a Transfer Service client
             StorageTransferServiceClient storageTransfer = StorageTransferServiceClient.Create();
-
             GetTransferJobRequest getTransferJobRequest = new GetTransferJobRequest { ProjectId = projectId, JobName = jobName };
             try
             {
@@ -39,7 +40,6 @@ using Google.Cloud.StorageTransfer.V1;
                 TransferJob transferJob = storageTransfer.GetTransferJob(getTransferJobRequest);
                 // Get Latest operation name from transfer job
                 string latestOperationName = transferJob.LatestOperationName;
-
 
                 if (!string.IsNullOrEmpty(latestOperationName))
                 {
@@ -57,5 +57,4 @@ using Google.Cloud.StorageTransfer.V1;
             }
         }
     }
-
 // [END storagetransfer_get_latest_transfer_operation]
