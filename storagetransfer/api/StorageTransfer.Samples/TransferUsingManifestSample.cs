@@ -54,7 +54,6 @@ using Google.Cloud.StorageTransfer.V1;
                 Status = TransferJob.Types.Status.Enabled,
             };
 
-
             // Create a Transfer Service client
             StorageTransferServiceClient client = StorageTransferServiceClient.Create();
 
