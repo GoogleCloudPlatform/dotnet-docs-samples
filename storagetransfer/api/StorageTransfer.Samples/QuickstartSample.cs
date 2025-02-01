@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2021 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-
 // [START storagetransfer_quickstart]
+
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-namespace StorageTransfer.Samples
-{
     public class QuickstartSample
     {
         public TransferJob Quickstart(
@@ -36,8 +34,8 @@ namespace StorageTransfer.Samples
                 ProjectId = projectId,
                 TransferSpec = new TransferSpec
                 {
-                    GcsDataSink = new GcsData { BucketName = sourceBucket },
-                    GcsDataSource = new GcsData { BucketName = sinkBucket }
+                    GcsDataSink = new GcsData { BucketName = sinkBucket },
+                    GcsDataSource = new GcsData { BucketName = sourceBucket }
                 },
                 Status = TransferJob.Types.Status.Enabled
             };
@@ -51,9 +49,7 @@ namespace StorageTransfer.Samples
             });
 
             Console.WriteLine($"Created and ran transfer job from {sourceBucket} to {sinkBucket} with name {response.Name}");
-
             return response;
         }
     }
-}
 // [END storagetransfer_quickstart]

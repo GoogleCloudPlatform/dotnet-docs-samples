@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2021 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Google.Apis.Storage.v1.Data;
+using Google.Cloud.PubSub.V1;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
+using Grpc.Core;
 using Xunit;
+
 namespace StorageTransfer.Samples.Tests
 {
     [CollectionDefinition(nameof(StorageFixture))]
@@ -28,12 +32,34 @@ namespace StorageTransfer.Samples.Tests
         public string ProjectId { get; }
         public string BucketNameSource { get; } = Guid.NewGuid().ToString();
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
+        public string BucketNameManifestSource { get; } = Guid.NewGuid().ToString();
+        public string BucketNamePosixSource { get; } = Guid.NewGuid().ToString();
+        public string JobName { get; }
+        public string SourceAgentPoolName { get; }
+        public string SinkAgentPoolName { get; }
+        public string GcsSourcePath { get; }
+        public string RootDirectory { get; } = System.IO.Path.GetTempPath();
+        public string DestinationDirectory { get; } = System.IO.Path.GetTempPath();
+        public string TempDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+        public string TempDestinationDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         public StorageClient Storage { get; } = StorageClient.Create();
+        public string ManifestObjectName { get; } = "manifest.csv";
+        public string TopicId { get; } = "DotNetTopic" + Guid.NewGuid().ToString();
+        public string SubscriptionId { get; } = "DotNetSubscription" + Guid.NewGuid().ToString();
+        public string PubSubId { get; }
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
+
+        public SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
+
+        public PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
 
         public StorageFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            SourceAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
+            SinkAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
+            PubSubId = $"projects/{ProjectId}/subscriptions/{SubscriptionId}";
+            GcsSourcePath = "foo/bar/";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
                 throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
@@ -41,6 +67,55 @@ namespace StorageTransfer.Samples.Tests
 
             CreateBucketAndGrantStsPermissions(BucketNameSink);
             CreateBucketAndGrantStsPermissions(BucketNameSource);
+            CreateBucketAndGrantStsPermissions(BucketNameManifestSource);
+            CreateBucketAndGrantStsPermissions(BucketNamePosixSource);
+            UploadObjectToManifestBucket(BucketNameManifestSource);
+            UploadObjectToPosixBucket(BucketNamePosixSource);
+            // Initialize request argument(s)
+            TransferJob transferJob = new TransferJob
+            {
+                ProjectId = ProjectId,
+                TransferSpec = new TransferSpec
+                {
+                    GcsDataSink = new GcsData { BucketName = BucketNameSource },
+                    GcsDataSource = new GcsData { BucketName = BucketNameSink }
+                },
+                Status = TransferJob.Types.Status.Enabled
+            };
+            CreateTransferJobRequest request = new CreateTransferJobRequest
+            {
+                TransferJob = transferJob
+            };
+            // Make the request
+            TransferJob response = Sts.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
+            JobName = response.Name;
+            string email = Sts.GetGoogleServiceAccount(new GetGoogleServiceAccountRequest()
+            {
+                ProjectId = ProjectId
+            }).AccountEmail;
+            string memberServiceAccount = "serviceAccount:" + email;
+            // Create subscription name
+            SubscriptionName subscriptionName = new SubscriptionName(ProjectId, SubscriptionId);
+            // Create topic name
+            TopicName topicName = new TopicName(ProjectId, TopicId);
+            // Create topic
+            PublisherClient.CreateTopic(topicName);
+            // Create subscription.
+            SubscriberClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 500);
+            var policyIamPolicyTopic = new Google.Cloud.Iam.V1.Policy();
+            policyIamPolicyTopic.AddRoleMember("roles/pubsub.publisher", memberServiceAccount);
+            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
+            {
+                ResourceAsResourceName = topicName,
+                Policy = policyIamPolicyTopic
+            });
+            var policyIamPolicySubscriber = new Google.Cloud.Iam.V1.Policy();
+            policyIamPolicySubscriber.AddRoleMember("roles/pubsub.subscriber", memberServiceAccount);
+            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
+            {
+                ResourceAsResourceName = subscriptionName,
+                Policy = policyIamPolicySubscriber
+            });
         }
 
         private void CreateBucketAndGrantStsPermissions(string bucketName)
@@ -81,32 +156,69 @@ namespace StorageTransfer.Samples.Tests
                 Role = bucketWriter,
                 Members = new List<string> { member }
             };
-
             policy.Bindings.Add(objectViewerBinding);
             policy.Bindings.Add(bucketReaderBinding);
             policy.Bindings.Add(bucketWriterBinding);
-
             Storage.SetBucketIamPolicy(bucketName, policy);
+        }
+
+        private void UploadObjectToManifestBucket(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
+            MemoryStream stream = new MemoryStream(byteArray);
+            storage.UploadObject(bucketName,ManifestObjectName, "application/octet-stream", stream);
+        }
+
+        private void UploadObjectToPosixBucket(string bucketName)
+        {
+            var storage = StorageClient.Create();
+            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
+            MemoryStream stream = new MemoryStream(byteArray);
+            string fileName = $"{GcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
+            storage.UploadObject(bucketName, fileName, "application/octet-stream", stream);
         }
 
         public void Dispose()
         {
             try
             {
-                Storage.DeleteBucket(BucketNameSink);
+                Storage.DeleteBucket(BucketNameSink, new DeleteBucketOptions { DeleteObjects = true });
             }
             catch (Exception)
             {
                 // Do nothing, we delete on a best effort basis.
+
             }
             try
             {
-                Storage.DeleteBucket(BucketNameSource);
+                Storage.DeleteBucket(BucketNameSource, new DeleteBucketOptions { DeleteObjects = true });
             }
             catch (Exception)
             {
                 // Do nothing, we delete on a best effort basis.
+
             }
+            try
+            {
+                TopicName topicName = TopicName.FromProjectTopic(ProjectId, TopicId);
+                PublisherClient.DeleteTopic(topicName);
+            }
+            catch (RpcException)
+            {
+                // Do nothing, we delete on a best effort basis.
+            }
+
+            try
+            {
+                SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(ProjectId, SubscriptionId);
+                SubscriberClient.DeleteSubscription(subscriptionName);
+            }
+            catch (RpcException)
+            {
+                // Do nothing, we delete on a best effort basis.
+            }
+
         }
     }
 }
