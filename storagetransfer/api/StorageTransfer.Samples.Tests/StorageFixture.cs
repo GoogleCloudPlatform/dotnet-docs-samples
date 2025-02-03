@@ -44,21 +44,13 @@ namespace StorageTransfer.Samples.Tests
         public string TempDestinationDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         public StorageClient Storage { get; } = StorageClient.Create();
         public string ManifestObjectName { get; } = "manifest.csv";
-        public string TopicId { get; } = "DotNetTopic" + Guid.NewGuid().ToString();
-        public string SubscriptionId { get; } = "DotNetSubscription" + Guid.NewGuid().ToString();
-        public string PubSubId { get; }
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
-
-        public SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
-
-        public PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
 
         public StorageFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             SourceAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
             SinkAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
-            PubSubId = $"projects/{ProjectId}/subscriptions/{SubscriptionId}";
             GcsSourcePath = "foo/bar/";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
@@ -94,28 +86,6 @@ namespace StorageTransfer.Samples.Tests
                 ProjectId = ProjectId
             }).AccountEmail;
             string memberServiceAccount = "serviceAccount:" + email;
-            // Create subscription name
-            SubscriptionName subscriptionName = new SubscriptionName(ProjectId, SubscriptionId);
-            // Create topic name
-            TopicName topicName = new TopicName(ProjectId, TopicId);
-            // Create topic
-            PublisherClient.CreateTopic(topicName);
-            // Create subscription.
-            SubscriberClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 500);
-            var policyIamPolicyTopic = new Google.Cloud.Iam.V1.Policy();
-            policyIamPolicyTopic.AddRoleMember("roles/pubsub.publisher", memberServiceAccount);
-            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
-            {
-                ResourceAsResourceName = topicName,
-                Policy = policyIamPolicyTopic
-            });
-            var policyIamPolicySubscriber = new Google.Cloud.Iam.V1.Policy();
-            policyIamPolicySubscriber.AddRoleMember("roles/pubsub.subscriber", memberServiceAccount);
-            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
-            {
-                ResourceAsResourceName = subscriptionName,
-                Policy = policyIamPolicySubscriber
-            });
         }
 
         private void CreateBucketAndGrantStsPermissions(string bucketName)
@@ -167,7 +137,7 @@ namespace StorageTransfer.Samples.Tests
             var storage = StorageClient.Create();
             byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
             MemoryStream stream = new MemoryStream(byteArray);
-            storage.UploadObject(bucketName,ManifestObjectName, "application/octet-stream", stream);
+            storage.UploadObject(bucketName, ManifestObjectName, "application/octet-stream", stream);
         }
 
         private void UploadObjectToPosixBucket(string bucketName)
@@ -188,7 +158,6 @@ namespace StorageTransfer.Samples.Tests
             catch (Exception)
             {
                 // Do nothing, we delete on a best effort basis.
-
             }
             try
             {
@@ -197,28 +166,7 @@ namespace StorageTransfer.Samples.Tests
             catch (Exception)
             {
                 // Do nothing, we delete on a best effort basis.
-
             }
-            try
-            {
-                TopicName topicName = TopicName.FromProjectTopic(ProjectId, TopicId);
-                PublisherClient.DeleteTopic(topicName);
-            }
-            catch (RpcException)
-            {
-                // Do nothing, we delete on a best effort basis.
-            }
-
-            try
-            {
-                SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(ProjectId, SubscriptionId);
-                SubscriberClient.DeleteSubscription(subscriptionName);
-            }
-            catch (RpcException)
-            {
-                // Do nothing, we delete on a best effort basis.
-            }
-
         }
     }
 }
