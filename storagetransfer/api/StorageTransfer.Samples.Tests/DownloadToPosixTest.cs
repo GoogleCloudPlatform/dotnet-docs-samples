@@ -27,19 +27,21 @@ public class DownloadToPosixTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
+    private readonly string _tempDirectory;
     public DownloadToPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _tempDirectory = fixture.GenerateTempFolderPath();
     }
 
     [Fact]
     public void DownloadToPosix()
     {
         DownloadToPosixSample downloadToPosixSample = new DownloadToPosixSample();
-        Directory.CreateDirectory(_fixture.TempDirectory);
-        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _fixture.BucketNamePosixSource, _fixture.GcsSourcePath, _fixture.TempDirectory);
+        Directory.CreateDirectory(_tempDirectory);
+        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _fixture.BucketNamePosixSource, _fixture.GcsSourcePath, _tempDirectory);
         Assert.Contains("transferJobs/", transferJob.Name);
-        Assert.True(Directory.Exists(_fixture.TempDirectory));
+        Assert.True(Directory.Exists(_tempDirectory));
         _transferJobName = transferJob.Name;
     }
 
@@ -57,7 +59,7 @@ public class DownloadToPosixTest : IDisposable
                     Status = TransferJob.Types.Status.Deleted
                 }
             });
-            Directory.Delete(_fixture.TempDirectory, true);
+            Directory.Delete(_tempDirectory, true);
         }
         catch (Exception)
         {

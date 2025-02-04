@@ -26,19 +26,22 @@ public class TransferBetweenPosixTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
+    private readonly string _tempDirectory;
+    private readonly string _tempDestinationDirectory;
     public TransferBetweenPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _tempDirectory = fixture.GenerateTempFolderPath();
+        _tempDestinationDirectory = fixture.GenerateTempFolderPath();
     }
 
     [Fact]
     public void TransferBetweenPosix()
     {
         TransferBetweenPosixSample transferBetweenPosixSample = new TransferBetweenPosixSample();
-        Directory.CreateDirectory(_fixture.TempDirectory);
-        Directory.CreateDirectory(_fixture.TempDestinationDirectory);
-        string sourceDir = _fixture.RootDirectory;
-        string fileName = Path.Combine(_fixture.TempDirectory, "test.txt");
+        Directory.CreateDirectory(_tempDirectory);
+        Directory.CreateDirectory(_tempDestinationDirectory);
+        string fileName = Path.Combine(_tempDirectory, "test.txt");
         // Check if file already exists. If yes, delete it.
         if (File.Exists(fileName))
         {
@@ -48,11 +51,11 @@ public class TransferBetweenPosixTest : IDisposable
         {
             sw.WriteLine("test message");
         }
-        var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.SinkAgentPoolName, _fixture.TempDirectory, _fixture.TempDestinationDirectory, _fixture.BucketNameSource);
+        var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.SinkAgentPoolName, _tempDirectory, _tempDestinationDirectory, _fixture.BucketNameSource);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
-        Assert.True(Directory.Exists(_fixture.TempDirectory));
-        Assert.True(Directory.Exists(_fixture.TempDestinationDirectory));
+        Assert.True(Directory.Exists(_tempDirectory));
+        Assert.True(Directory.Exists(_tempDestinationDirectory));
         Assert.True(File.Exists(fileName));
     }
 
@@ -70,8 +73,8 @@ public class TransferBetweenPosixTest : IDisposable
                     Status = TransferJob.Types.Status.Deleted
                 }
             });
-            Directory.Delete(_fixture.TempDirectory, true);
-            Directory.Delete(_fixture.TempDestinationDirectory, true);
+            Directory.Delete(_tempDirectory, true);
+            Directory.Delete(_tempDestinationDirectory, true);
         }
         catch (Exception)
         {

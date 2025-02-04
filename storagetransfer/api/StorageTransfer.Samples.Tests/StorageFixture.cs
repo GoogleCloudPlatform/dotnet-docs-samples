@@ -18,10 +18,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Google.Apis.Storage.v1.Data;
-using Google.Cloud.PubSub.V1;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
-using Grpc.Core;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests
@@ -38,10 +36,6 @@ namespace StorageTransfer.Samples.Tests
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
         public string GcsSourcePath { get; }
-        public string RootDirectory { get; } = System.IO.Path.GetTempPath();
-        public string DestinationDirectory { get; } = System.IO.Path.GetTempPath();
-        public string TempDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
-        public string TempDestinationDirectory { get; } = Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         public StorageClient Storage { get; } = StorageClient.Create();
         public string ManifestObjectName { get; } = "manifest.csv";
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
@@ -148,7 +142,8 @@ namespace StorageTransfer.Samples.Tests
             string fileName = $"{GcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
             storage.UploadObject(bucketName, fileName, "application/octet-stream", stream);
         }
-
+        internal string GetCurrentUserTempFolderPath() => System.IO.Path.GetTempPath();
+        internal string GenerateTempFolderPath() => Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         public void Dispose()
         {
             try

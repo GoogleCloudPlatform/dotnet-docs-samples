@@ -23,17 +23,18 @@ public class TransferFromPosixTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
+    private readonly string _rootDirectory;
     public TransferFromPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _rootDirectory = fixture.GetCurrentUserTempFolderPath();
     }
 
     [Fact]
     public void TransferFromPosix()
     {
         TransferFromPosixSample transferFromPosixSample = new TransferFromPosixSample();
-        var transferJob = transferFromPosixSample.TransferFromPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.RootDirectory, _fixture.BucketNameSink);
-        var storage = StorageClient.Create();
+        var transferJob = transferFromPosixSample.TransferFromPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _fixture.BucketNameSink);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }

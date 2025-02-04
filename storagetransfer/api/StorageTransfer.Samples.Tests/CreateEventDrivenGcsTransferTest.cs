@@ -26,7 +26,6 @@ namespace StorageTransfer.Samples.Tests
     public class CreateEventDrivenGcsTransferTest : IDisposable
     {
         private readonly StorageFixture _fixture;
-        private readonly StorageTransferServiceClient _sts;
         private readonly string _pubSubId;
         private string _transferJobName;
         private string TopicId { get; } = "DotNetTopic" + Guid.NewGuid().ToString();
