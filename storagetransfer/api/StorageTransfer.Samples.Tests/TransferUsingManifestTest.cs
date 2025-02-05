@@ -25,17 +25,19 @@ public class TransferUsingManifestTest : IDisposable
     private readonly StorageFixture _fixture;
     private string _transferJobName;
     private readonly string _rootDirectory;
+    private readonly string _manifestObjectName;
     public TransferUsingManifestTest(StorageFixture fixture)
     {
         _fixture = fixture;
         _rootDirectory = fixture.GetCurrentUserTempFolderPath();
+        _manifestObjectName = "manifest.csv";
     }
 
     [Fact]
     public void TransferUsingManifest()
     {
         TransferUsingManifestSample transferUsingManifestSample = new TransferUsingManifestSample();
-        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _fixture.BucketNameManifestSource, _fixture.BucketNameSink, _fixture.ManifestObjectName);
+        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _fixture.BucketNameManifestSource, _fixture.BucketNameSink, _manifestObjectName);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }

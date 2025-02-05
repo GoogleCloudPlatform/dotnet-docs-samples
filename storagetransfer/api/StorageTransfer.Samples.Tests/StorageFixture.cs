@@ -35,9 +35,7 @@ namespace StorageTransfer.Samples.Tests
         public string JobName { get; }
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
-        public string GcsSourcePath { get; }
         public StorageClient Storage { get; } = StorageClient.Create();
-        public string ManifestObjectName { get; } = "manifest.csv";
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
 
         public StorageFixture()
@@ -45,7 +43,6 @@ namespace StorageTransfer.Samples.Tests
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             SourceAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
             SinkAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
-            GcsSourcePath = "foo/bar/";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
                 throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
@@ -75,11 +72,6 @@ namespace StorageTransfer.Samples.Tests
             // Make the request
             TransferJob response = Sts.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
             JobName = response.Name;
-            string email = Sts.GetGoogleServiceAccount(new GetGoogleServiceAccountRequest()
-            {
-                ProjectId = ProjectId
-            }).AccountEmail;
-            string memberServiceAccount = "serviceAccount:" + email;
         }
 
         private void CreateBucketAndGrantStsPermissions(string bucketName)
@@ -128,18 +120,20 @@ namespace StorageTransfer.Samples.Tests
 
         private void UploadObjectToManifestBucket(string bucketName)
         {
+            var manifestObjectName = "manifest.csv";
             var storage = StorageClient.Create();
             byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
             MemoryStream stream = new MemoryStream(byteArray);
-            storage.UploadObject(bucketName, ManifestObjectName, "application/octet-stream", stream);
+            storage.UploadObject(bucketName, manifestObjectName, "application/octet-stream", stream);
         }
 
         private void UploadObjectToPosixBucket(string bucketName)
         {
             var storage = StorageClient.Create();
+            var gcsSourcePath = "foo/bar/";
             byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
             MemoryStream stream = new MemoryStream(byteArray);
-            string fileName = $"{GcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
+            string fileName = $"{gcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
             storage.UploadObject(bucketName, fileName, "application/octet-stream", stream);
         }
         internal string GetCurrentUserTempFolderPath() => System.IO.Path.GetTempPath();

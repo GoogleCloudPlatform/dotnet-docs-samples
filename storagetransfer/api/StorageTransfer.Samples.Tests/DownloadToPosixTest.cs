@@ -28,10 +28,12 @@ public class DownloadToPosixTest : IDisposable
     private readonly StorageFixture _fixture;
     private string _transferJobName;
     private readonly string _tempDirectory;
+    private readonly string _gcsSourcePath;
     public DownloadToPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
         _tempDirectory = fixture.GenerateTempFolderPath();
+        _gcsSourcePath = "foo/bar/";
     }
 
     [Fact]
@@ -39,7 +41,7 @@ public class DownloadToPosixTest : IDisposable
     {
         DownloadToPosixSample downloadToPosixSample = new DownloadToPosixSample();
         Directory.CreateDirectory(_tempDirectory);
-        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _fixture.BucketNamePosixSource, _fixture.GcsSourcePath, _tempDirectory);
+        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _fixture.BucketNamePosixSource, _gcsSourcePath, _tempDirectory);
         Assert.Contains("transferJobs/", transferJob.Name);
         Assert.True(Directory.Exists(_tempDirectory));
         _transferJobName = transferJob.Name;
