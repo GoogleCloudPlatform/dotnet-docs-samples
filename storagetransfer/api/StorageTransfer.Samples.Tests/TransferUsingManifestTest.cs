@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System;
+using System.IO;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
@@ -30,7 +31,8 @@ public class TransferUsingManifestTest : IDisposable
     {
         _fixture = fixture;
         _rootDirectory = fixture.GetCurrentUserTempFolderPath();
-        _manifestObjectName = "manifest.csv";
+        _manifestObjectName = $@"{Guid.NewGuid()}.csv";
+        UploadObjectToManifestBucket(_fixture.BucketNameManifestSource);
     }
 
     [Fact]
@@ -40,6 +42,13 @@ public class TransferUsingManifestTest : IDisposable
         var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _fixture.BucketNameManifestSource, _fixture.BucketNameSink, _manifestObjectName);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
+    }
+
+    private void UploadObjectToManifestBucket(string bucketName)
+    {
+        byte[] byteArray = System.Text.Encoding.UTF8.GetBytes($@"{Guid.NewGuid()}.jpeg");
+        MemoryStream stream = new MemoryStream(byteArray);
+        _fixture.Storage.UploadObject(bucketName, _manifestObjectName, "application/octet-stream", stream);
     }
 
     public void Dispose()

@@ -32,7 +32,6 @@ namespace StorageTransfer.Samples.Tests
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
         public string BucketNameManifestSource { get; } = Guid.NewGuid().ToString();
         public string BucketNamePosixSource { get; } = Guid.NewGuid().ToString();
-        public string JobName { get; }
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
         public StorageClient Storage { get; } = StorageClient.Create();
@@ -52,28 +51,7 @@ namespace StorageTransfer.Samples.Tests
             CreateBucketAndGrantStsPermissions(BucketNameSource);
             CreateBucketAndGrantStsPermissions(BucketNameManifestSource);
             CreateBucketAndGrantStsPermissions(BucketNamePosixSource);
-            UploadObjectToManifestBucket(BucketNameManifestSource);
-            UploadObjectToPosixBucket(BucketNamePosixSource);
-            // Initialize request argument(s)
-            TransferJob transferJob = new TransferJob
-            {
-                ProjectId = ProjectId,
-                TransferSpec = new TransferSpec
-                {
-                    GcsDataSink = new GcsData { BucketName = BucketNameSource },
-                    GcsDataSource = new GcsData { BucketName = BucketNameSink }
-                },
-                Status = TransferJob.Types.Status.Enabled
-            };
-            CreateTransferJobRequest request = new CreateTransferJobRequest
-            {
-                TransferJob = transferJob
-            };
-            // Make the request
-            TransferJob response = Sts.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-            JobName = response.Name;
         }
-
         private void CreateBucketAndGrantStsPermissions(string bucketName)
         {
             var bucket = Storage.CreateBucket(ProjectId, new Bucket
@@ -116,25 +94,6 @@ namespace StorageTransfer.Samples.Tests
             policy.Bindings.Add(bucketReaderBinding);
             policy.Bindings.Add(bucketWriterBinding);
             Storage.SetBucketIamPolicy(bucketName, policy);
-        }
-
-        private void UploadObjectToManifestBucket(string bucketName)
-        {
-            var manifestObjectName = "manifest.csv";
-            var storage = StorageClient.Create();
-            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
-            MemoryStream stream = new MemoryStream(byteArray);
-            storage.UploadObject(bucketName, manifestObjectName, "application/octet-stream", stream);
-        }
-
-        private void UploadObjectToPosixBucket(string bucketName)
-        {
-            var storage = StorageClient.Create();
-            var gcsSourcePath = "foo/bar/";
-            byte[] byteArray = System.Text.Encoding.UTF8.GetBytes("flower.jpeg");
-            MemoryStream stream = new MemoryStream(byteArray);
-            string fileName = $"{gcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
-            storage.UploadObject(bucketName, fileName, "application/octet-stream", stream);
         }
         internal string GetCurrentUserTempFolderPath() => System.IO.Path.GetTempPath();
         internal string GenerateTempFolderPath() => Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());

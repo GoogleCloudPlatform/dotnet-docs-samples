@@ -33,7 +33,8 @@ public class DownloadToPosixTest : IDisposable
     {
         _fixture = fixture;
         _tempDirectory = fixture.GenerateTempFolderPath();
-        _gcsSourcePath = "foo/bar/";
+        _gcsSourcePath = $"{Guid.NewGuid()}/{Guid.NewGuid()}/";
+        UploadObjectToPosixBucket(_fixture.BucketNamePosixSource);
     }
 
     [Fact]
@@ -45,6 +46,13 @@ public class DownloadToPosixTest : IDisposable
         Assert.Contains("transferJobs/", transferJob.Name);
         Assert.True(Directory.Exists(_tempDirectory));
         _transferJobName = transferJob.Name;
+    }
+    private void UploadObjectToPosixBucket(string bucketName)
+    {
+        byte[] byteArray = System.Text.Encoding.UTF8.GetBytes($@"{Guid.NewGuid()}.jpeg");
+        MemoryStream stream = new MemoryStream(byteArray);
+        string fileName = $"{_gcsSourcePath}{DateTime.Now.ToString("yyyyMMddHHmmss")}.txt";
+        _fixture.Storage.UploadObject(bucketName, fileName, "application/octet-stream", stream);
     }
 
     public void Dispose()
