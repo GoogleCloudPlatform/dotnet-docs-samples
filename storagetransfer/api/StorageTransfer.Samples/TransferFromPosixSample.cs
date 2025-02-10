@@ -17,51 +17,51 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-    public class TransferFromPosixSample
+public class TransferFromPosixSample
+{
+    // Create a transfer from a POSIX file system to a GCS sink bucket
+    public TransferJob TransferFromPosix(
+        // Your Google Cloud Project ID
+        string projectId = "my-project-id",
+        // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
+        string sourceAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
+        // The root directory path on the source filesystem
+        string rootDirectory = "/tmp/uploads",
+        // The GCS bucket to transfer data to
+        string sinkBucket = "my-sink-bucket")
     {
-            // Create a transfer from a POSIX file system to a GCS sink bucket
-        public TransferJob TransferFromPosix(
-            // Your Google Cloud Project ID
-            string projectId = "my-project-id",
-            // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
-            string sourceAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-            // The root directory path on the source filesystem
-            string rootDirectory = "/tmp/uploads",
-            // The GCS bucket to transfer data to
-            string sinkBucket = "my-sink-bucket")
+        //  A useful description for your transfer job
+        string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket})";
+
+        TransferJob transferJob = new TransferJob
         {
-            //  A useful description for your transfer job
-            string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket})";
-
-            TransferJob transferJob = new TransferJob
+            ProjectId = projectId,
+            Description = jobDescription,
+            TransferSpec = new TransferSpec
             {
-                ProjectId = projectId,
-                Description = jobDescription,
-                TransferSpec = new TransferSpec
-                {
-                    GcsDataSink = new GcsData { BucketName = sinkBucket },
-                    SourceAgentPoolName = sourceAgentPoolName,
-                    PosixDataSource = new PosixFilesystem { RootDirectory = rootDirectory }
-                },
-                Status = TransferJob.Types.Status.Enabled,
-            };
+                GcsDataSink = new GcsData { BucketName = sinkBucket },
+                SourceAgentPoolName = sourceAgentPoolName,
+                PosixDataSource = new PosixFilesystem { RootDirectory = rootDirectory }
+            },
+            Status = TransferJob.Types.Status.Enabled,
+        };
 
-            // Create a Transfer Service client
-            StorageTransferServiceClient client = StorageTransferServiceClient.Create();
+        // Create a Transfer Service client
+        StorageTransferServiceClient client = StorageTransferServiceClient.Create();
 
-            // Create a Transfer job
-            TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
+        // Create a Transfer job
+        TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
 
-            client.RunTransferJob(new RunTransferJobRequest
-            {
-                JobName = response.Name,
-                ProjectId = projectId
-            });
+        client.RunTransferJob(new RunTransferJobRequest
+        {
+            JobName = response.Name,
+            ProjectId = projectId
+        });
 
-            Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} with the name {response.Name}");
-            return response;
-        }
+        Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} with the name {response.Name}");
+        return response;
     }
+}
 // [END storagetransfer_transfer_from_posix]
 
 

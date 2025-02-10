@@ -18,49 +18,49 @@ using System;
 using Google.Cloud.StorageTransfer.V1;
 using Google.Protobuf.WellKnownTypes;
 
-    public class TransferToNearlineSample
+public class TransferToNearlineSample
+{
+    // Creates a one-off transfer job that transfers objects from a standard GCS bucket that are more
+    // than 30 days old to a Nearline GCS bucket
+    public TransferJob TransferToNearline(
+        // Your Google Cloud Project ID
+        string projectId = "my-project-id",
+        // The GCS bucket to transfer objects from
+        string sourceBucket = "my-source-bucket",
+        // The GCS Nearline bucket to transfer old objects to
+        string sinkBucket = "my-sink-bucket")
     {
-            // Creates a one-off transfer job that transfers objects from a standard GCS bucket that are more
-            // than 30 days old to a Nearline GCS bucket
-        public TransferJob TransferToNearline(
-            // Your Google Cloud Project ID
-            string projectId = "my-project-id",
-            // The GCS bucket to transfer objects from
-            string sourceBucket = "my-source-bucket",
-            // The GCS Nearline bucket to transfer old objects to
-            string sinkBucket = "my-sink-bucket")
+        // A description of this job
+        string jobDescription = $"Transfers old objects from standard bucket ({sourceBucket}) that haven't been modified in the last 30 days to a Nearline bucket ({sinkBucket})";
+
+        TransferJob transferJob = new TransferJob
         {
-            // A description of this job
-            string jobDescription = $"Transfers old objects from standard bucket ({sourceBucket}) that haven't been modified in the last 30 days to a Nearline bucket ({sinkBucket})";
-
-            TransferJob transferJob = new TransferJob
+            ProjectId = projectId,
+            Description = jobDescription,
+            TransferSpec = new TransferSpec
             {
-                ProjectId = projectId,
-                Description = jobDescription,
-                TransferSpec = new TransferSpec
-                {
-                    GcsDataSink = new GcsData { BucketName = sinkBucket },
-                    GcsDataSource = new GcsData { BucketName = sourceBucket },
-                    ObjectConditions = new ObjectConditions { MinTimeElapsedSinceLastModification = Duration.FromTimeSpan(TimeSpan.FromSeconds(2592000)) },
-                    TransferOptions = new TransferOptions { DeleteObjectsFromSourceAfterTransfer = true },
-                },
-                Status = TransferJob.Types.Status.Enabled,
-                Schedule = new Schedule { ScheduleStartDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)), ScheduleEndDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)) }
-            };
+                GcsDataSink = new GcsData { BucketName = sinkBucket },
+                GcsDataSource = new GcsData { BucketName = sourceBucket },
+                ObjectConditions = new ObjectConditions { MinTimeElapsedSinceLastModification = Duration.FromTimeSpan(TimeSpan.FromSeconds(2592000)) },
+                TransferOptions = new TransferOptions { DeleteObjectsFromSourceAfterTransfer = true },
+            },
+            Status = TransferJob.Types.Status.Enabled,
+            Schedule = new Schedule { ScheduleStartDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)), ScheduleEndDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)) }
+        };
 
-            // Create a Transfer Service client
-            StorageTransferServiceClient client = StorageTransferServiceClient.Create();
+        // Create a Transfer Service client
+        StorageTransferServiceClient client = StorageTransferServiceClient.Create();
 
-            // Create a Transfer job
-            TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-            client.RunTransferJob(new RunTransferJobRequest
-            {
-                JobName = response.Name,
-                ProjectId = projectId
-            });
+        // Create a Transfer job
+        TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
+        client.RunTransferJob(new RunTransferJobRequest
+        {
+            JobName = response.Name,
+            ProjectId = projectId
+        });
 
-            Console.WriteLine($"Created one-off transfer job from standard bucket {sourceBucket} to Nearline bucket {sinkBucket} with the name {response.Name}");
-            return response;
-        }
+        Console.WriteLine($"Created one-off transfer job from standard bucket {sourceBucket} to Nearline bucket {sinkBucket} with the name {response.Name}");
+        return response;
     }
+}
 // [END storagetransfer_transfer_to_nearline]

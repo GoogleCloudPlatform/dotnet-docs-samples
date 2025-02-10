@@ -19,39 +19,39 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-    public class CreateEventDrivenGcsTransferSample
+public class CreateEventDrivenGcsTransferSample
+{
+    public TransferJob CreateEventDrivenGcsTransfer(
+        // Your Google Cloud Project ID
+        string projectId = "my-project-id",
+        // The GCS bucket to transfer data from
+        string sourceBucket = "my-source-bucket",
+        // The GCS bucket to transfer data to
+        string sinkBucket = "my-sink-bucket",
+        // The subscription ID to a Pubsub queue to track
+        string pubSubId = "projects/PROJECT_NAME/subscriptions/SUBSCRIPTION_ID")
     {
-        public TransferJob CreateEventDrivenGcsTransfer(
-            // Your Google Cloud Project ID
-            string projectId = "my-project-id",
-            // The GCS bucket to transfer data from
-            string sourceBucket = "my-source-bucket",
-            // The GCS bucket to transfer data to
-            string sinkBucket = "my-sink-bucket",
-            // The subscription ID to a Pubsub queue to track
-            string pubSubId = "projects/PROJECT_NAME/subscriptions/SUBSCRIPTION_ID")
+        // A useful description for your transfer job
+        string jobDescription = $"Event driven gcs data transfer from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} ";
+
+        TransferJob transferJob = new TransferJob
         {
-            // A useful description for your transfer job
-            string jobDescription = $"Event driven gcs data transfer from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} ";
-
-            TransferJob transferJob = new TransferJob
+            ProjectId = projectId,
+            Description = jobDescription,
+            TransferSpec = new TransferSpec
             {
-                ProjectId = projectId,
-                Description = jobDescription,
-                TransferSpec = new TransferSpec
-                {
-                    GcsDataSink = new GcsData { BucketName = sinkBucket },
-                    GcsDataSource = new GcsData { BucketName = sourceBucket },
-                },
-                Status = TransferJob.Types.Status.Enabled,
-                EventStream = new EventStream { Name = pubSubId }
-            };
+                GcsDataSink = new GcsData { BucketName = sinkBucket },
+                GcsDataSource = new GcsData { BucketName = sourceBucket },
+            },
+            Status = TransferJob.Types.Status.Enabled,
+            EventStream = new EventStream { Name = pubSubId }
+        };
 
-            StorageTransferServiceClient client = StorageTransferServiceClient.Create();
-            TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-            Console.WriteLine($"Created an event driven transfer job from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} with name {response.Name}");
-            return response;
-        }
+        StorageTransferServiceClient client = StorageTransferServiceClient.Create();
+        TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
+        Console.WriteLine($"Created an event driven transfer job from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} with name {response.Name}");
+        return response;
     }
+}
 // [END storagetransfer_create_event_driven_gcs_transfer]
 

@@ -17,10 +17,10 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-    public class TransferBetweenPosixSample
-    {
-            // Creates a transfer between POSIX file systems
-        public TransferJob TransferBetweenPosix(
+public class TransferBetweenPosixSample
+{
+    // Creates a transfer between POSIX file systems
+    public TransferJob TransferBetweenPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
             // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
@@ -33,41 +33,41 @@ using Google.Cloud.StorageTransfer.V1;
             string destinationDirectory = "/directory/to/transfer/sink",
             // The name of GCS bucket for intermediate storage
             string intermediate_bucket = "my-intermediate-bucket")
+    {
+        //  A useful description for your transfer job
+        string jobDescription = $"Transfer objects from {rootDirectory} to the {destinationDirectory} between POSIX file system";
+
+        TransferJob transferJob = new TransferJob
         {
-            //  A useful description for your transfer job
-            string jobDescription = $"Transfer objects from {rootDirectory} to the {destinationDirectory} between POSIX file system";
-
-            TransferJob transferJob = new TransferJob
+            ProjectId = projectId,
+            Description = jobDescription,
+            TransferSpec = new TransferSpec
             {
-                ProjectId = projectId,
-                Description = jobDescription,
-                TransferSpec = new TransferSpec
-                {
-                    SourceAgentPoolName = sourceAgentPoolName,
-                    SinkAgentPoolName = sinkAgentPoolName,
-                    PosixDataSource = new PosixFilesystem { RootDirectory = rootDirectory },
-                    PosixDataSink = new PosixFilesystem { RootDirectory = destinationDirectory },
-                    GcsIntermediateDataLocation = new GcsData { BucketName = intermediate_bucket }
-                },
-                Status = TransferJob.Types.Status.Enabled,
-            };
+                SourceAgentPoolName = sourceAgentPoolName,
+                SinkAgentPoolName = sinkAgentPoolName,
+                PosixDataSource = new PosixFilesystem { RootDirectory = rootDirectory },
+                PosixDataSink = new PosixFilesystem { RootDirectory = destinationDirectory },
+                GcsIntermediateDataLocation = new GcsData { BucketName = intermediate_bucket }
+            },
+            Status = TransferJob.Types.Status.Enabled,
+        };
 
-            // Create a Transfer Service client
-            StorageTransferServiceClient client = StorageTransferServiceClient.Create();
+        // Create a Transfer Service client
+        StorageTransferServiceClient client = StorageTransferServiceClient.Create();
 
-            // Create a Transfer job
-            TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
+        // Create a Transfer job
+        TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
 
-            client.RunTransferJob(new RunTransferJobRequest
-            {
-                JobName = response.Name,
-                ProjectId = projectId
-            });
+        client.RunTransferJob(new RunTransferJobRequest
+        {
+            JobName = response.Name,
+            ProjectId = projectId
+        });
 
-            Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {destinationDirectory} with the name {response.Name}");
-            return response;
-        }
+        Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {destinationDirectory} with the name {response.Name}");
+        return response;
     }
+}
 //[END storagetransfer_transfer_posix_to_posix]
 
 

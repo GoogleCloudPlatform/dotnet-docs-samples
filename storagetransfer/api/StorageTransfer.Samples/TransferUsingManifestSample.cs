@@ -17,57 +17,57 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
-    public class TransferUsingManifestSample
+public class TransferUsingManifestSample
+{
+    // Create a transfer from a POSIX file system to a GCS bucket using a manifest file
+    public TransferJob TransferUsingManifest(
+        // Your Google Cloud Project ID
+        string projectId = "my-project-id",
+        // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
+        string sourceAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
+        // The root directory path on the source filesystem
+        string rootDirectory = "/tmp/uploads",
+        // The GCS bucket which has your manifest file
+        string manifestBucket = "my-source-bucket",
+        // The GCS bucket to transfer data to
+        string sinkBucket = "my-sink-bucket",
+        // The name of the manifest file in manifestBucket that specifies which objects to transfer
+        string manifestObjectName = "path/to/manifest.csv")
     {
-            // Create a transfer from a POSIX file system to a GCS bucket using a manifest file
-        public TransferJob TransferUsingManifest(
-            // Your Google Cloud Project ID
-            string projectId = "my-project-id",
-            // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
-            string sourceAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-            // The root directory path on the source filesystem
-            string rootDirectory = "/tmp/uploads",
-            // The GCS bucket which has your manifest file
-            string manifestBucket = "my-source-bucket",
-            // The GCS bucket to transfer data to
-            string sinkBucket = "my-sink-bucket",
-            // The name of the manifest file in manifestBucket that specifies which objects to transfer
-            string manifestObjectName = "path/to/manifest.csv")
+        string manifestLocation = $"gs://{manifestBucket}/{manifestObjectName}";
+
+        // A useful description for your transfer job
+        string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket}) using manifest file";
+
+        TransferJob transferJob = new TransferJob
         {
-            string manifestLocation = $"gs://{manifestBucket}/{manifestObjectName}";
-
-            // A useful description for your transfer job
-            string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket}) using manifest file";
-
-            TransferJob transferJob = new TransferJob
+            ProjectId = projectId,
+            Description = jobDescription,
+            TransferSpec = new TransferSpec
             {
-                ProjectId = projectId,
-                Description = jobDescription,
-                TransferSpec = new TransferSpec
-                {
-                    GcsDataSink = new GcsData { BucketName = sinkBucket },
-                    GcsDataSource = new GcsData { BucketName = manifestBucket },
-                    SourceAgentPoolName = sourceAgentPoolName,
-                    PosixDataSource = new PosixFilesystem { RootDirectory = rootDirectory },
-                    TransferManifest = new TransferManifest { Location = manifestLocation }
-                },
-                Status = TransferJob.Types.Status.Enabled,
-            };
+                GcsDataSink = new GcsData { BucketName = sinkBucket },
+                GcsDataSource = new GcsData { BucketName = manifestBucket },
+                SourceAgentPoolName = sourceAgentPoolName,
+                PosixDataSource = new PosixFilesystem { RootDirectory = rootDirectory },
+                TransferManifest = new TransferManifest { Location = manifestLocation }
+            },
+            Status = TransferJob.Types.Status.Enabled,
+        };
 
-            // Create a Transfer Service client
-            StorageTransferServiceClient client = StorageTransferServiceClient.Create();
+        // Create a Transfer Service client
+        StorageTransferServiceClient client = StorageTransferServiceClient.Create();
 
-            // Create a Transfer job
-            TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
+        // Create a Transfer job
+        TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
 
-            client.RunTransferJob(new RunTransferJobRequest
-            {
-                JobName = response.Name,
-                ProjectId = projectId
-            });
+        client.RunTransferJob(new RunTransferJobRequest
+        {
+            JobName = response.Name,
+            ProjectId = projectId
+        });
 
-            Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} using manifest file {manifestLocation} with the name {response.Name}");
-            return response;
-        }
+        Console.WriteLine($"Created and ran transfer job from {rootDirectory} to {sinkBucket} using manifest file {manifestLocation} with the name {response.Name}");
+        return response;
     }
+}
 // [END storagetransfer_manifest_request]
