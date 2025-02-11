@@ -17,9 +17,11 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
+/// <summary>
+/// Create a transfer to transfer objects from root directory to the destination directory between POSIX file systems.
+/// </summary>
 public class TransferBetweenPosixSample
 {
-    // Creates a transfer between POSIX file systems
     public TransferJob TransferBetweenPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",

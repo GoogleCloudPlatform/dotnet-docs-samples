@@ -17,9 +17,11 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
+/// <summary>
+/// Create a transfer for downloading objects from a gcs bucket to the root directory of POSIX file system.
+/// </summary>
 public class DownloadToPosixSample
 {
-    // Create a transfer from a GCS bucket to a POSIX file system
     public TransferJob DownloadToPosix(
         // Your Google Cloud Project ID
         string projectId = "my-project-id",

@@ -19,6 +19,9 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
+/// <summary>
+/// Create an event driven gcs data transfer from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.
+/// </summary>
 public class CreateEventDrivenGcsTransferSample
 {
     public TransferJob CreateEventDrivenGcsTransfer(

@@ -17,9 +17,11 @@
 using System;
 using Google.Cloud.StorageTransfer.V1;
 
+/// <summary>
+/// Checks the latest transfer operation for a given transfer job.
+/// </summary>
 public class CheckLatestTransferOperationSample
 {
-    // Checks the latest transfer operation for a given transfer job
     public TransferJob CheckLatestTransferOperation(
              // Your Google Cloud Project ID
              string projectId = "my-project-id",
