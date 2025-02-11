@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START cloudrun_pubsub_dockerfile]
+# [START cloudrun_pubsub_dockerfile_csharp]
 # Build in SDK base image
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build-env
 WORKDIR /app
@@ -32,4 +32,4 @@ COPY --from=build-env /app/out .
 ENV PORT=8080
 
 ENTRYPOINT ["dotnet", "Run.Samples.Pubsub.MinimalApi.dll"]
-# [END cloudrun_pubsub_dockerfile]
+# [END cloudrun_pubsub_dockerfile_csharp]

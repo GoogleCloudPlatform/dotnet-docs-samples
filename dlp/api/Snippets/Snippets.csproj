@@ -5,7 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Dlp.V2" Version="4.15.0" />
-    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.10.0" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.20.0" />
+    <PackageReference Include="Google.Cloud.BigQuery.V2" Version="3.11.0" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.21.0" />
   </ItemGroup>
 </Project>
