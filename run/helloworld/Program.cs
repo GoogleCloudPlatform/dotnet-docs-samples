@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START cloudrun_helloworld_service]
 var builder = WebApplication.CreateBuilder(args);
 
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
@@ -23,3 +24,4 @@ var app = builder.Build();
 app.MapGet("/", () => $"Hello {target}!");
 
 app.Run(url);
+// [END cloudrun_helloworld_service]
