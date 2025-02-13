@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2021 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16,10 +16,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
+
 namespace StorageTransfer.Samples.Tests
 {
     [CollectionDefinition(nameof(StorageFixture))]
@@ -28,12 +30,18 @@ namespace StorageTransfer.Samples.Tests
         public string ProjectId { get; }
         public string BucketNameSource { get; } = Guid.NewGuid().ToString();
         public string BucketNameSink { get; } = Guid.NewGuid().ToString();
+        public string BucketNameManifestSource { get; } = Guid.NewGuid().ToString();
+        public string BucketNamePosixSource { get; } = Guid.NewGuid().ToString();
+        public string SourceAgentPoolName { get; }
+        public string SinkAgentPoolName { get; }
         public StorageClient Storage { get; } = StorageClient.Create();
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
 
         public StorageFixture()
         {
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+            SourceAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
+            SinkAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
             if (string.IsNullOrWhiteSpace(ProjectId))
             {
                 throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
@@ -41,8 +49,9 @@ namespace StorageTransfer.Samples.Tests
 
             CreateBucketAndGrantStsPermissions(BucketNameSink);
             CreateBucketAndGrantStsPermissions(BucketNameSource);
+            CreateBucketAndGrantStsPermissions(BucketNameManifestSource);
+            CreateBucketAndGrantStsPermissions(BucketNamePosixSource);
         }
-
         private void CreateBucketAndGrantStsPermissions(string bucketName)
         {
             var bucket = Storage.CreateBucket(ProjectId, new Bucket
@@ -81,19 +90,18 @@ namespace StorageTransfer.Samples.Tests
                 Role = bucketWriter,
                 Members = new List<string> { member }
             };
-
             policy.Bindings.Add(objectViewerBinding);
             policy.Bindings.Add(bucketReaderBinding);
             policy.Bindings.Add(bucketWriterBinding);
-
             Storage.SetBucketIamPolicy(bucketName, policy);
         }
-
+        internal string GetCurrentUserTempFolderPath() => System.IO.Path.GetTempPath();
+        internal string GenerateTempFolderPath() => Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
         public void Dispose()
         {
             try
             {
-                Storage.DeleteBucket(BucketNameSink);
+                Storage.DeleteBucket(BucketNameSink, new DeleteBucketOptions { DeleteObjects = true });
             }
             catch (Exception)
             {
@@ -101,7 +109,7 @@ namespace StorageTransfer.Samples.Tests
             }
             try
             {
-                Storage.DeleteBucket(BucketNameSource);
+                Storage.DeleteBucket(BucketNameSource, new DeleteBucketOptions { DeleteObjects = true });
             }
             catch (Exception)
             {

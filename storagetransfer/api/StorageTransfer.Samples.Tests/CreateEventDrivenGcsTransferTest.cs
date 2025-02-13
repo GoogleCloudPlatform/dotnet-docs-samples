@@ -1,0 +1,110 @@
+/**
+ * Copyright 2024 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+using System;
+using Google.Cloud.PubSub.V1;
+using Google.Cloud.Storage.V1;
+using Google.Cloud.StorageTransfer.V1;
+using Xunit;
+
+namespace StorageTransfer.Samples.Tests
+{
+    [Collection(nameof(StorageFixture))]
+    public class CreateEventDrivenGcsTransferTest : IDisposable
+    {
+        private readonly StorageFixture _fixture;
+        private readonly string _pubSubId;
+        private string _transferJobName;
+        private string TopicId { get; } = "DotNetTopic" + Guid.NewGuid().ToString();
+        private string SubscriptionId { get; } = "DotNetSubscription" + Guid.NewGuid().ToString();
+        private SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
+        private PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
+        public CreateEventDrivenGcsTransferTest(StorageFixture fixture)
+        {
+            _fixture = fixture;
+            _pubSubId = $"projects/{_fixture.ProjectId}/subscriptions/{SubscriptionId}";
+            string email = _fixture.Sts.GetGoogleServiceAccount(new GetGoogleServiceAccountRequest()
+            {
+                ProjectId = _fixture.ProjectId
+            }).AccountEmail;
+
+            string memberServiceAccount = "serviceAccount:" + email;
+            // Create subscription name
+            SubscriptionName subscriptionName = new SubscriptionName(_fixture.ProjectId, SubscriptionId);
+            // Create topic name
+            TopicName topicName = new TopicName(_fixture.ProjectId, TopicId);
+            // Create topic
+            PublisherClient.CreateTopic(topicName);
+            // Create subscription.
+            SubscriberClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 500);
+
+            var policyIamPolicyTopic = new Google.Cloud.Iam.V1.Policy();
+
+            policyIamPolicyTopic.AddRoleMember("roles/pubsub.publisher", memberServiceAccount);
+
+            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
+            {
+                ResourceAsResourceName = topicName,
+                Policy = policyIamPolicyTopic
+            });
+
+            var policyIamPolicySubscriber = new Google.Cloud.Iam.V1.Policy();
+
+            policyIamPolicySubscriber.AddRoleMember("roles/pubsub.subscriber", memberServiceAccount);
+
+            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
+            {
+                ResourceAsResourceName = subscriptionName,
+                Policy = policyIamPolicySubscriber
+            });
+        }
+
+        [Fact]
+        public void CreateEventDrivenGcsTransfer()
+        {
+            CreateEventDrivenGcsTransferSample createEventDrivenGcsTransferSample = new CreateEventDrivenGcsTransferSample();
+            var transferJob = createEventDrivenGcsTransferSample.CreateEventDrivenGcsTransfer(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink, _pubSubId);
+            Assert.Contains("transferJobs/", transferJob.Name);
+            _transferJobName = transferJob.Name;
+        }
+
+        public void Dispose()
+        {
+            try
+            {
+                _fixture.Sts.UpdateTransferJob(new UpdateTransferJobRequest()
+                {
+                    ProjectId = _fixture.ProjectId,
+                    JobName = _transferJobName,
+                    TransferJob = new TransferJob()
+                    {
+                        Name = _transferJobName,
+                        Status = TransferJob.Types.Status.Deleted
+                    }
+                });
+
+                TopicName topicName = TopicName.FromProjectTopic(_fixture.ProjectId, TopicId);
+                PublisherClient.DeleteTopic(topicName);
+                SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(_fixture.ProjectId, SubscriptionId);
+                SubscriberClient.DeleteSubscription(subscriptionName);
+            }
+            catch (Exception)
+            {
+                // Do nothing, we delete on a best effort basis.
+            }
+        }
+    }
+}
