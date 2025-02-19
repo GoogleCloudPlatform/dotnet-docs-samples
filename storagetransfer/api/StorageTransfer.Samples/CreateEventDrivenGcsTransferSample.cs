@@ -57,4 +57,3 @@ public class CreateEventDrivenGcsTransferSample
     }
 }
 // [END storagetransfer_create_event_driven_gcs_transfer]
-

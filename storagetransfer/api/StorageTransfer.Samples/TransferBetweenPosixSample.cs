@@ -71,5 +71,3 @@ public class TransferBetweenPosixSample
     }
 }
 //[END storagetransfer_transfer_posix_to_posix]
-
-
