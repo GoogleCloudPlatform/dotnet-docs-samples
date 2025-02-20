@@ -14,14 +14,12 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
+
 [Collection(nameof(StorageFixture))]
 public class DownloadToPosixTest : IDisposable
 {
@@ -29,12 +27,15 @@ public class DownloadToPosixTest : IDisposable
     private string _transferJobName;
     private readonly string _tempDirectory;
     private readonly string _gcsSourcePath;
+    private readonly string _bucketNamePosixSource;
     public DownloadToPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _tempDirectory = fixture.GenerateTempFolderPath();
+        _bucketNamePosixSource = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_bucketNamePosixSource);
+        _tempDirectory = _fixture.GenerateTempFolderPath();
         _gcsSourcePath = $"{Guid.NewGuid()}/{Guid.NewGuid()}/";
-        UploadObjectToPosixBucket(_fixture.BucketNamePosixSource);
+        UploadObjectToPosixBucket(_bucketNamePosixSource);
     }
 
     [Fact]
@@ -42,11 +43,12 @@ public class DownloadToPosixTest : IDisposable
     {
         DownloadToPosixSample downloadToPosixSample = new DownloadToPosixSample();
         Directory.CreateDirectory(_tempDirectory);
-        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _fixture.BucketNamePosixSource, _gcsSourcePath, _tempDirectory);
+        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _bucketNamePosixSource, _gcsSourcePath, _tempDirectory);
         Assert.Contains("transferJobs/", transferJob.Name);
         Assert.True(Directory.Exists(_tempDirectory));
         _transferJobName = transferJob.Name;
     }
+
     private void UploadObjectToPosixBucket(string bucketName)
     {
         byte[] byteArray = System.Text.Encoding.UTF8.GetBytes($@"{Guid.NewGuid()}.jpeg");
@@ -70,6 +72,7 @@ public class DownloadToPosixTest : IDisposable
                 }
             });
             Directory.Delete(_tempDirectory, true);
+            _fixture.Storage.DeleteBucket(_bucketNamePosixSource, new DeleteBucketOptions { DeleteObjects = true });
         }
         catch (Exception)
         {

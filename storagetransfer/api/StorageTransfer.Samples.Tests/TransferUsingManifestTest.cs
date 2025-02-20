@@ -27,19 +27,24 @@ public class TransferUsingManifestTest : IDisposable
     private string _transferJobName;
     private readonly string _rootDirectory;
     private readonly string _manifestObjectName;
+    private readonly string _bucketNameManifestSource;
     public TransferUsingManifestTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _bucketNameManifestSource = _fixture.GenerateBucketName();
+        _fixture.BucketNameSink = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_bucketNameManifestSource);
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
         _rootDirectory = fixture.GetCurrentUserTempFolderPath();
         _manifestObjectName = $@"{Guid.NewGuid()}.csv";
-        UploadObjectToManifestBucket(_fixture.BucketNameManifestSource);
+        UploadObjectToManifestBucket(_bucketNameManifestSource);
     }
 
     [Fact]
     public void TransferUsingManifest()
     {
         TransferUsingManifestSample transferUsingManifestSample = new TransferUsingManifestSample();
-        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _fixture.BucketNameManifestSource, _fixture.BucketNameSink, _manifestObjectName);
+        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _bucketNameManifestSource, _fixture.BucketNameSink, _manifestObjectName);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }
@@ -65,6 +70,7 @@ public class TransferUsingManifestTest : IDisposable
                     Status = TransferJob.Types.Status.Deleted
                 }
             });
+            _fixture.Storage.DeleteBucket(_bucketNameManifestSource, new DeleteBucketOptions { DeleteObjects = true });
         }
         catch (Exception)
         {

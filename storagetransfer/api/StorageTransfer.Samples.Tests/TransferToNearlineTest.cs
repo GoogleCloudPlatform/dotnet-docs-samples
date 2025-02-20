@@ -18,6 +18,7 @@ using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
+
 [Collection(nameof(StorageFixture))]
 public class TransferToNearlineTest : IDisposable
 {
@@ -26,6 +27,10 @@ public class TransferToNearlineTest : IDisposable
     public TransferToNearlineTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _fixture.BucketNameSource = _fixture.GenerateBucketName();
+        _fixture.BucketNameSink = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
     }
 
     [Fact]

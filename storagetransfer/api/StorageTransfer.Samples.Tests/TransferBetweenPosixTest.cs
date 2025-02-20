@@ -14,13 +14,11 @@
 
 using System;
 using System.IO;
-using System.Linq;
-using System.Xml.Linq;
-using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
+
 [Collection(nameof(StorageFixture))]
 public class TransferBetweenPosixTest : IDisposable
 {
@@ -31,6 +29,8 @@ public class TransferBetweenPosixTest : IDisposable
     public TransferBetweenPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _fixture.BucketNameSource = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
         _tempDirectory = fixture.GenerateTempFolderPath();
         _tempDestinationDirectory = fixture.GenerateTempFolderPath();
     }

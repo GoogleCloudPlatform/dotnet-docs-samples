@@ -29,6 +29,10 @@ namespace StorageTransfer.Samples.Tests
         public QuickstartTest(StorageFixture fixture)
         {
             _fixture = fixture;
+            _fixture.BucketNameSource = _fixture.GenerateBucketName();
+            _fixture.BucketNameSink = _fixture.GenerateBucketName();
+            _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
+            _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
         }
 
         [Fact]

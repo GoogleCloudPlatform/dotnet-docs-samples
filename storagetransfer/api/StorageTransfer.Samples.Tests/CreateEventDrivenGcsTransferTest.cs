@@ -16,95 +16,98 @@
 
 using System;
 using Google.Cloud.PubSub.V1;
-using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
-namespace StorageTransfer.Samples.Tests
+namespace StorageTransfer.Samples.Tests;
+
+[Collection(nameof(StorageFixture))]
+public class CreateEventDrivenGcsTransferTest : IDisposable
 {
-    [Collection(nameof(StorageFixture))]
-    public class CreateEventDrivenGcsTransferTest : IDisposable
+    private readonly StorageFixture _fixture;
+    private readonly string _pubSubId;
+    private string _transferJobName;
+    private string TopicId { get; } = "DotNetTopic" + Guid.NewGuid().ToString();
+    private string SubscriptionId { get; } = "DotNetSubscription" + Guid.NewGuid().ToString();
+    private SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
+    private PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
+
+    public CreateEventDrivenGcsTransferTest(StorageFixture fixture)
     {
-        private readonly StorageFixture _fixture;
-        private readonly string _pubSubId;
-        private string _transferJobName;
-        private string TopicId { get; } = "DotNetTopic" + Guid.NewGuid().ToString();
-        private string SubscriptionId { get; } = "DotNetSubscription" + Guid.NewGuid().ToString();
-        private SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
-        private PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
-        public CreateEventDrivenGcsTransferTest(StorageFixture fixture)
+        _fixture = fixture;
+        _fixture.BucketNameSource = _fixture.GenerateBucketName();
+        _fixture.BucketNameSink = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
+        _pubSubId = $"projects/{_fixture.ProjectId}/subscriptions/{SubscriptionId}";
+        string email = _fixture.Sts.GetGoogleServiceAccount(new GetGoogleServiceAccountRequest()
         {
-            _fixture = fixture;
-            _pubSubId = $"projects/{_fixture.ProjectId}/subscriptions/{SubscriptionId}";
-            string email = _fixture.Sts.GetGoogleServiceAccount(new GetGoogleServiceAccountRequest()
-            {
-                ProjectId = _fixture.ProjectId
-            }).AccountEmail;
+            ProjectId = _fixture.ProjectId
+        }).AccountEmail;
 
-            string memberServiceAccount = "serviceAccount:" + email;
-            // Create subscription name
-            SubscriptionName subscriptionName = new SubscriptionName(_fixture.ProjectId, SubscriptionId);
-            // Create topic name
-            TopicName topicName = new TopicName(_fixture.ProjectId, TopicId);
-            // Create topic
-            PublisherClient.CreateTopic(topicName);
-            // Create subscription.
-            SubscriberClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 500);
+        string memberServiceAccount = "serviceAccount:" + email;
+        // Create subscription name
+        SubscriptionName subscriptionName = new SubscriptionName(_fixture.ProjectId, SubscriptionId);
+        // Create topic name
+        TopicName topicName = new TopicName(_fixture.ProjectId, TopicId);
+        // Create topic
+        PublisherClient.CreateTopic(topicName);
+        // Create subscription.
+        SubscriberClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 500);
 
-            var policyIamPolicyTopic = new Google.Cloud.Iam.V1.Policy();
+        var policyIamPolicyTopic = new Google.Cloud.Iam.V1.Policy();
 
-            policyIamPolicyTopic.AddRoleMember("roles/pubsub.publisher", memberServiceAccount);
+        policyIamPolicyTopic.AddRoleMember("roles/pubsub.publisher", memberServiceAccount);
 
-            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
-            {
-                ResourceAsResourceName = topicName,
-                Policy = policyIamPolicyTopic
-            });
-
-            var policyIamPolicySubscriber = new Google.Cloud.Iam.V1.Policy();
-
-            policyIamPolicySubscriber.AddRoleMember("roles/pubsub.subscriber", memberServiceAccount);
-
-            PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
-            {
-                ResourceAsResourceName = subscriptionName,
-                Policy = policyIamPolicySubscriber
-            });
-        }
-
-        [Fact]
-        public void CreateEventDrivenGcsTransfer()
+        PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
         {
-            CreateEventDrivenGcsTransferSample createEventDrivenGcsTransferSample = new CreateEventDrivenGcsTransferSample();
-            var transferJob = createEventDrivenGcsTransferSample.CreateEventDrivenGcsTransfer(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink, _pubSubId);
-            Assert.Contains("transferJobs/", transferJob.Name);
-            _transferJobName = transferJob.Name;
-        }
+            ResourceAsResourceName = topicName,
+            Policy = policyIamPolicyTopic
+        });
 
-        public void Dispose()
+        var policyIamPolicySubscriber = new Google.Cloud.Iam.V1.Policy();
+
+        policyIamPolicySubscriber.AddRoleMember("roles/pubsub.subscriber", memberServiceAccount);
+
+        PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
         {
-            try
+            ResourceAsResourceName = subscriptionName,
+            Policy = policyIamPolicySubscriber
+        });
+    }
+
+    [Fact]
+    public void CreateEventDrivenGcsTransfer()
+    {
+        CreateEventDrivenGcsTransferSample createEventDrivenGcsTransferSample = new CreateEventDrivenGcsTransferSample();
+        var transferJob = createEventDrivenGcsTransferSample.CreateEventDrivenGcsTransfer(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink, _pubSubId);
+        Assert.Contains("transferJobs/", transferJob.Name);
+        _transferJobName = transferJob.Name;
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _fixture.Sts.UpdateTransferJob(new UpdateTransferJobRequest()
             {
-                _fixture.Sts.UpdateTransferJob(new UpdateTransferJobRequest()
+                ProjectId = _fixture.ProjectId,
+                JobName = _transferJobName,
+                TransferJob = new TransferJob()
                 {
-                    ProjectId = _fixture.ProjectId,
-                    JobName = _transferJobName,
-                    TransferJob = new TransferJob()
-                    {
-                        Name = _transferJobName,
-                        Status = TransferJob.Types.Status.Deleted
-                    }
-                });
+                    Name = _transferJobName,
+                    Status = TransferJob.Types.Status.Deleted
+                }
+            });
 
-                TopicName topicName = TopicName.FromProjectTopic(_fixture.ProjectId, TopicId);
-                PublisherClient.DeleteTopic(topicName);
-                SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(_fixture.ProjectId, SubscriptionId);
-                SubscriberClient.DeleteSubscription(subscriptionName);
-            }
-            catch (Exception)
-            {
-                // Do nothing, we delete on a best effort basis.
-            }
+            TopicName topicName = TopicName.FromProjectTopic(_fixture.ProjectId, TopicId);
+            PublisherClient.DeleteTopic(topicName);
+            SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(_fixture.ProjectId, SubscriptionId);
+            SubscriberClient.DeleteSubscription(subscriptionName);
+        }
+        catch (Exception)
+        {
+            // Do nothing, we delete on a best effort basis.
         }
     }
 }

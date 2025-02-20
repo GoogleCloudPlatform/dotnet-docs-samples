@@ -28,10 +28,8 @@ namespace StorageTransfer.Samples.Tests
     public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     {
         public string ProjectId { get; }
-        public string BucketNameSource { get; } = Guid.NewGuid().ToString();
-        public string BucketNameSink { get; } = Guid.NewGuid().ToString();
-        public string BucketNameManifestSource { get; } = Guid.NewGuid().ToString();
-        public string BucketNamePosixSource { get; } = Guid.NewGuid().ToString();
+        public string BucketNameSource { get; set; }
+        public string BucketNameSink { get; set; }
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
         public StorageClient Storage { get; } = StorageClient.Create();
@@ -46,13 +44,9 @@ namespace StorageTransfer.Samples.Tests
             {
                 throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
             }
-
-            CreateBucketAndGrantStsPermissions(BucketNameSink);
-            CreateBucketAndGrantStsPermissions(BucketNameSource);
-            CreateBucketAndGrantStsPermissions(BucketNameManifestSource);
-            CreateBucketAndGrantStsPermissions(BucketNamePosixSource);
         }
-        private void CreateBucketAndGrantStsPermissions(string bucketName)
+
+        internal void CreateBucketAndGrantStsPermissions(string bucketName)
         {
             var bucket = Storage.CreateBucket(ProjectId, new Bucket
             {
@@ -95,8 +89,11 @@ namespace StorageTransfer.Samples.Tests
             policy.Bindings.Add(bucketWriterBinding);
             Storage.SetBucketIamPolicy(bucketName, policy);
         }
+
+        internal string GenerateBucketName() => Guid.NewGuid().ToString();
         internal string GetCurrentUserTempFolderPath() => System.IO.Path.GetTempPath();
         internal string GenerateTempFolderPath() => Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
+
         public void Dispose()
         {
             try

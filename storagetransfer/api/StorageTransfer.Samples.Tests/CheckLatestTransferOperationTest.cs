@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and 
 // limitations under the License.
-using Google.Cloud.Storage.V1;
+
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
@@ -20,13 +20,17 @@ namespace StorageTransfer.Samples.Tests;
 [Collection(nameof(StorageFixture))]
 public class CheckLatestTransferOperationTest
 {
-
     private readonly StorageFixture _fixture;
     private string _jobName;
     private readonly string _transferJobName;
+
     public CheckLatestTransferOperationTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _fixture.BucketNameSource = _fixture.GenerateBucketName();
+        _fixture.BucketNameSink = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
         _transferJobName = CreateTransferJob();
     }
 
@@ -38,6 +42,7 @@ public class CheckLatestTransferOperationTest
         Assert.Contains("transferJobs/", transferJob.Name);
         _jobName = transferJob.Name;
     }
+
     private string CreateTransferJob()
     {
         // Initialize request argument(s)

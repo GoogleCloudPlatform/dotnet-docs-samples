@@ -13,11 +13,11 @@
 // limitations under the License.
 
 using System;
-using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
+
 [Collection(nameof(StorageFixture))]
 public class TransferFromPosixTest : IDisposable
 {
@@ -27,6 +27,8 @@ public class TransferFromPosixTest : IDisposable
     public TransferFromPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
+        _fixture.BucketNameSink = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
         _rootDirectory = fixture.GetCurrentUserTempFolderPath();
     }
 
