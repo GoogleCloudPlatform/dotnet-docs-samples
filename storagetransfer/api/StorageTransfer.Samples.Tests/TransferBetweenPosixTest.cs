@@ -26,6 +26,7 @@ public class TransferBetweenPosixTest : IDisposable
     private string _transferJobName;
     private readonly string _tempDirectory;
     private readonly string _tempDestinationDirectory;
+
     public TransferBetweenPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;

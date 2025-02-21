@@ -24,6 +24,7 @@ public class TransferToNearlineTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
+
     public TransferToNearlineTest(StorageFixture fixture)
     {
         _fixture = fixture;

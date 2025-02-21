@@ -28,6 +28,7 @@ public class TransferUsingManifestTest : IDisposable
     private readonly string _rootDirectory;
     private readonly string _manifestObjectName;
     private readonly string _bucketNameManifestSource;
+
     public TransferUsingManifestTest(StorageFixture fixture)
     {
         _fixture = fixture;

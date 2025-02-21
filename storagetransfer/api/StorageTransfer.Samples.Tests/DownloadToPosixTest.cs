@@ -28,6 +28,7 @@ public class DownloadToPosixTest : IDisposable
     private readonly string _tempDirectory;
     private readonly string _gcsSourcePath;
     private readonly string _bucketNamePosixSource;
+
     public DownloadToPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
