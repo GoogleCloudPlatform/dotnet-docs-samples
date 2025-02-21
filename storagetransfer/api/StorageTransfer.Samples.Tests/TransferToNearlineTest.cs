@@ -38,11 +38,11 @@ public class TransferToNearlineTest : IDisposable
     public void TestTransferToNearline()
     {
         TransferToNearlineSample transferToNearlineSample = new TransferToNearlineSample();
-        var storage = StorageClient.Create();
+        var storage = _fixture.Storage;
         var bucket = storage.GetBucket(_fixture.BucketNameSink);
         string storageClass = StorageClasses.Nearline;
         bucket.StorageClass = storageClass;
-        bucket = storage.UpdateBucket(bucket);
+        storage.UpdateBucket(bucket);
         var transferJob = transferToNearlineSample.TransferToNearline(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
