@@ -30,7 +30,7 @@ appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @GoogleCloudPlatfor
 
 kms/            @GoogleCloudPlatform/dotnet-samples-reviewers
 secretmanager/  @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-secrets-team
-secretmanager/  @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-secrets-team @GoogleCloudPlatform/cloud-parameters-team
+parametermanager/  @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-secrets-team @GoogleCloudPlatform/cloud-parameters-team
 
 applications/googlehome-meets-dotnetcontainers/  @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 run/                                             @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
