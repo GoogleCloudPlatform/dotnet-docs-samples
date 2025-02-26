@@ -14,8 +14,8 @@
 
 // [START storagetransfer_transfer_from_posix]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 /// <summary>
 /// Create a transfer to transfer objects from a POSIX file system to a gcs sink bucket.

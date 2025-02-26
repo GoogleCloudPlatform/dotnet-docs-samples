@@ -14,9 +14,9 @@
 
 // [START storagetransfer_transfer_to_nearline]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
 using Google.Protobuf.WellKnownTypes;
+using System;
 
 /// <summary>
 /// Creates a one-off transfer job that transfers objects from a standard gcs bucket that are more

@@ -16,8 +16,8 @@
 
 // [START storagetransfer_quickstart]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 public class QuickstartSample
 {

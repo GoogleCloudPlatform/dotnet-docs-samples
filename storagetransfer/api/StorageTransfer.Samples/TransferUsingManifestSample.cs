@@ -14,8 +14,8 @@
 
 // [START storagetransfer_manifest_request]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 /// <summary>
 /// Create a transfer to transfer objects from a POSIX file system to a gcs sink bucket using a manifest file.

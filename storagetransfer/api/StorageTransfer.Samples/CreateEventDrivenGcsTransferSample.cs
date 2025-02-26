@@ -16,8 +16,8 @@
 
 // [START storagetransfer_create_event_driven_gcs_transfer]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 /// <summary>
 /// Create an event driven gcs data transfer from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.

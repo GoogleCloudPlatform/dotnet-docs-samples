@@ -14,8 +14,8 @@
 
 // [START storagetransfer_transfer_posix_to_posix]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 /// <summary>
 /// Create a transfer to transfer objects from root directory to the destination directory between POSIX file systems.

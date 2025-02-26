@@ -14,8 +14,8 @@
 
 // [START storagetransfer_download_to_posix]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 /// <summary>
 /// Create a transfer for downloading objects from a gcs bucket to the root directory of POSIX file system.

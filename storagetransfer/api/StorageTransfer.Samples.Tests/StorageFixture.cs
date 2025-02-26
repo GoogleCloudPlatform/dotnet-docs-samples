@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using System.IO;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests

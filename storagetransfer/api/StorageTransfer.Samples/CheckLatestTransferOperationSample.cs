@@ -14,8 +14,8 @@
 
 // [START storagetransfer_get_latest_transfer_operation]
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 
 /// <summary>
 /// Checks the latest transfer operation for a given transfer job.
