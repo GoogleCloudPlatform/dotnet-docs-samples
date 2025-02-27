@@ -45,7 +45,15 @@ Samples in this repository also follow the [framework coding
 style](https://github.com/dotnet/corefx/blob/master/Documentation/coding-guidelines/coding-style.md).
 This is enforced using [CodeFormatter](https://github.com/dotnet/codeformatter).
 
-### Starting a new sample
+## Starting a new sample set
 When starting a new sample, match the file and directory layout in the
 [KMS Samples](kms/api/Kms.Samples) and [KMS Samples Tests](kms/api/Kms.Samples.Tests). KMS samples and tests are
 the canonical example of how samples in this repo should be structured.
+
+## PR size
+In general prefer small PRs over bigger ones. A good rule of thumb is, no more than 10 new/modified files per PR.
+This is particularly relevant when starting a new sample set, when all files are new.
+
+- Reviews of smaller PRs are faster.
+- Time to merge is faster, both incrementally and overall.
+- Feedback and issues found in a first small PR can be more easily applied to subsequent small PRs.
