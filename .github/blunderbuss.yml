@@ -10,7 +10,7 @@ assign_issues_by:
   - 'api: storagetransfer'
   - 'api: storageinsights'
   to:
-  - GoogleCloudPlatform/cloud-storage-dpes
+  - GoogleCloudPlatform/gcs-sdk-team
 - labels:
   - 'api: cloudsql'
   to:
@@ -68,7 +68,7 @@ assign_prs_by:
   - 'api: storagetransfer'
   - 'api: storageinsights'
   to:
-  - GoogleCloudPlatform/cloud-storage-dpes
+  - GoogleCloudPlatform/gcs-sdk-team
 - labels:
   - 'api: spanner'
   to:
