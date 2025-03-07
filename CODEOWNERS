@@ -18,9 +18,9 @@ firestore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotne
 
 cloud-sql/  @GoogleCloudPlatform/cloud-sql-connectors @GoogleCloudPlatform/dotnet-samples-reviewers
 
-storage/          @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
-storageinsights/  @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
-storagetransfer/  @GoogleCloudPlatform/cloud-storage-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
+storage/          @GoogleCloudPlatform/gcs-sdk-team @GoogleCloudPlatform/dotnet-samples-reviewers
+storageinsights/  @GoogleCloudPlatform/gcs-sdk-team @GoogleCloudPlatform/dotnet-samples-reviewers
+storagetransfer/  @GoogleCloudPlatform/gcs-sdk-team @GoogleCloudPlatform/dotnet-samples-reviewers
 
 spanner/    @GoogleCloudPlatform/api-spanner-dotnet @GoogleCloudPlatform/dotnet-samples-reviewers
 
