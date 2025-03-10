@@ -24,7 +24,7 @@ public class ListSoftDeletedBucketsSample
     public IEnumerable<Bucket> ListSoftDeletedBuckets(string projectId = "your-project-id")
     {
         var storage = StorageClient.Create();
-        var buckets = storage.ListBuckets(projectId, new ListBucketsOptions { SoftDeleted = true });
+        var buckets = storage.ListBuckets(projectId, new ListBucketsOptions { SoftDeletedOnly = true });
         Console.WriteLine("Soft Deleted Buckets are as follows:");
         foreach (var bucket in buckets)
         {

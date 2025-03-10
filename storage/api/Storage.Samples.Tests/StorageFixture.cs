@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,6 +47,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     public string KmsKeyLocation { get; } = "us-west1";
     public string ServiceAccountEmail { get; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
     public List<TopicName> TempTopicNames { get; } = new List<TopicName>();
+    public StorageClient Client { get; }
 
     public RetryRobot HmacChangesPropagated { get; } = new RetryRobot
     {
@@ -64,6 +65,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         {
             throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
         }
+        Client = StorageClient.Create();
         // create simple bucket
         CreateBucket(BucketNameGeneric);
 
@@ -216,6 +218,26 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         SleepAfterBucketCreateUpdateDelete();
         TempBucketNames.Add(bucketName);
     }
+
+    internal Bucket CreateSoftDeleteBucket(string name, bool multiVersion, bool softDelete = false, bool registerForDeletion = true)
+    {
+        var bucket = Client.CreateBucket(ProjectId,
+            new Bucket
+            {
+                Name = name,
+                Versioning = new Bucket.VersioningData { Enabled = multiVersion },
+                // The minimum allowed for soft delete is 7 days.
+                SoftDeletePolicy = softDelete ? new Bucket.SoftDeletePolicyData { RetentionDurationSeconds = (int) TimeSpan.FromDays(7).TotalSeconds } : null,
+            });
+        SleepAfterBucketCreateUpdateDelete();
+        if (registerForDeletion)
+        {
+            TempBucketNames.Add(name);
+        }
+        return bucket;
+    }
+
+    internal string GenerateBucketName() => Guid.NewGuid().ToString();
 
     /// <summary>
     /// Bucket creation/update/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
