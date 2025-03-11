@@ -219,7 +219,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         TempBucketNames.Add(bucketName);
     }
 
-    internal Bucket CreateSoftDeleteBucket(string name, bool multiVersion, bool softDelete = false, bool registerForDeletion = true)
+    internal Bucket CreateBucket(string name, bool multiVersion, bool softDelete = false, bool registerForDeletion = true)
     {
         var bucket = Client.CreateBucket(ProjectId,
             new Bucket
