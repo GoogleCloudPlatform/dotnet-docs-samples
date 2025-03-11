@@ -15,29 +15,17 @@
 // [START storage_restore_bucket]
 
 using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.Control.V2;
 using Google.Cloud.Storage.V1;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-
-namespace Storage.Samples
+public class RestoreSoftDeletedBucketSample
 {
-    public class RestoreSoftDeletedBucketSample
+    public Bucket RestoreSoftDeletedBucket(string bucketName = "your-unique-bucket-name", long generation = 123456789)
     {
-        public Bucket RestoreSoftDeletedBucket(string bucketName = "your-unique-bucket-name")
-        {
-            var client = StorageClient.Create();
-            var bucket = client.GetBucket(bucketName, new GetBucketOptions { SoftDeleted = false });
-            client.DeleteBucket(bucket.Name, new DeleteBucketOptions { DeleteObjects = true });
-            var restored = client.RestoreBucket(bucket.Name, bucket.Generation.Value);
-            Console.WriteLine($"Bucket Name:\t {restored.Name}");
-            Console.WriteLine($"Bucket Generation:\t {restored.Generation}");
-            return restored;
-        }
+        var client = StorageClient.Create();
+        var restored = client.RestoreBucket(bucketName, generation);
+        Console.WriteLine($"Bucket Name:\t {restored.Name}");
+        Console.WriteLine($"Bucket Generation:\t {restored.Generation}");
+        return restored;
     }
 }
 // [END storage_restore_bucket]

@@ -17,21 +17,18 @@
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
-using System.Threading.Tasks;
 
 public class GetSoftDeletedBucketSample
 {
-    public  Bucket GetSoftDeletedBucket(string bucketName = "your-unique-bucket-name")
+    public Bucket GetSoftDeletedBucket(string bucketName = "your-unique-bucket-name", long? generation = 123456789)
     {
-        var client = StorageClient.Create(); 
-        var bucket = client.GetBucket(bucketName, new GetBucketOptions { SoftDeleted = false });
-        client.DeleteBucket(bucketName, new DeleteBucketOptions { DeleteObjects = true });
-        var softDeleted =  client.GetBucket(bucketName, new GetBucketOptions { SoftDeleted = true, Generation = bucket.Generation });
-        Console.WriteLine($"Bucket:\t{softDeleted.Name}");
-        Console.WriteLine($"Bucket Generation:\t{softDeleted.Generation}");
-        Console.WriteLine($"Bucket SoftDelete Time:\t{softDeleted.SoftDeleteTimeDateTimeOffset}");
-        Console.WriteLine($"Bucket HardDelete Time:\t{softDeleted.HardDeleteTimeDateTimeOffset}");
-        return softDeleted;
+        var client = StorageClient.Create();
+        var bucket = client.GetBucket(bucketName, new GetBucketOptions { SoftDeleted = true, Generation = generation });
+        Console.WriteLine($"Bucket:\t{bucket.Name}");
+        Console.WriteLine($"Bucket Generation:\t{bucket.Generation}");
+        Console.WriteLine($"Bucket SoftDelete Time:\t{bucket.SoftDeleteTimeDateTimeOffset}");
+        Console.WriteLine($"Bucket HardDelete Time:\t{bucket.HardDeleteTimeDateTimeOffset}");
+        return bucket;
     }
 }
 // [END storage_get_soft_deleted_bucket]

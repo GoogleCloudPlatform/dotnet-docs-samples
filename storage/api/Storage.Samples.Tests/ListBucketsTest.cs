@@ -46,7 +46,7 @@ public class ListBucketsTest
     {
         ListSoftDeletedBucketsSample listSoftDeletedBucketsSample = new ListSoftDeletedBucketsSample();
         var bucketName = _fixture.GenerateBucketName();
-        var softDeleteBucket = _fixture.CreateSoftDeleteBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
+        var softDeleteBucket = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
         await _fixture.Client.DeleteBucketAsync(softDeleteBucket.Name, new DeleteBucketOptions { DeleteObjects = true });
 
         var actualBuckets = listSoftDeletedBucketsSample.ListSoftDeletedBuckets(_fixture.ProjectId);
