@@ -13,12 +13,13 @@
 // limitations under the License.
 
 using Google.Cloud.StorageTransfer.V1;
+using System;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests;
 
 [Collection(nameof(StorageFixture))]
-public class CheckLatestTransferOperationTest
+public class CheckLatestTransferOperationTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _jobName;
@@ -63,5 +64,26 @@ public class CheckLatestTransferOperationTest
         // Make the request
         TransferJob response = _fixture.Sts.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
         return response.Name;
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _fixture.Sts.UpdateTransferJob(new UpdateTransferJobRequest()
+            {
+                ProjectId = _fixture.ProjectId,
+                JobName = _transferJobName,
+                TransferJob = new TransferJob()
+                {
+                    Name = _transferJobName,
+                    Status = TransferJob.Types.Status.Deleted
+                }
+            });
+        }
+        catch (Exception)
+        {
+            // Do nothing, we delete on a best effort basis.
+        }
     }
 }

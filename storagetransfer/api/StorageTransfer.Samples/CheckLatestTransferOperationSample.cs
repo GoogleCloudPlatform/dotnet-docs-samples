@@ -28,35 +28,24 @@ public class CheckLatestTransferOperationSample
              // The name of the job to check
              string jobName = "transferJobs/1234567890")
     {
-        if (string.IsNullOrEmpty(jobName))
-        {
-            throw new Exception("JobName can not be null or empty");
-        }
-
         // Create a Transfer Service client
         StorageTransferServiceClient storageTransfer = StorageTransferServiceClient.Create();
         GetTransferJobRequest getTransferJobRequest = new GetTransferJobRequest { ProjectId = projectId, JobName = jobName };
-        try
-        {
-            // Get Transfer job
-            TransferJob transferJob = storageTransfer.GetTransferJob(getTransferJobRequest);
-            // Get Latest operation name from transfer job
-            string latestOperationName = transferJob.LatestOperationName;
 
-            if (!string.IsNullOrEmpty(latestOperationName))
-            {
-                Console.WriteLine("The latest operation for transfer job " + jobName + " is: " + latestOperationName + "");
-            }
-            else
-            {
-                Console.WriteLine("Transfer job " + jobName + " hasn't run yet, try again after the job has started running.");
-            }
-            return transferJob;
-        }
-        catch (Exception)
+        // Get Transfer job
+        TransferJob transferJob = storageTransfer.GetTransferJob(getTransferJobRequest);
+        // Get Latest operation name from transfer job
+        string latestOperationName = transferJob.LatestOperationName;
+
+        if (!string.IsNullOrEmpty(latestOperationName))
         {
-            throw new Exception("Failed to get transfer job " + jobName + "");
+            Console.WriteLine("The latest operation for transfer job " + jobName + " is: " + latestOperationName + "");
         }
+        else
+        {
+            Console.WriteLine("Transfer job " + jobName + " hasn't run yet, try again after the job has started running.");
+        }
+        return transferJob;
     }
 }
 // [END storagetransfer_get_latest_transfer_operation]
