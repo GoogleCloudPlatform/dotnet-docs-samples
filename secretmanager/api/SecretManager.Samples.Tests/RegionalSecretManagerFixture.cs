@@ -30,7 +30,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
     public string LabelKey { get; }
     public string LabelValue { get; }
     public Secret Secret { get; }
-    public SecretName SecretToCreateName { get; }
     public SecretVersion SecretVersion { get; }
     public RegionalSecretManagerFixture()
     {
@@ -61,13 +60,11 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         // Required for testing regional samples
         Secret = CreateSecret(RandomId());
         SecretVersion = AddSecretVersion(Secret);
-        SecretToCreateName = SecretName.FromProjectLocationSecret(ProjectId, LocationId, RandomId());
     }
 
     public void Dispose()
     {
         DeleteSecret(Secret.SecretName);
-        DeleteSecret(SecretToCreateName);
     }
 
     public String RandomId()

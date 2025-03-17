@@ -34,7 +34,7 @@ public class CreateRegionalSecretTests
     public void CreatesRegionalSecrets()
     {
         // Get the SecretName from the set ProjectId & LocationId.
-        SecretName secretName = _fixture.SecretToCreateName;
+        SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
 
         // Run the sample code.
         Secret result = _sample.CreateRegionalSecret(
@@ -42,5 +42,8 @@ public class CreateRegionalSecretTests
 
         // Assert that the secret was created with the correct secretId.
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
+
+        // Clean the created secret.
+        _fixture.DeleteSecret(secretName);
     }
 }
