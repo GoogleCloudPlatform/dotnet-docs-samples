@@ -20,7 +20,14 @@ using System;
 
 public class GetSoftDeletedBucketSample
 {
-    public Bucket GetSoftDeletedBucket(string bucketName = "your-unique-bucket-name", long? generation = 123456789)
+    /// <summary>
+    /// Get a soft deleted bucket.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket.</param>
+    /// <param name="generation">The generation of the bucket.</param>
+    public Bucket GetSoftDeletedBucket(
+        string bucketName = "your-unique-bucket-name",
+        long? generation = 123456789)
     {
         var client = StorageClient.Create();
         var bucket = client.GetBucket(bucketName, new GetBucketOptions { SoftDeleted = true, Generation = generation });

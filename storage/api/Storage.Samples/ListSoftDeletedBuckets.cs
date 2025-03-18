@@ -21,6 +21,10 @@ using System.Collections.Generic;
 
 public class ListSoftDeletedBucketsSample
 {
+    /// <summary>
+    /// List soft deleted buckets.
+    /// </summary>
+    /// <param name="projectId">The ID of the project to list soft deleted buckets.</param>
     public IEnumerable<Bucket> ListSoftDeletedBuckets(string projectId = "your-project-id")
     {
         var storage = StorageClient.Create();

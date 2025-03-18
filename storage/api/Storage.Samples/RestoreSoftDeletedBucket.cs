@@ -19,7 +19,14 @@ using Google.Cloud.Storage.V1;
 using System;
 public class RestoreSoftDeletedBucketSample
 {
-    public Bucket RestoreSoftDeletedBucket(string bucketName = "your-unique-bucket-name", long generation = 123456789)
+    /// <summary>
+    /// Restores a soft deleted bucket.
+    /// </summary>
+    /// <param name="bucketName">The name of the bucket to restore.</param>
+    /// <param name="generation">The generation of the bucket.</param>
+    public Bucket RestoreSoftDeletedBucket(
+        string bucketName = "your-unique-bucket-name",
+        long generation = 123456789)
     {
         var client = StorageClient.Create();
         var restored = client.RestoreBucket(bucketName, generation);
