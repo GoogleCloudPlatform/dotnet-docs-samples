@@ -3,18 +3,18 @@ assign_issues_by:
   - 'api: bigtable'
   - 'api: datastore'
   - 'api: firestore'
-  to: 
+  to:
   - GoogleCloudPlatform/cloud-native-db-dpes
 - labels:
   - 'api: storage'
   - 'api: storagetransfer'
   - 'api: storageinsights'
   to:
-  - GoogleCloudPlatform/cloud-storage-dpes
+  - GoogleCloudPlatform/gcs-sdk-team
 - labels:
   - 'api: cloudsql'
   to:
-  - GoogleCloudPlatform/infra-db-sdk
+  - GoogleCloudPlatform/cloud-sql-connectors
 - labels:
   - 'api: dlp'
   to:
@@ -23,12 +23,6 @@ assign_issues_by:
   - 'api: retail'
   to:
   - chenlei1216
-- labels:
-  - 'api: videostitcher'
-  - 'api: livestream'
-  - 'api: transcoder'
-  to:
-  - irataxy
 - labels:
   - 'api: cloudtrace'
   - 'api: container'
@@ -47,7 +41,15 @@ assign_issues_by:
   - 'api: vertex-ai'
   to:
   - meteatamel
-  
+- labels:
+  - 'api: secretmanager'
+  to:
+  - GoogleCloudPlatform/cloud-secrets-team
+- labels:
+  - 'api: parametermanager'
+  to:
+  - GoogleCloudPlatform/cloud-parameters-team
+
 assign_issues:
   - GoogleCloudPlatform/dotnet-samples-reviewers
 
@@ -64,13 +66,13 @@ assign_prs_by:
 - labels:
   - 'api: cloudsql'
   to:
-  - GoogleCloudPlatform/infra-db-sdk
+  - GoogleCloudPlatform/cloud-sql-connectors
 - labels:
   - 'api: storage'
   - 'api: storagetransfer'
   - 'api: storageinsights'
   to:
-  - GoogleCloudPlatform/cloud-storage-dpes
+  - GoogleCloudPlatform/gcs-sdk-team
 - labels:
   - 'api: spanner'
   to:
@@ -83,12 +85,6 @@ assign_prs_by:
   - 'api: retail'
   to:
   - chenlei1216
-- labels:
-  - 'api: videostitcher'
-  - 'api: livestream'
-  - 'api: transcoder'
-  to:
-  - irataxy
 - labels:
   - 'api: cloudtrace'
   - 'api: container'
@@ -107,3 +103,11 @@ assign_prs_by:
   - 'api: vertex-ai'
   to:
   - meteatamel
+- labels:
+  - 'api: secretmanager'
+  to:
+  - GoogleCloudPlatform/cloud-secrets-team
+- labels:
+  - 'api: parametermanager'
+  to:
+  - GoogleCloudPlatform/cloud-parameters-team
