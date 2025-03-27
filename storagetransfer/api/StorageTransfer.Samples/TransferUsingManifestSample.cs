@@ -17,11 +17,18 @@
 using Google.Cloud.StorageTransfer.V1;
 using System;
 
-/// <summary>
-/// Create a transfer to transfer objects from a POSIX file system to a gcs sink bucket using a manifest file.
-/// </summary>
 public class TransferUsingManifestSample
 {
+    /// <summary>
+    /// Sample that creates a transfer job to transfer objects from a POSIX file system to a gcs sink bucket using a manifest file.
+    /// </summary>
+    /// <param name="projectId">The ID of the project.</param>
+    /// <param name="sourceAgentPoolName">The agent pool associated with the POSIX data source. If not provided ,
+    /// defaults to the default agent </param>
+    /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
+    /// <param name="manifestBucket">The GCS bucket which has your manifest file.</param>
+    /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
+    /// <param name="manifestObjectName">The name of the manifest file in manifestBucket that specifies which objects to transfer.</param>
     public TransferJob TransferUsingManifest(
         // Your Google Cloud Project ID
         string projectId = "my-project-id",

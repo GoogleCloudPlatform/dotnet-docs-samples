@@ -18,12 +18,15 @@ using Google.Cloud.StorageTransfer.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-/// <summary>
-/// Creates a one-off transfer job that transfers objects from a standard gcs bucket that are more
-/// than 30 days old to a nearline gcs bucket.
-/// </summary>
 public class TransferToNearlineSample
 {
+    /// <summary>
+    /// Sample that creates a one-off transfer job that transfers objects from a standard gcs bucket that are more
+    /// than 30 days old to a nearline gcs bucket.
+    /// </summary>
+    /// <param name="projectId">Your Google Cloud Project ID.</param>
+    /// <param name="sourceBucket">The GCS bucket to transfer objects from.</param>
+    /// <param name="sinkBucket">The GCS Nearline bucket to transfer old objects to.</param>
     public TransferJob TransferToNearline(
         // Your Google Cloud Project ID
         string projectId = "my-project-id",

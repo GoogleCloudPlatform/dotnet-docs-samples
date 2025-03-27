@@ -35,6 +35,7 @@ public class CheckLatestTransferOperationTest : IDisposable
         _transferJobName = CreateTransferJob();
     }
 
+    // Checks the latest transfer operation for a created transfer job.
     [Fact]
     public void CheckLatestTransferOperation()
     {
@@ -44,6 +45,7 @@ public class CheckLatestTransferOperationTest : IDisposable
         _jobName = transferJob.Name;
     }
 
+    // Creates one-time transfer job from a Google cloud storage bucket to another bucket.
     private string CreateTransferJob()
     {
         // Initialize request argument(s)

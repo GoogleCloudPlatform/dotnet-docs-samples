@@ -35,6 +35,7 @@ namespace StorageTransfer.Samples.Tests
             _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
         }
 
+        // Creates a one-time transfer job from a Google cloud storage bucket to another bucket
         [Fact]
         public void TestQuickstart()
         {

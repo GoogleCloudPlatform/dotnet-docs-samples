@@ -21,6 +21,12 @@ using System;
 
 public class QuickstartSample
 {
+    /// <summary>
+    /// Sample that creates a one-time transfer job from a Google cloud storage bucket to another bucket.
+    /// </summary>
+    /// <param name="projectId">Your Google Cloud Project ID.</param>
+    /// <param name="sourceBucket">The GCS bucket to transfer data from.</param>
+    /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
     public TransferJob Quickstart(
         // Your Google Cloud Project ID
         string projectId = "my-project-id",
