@@ -41,6 +41,7 @@ public class TransferUsingManifestTest : IDisposable
         UploadObjectToManifestBucket(_bucketNameManifestSource);
     }
 
+    // Transfers objects from a POSIX file system to a sink bucket using a manifest file.
     [Fact]
     public void TransferUsingManifest()
     {
@@ -50,6 +51,7 @@ public class TransferUsingManifestTest : IDisposable
         _transferJobName = transferJob.Name;
     }
 
+    // Uploads an object to the manifest bucket.
     private void UploadObjectToManifestBucket(string bucketName)
     {
         byte[] byteArray = System.Text.Encoding.UTF8.GetBytes($@"{Guid.NewGuid()}.jpeg");

@@ -36,6 +36,7 @@ public class TransferBetweenPosixTest : IDisposable
         _tempDestinationDirectory = fixture.GenerateTempFolderPath();
     }
 
+    // Transfers objects from a POSIX file system to another POSIX file system.
     [Fact]
     public void TransferBetweenPosix()
     {

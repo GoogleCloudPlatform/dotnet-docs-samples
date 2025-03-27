@@ -17,11 +17,15 @@
 using Google.Cloud.StorageTransfer.V1;
 using System;
 
-/// <summary>
-/// Create a transfer to transfer objects from a POSIX file system to a gcs sink bucket.
-/// </summary>
 public class TransferFromPosixSample
 {
+    /// <summary>
+    /// Sample that creates a transfer job to transfer objects from a POSIX file system to a gcs sink bucket.
+    /// </summary>
+    /// <param name="projectId">The ID of the project.</param>
+    /// <param name="sourceAgentPoolName">The agent pool associated with the POSIX data source. If not provided, defaults to the default agent.</param>
+    /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
+    /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
     public TransferJob TransferFromPosix(
         // Your Google Cloud Project ID
         string projectId = "my-project-id",
