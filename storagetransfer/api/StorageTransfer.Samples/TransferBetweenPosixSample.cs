@@ -17,17 +17,11 @@
 using Google.Cloud.StorageTransfer.V1;
 using System;
 
+/// <summary>
+/// Create a transfer to transfer objects from root directory to the destination directory between POSIX file systems.
+/// </summary>
 public class TransferBetweenPosixSample
 {
-    /// <summary>
-    /// Sample that creates a transfer to transfer objects from root directory to the destination directory between POSIX file systems.
-    /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
-    /// <param name="sourceAgentPoolName">The agent pool associated with the POSIX data source. If not provided, defaults to the default agent.</param>
-    /// <param name="sinkAgentPoolName">The agent pool associated with the POSIX data sink. If not provided, defaults to the default agent.</param>
-    /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
-    /// <param name="destinationDirectory">The root directory path on the sink filesystem.</param>
-    /// <param name="intermediateBucket">The name of GCS bucket for intermediate storage.</param>
     public TransferJob TransferBetweenPosix(
             // Your Google Cloud Project ID
             string projectId = "my-project-id",
@@ -40,7 +34,7 @@ public class TransferBetweenPosixSample
             // The root directory path on the sink filesystem
             string destinationDirectory = "/directory/to/transfer/sink",
             // The name of GCS bucket for intermediate storage
-            string intermediateBucket = "my-intermediate-bucket")
+            string intermediate_bucket = "my-intermediate-bucket")
     {
         //  A useful description for your transfer job
         string jobDescription = $"Transfer objects from {rootDirectory} to the {destinationDirectory} between POSIX file system";
@@ -55,7 +49,7 @@ public class TransferBetweenPosixSample
                 SinkAgentPoolName = sinkAgentPoolName,
                 PosixDataSource = new PosixFilesystem { RootDirectory = rootDirectory },
                 PosixDataSink = new PosixFilesystem { RootDirectory = destinationDirectory },
-                GcsIntermediateDataLocation = new GcsData { BucketName = intermediateBucket }
+                GcsIntermediateDataLocation = new GcsData { BucketName = intermediate_bucket }
             },
             Status = TransferJob.Types.Status.Enabled,
         };
@@ -76,4 +70,4 @@ public class TransferBetweenPosixSample
         return response;
     }
 }
-// [END storagetransfer_transfer_posix_to_posix]
+//[END storagetransfer_transfer_posix_to_posix]

@@ -33,7 +33,6 @@ public class TransferFromPosixTest : IDisposable
         _rootDirectory = fixture.GetCurrentUserTempFolderPath();
     }
 
-    // Transfers objects from a POSIX file system to a Cloud Storage bucket.
     [Fact]
     public void TransferFromPosix()
     {

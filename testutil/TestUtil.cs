@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (c) 2016 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -38,8 +38,8 @@ namespace GoogleCloudSamples
                 while (nextChar < randomChars.Length)
                 {
                     rng.GetBytes(randomByte);
-                    if (legalChars.Contains((char) randomByte[0]))
-                        randomChars[nextChar++] = (char) randomByte[0];
+                    if (legalChars.Contains((char)randomByte[0]))
+                        randomChars[nextChar++] = (char)randomByte[0];
                 }
                 return new string(randomChars);
             }
@@ -76,21 +76,21 @@ namespace GoogleCloudSamples
                 catch (Exception e) when (ShouldCatch(e) && i < MaxTryCount)
                 {
                     int jitteredDelayMs;
-                    lock (_lock)
+                    lock(_lock)
                     {
-                        jitteredDelayMs = delayMs / 2 + (int) (_random.NextDouble() * delayMs);
+                        jitteredDelayMs = delayMs/2 + (int)(_random.NextDouble() * delayMs);
                     }
                     Thread.Sleep(jitteredDelayMs);
-                    delayMs *= (int) DelayMultiplier;
+                    delayMs *= (int)DelayMultiplier;
                 }
             }
         }
 
         public void Eventually(Action action) =>
             Eventually(() =>
-            {
+            { 
                 action();
-                return 0;
+                return 0; 
             });
 
 
@@ -108,10 +108,10 @@ namespace GoogleCloudSamples
                     int jitteredDelayMs;
                     lock (_lock)
                     {
-                        jitteredDelayMs = delayMs / 2 + (int) (_random.NextDouble() * delayMs);
+                        jitteredDelayMs = delayMs / 2 + (int)(_random.NextDouble() * delayMs);
                     }
                     await Task.Delay(jitteredDelayMs);
-                    delayMs *= (int) DelayMultiplier;
+                    delayMs *= (int)DelayMultiplier;
                 }
             }
         }
@@ -119,9 +119,9 @@ namespace GoogleCloudSamples
         public async Task Eventually(Func<Task> action)
         {
             await Eventually(async () =>
-            {
+            { 
                 await action();
-                return 0;
+                return 0; 
             });
         }
 

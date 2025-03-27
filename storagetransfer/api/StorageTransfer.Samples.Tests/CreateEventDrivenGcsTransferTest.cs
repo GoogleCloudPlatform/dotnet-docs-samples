@@ -76,7 +76,6 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
         });
     }
 
-    // Transfers object from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.
     [Fact]
     public void CreateEventDrivenGcsTransfer()
     {

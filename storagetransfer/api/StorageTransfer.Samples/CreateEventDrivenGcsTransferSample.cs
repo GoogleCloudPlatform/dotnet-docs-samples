@@ -19,15 +19,11 @@
 using Google.Cloud.StorageTransfer.V1;
 using System;
 
+/// <summary>
+/// Create an event driven gcs data transfer from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.
+/// </summary>
 public class CreateEventDrivenGcsTransferSample
 {
-    /// <summary>
-    /// Sample that creates an event driven gcs data transfer from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.
-    /// </summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
-    /// <param name="sourceBucket">The GCS bucket to transfer data from.</param>
-    /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
-    /// <param name="pubSubId">The subscription ID to a Pubsub queue to track.</param>
     public TransferJob CreateEventDrivenGcsTransfer(
         // Your Google Cloud Project ID
         string projectId = "my-project-id",
