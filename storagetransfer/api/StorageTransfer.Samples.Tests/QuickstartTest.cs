@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2021 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests
@@ -29,8 +29,13 @@ namespace StorageTransfer.Samples.Tests
         public QuickstartTest(StorageFixture fixture)
         {
             _fixture = fixture;
+            _fixture.BucketNameSource = _fixture.GenerateBucketName();
+            _fixture.BucketNameSink = _fixture.GenerateBucketName();
+            _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
+            _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
         }
 
+        // Creates a one-time transfer job from a Google cloud storage bucket to another bucket.
         [Fact]
         public void TestQuickstart()
         {
