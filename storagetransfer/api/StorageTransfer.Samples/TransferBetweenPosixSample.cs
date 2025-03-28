@@ -20,7 +20,7 @@ using System;
 public class TransferBetweenPosixSample
 {
     /// <summary>
-    /// Sample that creates a transfer to transfer objects from root directory to the destination directory between POSIX file systems.
+    /// Sample that creates a transfer that transfer objects from root directory to the destination directory between POSIX file systems.
     /// </summary>
     /// <param name="projectId">The ID of the project.</param>
     /// <param name="sourceAgentPoolName">The agent pool associated with the POSIX data source. If not provided, defaults to the default agent.</param>
