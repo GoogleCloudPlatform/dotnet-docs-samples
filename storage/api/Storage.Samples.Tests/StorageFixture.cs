@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,6 +84,8 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         //upload file to BucketName
         UploadFileSample uploadFileSample = new UploadFileSample();
         uploadFileSample.UploadFile(BucketNameGeneric, FilePath, FileName);
+        // upload file to hns bucket
+        uploadFileSample.UploadFile(BucketNameHns, FilePath, FileName);
 
         Collect(FileName);
     }
