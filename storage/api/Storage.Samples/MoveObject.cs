@@ -35,5 +35,28 @@ public class MoveObjectSample
 
         Console.WriteLine($"Moved {sourceBucketName}/{sourceObjectName} to " + $"{sourceBucketName}/{destinationObjectName} within a hierarchical namespace enabled bucket.");
     }
+
+    /// <summary>
+    /// Sample that moves the source object to the destination object within a hierarchical namespace enabled bucket with preconditions set.
+    /// </summary>
+    /// <param name="sourceBucketName">The name of the source bucket.</param>
+    /// <param name="sourceObjectName">The name of source object to move.</param>
+    /// <param name="destinationObjectName">The name of destination object.</param>
+    /// <param name="generation">The generation of the object.</param>
+    public void MoveObjectWithOptions(
+       string sourceBucketName = "source-bucket-name",
+       string sourceObjectName = "source-file",
+       string destinationObjectName = "destination-file-name",
+       long? generation = 1579287380533984)
+    {
+        var storage = StorageClient.Create();
+        var moveOptions = new MoveObjectOptions
+        {
+            IfGenerationMatch = generation
+        };
+        storage.MoveObject(sourceBucketName, sourceObjectName, destinationObjectName, moveOptions);
+
+        Console.WriteLine($"Moved {sourceBucketName}/{sourceObjectName} to " + $"{sourceBucketName}/{destinationObjectName} within a hierarchical namespace enabled bucket with preconditions set.");
+    }
 }
 // [END storage_move_object]
