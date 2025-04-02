@@ -23,5 +23,4 @@
   <ItemGroup>
     <ProjectReference Include="..\ParameterManager.Samples\ParameterManager.Samples.csproj" />
   </ItemGroup>
-
 </Project>
