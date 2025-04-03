@@ -19,16 +19,16 @@
 using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf.WellKnownTypes;
 
-/// <summary>
-/// This function disables a parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be disabled.</param>
-/// <param name="versionId">The ID of the version to be disabled.</param>
-/// <returns>The updated ParameterVersion object.</returns>
-public class DisableParamVersionSample
+public class DisableParameterVersionSample
 {
-    public ParameterVersion DisableParamVersion(
+    /// <summary>
+    /// This function disables a parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be disabled.</param>
+    /// <param name="versionId">The ID of the version to be disabled.</param>
+    /// <returns>The updated ParameterVersion object.</returns>
+    public ParameterVersion DisableParameterVersion(
         string projectId,
         string parameterId,
         string versionId)
@@ -43,7 +43,7 @@ public class DisableParamVersionSample
         {
             ParameterVersion = new ParameterVersion
             {
-                Name = parameterVersionName.ToString(),
+                Name = parameterVersionName,
                 Disabled = true
             },
             UpdateMask = new FieldMask

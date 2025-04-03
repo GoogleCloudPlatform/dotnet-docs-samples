@@ -19,16 +19,16 @@
 using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf.WellKnownTypes;
 
-/// <summary>
-/// This function enables a parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be enabled.</param>
-/// <param name="versionId">The ID of the version to be enabled.</param>
-/// <returns>The updated ParameterVersion object.</returns>
-public class EnableParamVersionSample
+public class EnableParameterVersionSample
 {
-    public ParameterVersion EnableParamVersion(
+    /// <summary>
+    /// This function enables a parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be enabled.</param>
+    /// <param name="versionId">The ID of the version to be enabled.</param>
+    /// <returns>The updated ParameterVersion object.</returns>
+    public ParameterVersion EnableParameterVersion(
         string projectId,
         string parameterId,
         string versionId)
@@ -44,7 +44,7 @@ public class EnableParamVersionSample
         {
             ParameterVersion = new ParameterVersion
             {
-                Name = parameterVersionName.ToString(),
+                Name = parameterVersionName,
                 Disabled = false
             },
             UpdateMask = new FieldMask

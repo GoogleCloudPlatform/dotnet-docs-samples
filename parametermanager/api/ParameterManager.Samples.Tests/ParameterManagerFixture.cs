@@ -24,42 +24,20 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 {
     public string ProjectId { get; }
     public string LocationId = "global";
-
     public string Payload = "test123";
-    public string JsonPayload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
-    public string SecretReference { get; }
-    public string SecretId = "projects/project-id/secrets/secret-id/versions/latest";
-
-    public ParameterName ParameterName { get; }
-    public ParameterName ParameterNameWithFormat { get; }
 
     public string ParameterId { get; }
-    public Parameter Parameter { get; }
-    public ParameterVersionName ParameterVersionName { get; }
-
-    public Parameter ParameterWithFormat { get; }
-    public ParameterVersionName ParameterVersionNameWithFormat { get; }
-
-    public Parameter ParameterWithSecretReference { get; }
-    public ParameterVersionName ParameterVersionNameWithSecretReference { get; }
+    public string ParameterVersionId { get; }
 
     public Parameter ParameterToDelete { get; }
     public ParameterName ParameterNameToDelete { get; }
 
-    public string ParameterVersionId { get; }
     public Parameter ParameterToDeleteVersion { get; }
     public ParameterVersion ParameterVersionToDelete { get; }
     public ParameterVersionName ParameterVersionNameToDelete { get; }
 
-    public ParameterName ParameterNameForQuickstart { get; }
-    public ParameterVersionName ParameterVersionNameForQuickstart { get; }
-
-    public Parameter ParameterToRender { get; }
-    public ParameterVersion ParameterVersionToRender { get; }
-    public ParameterVersionName ParameterVersionNameToRender { get; }
-    public Secret Secret { get; }
-    public SecretVersion SecretVersion { get; }
-    public Policy Policy { get; }
+    public ParameterVersion ParameterVersionToDisableAndEnable { get; }
+    public ParameterVersionName ParameterVersionNameToDisableAndEnable { get; }
     public ParameterManagerFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -67,21 +45,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
-
-        ParameterName = new ParameterName(ProjectId, LocationId, RandomId());
-        ParameterNameWithFormat = new ParameterName(ProjectId, LocationId, RandomId());
-
-        ParameterId = RandomId();
-        Parameter = CreateParameter(ParameterId, ParameterFormat.Unformatted);
-        ParameterVersionName = new ParameterVersionName(ProjectId, LocationId, ParameterId, RandomId());
-
-        ParameterId = RandomId();
-        ParameterWithFormat = CreateParameter(ParameterId, ParameterFormat.Json);
-        ParameterVersionNameWithFormat = new ParameterVersionName(ProjectId, LocationId, ParameterId, RandomId());
-
-        ParameterId = RandomId();
-        ParameterWithSecretReference = CreateParameter(ParameterId, ParameterFormat.Unformatted);
-        ParameterVersionNameWithSecretReference = new ParameterVersionName(ProjectId, LocationId, ParameterId, RandomId());
 
         ParameterId = RandomId();
         ParameterToDelete = CreateParameter(ParameterId, ParameterFormat.Unformatted);
@@ -93,40 +56,17 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         ParameterVersionToDelete = CreateParameterVersion(ParameterId, ParameterVersionId, Payload);
         ParameterVersionNameToDelete = new ParameterVersionName(ProjectId, LocationId, ParameterId, ParameterVersionId);
 
-        ParameterId = RandomId();
         ParameterVersionId = RandomId();
-        ParameterNameForQuickstart = new ParameterName(ProjectId, LocationId, ParameterId);
-        ParameterVersionNameForQuickstart = new ParameterVersionName(ProjectId, LocationId, ParameterId, ParameterVersionId);
-
-        ParameterId = RandomId();
-        ParameterVersionId = RandomId();
-        ParameterToRender = CreateParameter(ParameterId, ParameterFormat.Json);
-        Secret = CreateSecret(RandomId());
-        SecretVersion = AddSecretVersion(Secret);
-        SecretReference = $"{{\"username\": \"test-user\", \"password\": \"__REF__(//secretmanager.googleapis.com/{Secret.SecretName}/versions/latest)\"}}";
-        ParameterVersionToRender = CreateParameterVersion(ParameterId, ParameterVersionId, SecretReference);
-        Policy = GrantIAMAccess(Secret.SecretName, ParameterToRender.PolicyMember.IamPolicyUidPrincipal.ToString());
-        ParameterVersionNameToRender = new ParameterVersionName(ProjectId, LocationId, ParameterId, ParameterVersionId);
+        ParameterVersionToDisableAndEnable = CreateParameterVersion(ParameterId, ParameterVersionId, Payload);
+        ParameterVersionNameToDisableAndEnable = new ParameterVersionName(ProjectId, LocationId, ParameterId, ParameterVersionId);
     }
 
     public void Dispose()
     {
-        DeleteParameter(ParameterName);
-        DeleteParameter(ParameterNameWithFormat);
-        DeleteParameterVersion(ParameterVersionName);
-        DeleteParameter(Parameter.ParameterName);
-        DeleteParameterVersion(ParameterVersionNameWithFormat);
-        DeleteParameter(ParameterWithFormat.ParameterName);
-        DeleteParameterVersion(ParameterVersionNameWithSecretReference);
-        DeleteParameter(ParameterWithSecretReference.ParameterName);
         DeleteParameter(ParameterNameToDelete);
         DeleteParameterVersion(ParameterVersionNameToDelete);
+        DeleteParameterVersion(ParameterVersionNameToDisableAndEnable);
         DeleteParameter(ParameterToDeleteVersion.ParameterName);
-        DeleteParameterVersion(ParameterVersionNameForQuickstart);
-        DeleteParameter(ParameterNameForQuickstart);
-        DeleteParameterVersion(ParameterVersionNameToRender);
-        DeleteParameter(ParameterToRender.ParameterName);
-        DeleteSecret(Secret.SecretName);
     }
 
     public String RandomId()
@@ -160,7 +100,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             }
         };
 
-        return client.CreateParameterVersion(parameterName.ToString(), parameterVersion, versionId);
+        return client.CreateParameterVersion(parameterName, parameterVersion, versionId);
     }
 
     private void DeleteParameter(ParameterName name)
@@ -186,70 +126,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
             // Ignore error - Parameter version was already deleted
-        }
-    }
-
-    public Secret CreateSecret(string secretId)
-    {
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-        ProjectName projectName = new ProjectName(ProjectId);
-
-        Secret secret = new Secret
-        {
-            Replication = new Replication
-            {
-                Automatic = new Replication.Types.Automatic(),
-            },
-        };
-
-        return client.CreateSecret(projectName, secretId, secret);
-    }
-
-    public Policy GrantIAMAccess(SecretName secretName, string member)
-    {
-        // Create the client.
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-
-        // Get current policy.
-        Policy policy = client.GetIamPolicy(new GetIamPolicyRequest
-        {
-            ResourceAsResourceName = secretName,
-        });
-
-        // Add the user to the list of bindings.
-        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
-
-        // Save the updated policy.
-        policy = client.SetIamPolicy(new SetIamPolicyRequest
-        {
-            ResourceAsResourceName = secretName,
-            Policy = policy,
-        });
-        return policy;
-    }
-    private SecretVersion AddSecretVersion(Secret secret)
-    {
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-
-        SecretPayload payload = new SecretPayload
-        {
-            Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
-        };
-
-        return client.AddSecretVersion(secret.SecretName, payload);
-    }
-
-    private void DeleteSecret(SecretName name)
-    {
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-
-        try
-        {
-            client.DeleteSecret(name);
-        }
-        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
-        {
-            // Ignore error - secret was already deleted
         }
     }
 }

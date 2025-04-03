@@ -18,14 +18,14 @@
 
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function deletes a parameter using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter to be deleted.</param>
-public class DeleteParamSample
+public class DeleteParameterSample
 {
-    public void DeleteParam(
+    /// <summary>
+    /// This function deletes a parameter using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter to be deleted.</param>
+    public void DeleteParameter(
         string projectId,
         string parameterId)
     {

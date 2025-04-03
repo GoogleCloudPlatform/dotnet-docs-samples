@@ -17,22 +17,22 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class DeleteParamVersionTests
+public class DeleteParameterVersionTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly DeleteParamVersionSample _sample;
+    private readonly DeleteParameterVersionSample _sample;
 
-    public DeleteParamVersionTests(ParameterManagerFixture fixture)
+    public DeleteParameterVersionTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new DeleteParamVersionSample();
+        _sample = new DeleteParameterVersionSample();
     }
 
     [Fact]
-    public void DeleteParamVersion()
+    public void DeleteParameterVersion()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameToDelete;
-        _sample.DeleteParamVersion(projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
+        _sample.DeleteParameterVersion(projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
 
         ParameterManagerClient client = ParameterManagerClient.Create();
         Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameterVersion(parameterVersionName));
