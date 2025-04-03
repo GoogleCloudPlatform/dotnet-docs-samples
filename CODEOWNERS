@@ -10,7 +10,7 @@
 # Note that on the @GoogleCloudPlatform/dotnet-samples-reviewers group there might be some training reviewers.
 # Training reviewers' reviews are in turned review by established reviewers.
 
-*           @GoogleCloudPlatform/dotnet-samples-reviewers
+*           @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-samples-infra
 
 bigtable/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
 datastore/  @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/dotnet-samples-reviewers
