@@ -19,18 +19,18 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function creates a parameter with kms_key using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is to be created.</param>
-/// <param name="locationId"> The region where the parameter is to be created.</param>
-/// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
-/// <param name="kmsKey">The ID of the KMS key to be used for encryption.
-/// (e.g. "projects/my-project/locations/us-central1/keyRings/my-key-ring/cryptoKeys/my-encryption-key")</param>
-/// <returns>The created Parameter object.</returns>
-public class CreateRegionalParamWithKmsKeySample
+public class CreateRegionalParameterWithKmsKeySample
 {
-    public Parameter CreateRegionalParamWithKmsKey(
+    /// <summary>
+    /// This function creates a parameter with kms_key using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is to be created.</param>
+    /// <param name="locationId"> The region where the parameter is to be created.</param>
+    /// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
+    /// <param name="kmsKey">The ID of the KMS key to be used for encryption.
+    /// (e.g. "projects/my-project/locations/us-central1/keyRings/my-key-ring/cryptoKeys/my-encryption-key")</param>
+    /// <returns>The created Parameter object.</returns>
+    public Parameter CreateRegionalParameterWithKmsKey(
         string projectId,
         string locationId,
         string parameterId,

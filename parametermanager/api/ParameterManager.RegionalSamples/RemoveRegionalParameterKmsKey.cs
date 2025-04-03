@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-// [START parametermanager_update_regional_param_kms_key]
+// [START parametermanager_remove_regional_param_kms_key]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf.WellKnownTypes;
 
-/// <summary>
-/// This function updates a parameter with kms_key using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is to be updated.</param>
-/// <param name="locationId"> The region where the parameter is to be created.</param>
-/// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
-/// <param name="kmsKey">The ID of the KMS key to be used for encryption.
-/// (e.g. "projects/my-project/locations/global/keyRings/my-key-ring/cryptoKeys/my-encryption-key")</param>
-/// <returns>The updated Parameter object.</returns>
-public class UpdateRegionalParamKmsKeySample
+public class RemoveRegionalParameterKmsKeySample
 {
-    public Parameter UpdateRegionalParamKmsKey(
+    /// <summary>
+    /// This function Removes a kms_key for parameter using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is to be created.</param>
+    /// <param name="locationId"> The region where the parameter is to be created.</param>
+    /// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
+    /// <returns>The Parameter object.</returns>
+    public Parameter RemoveRegionalParameterKmsKey(
         string projectId,
         string locationId,
-        string parameterId,
-        string kmsKey)
+        string parameterId)
     {
         // Define the regional endpoint
         string regionalEndpoint = $"parametermanager.{locationId}.rep.googleapis.com";
@@ -55,7 +52,6 @@ public class UpdateRegionalParamKmsKeySample
             Parameter = new Parameter
             {
                 Name = name.ToString(),
-                KmsKey = kmsKey
             },
             UpdateMask = new FieldMask
             {
@@ -67,10 +63,10 @@ public class UpdateRegionalParamKmsKeySample
         Parameter updatedParameter = client.UpdateParameter(request);
 
         // Print the updated regional parameter name with kms_key.
-        Console.WriteLine($"Updated regional parameter {updatedParameter.Name} with kms_key {updatedParameter.KmsKey}");
+        Console.WriteLine($"Removed kms_key for regional parameter {updatedParameter.Name}");
 
         // Return the updated parameter.
         return updatedParameter;
     }
 }
-// [END parametermanager_update_regional_param_kms_key]
+// [END parametermanager_remove_regional_param_kms_key]
