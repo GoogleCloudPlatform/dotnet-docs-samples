@@ -19,17 +19,17 @@
 using Google.Cloud.ParameterManager.V1;
 using System.Text;
 
-/// <summary>
-/// This function retrieves a regional parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="locationId">The ID of the region where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be retrieved.</param>
-/// <param name="versionId">The ID of the version to be retrieved.</param>
-/// <returns>The retrieved ParameterVersion object.</returns>
-public class GetRegionalParamVersionSample
+public class GetRegionalParameterVersionSample
 {
-    public ParameterVersion GetRegionalParamVersion(
+    /// <summary>
+    /// This function retrieves a regional parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="locationId">The ID of the region where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be retrieved.</param>
+    /// <param name="versionId">The ID of the version to be retrieved.</param>
+    /// <returns>The retrieved ParameterVersion object.</returns>
+    public ParameterVersion GetRegionalParameterVersion(
         string projectId,
         string locationId,
         string parameterId,

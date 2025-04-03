@@ -17,21 +17,22 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerRegionalFixture))]
-public class ListRegionalParamsTests
+public class ListRegionalParameterVersionsTests
 {
     private readonly ParameterManagerRegionalFixture _fixture;
-    private readonly ListRegionalParamsSample _sample;
+    private readonly ListRegionalParameterVersionsSample _sample;
 
-    public ListRegionalParamsTests(ParameterManagerRegionalFixture fixture)
+    public ListRegionalParameterVersionsTests(ParameterManagerRegionalFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ListRegionalParamsSample();
+        _sample = new ListRegionalParameterVersionsSample();
     }
 
     [Fact]
-    public void ListRegionalParams()
+    public void ListRegionalParameterVersions()
     {
-        IEnumerable<Parameter> result = _sample.ListRegionalParams(projectId: _fixture.ProjectId, locationId: _fixture.LocationId);
+        ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameToRender;
+        IEnumerable<ParameterVersion> result = _sample.ListRegionalParameterVersions(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, parameterId: parameterVersionName.ParameterId);
         Assert.NotNull(result);
     }
 }

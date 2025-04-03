@@ -18,16 +18,16 @@
 
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function retrieves a regional parameter using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="locationId">The ID of the region where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter to be retrieved.</param>
-/// <returns>The retrieved Parameter object.</returns>
-public class GetRegionalParamSample
+public class GetRegionalParameterSample
 {
-    public Parameter GetRegionalParam(
+    /// <summary>
+    /// This function retrieves a regional parameter using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="locationId">The ID of the region where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter to be retrieved.</param>
+    /// <returns>The retrieved Parameter object.</returns>
+    public Parameter GetRegionalParameter(
         string projectId,
         string locationId,
         string parameterId)

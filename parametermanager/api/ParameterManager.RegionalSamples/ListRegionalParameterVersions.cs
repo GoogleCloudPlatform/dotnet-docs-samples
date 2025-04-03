@@ -19,16 +19,16 @@
 using Google.Api.Gax;
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function lists all versions of a regional parameter using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="locationId">The ID of the region where the parameter is located.</param>
-/// <param name="parameterId"> The ID of the parameter for which the version is to be listed.</param>
-/// <returns>A list of ParameterVersion objects.</returns>
-public class ListRegionalParamVersionsSample
+public class ListRegionalParameterVersionsSample
 {
-    public IEnumerable<ParameterVersion> ListRegionalParamVersions(
+    /// <summary>
+    /// This function lists all versions of a regional parameter using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="locationId">The ID of the region where the parameter is located.</param>
+    /// <param name="parameterId"> The ID of the parameter for which the version is to be listed.</param>
+    /// <returns>A list of ParameterVersion objects.</returns>
+    public IEnumerable<ParameterVersion> ListRegionalParameterVersions(
         string projectId,
         string locationId,
         string parameterId)

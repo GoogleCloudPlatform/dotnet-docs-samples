@@ -20,15 +20,15 @@ using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function lists all regional parameters using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="locationId">The ID of the region where the parameter is located.</param>
-/// <returns>A list of Parameter objects.</returns>
-public class ListRegionalParamsSample
+public class ListRegionalParametersSample
 {
-    public IEnumerable<Parameter> ListRegionalParams(
+    /// <summary>
+    /// This function lists all regional parameters using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="locationId">The ID of the region where the parameter is located.</param>
+    /// <returns>A list of Parameter objects.</returns>
+    public IEnumerable<Parameter> ListRegionalParameters(
         string projectId,
         string locationId)
     {
