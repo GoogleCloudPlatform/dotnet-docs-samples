@@ -20,18 +20,19 @@ using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf;
 using System.Text;
 
-/// <summary>
-/// This function creates a regional parameter version with an unformatted payload using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="locationId">The ID of the region where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
-/// <param name="versionId">The ID of the version to be created.</param>
-/// <param name="payload">The unformatted string payload to be stored in the new parameter version.</param>
-/// <returns>The created ParameterVersion object.</returns>
-public class CreateRegionalParamVersionSample
+
+public class CreateRegionalParameterVersionSample
 {
-    public ParameterVersion CreateRegionalParamVersion(
+    /// <summary>
+    /// This function creates a regional parameter version with an unformatted payload using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="locationId">The ID of the region where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
+    /// <param name="versionId">The ID of the version to be created.</param>
+    /// <param name="payload">The unformatted string payload to be stored in the new parameter version.</param>
+    /// <returns>The created ParameterVersion object.</returns>
+    public ParameterVersion CreateRegionalParameterVersion(
         string projectId,
         string locationId,
         string parameterId,
@@ -63,7 +64,7 @@ public class CreateRegionalParamVersionSample
         };
 
         // Call the API to create the parameter version
-        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parent.ToString(), parameterVersion, versionId);
+        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parent, parameterVersion, versionId);
 
         // Print the created parameter version name
         Console.WriteLine($"Created regional parameter version: {createdParameterVersion.Name}");

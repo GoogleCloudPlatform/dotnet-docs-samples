@@ -27,7 +27,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     public string Payload = "test123";
     public string JsonPayload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
-    public string SecretReference { get; }
     public string SecretId = "projects/project-id/secrets/secret-id/versions/latest";
 
     public ParameterName ParameterName { get; }
@@ -42,24 +41,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     public Parameter ParameterWithSecretReference { get; }
     public ParameterVersionName ParameterVersionNameWithSecretReference { get; }
-
-    public Parameter ParameterToDelete { get; }
-    public ParameterName ParameterNameToDelete { get; }
-
-    public string ParameterVersionId { get; }
-    public Parameter ParameterToDeleteVersion { get; }
-    public ParameterVersion ParameterVersionToDelete { get; }
-    public ParameterVersionName ParameterVersionNameToDelete { get; }
-
-    public ParameterName ParameterNameForQuickstart { get; }
-    public ParameterVersionName ParameterVersionNameForQuickstart { get; }
-
-    public Parameter ParameterToRender { get; }
-    public ParameterVersion ParameterVersionToRender { get; }
-    public ParameterVersionName ParameterVersionNameToRender { get; }
-    public Secret Secret { get; }
-    public SecretVersion SecretVersion { get; }
-    public Policy Policy { get; }
 
     public ParameterManagerRegionalFixture()
     {
@@ -83,32 +64,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         ParameterId = RandomId();
         ParameterWithSecretReference = CreateParameter(ParameterId, ParameterFormat.Unformatted);
         ParameterVersionNameWithSecretReference = new ParameterVersionName(ProjectId, LocationId, ParameterId, RandomId());
-
-        ParameterId = RandomId();
-        ParameterToDelete = CreateParameter(ParameterId, ParameterFormat.Unformatted);
-        ParameterNameToDelete = new ParameterName(ProjectId, LocationId, ParameterId);
-
-        ParameterId = RandomId();
-        ParameterVersionId = RandomId();
-        ParameterToDeleteVersion = CreateParameter(ParameterId, ParameterFormat.Unformatted);
-        ParameterVersionToDelete = CreateParameterVersion(ParameterId, ParameterVersionId, Payload);
-        ParameterVersionNameToDelete = new ParameterVersionName(ProjectId, LocationId, ParameterId, ParameterVersionId);
-
-        ParameterId = RandomId();
-        ParameterVersionId = RandomId();
-        ParameterNameForQuickstart = new ParameterName(ProjectId, LocationId, ParameterId);
-        ParameterVersionNameForQuickstart = new ParameterVersionName(ProjectId, LocationId, ParameterId, ParameterVersionId);
-
-        ParameterId = RandomId();
-        ParameterVersionId = RandomId();
-        ParameterToRender = CreateParameter(ParameterId, ParameterFormat.Json);
-        Secret = CreateSecret(RandomId());
-        SecretVersion = AddSecretVersion(Secret);
-        SecretReference = $"{{\"username\": \"test-user\", \"password\": \"__REF__(//secretmanager.googleapis.com/{Secret.SecretName}/versions/latest)\"}}";
-        ParameterVersionToRender = CreateParameterVersion(ParameterId, ParameterVersionId, SecretReference);
-        Policy = GrantIAMAccess(Secret.SecretName, ParameterToRender.PolicyMember.IamPolicyUidPrincipal.ToString());
-        ParameterVersionNameToRender = new ParameterVersionName(ProjectId, LocationId, ParameterId, ParameterVersionId);
-        Thread.Sleep(120000);
     }
 
     public void Dispose()
@@ -121,14 +76,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         DeleteParameter(ParameterWithFormat.ParameterName);
         DeleteParameterVersion(ParameterVersionNameWithSecretReference);
         DeleteParameter(ParameterWithSecretReference.ParameterName);
-        DeleteParameter(ParameterNameToDelete);
-        DeleteParameterVersion(ParameterVersionNameToDelete);
-        DeleteParameter(ParameterToDeleteVersion.ParameterName);
-        DeleteParameterVersion(ParameterVersionNameForQuickstart);
-        DeleteParameter(ParameterNameForQuickstart);
-        DeleteParameterVersion(ParameterVersionNameToRender);
-        DeleteParameter(ParameterToRender.ParameterName);
-        DeleteSecret(Secret.SecretName);
     }
 
     public String RandomId()
@@ -155,29 +102,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         };
 
         return client.CreateParameter(parent, parameter, parameterId);
-    }
-
-    public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
-    {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        ParameterName parameterName = new ParameterName(ProjectId, LocationId, parameterId);
-        ParameterVersion parameterVersion = new ParameterVersion
-        {
-            Payload = new ParameterVersionPayload
-            {
-                Data = ByteString.CopyFrom(payload, Encoding.UTF8)
-            }
-        };
-
-        return client.CreateParameterVersion(parameterName.ToString(), parameterVersion, versionId);
     }
 
     private void DeleteParameter(ParameterName name)
@@ -217,80 +141,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
             // Ignore error - Parameter version was already deleted
-        }
-    }
-
-    public Secret CreateSecret(string secretId)
-    {
-        string regionalEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        LocationName parent = new LocationName(ProjectId, LocationId);
-
-        Secret secret = new Secret();
-
-        return client.CreateSecret(parent, secretId, secret);
-    }
-
-    public Policy GrantIAMAccess(SecretName secretName, string member)
-    {
-        string regionalEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        // Get current policy.
-        Policy policy = client.GetIamPolicy(new GetIamPolicyRequest
-        {
-            ResourceAsResourceName = secretName,
-        });
-
-        // Add the user to the list of bindings.
-        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
-
-        // Save the updated policy.
-        policy = client.SetIamPolicy(new SetIamPolicyRequest
-        {
-            ResourceAsResourceName = secretName,
-            Policy = policy,
-        });
-        return policy;
-    }
-    private SecretVersion AddSecretVersion(Secret secret)
-    {
-        string regionalEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        SecretPayload payload = new SecretPayload
-        {
-            Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
-        };
-
-        return client.AddSecretVersion(secret.SecretName, payload);
-    }
-
-    private void DeleteSecret(SecretName name)
-    {
-        string regionalEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        try
-        {
-            client.DeleteSecret(name);
-        }
-        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
-        {
-            // Ignore error - secret was already deleted
         }
     }
 }

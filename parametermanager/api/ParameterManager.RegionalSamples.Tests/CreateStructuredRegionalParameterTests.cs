@@ -17,26 +17,26 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerRegionalFixture))]
-public class CreateRegionalParamSampleTests
+public class CreateStructuredRegionalParameterTests
 {
     private readonly ParameterManagerRegionalFixture _fixture;
-    private readonly CreateRegionalParamSample _sample;
+    private readonly CreateStructuredRegionalParameterSample _sample;
 
-    public CreateRegionalParamSampleTests(ParameterManagerRegionalFixture fixture)
+    public CreateStructuredRegionalParameterTests(ParameterManagerRegionalFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateRegionalParamSample();
+        _sample = new CreateStructuredRegionalParameterSample();
     }
 
     [Fact]
-    public void CreateRegionalParam()
+    public void CreateStructuredRegionalParameter()
     {
-        ParameterName parameterName = _fixture.ParameterName;
-        Parameter result = _sample.CreateRegionalParam(
-          projectId: parameterName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterName.ParameterId);
+        ParameterName parameterName = _fixture.ParameterNameWithFormat;
+        Parameter result = _sample.CreateStructuredRegionalParameter(
+          projectId: parameterName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
 
         Assert.NotNull(result);
-        Assert.Equal(result.Name, parameterName.ToString());
-        Assert.Equal(result.Format.ToString(), ParameterFormat.Unformatted.ToString());
+        Assert.Equal(ParameterFormat.Json, result.Format);
+        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
     }
 }
