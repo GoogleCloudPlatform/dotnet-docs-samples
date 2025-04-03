@@ -14,21 +14,21 @@
  * limitations under the License.
  */
 
-// [START parametermanager_disable_regional_param_version]
+// [START parametermanager_enable_regional_param_version]
 
 using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf.WellKnownTypes;
 
-/// <summary>
-/// This function disables a regional parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="locationId">The ID of the region where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be disabled.</param>
-/// <param name="versionId">The ID of the version to be disabled.</param>
-public class DisableRegionalParamVersionSample
+public class EnableRegionalParameterVersionSample
 {
-    public ParameterVersion DisableRegionalParamVersion(
+    /// <summary>
+    /// This function enables a regional parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="locationId">The ID of the region where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be enabled.</param>
+    /// <param name="versionId">The ID of the version to be enabled.</param>
+    public ParameterVersion EnableRegionalParameterVersion(
         string projectId,
         string locationId,
         string parameterId,
@@ -51,7 +51,7 @@ public class DisableRegionalParamVersionSample
             ParameterVersion = new ParameterVersion
             {
                 Name = parameterVersionName.ToString(),
-                Disabled = true
+                Disabled = false
             },
             UpdateMask = new FieldMask
             {
@@ -62,9 +62,9 @@ public class DisableRegionalParamVersionSample
         // Call the API to update (disable) the parameter version.
         ParameterVersion updatedParameterVersion = client.UpdateParameterVersion(request);
 
-        Console.WriteLine($"Disabled regional parameter version {versionId} for parameter {parameterId}");
+        Console.WriteLine($"Enabled regional parameter version {versionId} for parameter {parameterId}");
 
         return updatedParameterVersion;
     }
 }
-// [END parametermanager_disable_regional_param_version]
+// [END parametermanager_enable_regional_param_version]

@@ -18,16 +18,16 @@
 
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function deletes a regional parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="locationId">The ID of the region where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be deleted.</param>
-/// <param name="versionId">The ID of the version to be deleted.</param>
-public class DeleteRegionalParamVersionSample
+public class DeleteRegionalParameterVersionSample
 {
-    public void DeleteRegionalParamVersion(
+    /// <summary>
+    /// This function deletes a regional parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="locationId">The ID of the region where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be deleted.</param>
+    /// <param name="versionId">The ID of the version to be deleted.</param>
+    public void DeleteRegionalParameterVersion(
         string projectId,
         string locationId,
         string parameterId,

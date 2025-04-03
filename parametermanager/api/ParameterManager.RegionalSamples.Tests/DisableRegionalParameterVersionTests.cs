@@ -17,24 +17,24 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerRegionalFixture))]
-public class EnableRegionalParamVersionTests
+public class DisableRegionalParameterVersionTests
 {
     private readonly ParameterManagerRegionalFixture _fixture;
-    private readonly EnableRegionalParamVersionSample _sample;
+    private readonly DisableRegionalParameterVersionSample _sample;
 
-    public EnableRegionalParamVersionTests(ParameterManagerRegionalFixture fixture)
+    public DisableRegionalParameterVersionTests(ParameterManagerRegionalFixture fixture)
     {
         _fixture = fixture;
-        _sample = new EnableRegionalParamVersionSample();
+        _sample = new DisableRegionalParameterVersionSample();
     }
 
     [Fact]
-    public void EnableRegionalParamVersion()
+    public void DisableRegionalParameterVersion()
     {
-        ParameterVersion result = _sample.EnableRegionalParamVersion(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, parameterId: _fixture.ParameterId, versionId: _fixture.ParameterVersionId);
+        ParameterVersion result = _sample.DisableRegionalParameterVersion(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, parameterId: _fixture.ParameterId, versionId: _fixture.ParameterVersionId);
 
         Assert.NotNull(result);
-        Assert.Equal(result.Name, _fixture.ParameterVersionToRender.Name);
-        Assert.False(result.Disabled);
+        Assert.Equal(result.Name, _fixture.ParameterVersionToDisableAndEnable.Name);
+        Assert.True(result.Disabled);
     }
 }
