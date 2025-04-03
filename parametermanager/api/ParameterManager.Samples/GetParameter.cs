@@ -18,15 +18,15 @@
 
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function retrieves a parameter using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter to be retrieved.</param>
-/// <returns>The retrieved Parameter object.</returns>
-public class GetParamSample
+public class GetParameterSample
 {
-    public Parameter GetParam(
+    /// <summary>
+    /// This function retrieves a parameter using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter to be retrieved.</param>
+    /// <returns>The retrieved Parameter object.</returns>
+    public Parameter GetParameter(
         string projectId,
         string parameterId)
     {

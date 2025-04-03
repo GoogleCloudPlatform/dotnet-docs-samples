@@ -19,16 +19,16 @@
 using Google.Cloud.ParameterManager.V1;
 using System.Text;
 
-/// <summary>
-/// This function renders a parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be rendered.</param>
-/// <param name="versionId">The ID of the version to be rendered.</param>
-/// <returns>The rendered parameter version data as a string.</returns>
-public class RenderParamVersionSample
+public class RenderParameterVersionSample
 {
-    public string RenderParamVersion(
+    /// <summary>
+    /// This function renders a parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be rendered.</param>
+    /// <param name="versionId">The ID of the version to be rendered.</param>
+    /// <returns>The rendered parameter version data as a string.</returns>
+    public string RenderParameterVersion(
         string projectId,
         string parameterId,
         string versionId)

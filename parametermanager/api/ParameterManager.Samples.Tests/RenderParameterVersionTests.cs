@@ -17,21 +17,23 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class ListParamsTests
+public class RenderParameterVersionTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly ListParamsSample _sample;
+    private readonly RenderParameterVersionSample _sample;
 
-    public ListParamsTests(ParameterManagerFixture fixture)
+    public RenderParameterVersionTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ListParamsSample();
+        _sample = new RenderParameterVersionSample();
     }
 
     [Fact]
-    public void ListParams()
+    public void RenderParameterVersion()
     {
-        IEnumerable<Parameter> result = _sample.ListParams(projectId: _fixture.ProjectId);
+        ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameToRender;
+        string result = _sample.RenderParameterVersion(projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
+
         Assert.NotNull(result);
     }
 }

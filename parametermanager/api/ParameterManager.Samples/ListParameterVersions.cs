@@ -19,15 +19,15 @@
 using Google.Api.Gax;
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function lists parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be listed.</param>
-/// <returns>A list of ParameterVersion objects.</returns>
-public class ListParamVersionsSample
+public class ListParameterVersionsSample
 {
-    public IEnumerable<ParameterVersion> ListParamVersions(
+    /// <summary>
+    /// This function lists parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be listed.</param>
+    /// <returns>A list of ParameterVersion objects.</returns>
+    public IEnumerable<ParameterVersion> ListParameterVersions(
         string projectId,
         string parameterId)
     {

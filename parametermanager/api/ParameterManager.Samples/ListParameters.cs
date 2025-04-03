@@ -20,14 +20,14 @@ using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function lists parameter using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <returns>A list of Parameter objects.</returns>
-public class ListParamsSample
+public class ListParametersSample
 {
-    public IEnumerable<Parameter> ListParams(string projectId)
+    /// <summary>
+    /// This function lists parameter using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <returns>A list of Parameter objects.</returns>
+    public IEnumerable<Parameter> ListParameters(string projectId)
     {
         // Create the client.
         ParameterManagerClient client = ParameterManagerClient.Create();

@@ -19,16 +19,16 @@
 using Google.Cloud.ParameterManager.V1;
 using System.Text;
 
-/// <summary>
-/// This function retrieves a parameter version using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be retrieved.</param>
-/// <param name="versionId">The ID of the version to be retrieved.</param>
-/// <returns>The retrieved ParameterVersion object.</returns>
-public class GetParamVersionSample
+public class GetParameterVersionSample
 {
-    public ParameterVersion GetParamVersion(
+    /// <summary>
+    /// This function retrieves a parameter version using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be retrieved.</param>
+    /// <param name="versionId">The ID of the version to be retrieved.</param>
+    /// <returns>The retrieved ParameterVersion object.</returns>
+    public ParameterVersion GetParameterVersion(
         string projectId,
         string parameterId,
         string versionId)
