@@ -21,16 +21,16 @@ using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf;
 using System.Text;
 
-/// <summary>
-/// This function demonstrates the quickstart for using the parameter manager using the Parameter Manager SDK for GCP.
-/// It covers structured parameter creation, creation of parameter version with JSON format payload which has secret reference in it.
-/// Finally, it fetches the simple and decoded payload and prints them.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
-/// <param name="versionId">The ID of the version to be created.</param>
 public class QuickstartSample
 {
+    /// <summary>
+    /// This function demonstrates the quickstart for using the parameter manager using the Parameter Manager SDK for GCP.
+    /// It covers structured parameter creation, creation of parameter version with JSON format payload which has secret reference in it.
+    /// Finally, it fetches the simple and decoded payload and prints them.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
+    /// <param name="versionId">The ID of the version to be created.</param>
     public void Quickstart(
         string projectId,
         string parameterId,
