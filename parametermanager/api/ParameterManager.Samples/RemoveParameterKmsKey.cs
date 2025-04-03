@@ -14,26 +14,23 @@
  * limitations under the License.
  */
 
-// [START parametermanager_update_param_kms_key]
+// [START parametermanager_remove_param_kms_key]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf.WellKnownTypes;
 
-/// <summary>
-/// This function updates a parameter with kms_key using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is to be updated.</param>
-/// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
-/// <param name="kmsKey">The ID of the KMS key to be used for encryption.
-/// (e.g. "projects/my-project/locations/global/keyRings/my-key-ring/cryptoKeys/my-encryption-key")</param>
-/// <returns>The updated Parameter object.</returns>
-public class UpdateParamKmsKeySample
+public class RemoveParameterKmsKeySample
 {
-    public Parameter UpdateParamKmsKey(
+    /// <summary>
+    /// This function Removes a kms_key for parameter using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is to be created.</param>
+    /// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
+    /// <returns>The Parameter object.</returns>
+    public Parameter RemoveParameterKmsKey(
         string projectId,
-        string parameterId,
-        string kmsKey)
+        string parameterId)
     {
         // Create the client.
         ParameterManagerClient client = ParameterManagerClient.Create();
@@ -47,7 +44,6 @@ public class UpdateParamKmsKeySample
             Parameter = new Parameter
             {
                 Name = name.ToString(),
-                KmsKey = kmsKey
             },
             UpdateMask = new FieldMask
             {
@@ -59,10 +55,10 @@ public class UpdateParamKmsKeySample
         Parameter updatedParameter = client.UpdateParameter(request);
 
         // Print the updated parameter name with kms_key.
-        Console.WriteLine($"Updated parameter {updatedParameter.Name} with kms_key {updatedParameter.KmsKey}");
+        Console.WriteLine($"Removed kms_key for parameter {updatedParameter.Name}");
 
         // Return the updated parameter.
         return updatedParameter;
     }
 }
-// [END parametermanager_update_param_kms_key]
+// [END parametermanager_remove_param_kms_key]

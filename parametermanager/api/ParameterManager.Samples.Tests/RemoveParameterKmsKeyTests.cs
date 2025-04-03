@@ -18,26 +18,25 @@ using Google.Cloud.Kms.V1;
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class CreateParamWithKmsKeyTests
+public class RemoveParameterKmsKeyTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly CreateParamWithKmsKeySample _sample;
+    private readonly RemoveParameterKmsKeySample _sample;
 
-    public CreateParamWithKmsKeyTests(ParameterManagerFixture fixture)
+    public RemoveParameterKmsKeyTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateParamWithKmsKeySample();
+        _sample = new RemoveParameterKmsKeySample();
     }
 
     [Fact]
-    public void CreateParamWithKmsKey()
+    public void RemoveParameterKmsKey()
     {
         ParameterName parameterName = _fixture.ParameterName;
-        Parameter result = _sample.CreateParamWithKmsKey(
-          projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId, kmsKey: _fixture.cryptoKey.Name);
+        Parameter result = _sample.RemoveParameterKmsKey(
+          projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId);
 
         Assert.NotNull(result);
-        Assert.Equal(result.Name, parameterName.ToString());
-        Assert.Equal(result.KmsKey, _fixture.cryptoKey.Name);
+        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
     }
 }
