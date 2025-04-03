@@ -43,7 +43,7 @@ public class DisableParameterVersionSample
         {
             ParameterVersion = new ParameterVersion
             {
-                Name = parameterVersionName,
+                Name = parameterVersionName.ToString(),
                 Disabled = true
             },
             UpdateMask = new FieldMask
