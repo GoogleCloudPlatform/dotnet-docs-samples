@@ -17,26 +17,26 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class CreateParamTests
+public class CreateParameterTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly CreateParamSample _sample;
+    private readonly CreateParameterSample _sample;
 
-    public CreateParamTests(ParameterManagerFixture fixture)
+    public CreateParameterTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateParamSample();
+        _sample = new CreateParameterSample();
     }
 
     [Fact]
-    public void CreateParam()
+    public void CreateParameter()
     {
         ParameterName parameterName = _fixture.ParameterName;
-        Parameter result = _sample.CreateParam(
+        Parameter result = _sample.CreateParameter(
           projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId);
 
         Assert.NotNull(result);
-        Assert.Equal(result.Name, parameterName.ToString());
-        Assert.Equal(result.Format.ToString(), ParameterFormat.Unformatted.ToString());
+        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
+        Assert.Equal(ParameterFormat.Unformatted, result.Format);
     }
 }

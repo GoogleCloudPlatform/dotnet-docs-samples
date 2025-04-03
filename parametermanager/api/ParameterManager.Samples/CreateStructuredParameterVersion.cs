@@ -20,17 +20,17 @@ using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf;
 using System.Text;
 
-/// <summary>
-/// This function creates a parameter version with a JSON payload using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
-/// <param name="versionId">The ID of the version to be created.</param>
-/// <param name="payload">The JSON dictionary payload to be stored in the new parameter version.</param>
-/// <returns>The created ParameterVersion object.</returns>
-public class CreateStructuredParamVersionSample
+public class CreateStructuredParameterVersionSample
 {
-    public ParameterVersion CreateStructuredParamVersion(
+    /// <summary>
+    /// This function creates a parameter version with a JSON payload using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
+    /// <param name="versionId">The ID of the version to be created.</param>
+    /// <param name="payload">The JSON dictionary payload to be stored in the new parameter version.</param>
+    /// <returns>The created ParameterVersion object.</returns>
+    public ParameterVersion CreateStructuredParameterVersion(
         string projectId,
         string parameterId,
         string versionId,

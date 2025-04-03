@@ -19,15 +19,15 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function creates a parameter of the format type "unformatted" using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is to be created.</param>
-/// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
-/// <returns>The created Parameter object.</returns>
-public class CreateParamSample
+public class CreateParameterSample
 {
-    public Parameter CreateParam(
+    /// <summary>
+    /// This function creates a parameter of the format type "unformatted" using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is to be created.</param>
+    /// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
+    /// <returns>The created Parameter object.</returns>
+    public Parameter CreateParameter(
         string projectId,
         string parameterId)
     {

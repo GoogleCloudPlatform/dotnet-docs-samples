@@ -17,26 +17,26 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class CreateParamVersionWithSecretTests
+public class CreateStructuredParameterTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly CreateParamVersionWithSecretSample _sample;
+    private readonly CreateStructuredParameterSample _sample;
 
-    public CreateParamVersionWithSecretTests(ParameterManagerFixture fixture)
+    public CreateStructuredParameterTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateParamVersionWithSecretSample();
+        _sample = new CreateStructuredParameterSample();
     }
 
     [Fact]
-    public void CreateParamVersionWithSecret()
+    public void CreateStructuredParameter()
     {
-        ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameWithSecretReference;
-        string secretId = _fixture.SecretId;
-        ParameterVersion result = _sample.CreateParamVersionWithSecret(
-          projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, secretId: secretId);
+        ParameterName parameterName = _fixture.ParameterNameWithFormat;
+        Parameter result = _sample.CreateStructuredParameter(
+          projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
 
         Assert.NotNull(result);
-        Assert.Equal(result.Name, parameterVersionName.ToString());
+        Assert.Equal(ParameterFormat.Json, result.Format);
+        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
     }
 }

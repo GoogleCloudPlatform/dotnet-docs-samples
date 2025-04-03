@@ -19,16 +19,16 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 
-/// <summary>
-/// This function creates a parameter of the specified format type using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is to be created.</param>
-/// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
-/// <param name="format">The format type of the parameter (UNFORMATTED, YAML, JSON).</param>
-/// <returns>The created Parameter object.</returns>
-public class CreateStructuredParamSample
+public class CreateStructuredParameterSample
 {
-    public Parameter CreateStructuredParam(
+    /// <summary>
+    /// This function creates a parameter of the specified format type using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is to be created.</param>
+    /// <param name="parameterId">The ID to assign to the new parameter. This ID must be unique within the project.</param>
+    /// <param name="format">The format type of the parameter (UNFORMATTED, YAML, JSON).</param>
+    /// <returns>The created Parameter object.</returns>
+    public Parameter CreateStructuredParameter(
         string projectId,
         string parameterId,
         ParameterFormat format)

@@ -14,27 +14,27 @@
  * limitations under the License.
  */
 
-// [START parametermanager_create_param_version_with_secret]
+// [START parametermanager_create_param_version]
 
 using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf;
 using System.Text;
 
-/// <summary>
-/// This function creates a parameter version with a JSON payload that includes a secret reference using the Parameter Manager SDK for GCP.
-/// </summary>
-/// <param name="projectId">The ID of the project where the parameter is located.</param>
-/// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
-/// <param name="versionId">The ID of the version to be created.</param>
-/// <param name="secretId">The ID of the secret to be referenced.</param>
-/// <returns>The created ParameterVersion object.</returns>
-public class CreateParamVersionWithSecretSample
+public class CreateParameterVersionSample
 {
-    public ParameterVersion CreateParamVersionWithSecret(
+    /// <summary>
+    /// This function creates a parameter version with an unformatted payload using the Parameter Manager SDK for GCP.
+    /// </summary>
+    /// <param name="projectId">The ID of the project where the parameter is located.</param>
+    /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
+    /// <param name="versionId">The ID of the version to be created.</param>
+    /// <param name="payload">The unformatted string payload to be stored in the new parameter version.</param>
+    /// <returns>The created ParameterVersion object.</returns>
+    public ParameterVersion CreateParameterVersion(
         string projectId,
         string parameterId,
         string versionId,
-        string secretId)
+        string payload)
     {
         // Create the client.
         ParameterManagerClient client = ParameterManagerClient.Create();
@@ -42,11 +42,10 @@ public class CreateParamVersionWithSecretSample
         // Build the parent resource name.
         ParameterName parent = new ParameterName(projectId, "global", parameterId);
 
-        // Convert the JSON payload to bytes.
-        string payload = $"{{\"username\": \"test-user\", \"password\": \"__REF__(//secretmanager.googleapis.com/{secretId}\"}}";
+        // Convert the payload to bytes.
         ByteString data = ByteString.CopyFrom(payload, Encoding.UTF8);
 
-        // Build the parameter version with the JSON payload that includes a secret reference.
+        // Build the parameter version with the unformatted payload.
         ParameterVersion parameterVersion = new ParameterVersion
         {
             Payload = new ParameterVersionPayload
@@ -65,4 +64,4 @@ public class CreateParamVersionWithSecretSample
         return createdParameterVersion;
     }
 }
-// [END parametermanager_create_param_version_with_secret]
+// [END parametermanager_create_param_version]
