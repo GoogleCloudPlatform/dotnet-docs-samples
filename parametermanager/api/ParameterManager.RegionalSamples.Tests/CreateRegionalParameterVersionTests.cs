@@ -32,9 +32,9 @@ public class CreateRegionalParameterVersionTests
     public void CreateRegionalParameterVersion()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionName;
-        string payload = _fixture.Payload;
+        string payload = ParameterManagerRegionalFixture.Payload;
         ParameterVersion result = _sample.CreateRegionalParameterVersion(
-          projectId: parameterVersionName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
+          projectId: parameterVersionName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);

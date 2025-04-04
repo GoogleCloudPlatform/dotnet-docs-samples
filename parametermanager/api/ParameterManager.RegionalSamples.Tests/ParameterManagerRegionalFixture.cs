@@ -23,11 +23,11 @@ using System.Text;
 public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<ParameterManagerRegionalFixture>
 {
     public string ProjectId { get; }
-    public string LocationId = "us-central1";
+    public const string LocationId = "us-central1";
 
-    public string Payload = "test123";
-    public string JsonPayload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
-    public string SecretId = "projects/project-id/secrets/secret-id/versions/latest";
+    public const string Payload = "test123";
+    public const string JsonPayload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
+    public const string SecretId = "projects/project-id/secrets/secret-id/versions/latest";
 
     public ParameterName ParameterName { get; }
     public ParameterName ParameterNameWithFormat { get; }

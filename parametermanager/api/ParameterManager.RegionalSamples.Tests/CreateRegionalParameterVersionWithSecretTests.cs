@@ -32,9 +32,9 @@ public class CreateRegionalParameterVersionWithSecretTests
     public void CreateRegionalParameterVersionWithSecret()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameWithSecretReference;
-        string secretId = _fixture.SecretId;
+        string secretId = ParameterManagerRegionalFixture.SecretId;
         ParameterVersion result = _sample.CreateRegionalParameterVersionWithSecret(
-          projectId: parameterVersionName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, secretId: secretId);
+          projectId: parameterVersionName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, secretId: secretId);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);

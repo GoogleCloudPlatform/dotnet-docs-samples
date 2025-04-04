@@ -32,9 +32,9 @@ public class CreateStructuredRegionalParameterVersionTests
     public void CreateStructuredRegionalParameterVersion()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameWithFormat;
-        string payload = _fixture.JsonPayload;
+        string payload = ParameterManagerRegionalFixture.JsonPayload;
         ParameterVersion result = _sample.CreateStructuredRegionalParameterVersion(
-          projectId: parameterVersionName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
+          projectId: parameterVersionName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);

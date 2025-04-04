@@ -33,7 +33,7 @@ public class CreateStructuredRegionalParameterTests
     {
         ParameterName parameterName = _fixture.ParameterNameWithFormat;
         Parameter result = _sample.CreateStructuredRegionalParameter(
-          projectId: parameterName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
+          projectId: parameterName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
 
         Assert.NotNull(result);
         Assert.Equal(ParameterFormat.Json, result.Format);
