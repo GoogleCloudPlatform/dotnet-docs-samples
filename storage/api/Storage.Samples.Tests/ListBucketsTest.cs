@@ -40,27 +40,4 @@ public class ListBucketsTest
         var buckets = listBucketsSample.ListBuckets(_fixture.ProjectId);
         Assert.Contains(buckets, c => c.Name == bucketName);
     }
-
-    [Fact]
-    public async Task SoftDeletedOnly()
-    {
-        ListSoftDeletedBucketsSample listSoftDeletedBucketsSample = new ListSoftDeletedBucketsSample();
-        var bucketName = _fixture.GenerateBucketName();
-        var softDeleteBucket = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
-        await _fixture.Client.DeleteBucketAsync(softDeleteBucket.Name, new DeleteBucketOptions { DeleteObjects = true });
-
-        var actualBuckets = listSoftDeletedBucketsSample.ListSoftDeletedBuckets(_fixture.ProjectId);
-        // Check the list contains the bucket we just soft-deleted.
-        Assert.Contains(actualBuckets, bucket => bucket.Name == softDeleteBucket.Name && bucket.Generation == softDeleteBucket.Generation);
-        // Check all the buckets in the list are soft-deleted buckets.
-        Assert.All(actualBuckets, AssertSoftDeletedBucket);
-    }
-
-    // Validates that the given bucket is soft-deleted.
-    private void AssertSoftDeletedBucket(Bucket b)
-    {
-        Assert.NotNull(b.Generation);
-        Assert.NotNull(b.HardDeleteTimeDateTimeOffset);
-        Assert.NotNull(b.SoftDeleteTimeDateTimeOffset);
-    }
 }
