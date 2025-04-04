@@ -12,11 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Apis.Storage.v1.Data;
-using Google.Cloud.Storage.V1;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
