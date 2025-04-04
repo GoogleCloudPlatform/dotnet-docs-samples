@@ -23,7 +23,7 @@ using System.Text;
 public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<ParameterManagerRegionalFixture>
 {
     public string ProjectId { get; }
-    public string LocationId = "us-central1";
+    public const string LocationId = "us-central1";
     public string SecretReference { get; }
     public string ParameterId { get; }
     public string ParameterVersionId { get; }

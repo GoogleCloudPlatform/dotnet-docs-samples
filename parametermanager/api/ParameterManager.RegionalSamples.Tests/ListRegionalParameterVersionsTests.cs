@@ -32,7 +32,7 @@ public class ListRegionalParameterVersionsTests
     public void ListRegionalParameterVersions()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameToRender;
-        IEnumerable<ParameterVersion> result = _sample.ListRegionalParameterVersions(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, parameterId: parameterVersionName.ParameterId);
+        IEnumerable<ParameterVersion> result = _sample.ListRegionalParameterVersions(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterVersionName.ParameterId);
         Assert.NotNull(result);
     }
 }

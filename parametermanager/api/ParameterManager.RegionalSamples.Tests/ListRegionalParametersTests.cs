@@ -31,7 +31,7 @@ public class ListRegionalParametersTests
     [Fact]
     public void ListRegionalParameters()
     {
-        IEnumerable<Parameter> result = _sample.ListRegionalParameters(projectId: _fixture.ProjectId, locationId: _fixture.LocationId);
+        IEnumerable<Parameter> result = _sample.ListRegionalParameters(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId);
         Assert.NotNull(result);
     }
 }

@@ -31,7 +31,7 @@ public class GetRegionalParameterTests
     [Fact]
     public void GetRegionalParameter()
     {
-        Parameter result = _sample.GetRegionalParameter(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, parameterId: _fixture.ParameterId);
+        Parameter result = _sample.GetRegionalParameter(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: _fixture.ParameterId);
 
         Assert.NotNull(result);
         Assert.Equal(result.Name, _fixture.ParameterToRender.Name);

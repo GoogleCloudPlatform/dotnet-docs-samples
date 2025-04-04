@@ -32,7 +32,7 @@ public class RenderRegionalParameterVersionTests
     public void RenderRegionalParameterVersion()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameToRender;
-        string result = _sample.RenderRegionalParameterVersion(projectId: parameterVersionName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
+        string result = _sample.RenderRegionalParameterVersion(projectId: parameterVersionName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
 
         Assert.NotNull(result);
     }
