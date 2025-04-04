@@ -32,7 +32,7 @@ public class CreateParameterVersionWithSecretTests
     public void CreateParameterVersionWithSecret()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameWithSecretReference;
-        string secretId = _fixture.SecretId;
+        string secretId = ParameterManagerFixture.SecretId;
         ParameterVersion result = _sample.CreateParameterVersionWithSecret(
           projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, secretId: secretId);
 

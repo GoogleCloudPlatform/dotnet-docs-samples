@@ -32,7 +32,7 @@ public class CreateParameterVersionTests
     public void CreateParameterVersion()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionName;
-        string payload = _fixture.Payload;
+        string payload = ParameterManagerFixture.Payload;
         ParameterVersion result = _sample.CreateParameterVersion(
           projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
 

@@ -32,7 +32,7 @@ public class CreateStructureParameterVersionTests
     public void CreateStructureParameterVersion()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameWithFormat;
-        string payload = _fixture.JsonPayload;
+        string payload = ParameterManagerFixture.JsonPayload;
         ParameterVersion result = _sample.CreateStructuredParameterVersion(
           projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
 
