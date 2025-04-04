@@ -23,8 +23,8 @@ using System.Text;
 public class ParameterManagerFixture : IDisposable, ICollectionFixture<ParameterManagerFixture>
 {
     public string ProjectId { get; }
-    public string LocationId = "global";
-    public string Payload = "test123";
+    public const string LocationId = "global";
+    public const string Payload = "test123";
 
     public string ParameterId { get; }
     public string ParameterVersionId { get; }
