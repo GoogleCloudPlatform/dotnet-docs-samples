@@ -30,7 +30,11 @@ public class GetSoftDeletedBucketSample
         long? generation = 123456789)
     {
         var client = StorageClient.Create();
-        var bucket = client.GetBucket(bucketName, new GetBucketOptions { SoftDeleted = true, Generation = generation });
+        var bucket = client.GetBucket(bucketName, new GetBucketOptions
+        {
+            SoftDeleted = true,
+            Generation = generation
+        });
         Console.WriteLine($"Bucket:\t{bucket.Name}");
         Console.WriteLine($"Bucket Generation:\t{bucket.Generation}");
         Console.WriteLine($"Bucket SoftDelete Time:\t{bucket.SoftDeleteTimeDateTimeOffset}");
