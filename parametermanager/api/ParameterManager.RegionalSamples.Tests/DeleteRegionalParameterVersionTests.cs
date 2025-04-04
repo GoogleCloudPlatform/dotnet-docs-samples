@@ -32,7 +32,7 @@ public class DeleteRegionalParameterVersionTests
     public void DeleteRegionalParameterVersion()
     {
         ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameToDelete;
-        _sample.DeleteRegionalParameterVersion(projectId: parameterVersionName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
+        _sample.DeleteRegionalParameterVersion(projectId: parameterVersionName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
 
         ParameterManagerClient client = ParameterManagerClient.Create();
         Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameterVersion(parameterVersionName));

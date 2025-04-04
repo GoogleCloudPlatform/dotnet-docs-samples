@@ -31,7 +31,7 @@ public class EnableRegionalParameterVersionTests
     [Fact]
     public void EnableRegionalParameterVersion()
     {
-        ParameterVersion result = _sample.EnableRegionalParameterVersion(projectId: _fixture.ProjectId, locationId: _fixture.LocationId, parameterId: _fixture.ParameterId, versionId: _fixture.ParameterVersionId);
+        ParameterVersion result = _sample.EnableRegionalParameterVersion(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: _fixture.ParameterId, versionId: _fixture.ParameterVersionId);
 
         Assert.NotNull(result);
         Assert.Equal(result.Name, _fixture.ParameterVersionToDisableAndEnable.Name);

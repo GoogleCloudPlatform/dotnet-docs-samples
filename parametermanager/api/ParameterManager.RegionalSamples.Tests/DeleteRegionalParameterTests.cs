@@ -32,7 +32,7 @@ public class DeleteRegionalParameterTests
     public void DeleteRegionalParameter()
     {
         ParameterName parameterName = _fixture.ParameterNameToDelete;
-        _sample.DeleteRegionalParameter(projectId: parameterName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterName.ParameterId);
+        _sample.DeleteRegionalParameter(projectId: parameterName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterName.ParameterId);
 
         ParameterManagerClient client = ParameterManagerClient.Create();
         Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameter(parameterName));
