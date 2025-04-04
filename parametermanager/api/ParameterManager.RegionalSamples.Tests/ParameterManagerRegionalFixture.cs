@@ -18,11 +18,11 @@ using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf;
 using System.Text;
 
-[CollectionDefinition(nameof(ParameterManagerFixture))]
-public class ParameterManagerFixture : IDisposable, ICollectionFixture<ParameterManagerFixture>
+[CollectionDefinition(nameof(ParameterManagerRegionalFixture))]
+public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<ParameterManagerRegionalFixture>
 {
     public string ProjectId { get; }
-    public string LocationId = "us-central1";
+    public const string LocationId = "us-central1";
 
     public ParameterName ParameterName { get; }
 
@@ -38,7 +38,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public CryptoKey cryptoKey { get; }
     public CryptoKey cryptoKey1 { get; }
 
-    public ParameterManagerFixture()
+    public ParameterManagerRegionalFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (String.IsNullOrEmpty(ProjectId))

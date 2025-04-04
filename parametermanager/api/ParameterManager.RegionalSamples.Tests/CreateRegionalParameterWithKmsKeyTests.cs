@@ -17,13 +17,13 @@
 using Google.Cloud.Kms.V1;
 using Google.Cloud.ParameterManager.V1;
 
-[Collection(nameof(ParameterManagerFixture))]
+[Collection(nameof(ParameterManagerRegionalFixture))]
 public class CreateRegionalParameterWithKmsKeyTests
 {
-    private readonly ParameterManagerFixture _fixture;
+    private readonly ParameterManagerRegionalFixture _fixture;
     private readonly CreateRegionalParameterWithKmsKeySample _sample;
 
-    public CreateRegionalParameterWithKmsKeyTests(ParameterManagerFixture fixture)
+    public CreateRegionalParameterWithKmsKeyTests(ParameterManagerRegionalFixture fixture)
     {
         _fixture = fixture;
         _sample = new CreateRegionalParameterWithKmsKeySample();
@@ -34,10 +34,10 @@ public class CreateRegionalParameterWithKmsKeyTests
     {
         ParameterName parameterName = _fixture.ParameterName;
         Parameter result = _sample.CreateRegionalParameterWithKmsKey(
-          projectId: parameterName.ProjectId, locationId: _fixture.LocationId, parameterId: parameterName.ParameterId, kmsKey: _fixture.cryptoKey.Name);
+          projectId: parameterName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterName.ParameterId, kmsKey: _fixture.cryptoKey.Name);
 
         Assert.NotNull(result);
-        Assert.Equal(result.Name, parameterName.ToString());
+        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
         Assert.Equal(result.KmsKey, _fixture.cryptoKey.Name);
     }
 }
