@@ -25,9 +25,9 @@ public class ExecuteWorkflowSample
 {
     /// <summary>
     /// Execute a workflow and return the execution operation.
-    ///</summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
-    /// <param name="locationID">The region where your workflow is located</param>
+    /// </summary>
+    /// <param name="projectID">Your Google Cloud Project ID.</param>
+    /// <param name="locationID">The region where your workflow is located.</param>
     /// <param name="workflowID">Your Google Cloud Workflow ID.</param>
     /// 
     public async Task<Execution> ExecuteWorkflow(
@@ -36,10 +36,6 @@ public class ExecuteWorkflowSample
         string workflowID = "YOUR-WORKFLOW-ID"
     )
     {
-        // Arbitrary values
-        int delay = 1000;
-        TimeSpan timeout = TimeSpan.FromMinutes(5);
-
         // Initialize the client.
         ExecutionsClient client = await ExecutionsClient.CreateAsync();
 
@@ -47,17 +43,21 @@ public class ExecuteWorkflowSample
         string parent = WorkflowName.Format(projectId, locationID, workflowID);
 
         // Craete te execution request.
-        CreateExecutionRequest req = new CreateExecutionRequest
+        CreateExecutionRequest createExecutionRequest = new CreateExecutionRequest
         {
             ParentAsWorkflowName = WorkflowName.Parse(parent),
         };
 
-        // Execute the operation.. 
-        Execution execution = await client.CreateExecutionAsync(req);
+        // Execute the operation.
+        Execution execution = await client.CreateExecutionAsync(createExecutionRequest);
         Console.WriteLine("- Execution started...");
 
         Execution fetchedExecution;
         DateTime startTime = DateTime.UtcNow;
+
+        // TODO(developer): Adjust the following time parameters according to your Workflow timeout settings.
+        int fetchDelayMilliseconds = 1000;
+        TimeSpan timeout = TimeSpan.FromMinutes(5);
 
         // Loop to check whether the execution is done or the timeout has been reached.
         do
@@ -73,12 +73,13 @@ public class ExecuteWorkflowSample
             {
                 Console.WriteLine("- Waiting for results...");
 
-                await Task.Delay(delay);
-                delay *= 2;
+                await Task.Delay(fetchDelayMilliseconds);
+                fetchDelayMilliseconds *= 2;
             }
 
         } while (fetchedExecution.State == Execution.Types.State.Active);
 
+        // Return the fetched execution.
         return fetchedExecution;
     }
 }

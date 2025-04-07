@@ -34,7 +34,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         }
 
         // Generate a random ID for the testing workflow.
-        WorkflowID = RandomId();
+        WorkflowID = GetRandomWorkflowId();
 
         // Create workflow with the given ID.
         Workflow = CreateWorkflow(WorkflowID);
@@ -42,8 +42,8 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     }
 
     /// <summary>
-    /// Create a workflow by the given id and return it.
-    ///</summary>
+    /// Create a workflow by the given ID and return it.
+    /// </summary>
     /// <param name="workflowID">The workflow's ID</param>
     /// 
     public Workflow CreateWorkflow(string workflowID)
@@ -52,15 +52,15 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 
         string parent = LocationName.Format(ProjectId, LocationId);
         string filePath = Path.Combine(AppContext.BaseDirectory, "myFirstWorkflow.yaml");
-        string content = File.ReadAllText(filePath);
+        string fileContent = File.ReadAllText(filePath);
 
         Workflow workflow = new Workflow
         {
             Name = WorkflowName.Format(ProjectId, LocationId, workflowID),
-            SourceContents = content
+            SourceContents = fileContent
         };
 
-        CreateWorkflowRequest req = new CreateWorkflowRequest
+        CreateWorkflowRequest createWorkflowReq = new CreateWorkflowRequest
         {
             Parent = parent,
             Workflow = workflow,
@@ -68,35 +68,34 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         };
 
 
-        Operation<Workflow, OperationMetadata> operation = client.CreateWorkflow(req);
+        Operation<Workflow, OperationMetadata> operation = client.CreateWorkflow(createWorkflowReq);
         Operation<Workflow, OperationMetadata> deployedWorkflow = operation.PollUntilCompletedAsync().GetAwaiter().GetResult();
 
-        workflow = deployedWorkflow.Result;
-
-        return workflow;
+        // Get the deployed workflow once 
+        return deployedWorkflow.Result;
     }
 
     /// <summary>
     /// Delete a workflow by the given workflow name and return it.
-    ///</summary>
+    /// </summary>
     /// <param name="workflowName">The workflow's ID</param>
     /// 
     public void DeleteWorkflow(string workflowName)
     {
         WorkflowsClient client = WorkflowsClient.Create();
 
-        DeleteWorkflowRequest req = new DeleteWorkflowRequest
+        DeleteWorkflowRequest deleteWorkflowReq = new DeleteWorkflowRequest
         {
             Name = workflowName,
         };
 
         try
         {
-            client.DeleteWorkflow(req);
+            client.DeleteWorkflow(deleteWorkflowReq);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
-            // Ignore error - secret was already deleted
+            // Ignore error - secret was already deleted.
         }
     }
 
@@ -105,7 +104,12 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         DeleteWorkflow(Workflow.Name);
     }
 
-    public string RandomId()
+    /// <summary>
+    /// Create a random ID adding the prefix "workflow-cs-test-".
+    /// </summary>
+    /// <param name="workflowName">The workflow's ID</param>
+    ///
+    public string GetRandomWorkflowId()
     {
         return $"workflow-cs-test-{Guid.NewGuid()}";
     }
