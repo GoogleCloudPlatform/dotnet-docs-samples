@@ -12,10 +12,10 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
-using Google.LongRunning;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Workflows.Common.V1;
 using Google.Cloud.Workflows.V1;
-using Google.Api.Gax.ResourceNames;
+using Google.LongRunning;
 
 [CollectionDefinition(nameof(WorkflowFixture))]
 public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
@@ -76,7 +76,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         return workflow;
     }
 
-     /// <summary>
+    /// <summary>
     /// Delete a workflow by the given workflow name and return it.
     ///</summary>
     /// <param name="workflowName">The workflow's ID</param>

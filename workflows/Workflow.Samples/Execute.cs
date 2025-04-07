@@ -16,11 +16,10 @@
 
 // [START workflows_api_quickstart]
 
+using Google.Cloud.Workflows.Common.V1;
+using Google.Cloud.Workflows.Executions.V1;
 using System;
 using System.Threading.Tasks;
-
-using Google.Cloud.Workflows.Executions.V1;
-using Google.Cloud.Workflows.Common.V1;
 
 public class ExecuteWorkflowSample
 {
