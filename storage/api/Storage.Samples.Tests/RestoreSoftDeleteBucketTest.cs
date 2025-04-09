@@ -27,7 +27,7 @@ public class RestoreSoftDeleteBucketTest
     }
 
     [Fact]
-    public async Task RestoreSoftDeletedBucket()
+    public async Task RestoreSoftDeleteBucket()
     {
         RestoreSoftDeletedBucketSample restoreSoftDeletedBucketSample = new RestoreSoftDeletedBucketSample();
         var bucketName = _fixture.GenerateBucketName();

@@ -27,7 +27,7 @@ public class ListSoftDeleteBucketsTest
     }
 
     [Fact]
-    public async Task SoftDeletedOnly()
+    public async Task ListSoftDeleteBuckets()
     {
         ListSoftDeletedBucketsSample listSoftDeletedBucketsSample = new ListSoftDeletedBucketsSample();
         var bucketName = _fixture.GenerateBucketName();
