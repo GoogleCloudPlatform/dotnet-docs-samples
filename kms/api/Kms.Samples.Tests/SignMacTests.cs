@@ -41,10 +41,9 @@ public class SignMacTest
             data: data);
 
         // Verify the signature.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.MacKeyId, "1");
 
-        MacVerifyResponse result = client.MacVerify(keyVersionName, ByteString.CopyFromUtf8(data), ByteString.CopyFrom(signature));
+        MacVerifyResponse result = _fixture.KmsClient.MacVerify(keyVersionName, ByteString.CopyFromUtf8(data), ByteString.CopyFrom(signature));
         Assert.True(result.Success);
     }
 }
