@@ -20,6 +20,7 @@ using Google.LongRunning;
 [CollectionDefinition(nameof(WorkflowFixture))]
 public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 {
+    private WorkflowsClient Client;
     public string LocationId { get; } = "us-central1";
     public string ProjectId { get; }
     public string WorkflowID { get; }
@@ -32,6 +33,8 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
+        Client = WorkflowsClient.Create();
 
         // Generate a random ID for the testing workflow.
         WorkflowID = GetRandomWorkflowId();
@@ -48,8 +51,6 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     /// 
     public Workflow CreateWorkflow(string workflowID)
     {
-        WorkflowsClient client = WorkflowsClient.Create();
-
         string parent = LocationName.Format(ProjectId, LocationId);
         string filePath = Path.Combine(AppContext.BaseDirectory, "myFirstWorkflow.yaml");
         string fileContent = File.ReadAllText(filePath);
@@ -68,7 +69,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         };
 
 
-        Operation<Workflow, OperationMetadata> operation = client.CreateWorkflow(createWorkflowReq);
+        Operation<Workflow, OperationMetadata> operation = Client.CreateWorkflow(createWorkflowReq);
         Operation<Workflow, OperationMetadata> deployedWorkflow = operation.PollUntilCompletedAsync().GetAwaiter().GetResult();
 
         // Get the deployed workflow once 
@@ -82,8 +83,6 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     /// 
     public void DeleteWorkflow(string workflowName)
     {
-        WorkflowsClient client = WorkflowsClient.Create();
-
         DeleteWorkflowRequest deleteWorkflowReq = new DeleteWorkflowRequest
         {
             Name = workflowName,
@@ -91,7 +90,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 
         try
         {
-            client.DeleteWorkflow(deleteWorkflowReq);
+            Client.DeleteWorkflow(deleteWorkflowReq);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -101,7 +100,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 
     public void Dispose()
     {
-        //DeleteWorkflow(Workflow.Name);
+        DeleteWorkflow(Workflow.Name);
     }
 
     /// <summary>
