@@ -38,8 +38,7 @@ public class CreateKeyAsymmetricDecryptTest
             id: _fixture.RandomId());
 
         // Get the key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(result.CryptoKeyName);
+        var key = _fixture.KmsClient.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(CryptoKey.Types.CryptoKeyPurpose.AsymmetricDecrypt, key.Purpose);
         Assert.Equal(CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaDecryptOaep2048Sha256, key.VersionTemplate.Algorithm);

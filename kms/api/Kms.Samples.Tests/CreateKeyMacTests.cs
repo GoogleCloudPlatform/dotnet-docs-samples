@@ -38,8 +38,7 @@ public class CreateKeyMacTest
             id: _fixture.RandomId());
 
         // Get the key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(result.CryptoKeyName);
+        var key = _fixture.KmsClient.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(CryptoKey.Types.CryptoKeyPurpose.Mac, key.Purpose);
         Assert.Equal(CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.HmacSha256, key.VersionTemplate.Algorithm);

@@ -37,8 +37,7 @@ public class CreateKeyVersionTest
             projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId);
 
         // Get the key version.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var response = client.GetCryptoKeyVersion(result.CryptoKeyVersionName);
+        var response = _fixture.KmsClient.GetCryptoKeyVersion(result.CryptoKeyVersionName);
 
         Assert.NotNull(response.CryptoKeyVersionName.CryptoKeyVersionId);
     }

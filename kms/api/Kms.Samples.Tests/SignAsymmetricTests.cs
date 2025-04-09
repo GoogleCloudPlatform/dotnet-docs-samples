@@ -47,9 +47,8 @@ public class SignAsymmetricTest
         var digest = sha256.ComputeHash(Encoding.UTF8.GetBytes(message));
 
         // Get the public key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricSignRsaKeyId, "1");
-        var publicKey = client.GetPublicKey(keyVersionName);
+        var publicKey = _fixture.KmsClient.GetPublicKey(keyVersionName);
 
         // Split the key into blocks and base64-decode the PEM parts.
         var blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);

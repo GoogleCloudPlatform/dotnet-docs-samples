@@ -38,9 +38,8 @@ public class DecryptAsymmetricTest
         var plaintext = "testing1234";
 
         // Get the public key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.AsymmetricDecryptKeyId, "1");
-        var publicKey = client.GetPublicKey(keyVersionName);
+        var publicKey = _fixture.KmsClient.GetPublicKey(keyVersionName);
 
         // Split the key into blocks and base64-decode the PEM parts.
         var blocks = publicKey.Pem.Split("-", StringSplitOptions.RemoveEmptyEntries);

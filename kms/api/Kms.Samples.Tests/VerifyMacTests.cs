@@ -36,9 +36,8 @@ public class VerifyMacTest
         var data = "testing1234";
 
         // Create the signature.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
         CryptoKeyVersionName keyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, _fixture.LocationId, _fixture.KeyRingId, _fixture.MacKeyId, "1");
-        MacSignResponse result = client.MacSign(keyVersionName, ByteString.CopyFromUtf8(data));
+        MacSignResponse result = _fixture.KmsClient.MacSign(keyVersionName, ByteString.CopyFromUtf8(data));
 
         // Run the sample code.
         var success = _sample.VerifyMac(
