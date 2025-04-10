@@ -20,7 +20,7 @@ using Google.LongRunning;
 [CollectionDefinition(nameof(WorkflowFixture))]
 public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 {
-     private WorkflowsClient Client { get; }
+    private WorkflowsClient Client { get; }
     public string LocationId { get; } = "us-central1";
     public string ProjectId { get; }
     public string WorkflowID { get; }
