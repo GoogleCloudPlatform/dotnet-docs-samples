@@ -30,7 +30,7 @@ public class ExecuteWithArgumentsTests
     }
 
     [Fact]
-    public async Task Execute()
+    public async Task ExecuteWithArguments()
     {
         Execution execution = await _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
         Assert.Equal(Execution.Types.State.Succeeded, execution.State);
