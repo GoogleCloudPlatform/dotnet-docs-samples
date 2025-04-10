@@ -32,14 +32,7 @@ public class ExecuteTests
     [Fact]
     public async Task Execute()
     {
-        try
-        {
-            Execution execution = await _sample.ExecuteWorkflow(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
-            Assert.Equal(Execution.Types.State.Succeeded, execution.State);
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.Message);
-        }
+        Execution execution = await _sample.ExecuteWorkflow(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+        Assert.Equal(Execution.Types.State.Succeeded, execution.State);
     }
 }

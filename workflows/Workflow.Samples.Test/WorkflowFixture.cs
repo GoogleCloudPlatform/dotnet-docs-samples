@@ -20,7 +20,7 @@ using Google.LongRunning;
 [CollectionDefinition(nameof(WorkflowFixture))]
 public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 {
-    private readonly WorkflowsClient Client;
+     private WorkflowsClient Client { get; }
     public string LocationId { get; } = "us-central1";
     public string ProjectId { get; }
     public string WorkflowID { get; }
@@ -41,7 +41,6 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 
         // Create workflow with the given ID.
         Workflow = CreateWorkflow(WorkflowID);
-
     }
 
     /// <summary>
@@ -70,7 +69,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
 
 
         Operation<Workflow, OperationMetadata> operation = Client.CreateWorkflow(createWorkflowReq);
-        Operation<Workflow, OperationMetadata> deployedWorkflow = operation.PollUntilCompletedAsync().GetAwaiter().GetResult();
+        Operation<Workflow, OperationMetadata> deployedWorkflow = operation.PollUntilCompleted();
 
         // Get the deployed workflow once 
         return deployedWorkflow.Result;

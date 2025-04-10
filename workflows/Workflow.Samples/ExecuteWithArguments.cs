@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// [START workflows_api_quickstart]
-
 using Google.Cloud.Workflows.Common.V1;
 using Google.Cloud.Workflows.Executions.V1;
 using System;
@@ -34,8 +32,7 @@ public class ExecuteWorkfloWithArgumentswSample
     public async Task<Execution> ExecuteWorkflowWithArguments(
         string projectId = "YOUR-PROJECT-ID",
         string locationID = "YOUR-LOCATION-ID",
-        string workflowID = "YOUR-WORKFLOW-ID"
-    )
+        string workflowID = "YOUR-WORKFLOW-ID")
     {
         // Initialize the client.
         ExecutionsClient client = await ExecutionsClient.CreateAsync();
@@ -64,34 +61,21 @@ public class ExecuteWorkfloWithArgumentswSample
         Console.WriteLine("- Execution started...");
 
         Execution fetchedExecution;
-        DateTime startTime = DateTime.UtcNow;
-
+       
         // TODO(developer): Adjust the following time parameters according to your Workflow timeout settings.
         int fetchDelayMilliseconds = 1000;
-        TimeSpan timeout = TimeSpan.FromMinutes(5);
 
-        // Loop to check whether the execution is done or the timeout has been reached.
+        // Loop to check whether the execution state is different from Active.
         do
         {
             fetchedExecution = await client.GetExecutionAsync(execution.Name);
 
-            if (DateTime.UtcNow - startTime > timeout)
-            {
-                Console.WriteLine($"Timeout reached after {timeout}");
-                break;
-            }
-            else
-            {
-                Console.WriteLine("- Waiting for results...");
-
-                await Task.Delay(fetchDelayMilliseconds);
-                fetchDelayMilliseconds *= 2;
-            }
-
+            Console.WriteLine("- Waiting for results...");
+            await Task.Delay(fetchDelayMilliseconds);
+            fetchDelayMilliseconds *= 2;
         } while (fetchedExecution.State == Execution.Types.State.Active);
 
         // Return the fetched execution.
         return fetchedExecution;
     }
 }
-// [END workflows_api_quickstart]
