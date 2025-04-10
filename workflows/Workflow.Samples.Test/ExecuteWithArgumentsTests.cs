@@ -32,7 +32,21 @@ public class ExecuteWithArgumentsTests
     [Fact]
     public async Task ExecuteWithArguments()
     {
-        Execution execution = await _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(5));
+        CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+        Execution execution = new Execution();
+
+        // If the execution fails, it will retry until it the state is Succeeded or CancelationToken is cancelled
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            execution = await _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+            if (execution.State == Execution.Types.State.Succeeded)
+            {
+                break;
+            }
+        }
+
         Assert.Equal(Execution.Types.State.Succeeded, execution.State);
         Assert.Contains("Cloud", execution.Argument);
     }

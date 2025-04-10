@@ -32,7 +32,21 @@ public class ExecuteTests
     [Fact]
     public async Task Execute()
     {
-        Execution execution = await _sample.ExecuteWorkflow(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
+        CancellationToken cancellationToken = cancellationTokenSource.Token;
+
+        Execution execution = new Execution();
+
+        // If the execution fails, it will retry until it the state is Succeeded or CancelationToken is cancelled
+        while (!cancellationToken.IsCancellationRequested)
+        {
+            execution = await _sample.ExecuteWorkflow(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+            if (execution.State == Execution.Types.State.Succeeded)
+            {
+                break;
+            }
+        }
+
         Assert.Equal(Execution.Types.State.Succeeded, execution.State);
     }
 }

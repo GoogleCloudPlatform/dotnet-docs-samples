@@ -63,7 +63,8 @@ public class ExecuteWorkfloWithArgumentswSample
         Execution fetchedExecution;
 
         // TODO(developer): Adjust the following time parameters according to your Workflow timeout settings.
-        int fetchDelayMilliseconds = 1000;
+        // backoffDelay start value is 1000 milliseconds (1 second).
+        int backoffDelay = 1000;
 
         // Loop to check whether the execution state is different from Active.
         do
@@ -71,10 +72,12 @@ public class ExecuteWorkfloWithArgumentswSample
             fetchedExecution = await client.GetExecutionAsync(execution.Name);
 
             Console.WriteLine("- Waiting for results...");
-            await Task.Delay(fetchDelayMilliseconds);
-            fetchDelayMilliseconds *= 2;
-        } while (fetchedExecution.State == Execution.Types.State.Active);
+            await Task.Delay(backoffDelay);
 
+            // Exponential delay by doubling the current value
+            backoffDelay *= 2;
+        } while (fetchedExecution.State == Execution.Types.State.Active);
+    
         // Return the fetched execution.
         return fetchedExecution;
     }
