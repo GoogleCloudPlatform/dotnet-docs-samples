@@ -35,8 +35,6 @@ public class ExecuteWithArgumentsTests
         using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(5));
         CancellationToken cancellationToken = cancellationTokenSource.Token;
 
-        Execution execution1;
-
         Execution execution = new Execution();
 
         // If the execution fails, it will retry until it the state is Succeeded or CancelationToken is cancelled
