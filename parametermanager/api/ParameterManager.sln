@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParameterManager.Samples", "ParameterManager.Samples\ParameterManager.Samples.csproj", "{3E86B4EA-CA57-4E41-8D9A-FAB8F97F4779}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParameterManager.Samples.Tests", "ParameterManager.Samples.Tests\ParameterManager.Samples.Tests.csproj", "{0684F22B-8869-47CF-9480-31FE68756B04}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3E86B4EA-CA57-4E41-8D9A-FAB8F97F4779}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E86B4EA-CA57-4E41-8D9A-FAB8F97F4779}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E86B4EA-CA57-4E41-8D9A-FAB8F97F4779}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E86B4EA-CA57-4E41-8D9A-FAB8F97F4779}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0684F22B-8869-47CF-9480-31FE68756B04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0684F22B-8869-47CF-9480-31FE68756B04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0684F22B-8869-47CF-9480-31FE68756B04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0684F22B-8869-47CF-9480-31FE68756B04}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
