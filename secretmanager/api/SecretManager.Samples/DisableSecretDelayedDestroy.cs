@@ -37,8 +37,8 @@ public class DisableSecretDelayedDestroySample
         FieldMask fieldMask = FieldMask.FromString("version_destroy_ttl");
 
         // Call the API.
-        Secret disabledSecret = client.UpdateSecret(secret, fieldMask);
-        return disabledSecret;
+        Secret disabledDelayedDestroySecret = client.UpdateSecret(secret, fieldMask);
+        return disabledDelayedDestroySecret;
     }
 }
 // [END secretmanager_disable_secret_delayed_destroy]
