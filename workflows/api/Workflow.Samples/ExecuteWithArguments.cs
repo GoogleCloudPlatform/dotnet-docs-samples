@@ -77,7 +77,7 @@ public class ExecuteWorkfloWithArgumentswSample
             // Exponential delay by doubling the current value
             backoffDelay *= 2;
         } while (fetchedExecution.State == Execution.Types.State.Active);
-    
+
         // Return the fetched execution.
         return fetchedExecution;
     }
