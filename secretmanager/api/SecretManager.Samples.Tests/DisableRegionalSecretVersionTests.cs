@@ -51,4 +51,32 @@ public class DisableRegionalSecretVersionTests
         // Clean the created secret.
         _fixture.DeleteSecret(secret.SecretName);
     }
+
+    [Fact]
+    public void DisablesSecretVersionScheduledForDestruction()
+    {
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecretWithDelayedDestroy();
+
+        // Add the secret version to the created secret.
+        SecretVersion version = _fixture.AddSecretVersion(secret);
+        SecretVersionName secretVersionName = version.SecretVersionName;
+
+        // Destroy the created secret.
+        SecretVersion destroyedVersion = _fixture.DestroySecretVersion(version);
+
+        // Run the code sample.
+        SecretVersion secretVersion = _sample.DisableRegionalSecretVersion(
+          projectId: secretVersionName.ProjectId,
+          locationId: secretVersionName.LocationId,
+          secretId: secretVersionName.SecretId,
+          secretVersionId: secretVersionName.SecretVersionId
+        );
+
+        // Assert that the Secret gets disabled.
+        Assert.Equal(SecretVersion.Types.State.Disabled, secretVersion.State);
+
+        // Clean up the created resource
+        _fixture.DeleteSecret(secret.SecretName);
+    }
 }
