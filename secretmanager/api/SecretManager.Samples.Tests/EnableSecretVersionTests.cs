@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
 using Google.Cloud.SecretManager.V1;
+using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
 public class EnableSecretVersionTests
@@ -32,9 +32,49 @@ public class EnableSecretVersionTests
     [Fact]
     public void EnablesSecretVersions()
     {
-        SecretVersionName secretVersionName = _fixture.SecretVersionToEnable.SecretVersionName;
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+
+        // Add the secret version to the created secret.
+        SecretVersion version = _fixture.AddSecretVersion(secret);
+
+        // Get the SecretVersionName.
+        SecretVersionName secretVersionName = version.SecretVersionName;
+
+        // Disable the SecretVersion.
+        _fixture.DisableSecretVersion(version);
+
+        // Run the sample code.
         SecretVersion secretVersion = _sample.EnableSecretVersion(
           projectId: secretVersionName.ProjectId, secretId: secretVersionName.SecretId, secretVersionId: secretVersionName.SecretVersionId);
+
+        // Assert that the Secret gets disabled.
         Assert.Equal(SecretVersion.Types.State.Enabled, secretVersion.State);
+
+        // Clean up the created resource
+        _fixture.DeleteSecret(secret.SecretName);
+    }
+
+    [Fact]
+    public void EnableSecretVersionScheduledForDestruction()
+    {
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecretWithDelayedDestroy();
+
+        // Add the secret version to the created secret.
+        SecretVersion version = _fixture.AddSecretVersion(secret);
+
+        // Destroy the created secret.
+        SecretVersion destroyedVersion = _fixture.DestroySecretVersion(version);
+
+        // Run the sample code.
+        SecretVersion secretVersion = _sample.EnableSecretVersion(
+          projectId: destroyedVersion.SecretVersionName.ProjectId, secretId: destroyedVersion.SecretVersionName.SecretId, secretVersionId: destroyedVersion.SecretVersionName.SecretVersionId);
+
+        // Assert that the Secret gets disabled.
+        Assert.Equal(SecretVersion.Types.State.Enabled, secretVersion.State);
+
+        // Clean up the created resource
+        _fixture.DeleteSecret(secret.SecretName);
     }
 }
