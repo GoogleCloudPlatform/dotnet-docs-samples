@@ -17,26 +17,28 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class CreateParameterVersionWithSecretTests
+public class CreateStructuredParameterTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly CreateParameterVersionWithSecretSample _sample;
+    private readonly CreateStructuredParameterSample _sample;
 
-    public CreateParameterVersionWithSecretTests(ParameterManagerFixture fixture)
+    public CreateStructuredParameterTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateParameterVersionWithSecretSample();
+        _sample = new CreateStructuredParameterSample();
     }
 
     [Fact]
-    public void CreateParameterVersionWithSecret()
+    public void CreateStructuredParameter()
     {
-        ParameterVersionName parameterVersionName = _fixture.ParameterVersionNameWithSecretReference;
-        string secretId = ParameterManagerFixture.SecretId;
-        ParameterVersion result = _sample.CreateParameterVersionWithSecret(
-          projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, secretId: secretId);
+        ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerFixture.LocationId, _fixture.RandomId());
+        Parameter result = _sample.CreateStructuredParameter(
+          projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
+        Assert.Equal(ParameterFormat.Json, result.Format);
+        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
+
+        _fixture.ParametersToDelete.Add(parameterName);
     }
 }

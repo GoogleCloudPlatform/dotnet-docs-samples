@@ -31,12 +31,16 @@ public class CreateParameterVersionTests
     [Fact]
     public void CreateParameterVersion()
     {
-        ParameterVersionName parameterVersionName = _fixture.ParameterVersionName;
-        string payload = ParameterManagerFixture.Payload;
+        ParameterVersionName parameterVersionName = new ParameterVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, _fixture.RandomId(), _fixture.RandomId());
+        Parameter parameter = _fixture.CreateParameter(parameterVersionName.ParameterId, ParameterFormat.Unformatted);
+        string payload = "test123";
         ParameterVersion result = _sample.CreateParameterVersion(
           projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
+
+        _fixture.ParametersToDelete.Add(parameter.ParameterName);
+        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
     }
 }

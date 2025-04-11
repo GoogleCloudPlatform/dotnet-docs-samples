@@ -25,22 +25,8 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public string ProjectId { get; }
     public const string LocationId = "global";
 
-    public const string Payload = "test123";
-    public const string JsonPayload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
-    public const string SecretId = "projects/project-id/secrets/secret-id/versions/latest";
-
-    public ParameterName ParameterName { get; }
-    public ParameterName ParameterNameWithFormat { get; }
-
-    public string ParameterId { get; }
-    public Parameter Parameter { get; }
-    public ParameterVersionName ParameterVersionName { get; }
-
-    public Parameter ParameterWithFormat { get; }
-    public ParameterVersionName ParameterVersionNameWithFormat { get; }
-
-    public Parameter ParameterWithSecretReference { get; }
-    public ParameterVersionName ParameterVersionNameWithSecretReference { get; }
+    internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
+    internal List<ParameterVersionName> ParameterVersionsToDelete = new List<ParameterVersionName>();
 
     public ParameterManagerFixture()
     {
@@ -49,33 +35,18 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
-
-        ParameterName = new ParameterName(ProjectId, LocationId, RandomId());
-        ParameterNameWithFormat = new ParameterName(ProjectId, LocationId, RandomId());
-
-        ParameterId = RandomId();
-        Parameter = CreateParameter(ParameterId, ParameterFormat.Unformatted);
-        ParameterVersionName = new ParameterVersionName(ProjectId, LocationId, ParameterId, RandomId());
-
-        ParameterId = RandomId();
-        ParameterWithFormat = CreateParameter(ParameterId, ParameterFormat.Json);
-        ParameterVersionNameWithFormat = new ParameterVersionName(ProjectId, LocationId, ParameterId, RandomId());
-
-        ParameterId = RandomId();
-        ParameterWithSecretReference = CreateParameter(ParameterId, ParameterFormat.Unformatted);
-        ParameterVersionNameWithSecretReference = new ParameterVersionName(ProjectId, LocationId, ParameterId, RandomId());
     }
 
     public void Dispose()
     {
-        DeleteParameter(ParameterName);
-        DeleteParameter(ParameterNameWithFormat);
-        DeleteParameterVersion(ParameterVersionName);
-        DeleteParameter(Parameter.ParameterName);
-        DeleteParameterVersion(ParameterVersionNameWithFormat);
-        DeleteParameter(ParameterWithFormat.ParameterName);
-        DeleteParameterVersion(ParameterVersionNameWithSecretReference);
-        DeleteParameter(ParameterWithSecretReference.ParameterName);
+        foreach (var parameterVersion in ParameterVersionsToDelete)
+        {
+            DeleteParameterVersion(parameterVersion);
+        }
+        foreach (var parameter in ParametersToDelete)
+        {
+            DeleteParameter(parameter);
+        }
     }
 
     public String RandomId()
