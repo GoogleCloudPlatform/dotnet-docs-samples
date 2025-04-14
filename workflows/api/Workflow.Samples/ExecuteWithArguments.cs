@@ -69,14 +69,14 @@ public class ExecuteWorkfloWithArgumentswSample
         {
             await Task.Delay(backoffDelay);
             // Exponential delay by doubling the current value (capped in 16 seconds).
-            if(backoffDelay <= 8000)
+            if (backoffDelay <= 8000)
             {
                 backoffDelay *= 2;
             }
 
             execution = await client.GetExecutionAsync(execution.Name);
         }
-        
+
         // Return the fetched execution.
         return execution;
     }

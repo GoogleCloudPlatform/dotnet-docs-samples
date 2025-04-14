@@ -34,7 +34,7 @@ public class ExecuteWithArgumentsTests
     {
         var cts = new CancellationTokenSource();
         Execution execution = new Execution();
-        
+
         using (var timeoutCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
         {
             Task<Execution> task = _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
