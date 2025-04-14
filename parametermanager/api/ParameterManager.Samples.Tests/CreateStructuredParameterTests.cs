@@ -33,12 +33,11 @@ public class CreateStructuredParameterTests
     {
         ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerFixture.LocationId, _fixture.RandomId());
         Parameter result = _sample.CreateStructuredParameter(
-          projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
+            projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
+        _fixture.ParametersToDelete.Add(parameterName);
 
         Assert.NotNull(result);
         Assert.Equal(ParameterFormat.Json, result.Format);
         Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
-
-        _fixture.ParametersToDelete.Add(parameterName);
     }
 }

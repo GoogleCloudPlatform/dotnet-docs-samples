@@ -35,12 +35,11 @@ public class CreateStructureParameterVersionTests
         Parameter parameter = _fixture.CreateParameter(parameterVersionName.ParameterId, ParameterFormat.Json);
         string payload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
         ParameterVersion result = _sample.CreateStructuredParameterVersion(
-          projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
+            projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
+        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
 
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
     }
 }

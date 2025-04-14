@@ -35,12 +35,10 @@ public class CreateParameterVersionWithSecretTests
         Parameter parameter = _fixture.CreateParameter(parameterVersionName.ParameterId, ParameterFormat.Json);
         string secretId = "projects/project-id/secrets/secret-id/versions/latest";
         ParameterVersion result = _sample.CreateParameterVersionWithSecret(
-          projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, secretId: secretId);
+            projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, secretId: secretId);
+        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
     }
 }

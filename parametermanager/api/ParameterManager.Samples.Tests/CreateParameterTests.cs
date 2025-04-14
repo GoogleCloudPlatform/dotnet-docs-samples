@@ -33,12 +33,11 @@ public class CreateParameterTests
     {
         ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerFixture.LocationId, _fixture.RandomId());
         Parameter result = _sample.CreateParameter(
-          projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId);
+            projectId: parameterName.ProjectId, parameterId: parameterName.ParameterId);
+        _fixture.ParametersToDelete.Add(parameterName);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
         Assert.Equal(ParameterFormat.Unformatted, result.Format);
-
-        _fixture.ParametersToDelete.Add(parameterName);
     }
 }
