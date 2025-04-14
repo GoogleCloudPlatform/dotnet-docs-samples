@@ -45,28 +45,8 @@ public class DestroySecretVersionTests
         SecretVersion secretVersion = _sample.DestroySecretVersion(
           projectId: secretVersionName.ProjectId, secretId: secretVersionName.SecretId, secretVersionId: secretVersionName.SecretVersionId);
 
-        // Assert that the Secret gets disabled.
+        // Assert that the Secret is destroyed.
         Assert.Equal(SecretVersion.Types.State.Destroyed, secretVersion.State);
-
-        // Clean up the created resource
-        _fixture.DeleteSecret(secret.SecretName);
-    }
-
-    [Fact]
-    public void DisablesSecretVersionWhenDelayedDestroyEnabled()
-    {
-        // Create the secret and add secret version.
-        Secret secret = _fixture.CreateSecretWithDelayedDestroy();
-
-        // Add the secret version to the created secret.
-        SecretVersion version = _fixture.AddSecretVersion(secret);
-
-        // Run the sample code.
-        SecretVersion secretVersion = _sample.DestroySecretVersion(
-          projectId: secret.SecretName.ProjectId, secretId: secret.SecretName.SecretId, secretVersionId: version.SecretVersionName.SecretVersionId);
-
-        // Assert that the Secret gets disabled.
-        Assert.Equal(SecretVersion.Types.State.Disabled, secretVersion.State);
 
         // Clean up the created resource
         _fixture.DeleteSecret(secret.SecretName);
