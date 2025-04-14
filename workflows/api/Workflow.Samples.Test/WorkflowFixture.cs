@@ -76,7 +76,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     }
 
     /// <summary>
-    /// Delete a workflow by the given workflow name and return it.
+    /// Delete a workflow by the given workflow name.
     /// </summary>
     /// <param name="workflowName">The workflow's ID</param>
     /// 
@@ -105,7 +105,6 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     /// <summary>
     /// Create a random ID adding the prefix "workflow-cs-test-".
     /// </summary>
-    /// <param name="workflowName">The workflow's ID</param>
     ///
     public string GetRandomWorkflowId()
     {

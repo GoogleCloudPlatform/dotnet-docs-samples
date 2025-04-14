@@ -38,7 +38,7 @@ public class ExecuteWorkfloWithArgumentswSample
         ExecutionsClient client = await ExecutionsClient.CreateAsync();
 
         // Build the parent location path.
-        string parent = WorkflowName.Format(projectId, locationID, workflowID);
+        WorkflowName parent = new WorkflowName(projectId, locationID, workflowID);
 
         // Serialize the argument.
         string argument = JsonSerializer.Serialize(new
@@ -49,7 +49,7 @@ public class ExecuteWorkfloWithArgumentswSample
         // Craete te execution request.
         CreateExecutionRequest createExecutionRequest = new CreateExecutionRequest
         {
-            ParentAsWorkflowName = WorkflowName.Parse(parent),
+            ParentAsWorkflowName = parent,
             Execution = new Execution
             {
                 Argument = argument,
@@ -60,25 +60,24 @@ public class ExecuteWorkfloWithArgumentswSample
         Execution execution = await client.CreateExecutionAsync(createExecutionRequest);
         Console.WriteLine("- Execution started...");
 
-        Execution fetchedExecution;
-
         // TODO(developer): Adjust the following time parameters according to your Workflow timeout settings.
         // backoffDelay start value is 1000 milliseconds (1 second).
         int backoffDelay = 1000;
 
         // Loop to check whether the execution state is different from Active.
-        do
+        while (execution.State == Execution.Types.State.Active)
         {
-            fetchedExecution = await client.GetExecutionAsync(execution.Name);
-
-            Console.WriteLine("- Waiting for results...");
             await Task.Delay(backoffDelay);
+            // Exponential delay by doubling the current value (capped in 16 seconds).
+            if(backoffDelay <= 8000)
+            {
+                backoffDelay *= 2;
+            }
 
-            // Exponential delay by doubling the current value
-            backoffDelay *= 2;
-        } while (fetchedExecution.State == Execution.Types.State.Active);
-
+            execution = await client.GetExecutionAsync(execution.Name);
+        }
+        
         // Return the fetched execution.
-        return fetchedExecution;
+        return execution;
     }
 }

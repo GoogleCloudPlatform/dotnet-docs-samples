@@ -32,20 +32,25 @@ public class ExecuteTests
     [Fact]
     public async Task Execute()
     {
-        using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(10));
-        CancellationToken cancellationToken = cancellationTokenSource.Token;
-
+        var cts = new CancellationTokenSource();
         Execution execution = new Execution();
-
-        // If the execution fails, it will retry until it the state is Succeeded or CancelationToken is cancelled
-        while (!cancellationToken.IsCancellationRequested)
+        
+        using (var timeoutCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
         {
-            execution = await _sample.ExecuteWorkflow(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
-            if (execution.State == Execution.Types.State.Succeeded)
+            Task<Execution> task = _sample.ExecuteWorkflow(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+
+            var completedTask = await Task.WhenAny(task, Task.Delay(TimeSpan.FromMinutes(10), timeoutCancellationTokenSource.Token));
+            if (completedTask == task)
             {
-                break;
+                timeoutCancellationTokenSource.Cancel();
+                execution = await task;
+            }
+            else
+            {
+                throw new TimeoutException("The operation has timed out.");
             }
         }
+        ;
 
         Assert.Equal(Execution.Types.State.Succeeded, execution.State);
     }
