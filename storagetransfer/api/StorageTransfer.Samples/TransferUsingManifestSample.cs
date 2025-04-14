@@ -20,9 +20,9 @@ using System;
 public class TransferUsingManifestSample
 {
     /// <summary>
-    /// Sample that creates a transfer job that transfer objects from a POSIX file system to a gcs sink bucket using a manifest file.
+    /// Creates a transfer job that transfer objects from a POSIX file system to a gcs sink bucket using a manifest file.
     /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
+    /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sourceAgentPoolName">The agent pool associated with the POSIX data source. If not provided,
     /// defaults to the default agent </param>
     /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
@@ -30,22 +30,15 @@ public class TransferUsingManifestSample
     /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
     /// <param name="manifestObjectName">The name of the manifest file in manifestBucket that specifies which objects to transfer.</param>
     public TransferJob TransferUsingManifest(
-        // Your Google Cloud Project ID
         string projectId = "my-project-id",
-        // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
         string sourceAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-        // The root directory path on the source filesystem
         string rootDirectory = "/tmp/uploads",
-        // The GCS bucket which has your manifest file
         string manifestBucket = "my-source-bucket",
-        // The GCS bucket to transfer data to
         string sinkBucket = "my-sink-bucket",
-        // The name of the manifest file in manifestBucket that specifies which objects to transfer
         string manifestObjectName = "path/to/manifest.csv")
     {
         string manifestLocation = $"gs://{manifestBucket}/{manifestObjectName}";
 
-        // A useful description for your transfer job
         string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket}) using manifest file";
 
         TransferJob transferJob = new TransferJob
@@ -63,12 +56,8 @@ public class TransferUsingManifestSample
             Status = TransferJob.Types.Status.Enabled,
         };
 
-        // Create a Transfer Service client
         StorageTransferServiceClient client = StorageTransferServiceClient.Create();
-
-        // Create a Transfer job
         TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-
         client.RunTransferJob(new RunTransferJobRequest
         {
             JobName = response.Name,

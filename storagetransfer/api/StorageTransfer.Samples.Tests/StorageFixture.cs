@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+using Google;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageTransfer.V1;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
+using System.Xml.Linq;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests
@@ -32,11 +35,14 @@ namespace StorageTransfer.Samples.Tests
         public string BucketNameSink { get; set; }
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
+        public StorageClient Client { get; }
         public StorageClient Storage { get; } = StorageClient.Create();
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
+        private readonly List<string> _bucketsToDelete = [];
 
         public StorageFixture()
         {
+            Client = StorageClient.Create();
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             SourceAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
             SinkAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
@@ -46,7 +52,7 @@ namespace StorageTransfer.Samples.Tests
             }
         }
 
-        internal void CreateBucketAndGrantStsPermissions(string bucketName)
+        internal void CreateBucketAndGrantStsPermissions(string bucketName, bool registerForDeletion = true)
         {
             var bucket = Storage.CreateBucket(ProjectId, new Bucket
             {
@@ -88,30 +94,44 @@ namespace StorageTransfer.Samples.Tests
             policy.Bindings.Add(bucketReaderBinding);
             policy.Bindings.Add(bucketWriterBinding);
             Storage.SetBucketIamPolicy(bucketName, policy);
+            SleepAfterBucketCreateDelete();
+            if (registerForDeletion)
+            {
+                RegisterBucketToDelete(bucketName);
+            }
         }
 
         internal string GenerateBucketName() => Guid.NewGuid().ToString();
         internal string GetCurrentUserTempFolderPath() => System.IO.Path.GetTempPath();
         internal string GenerateTempFolderPath() => Path.Combine(Path.GetTempPath(), Guid.NewGuid().ToString());
 
+        /// <summary>
+        /// Bucket creation/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
+        /// </summary>
+        internal static void SleepAfterBucketCreateDelete() => Thread.Sleep(2000);
+
+        internal void RegisterBucketToDelete(string bucket) => _bucketsToDelete.Add(bucket);
+
         public void Dispose()
+        {
+            foreach (var bucket in _bucketsToDelete)
+            {
+                DeleteBucket(Client, bucket, null);
+            }
+        }
+
+        private void DeleteBucket(StorageClient client, string bucket, string userProject)
         {
             try
             {
-                Storage.DeleteBucket(BucketNameSink, new DeleteBucketOptions { DeleteObjects = true });
+                client.DeleteBucket(bucket, new DeleteBucketOptions { UserProject = userProject, DeleteObjects = true });
             }
-            catch (Exception)
+            catch (GoogleApiException)
             {
-                // Do nothing, we delete on a best effort basis.
+                // Some tests fail to delete buckets due to object retention locks etc.
+                // They can be cleaned up later.
             }
-            try
-            {
-                Storage.DeleteBucket(BucketNameSource, new DeleteBucketOptions { DeleteObjects = true });
-            }
-            catch (Exception)
-            {
-                // Do nothing, we delete on a best effort basis.
-            }
+            SleepAfterBucketCreateDelete();
         }
     }
 }

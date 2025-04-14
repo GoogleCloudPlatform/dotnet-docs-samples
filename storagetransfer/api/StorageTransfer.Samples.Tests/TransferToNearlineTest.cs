@@ -34,9 +34,8 @@ public class TransferToNearlineTest : IDisposable
         _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
     }
 
-    // Transfers objects from a Google Cloud Storage bucket to another bucket with Nearline storage class.
     [Fact]
-    public void TestTransferToNearline()
+    public void TransferToNearline()
     {
         TransferToNearlineSample transferToNearlineSample = new TransferToNearlineSample();
         var storage = _fixture.Storage;

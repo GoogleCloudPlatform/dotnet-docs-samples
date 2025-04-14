@@ -20,23 +20,18 @@ using System;
 public class TransferFromPosixSample
 {
     /// <summary>
-    /// Sample that creates a transfer job to transfer objects from a POSIX file system to a gcs sink bucket.
+    /// Creates a transfer job to transfer objects from a POSIX file system to a gcs sink bucket.
     /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
+    /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sourceAgentPoolName">The agent pool associated with the POSIX data source. If not provided, defaults to the default agent.</param>
     /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
     /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
     public TransferJob TransferFromPosix(
-        // Your Google Cloud Project ID
         string projectId = "my-project-id",
-        // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
         string sourceAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-        // The root directory path on the source filesystem
         string rootDirectory = "/tmp/uploads",
-        // The GCS bucket to transfer data to
         string sinkBucket = "my-sink-bucket")
     {
-        //  A useful description for your transfer job
         string jobDescription = $"Transfers objects from a POSIX file system to a sink bucket ({sinkBucket})";
 
         TransferJob transferJob = new TransferJob
@@ -52,12 +47,8 @@ public class TransferFromPosixSample
             Status = TransferJob.Types.Status.Enabled,
         };
 
-        // Create a Transfer Service client
         StorageTransferServiceClient client = StorageTransferServiceClient.Create();
-
-        // Create a Transfer job
         TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-
         client.RunTransferJob(new RunTransferJobRequest
         {
             JobName = response.Name,

@@ -39,7 +39,6 @@ public class DownloadToPosixTest : IDisposable
         UploadObjectToPosixBucket(_bucketNamePosixSource);
     }
 
-    // Downloads an object from a GCS bucket to a POSIX file system.
     [Fact]
     public void DownloadToPosix()
     {
@@ -51,7 +50,6 @@ public class DownloadToPosixTest : IDisposable
         _transferJobName = transferJob.Name;
     }
 
-    // Uploads an object to the POSIX bucket.
     private void UploadObjectToPosixBucket(string bucketName)
     {
         byte[] byteArray = System.Text.Encoding.UTF8.GetBytes($@"{Guid.NewGuid()}.jpeg");

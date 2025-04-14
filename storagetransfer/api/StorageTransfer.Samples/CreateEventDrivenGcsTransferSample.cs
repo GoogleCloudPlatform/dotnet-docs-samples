@@ -22,23 +22,18 @@ using System;
 public class CreateEventDrivenGcsTransferSample
 {
     /// <summary>
-    /// Sample that creates an event driven gcs data transfer from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.
+    /// Creates an event driven gcs data transfer from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.
     /// </summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
+    /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sourceBucket">The GCS bucket to transfer data from.</param>
     /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
-    /// <param name="pubSubId">The subscription ID to a Pubsub queue to track.</param>
+    /// <param name="pubSubId">The subscription ID to a PubSub queue to track.</param>
     public TransferJob CreateEventDrivenGcsTransfer(
-        // Your Google Cloud Project ID
         string projectId = "my-project-id",
-        // The GCS bucket to transfer data from
         string sourceBucket = "my-source-bucket",
-        // The GCS bucket to transfer data to
         string sinkBucket = "my-sink-bucket",
-        // The subscription ID to a Pubsub queue to track
         string pubSubId = "projects/PROJECT_NAME/subscriptions/SUBSCRIPTION_ID")
     {
-        // A useful description for your transfer job
         string jobDescription = $"Event driven gcs data transfer from {sourceBucket} to {sinkBucket} subscribed to {pubSubId} ";
 
         TransferJob transferJob = new TransferJob

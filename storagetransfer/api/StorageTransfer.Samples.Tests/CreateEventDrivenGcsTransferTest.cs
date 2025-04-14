@@ -27,8 +27,8 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
     private readonly StorageFixture _fixture;
     private readonly string _pubSubId;
     private string _transferJobName;
-    private string TopicId { get; } = "DotNetTopic" + Guid.NewGuid().ToString();
-    private string SubscriptionId { get; } = "DotNetSubscription" + Guid.NewGuid().ToString();
+    private string TopicId { get; } = Guid.NewGuid().ToString();
+    private string SubscriptionId { get; } = Guid.NewGuid().ToString();
     private SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
     private PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
 
@@ -40,43 +40,9 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
         _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
         _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
         _pubSubId = $"projects/{_fixture.ProjectId}/subscriptions/{SubscriptionId}";
-        string email = _fixture.Sts.GetGoogleServiceAccount(new GetGoogleServiceAccountRequest()
-        {
-            ProjectId = _fixture.ProjectId
-        }).AccountEmail;
-
-        string memberServiceAccount = "serviceAccount:" + email;
-        // Create subscription name
-        SubscriptionName subscriptionName = new SubscriptionName(_fixture.ProjectId, SubscriptionId);
-        // Create topic name
-        TopicName topicName = new TopicName(_fixture.ProjectId, TopicId);
-        // Create topic
-        PublisherClient.CreateTopic(topicName);
-        // Create subscription.
-        SubscriberClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 500);
-
-        var policyIamPolicyTopic = new Google.Cloud.Iam.V1.Policy();
-
-        policyIamPolicyTopic.AddRoleMember("roles/pubsub.publisher", memberServiceAccount);
-
-        PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
-        {
-            ResourceAsResourceName = topicName,
-            Policy = policyIamPolicyTopic
-        });
-
-        var policyIamPolicySubscriber = new Google.Cloud.Iam.V1.Policy();
-
-        policyIamPolicySubscriber.AddRoleMember("roles/pubsub.subscriber", memberServiceAccount);
-
-        PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
-        {
-            ResourceAsResourceName = subscriptionName,
-            Policy = policyIamPolicySubscriber
-        });
+        CreatePubSubResourcesAndGrantStsPermissions();
     }
 
-    // Transfers object from source gcs bucket to sink gcs bucket subscribed to pub/sub subscription id.
     [Fact]
     public void CreateEventDrivenGcsTransfer()
     {
@@ -84,6 +50,36 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
         var transferJob = createEventDrivenGcsTransferSample.CreateEventDrivenGcsTransfer(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink, _pubSubId);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
+    }
+
+    private void CreatePubSubResourcesAndGrantStsPermissions()
+    {
+        string email = _fixture.Sts.GetGoogleServiceAccount(new GetGoogleServiceAccountRequest()
+        {
+            ProjectId = _fixture.ProjectId
+        }).AccountEmail;
+
+        string memberServiceAccount = "serviceAccount:" + email;
+        SubscriptionName subscriptionName = new SubscriptionName(_fixture.ProjectId, SubscriptionId);
+        TopicName topicName = new TopicName(_fixture.ProjectId, TopicId);
+        PublisherClient.CreateTopic(topicName);
+        SubscriberClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 500);
+
+        var policyIamPolicyTopic = new Google.Cloud.Iam.V1.Policy();
+        policyIamPolicyTopic.AddRoleMember("roles/pubsub.publisher", memberServiceAccount);
+        PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
+        {
+            ResourceAsResourceName = topicName,
+            Policy = policyIamPolicyTopic
+        });
+
+        var policyIamPolicySubscriber = new Google.Cloud.Iam.V1.Policy();
+        policyIamPolicySubscriber.AddRoleMember("roles/pubsub.subscriber", memberServiceAccount);
+        PublisherClient.IAMPolicyClient.SetIamPolicy(new Google.Cloud.Iam.V1.SetIamPolicyRequest
+        {
+            ResourceAsResourceName = subscriptionName,
+            Policy = policyIamPolicySubscriber
+        });
     }
 
     public void Dispose()

@@ -20,29 +20,22 @@ using System;
 public class TransferBetweenPosixSample
 {
     /// <summary>
-    /// Sample that creates a transfer that transfer objects from root directory to the destination directory between POSIX file systems.
+    ///  Creates a transfer that transfer objects from root directory to the destination directory between POSIX file systems.
     /// </summary>
-    /// <param name="projectId">The ID of the project.</param>
+    /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sourceAgentPoolName">The agent pool associated with the POSIX data source. If not provided, defaults to the default agent.</param>
     /// <param name="sinkAgentPoolName">The agent pool associated with the POSIX data sink. If not provided, defaults to the default agent.</param>
     /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
     /// <param name="destinationDirectory">The root directory path on the sink filesystem.</param>
     /// <param name="intermediateBucket">The name of GCS bucket for intermediate storage.</param>
     public TransferJob TransferBetweenPosix(
-            // Your Google Cloud Project ID
             string projectId = "my-project-id",
-            // The agent pool associated with the POSIX data source. If not provided, defaults to the default agent
             string sourceAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-            // The agent pool associated with the POSIX data sink. If not provided, defaults to the default agent
             string sinkAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-            // The root directory path on the source filesystem
             string rootDirectory = "/tmp/uploads",
-            // The root directory path on the sink filesystem
             string destinationDirectory = "/directory/to/transfer/sink",
-            // The name of GCS bucket for intermediate storage
             string intermediateBucket = "my-intermediate-bucket")
     {
-        //  A useful description for your transfer job
         string jobDescription = $"Transfer objects from {rootDirectory} to the {destinationDirectory} between POSIX file system";
 
         TransferJob transferJob = new TransferJob
@@ -60,12 +53,8 @@ public class TransferBetweenPosixSample
             Status = TransferJob.Types.Status.Enabled,
         };
 
-        // Create a Transfer Service client
         StorageTransferServiceClient client = StorageTransferServiceClient.Create();
-
-        // Create a Transfer job
         TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-
         client.RunTransferJob(new RunTransferJobRequest
         {
             JobName = response.Name,

@@ -21,21 +21,17 @@ using System;
 public class TransferToNearlineSample
 {
     /// <summary>
-    /// Sample that creates a one-off transfer job that transfers objects from a standard gcs bucket that are more
+    /// Creates an one-off transfer job that transfers objects from a standard gcs bucket that are more
     /// than 30 days old to a nearline gcs bucket.
     /// </summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
+    /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sourceBucket">The GCS bucket to transfer objects from.</param>
     /// <param name="sinkBucket">The GCS Nearline bucket to transfer old objects to.</param>
     public TransferJob TransferToNearline(
-        // Your Google Cloud Project ID
         string projectId = "my-project-id",
-        // The GCS bucket to transfer objects from
         string sourceBucket = "my-source-bucket",
-        // The GCS Nearline bucket to transfer old objects to
         string sinkBucket = "my-sink-bucket")
     {
-        // A description of this job
         string jobDescription = $"Transfers old objects from standard bucket ({sourceBucket}) that haven't been modified in the last 30 days to a Nearline bucket ({sinkBucket})";
 
         TransferJob transferJob = new TransferJob
@@ -53,10 +49,7 @@ public class TransferToNearlineSample
             Schedule = new Schedule { ScheduleStartDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)), ScheduleEndDate = Google.Type.Date.FromDateTime(System.DateTime.UtcNow.Date.AddMonths(1)) }
         };
 
-        // Create a Transfer Service client
         StorageTransferServiceClient client = StorageTransferServiceClient.Create();
-
-        // Create a Transfer job
         TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
         client.RunTransferJob(new RunTransferJobRequest
         {

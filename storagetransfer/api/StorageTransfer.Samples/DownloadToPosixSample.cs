@@ -20,26 +20,20 @@ using System;
 public class DownloadToPosixSample
 {
     /// <summary>
-    /// Sample that creates a transfer for downloading objects from a gcs bucket to the root directory of POSIX file system.
+    /// Creates a transfer for downloading objects from a gcs bucket to the root directory of POSIX file system.
     /// </summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
+    /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sinkAgentPoolName">The agent pool associated with the POSIX data sink. If not provided, defaults to the default agent.</param>
     /// <param name="gcsSourceBucket">Your GCS source bucket name.</param>
     /// <param name="gcsSourcePath">An optional path on the Google Cloud Storage bucket to download from.</param>
     /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
     public TransferJob DownloadToPosix(
-        // Your Google Cloud Project ID
         string projectId = "my-project-id",
-        // The agent pool associated with the POSIX data sink. If not provided, defaults to the default agent
         string sinkAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-        // Your GCS source bucket name
         string gcsSourceBucket = "my-gcs-source-bucket",
-        // An optional path on the Google Cloud Storage bucket to download from
         string gcsSourcePath = "foo/bar/",
-        // The root directory path on the source filesystem
         string rootDirectory = "/tmp/uploads")
     {
-        // A useful description for your transfer job
         string jobDescription = $"Download objects from a GCS source bucket ({gcsSourceBucket}/{gcsSourcePath}) to the root directory of POSIX file system";
 
         TransferJob transferJob = new TransferJob
@@ -55,12 +49,8 @@ public class DownloadToPosixSample
             Status = TransferJob.Types.Status.Enabled,
         };
 
-        // Create a Transfer Service client
         StorageTransferServiceClient client = StorageTransferServiceClient.Create();
-
-        // Create a Transfer job
         TransferJob response = client.CreateTransferJob(new CreateTransferJobRequest { TransferJob = transferJob });
-
         client.RunTransferJob(new RunTransferJobRequest
         {
             JobName = response.Name,

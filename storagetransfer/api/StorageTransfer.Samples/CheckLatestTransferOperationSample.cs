@@ -20,23 +20,18 @@ using System;
 public class CheckLatestTransferOperationSample
 {
     /// <summary>
-    /// Sample that checks the latest transfer operation for a given transfer job.
+    /// Checks the latest transfer operation for a given transfer job.
     /// </summary>
-    /// <param name="projectId">Your Google Cloud Project ID.</param>
-    /// <param name="jobName">The name of the job to check.</param>
+    /// <param name="projectId">The ID of the Google Cloud project.</param>
+    /// <param name="jobName">The name of the transfer job.</param>
     public TransferJob CheckLatestTransferOperation(
-             // Your Google Cloud Project ID
              string projectId = "my-project-id",
-             // The name of the job to check
              string jobName = "transferJobs/1234567890")
     {
-        // Create a Transfer Service client
         StorageTransferServiceClient storageTransfer = StorageTransferServiceClient.Create();
         GetTransferJobRequest getTransferJobRequest = new GetTransferJobRequest { ProjectId = projectId, JobName = jobName };
 
-        // Get Transfer job
         TransferJob transferJob = storageTransfer.GetTransferJob(getTransferJobRequest);
-        // Get Latest operation name from transfer job
         string latestOperationName = transferJob.LatestOperationName;
 
         if (!string.IsNullOrEmpty(latestOperationName))
