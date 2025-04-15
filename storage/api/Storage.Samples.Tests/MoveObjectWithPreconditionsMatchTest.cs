@@ -16,27 +16,29 @@ using System;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class MoveObjectTest
+public class MoveObjectWithPreconditionsMatchTest
 {
     private readonly StorageFixture _fixture;
 
-    public MoveObjectTest(StorageFixture fixture)
+    public MoveObjectWithPreconditionsMatchTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void MoveObject()
+    public void MoveObjectWithPreconditionsMatch()
     {
-        MoveObjectSample moveObjectSample = new MoveObjectSample();
+        MoveObjectPreconditionsMatchSample moveObjectPreconditionsMatch = new MoveObjectPreconditionsMatchSample();
         UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
+        GetMetadataSample getMetadataSample = new GetMetadataSample();
         ListFilesSample listFilesSample = new ListFilesSample();
         DownloadObjectIntoMemorySample downloadObjectIntoMemory = new DownloadObjectIntoMemorySample();
         var originName = Guid.NewGuid().ToString();
         var originContent = Guid.NewGuid().ToString();
         var destinationName = Guid.NewGuid().ToString();
         uploadObjectFromMemory.UploadObjectFromMemory(_fixture.BucketNameHns, originName, originContent);
-        moveObjectSample.MoveObject(_fixture.BucketNameHns, originName, destinationName);
+        var originMetaData = getMetadataSample.GetMetadata(_fixture.BucketNameHns, originName);
+        moveObjectPreconditionsMatch.MoveObjectPreconditionsMatch(_fixture.BucketNameHns, originName, destinationName, originMetaData.Generation, originMetaData.Metageneration);
         _fixture.CollectHnsObject(destinationName);
         var objects = listFilesSample.ListFiles(_fixture.BucketNameHns);
         Assert.DoesNotContain(objects, obj => obj.Name == originName);

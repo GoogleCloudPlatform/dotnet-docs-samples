@@ -12,34 +12,32 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 
+using Google;
 using System;
+using System.Net;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class MoveObjectTest
+public class MoveObjectWithGenerationMismatchFailsTest
 {
     private readonly StorageFixture _fixture;
 
-    public MoveObjectTest(StorageFixture fixture)
+    public MoveObjectWithGenerationMismatchFailsTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void MoveObject()
+    public void MoveObjectWithGenerationMismatchFails()
     {
-        MoveObjectSample moveObjectSample = new MoveObjectSample();
+        MoveObjectGenerationMismatchFailsSample moveObjectGenerationMismatchFails = new MoveObjectGenerationMismatchFailsSample();
         UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
-        ListFilesSample listFilesSample = new ListFilesSample();
-        DownloadObjectIntoMemorySample downloadObjectIntoMemory = new DownloadObjectIntoMemorySample();
         var originName = Guid.NewGuid().ToString();
         var originContent = Guid.NewGuid().ToString();
         var destinationName = Guid.NewGuid().ToString();
         uploadObjectFromMemory.UploadObjectFromMemory(_fixture.BucketNameHns, originName, originContent);
-        moveObjectSample.MoveObject(_fixture.BucketNameHns, originName, destinationName);
-        _fixture.CollectHnsObject(destinationName);
-        var objects = listFilesSample.ListFiles(_fixture.BucketNameHns);
-        Assert.DoesNotContain(objects, obj => obj.Name == originName);
-        Assert.Contains(objects, obj => obj.Name == destinationName);
+        var exception = Assert.Throws<GoogleApiException>(() => moveObjectGenerationMismatchFails.MoveObjectGenerationMismatchFails(_fixture.BucketNameHns, originName, destinationName, 1));
+        _fixture.CollectHnsObject(originName);
+        Assert.Equal(HttpStatusCode.PreconditionFailed, exception.HttpStatusCode);
     }
 }

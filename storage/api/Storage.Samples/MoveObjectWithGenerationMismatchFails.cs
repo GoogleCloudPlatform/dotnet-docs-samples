@@ -12,27 +12,31 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 
-// [START storage_move_object]
+// [START storage_move_object_generation_mismatch_fails]
 
 using Google.Cloud.Storage.V1;
-using System;
 
-public class MoveObjectSample
+public class MoveObjectGenerationMismatchFailsSample
 {
     /// <summary>
-    /// Moves an object within a bucket with hierarchical namespace enabled.
+    /// Moves the source object to the destination object within a hierarchical namespace enabled bucket with preconditions set.
     /// </summary>
     /// <param name="sourceBucketName">Name of the source bucket containing the object to move.</param>
     /// <param name="sourceObjectName">The name of the source object to move within the bucket.</param>
     /// <param name="destinationObjectName">The name of the new object to move to within the bucket.</param>
-    public void MoveObject(
-        string sourceBucketName = "source-bucket-name",
-        string sourceObjectName = "source-object-name",
-        string destinationObjectName = "destination-object-name")
+    /// <param name="generation">The generation of the source object.</param>
+    public void MoveObjectGenerationMismatchFails(
+       string sourceBucketName = "source-bucket-name",
+       string sourceObjectName = "source-object-name",
+       string destinationObjectName = "destination-object-name",
+       long? generation = 1579287380533984)
     {
         var storage = StorageClient.Create();
-        storage.MoveObject(sourceBucketName, sourceObjectName, destinationObjectName);
-        Console.WriteLine($"Moved {sourceBucketName}/{sourceObjectName} to " + $"{sourceBucketName}/{destinationObjectName} within a hierarchical namespace enabled bucket.");
+        var moveOptions = new MoveObjectOptions
+        {
+            IfSourceGenerationMatch = generation
+        };
+        storage.MoveObject(sourceBucketName, sourceObjectName, destinationObjectName, moveOptions);
     }
 }
-// [END storage_move_object]
+// [END storage_move_object_generation_mismatch_fails]

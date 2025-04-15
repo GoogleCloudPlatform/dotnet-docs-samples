@@ -84,8 +84,6 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         //upload file to BucketName
         UploadFileSample uploadFileSample = new UploadFileSample();
         uploadFileSample.UploadFile(BucketNameGeneric, FilePath, FileName);
-        // upload file to hns bucket
-        uploadFileSample.UploadFile(BucketNameHns, FilePath, FileName);
 
         Collect(FileName);
     }
@@ -180,6 +178,13 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     /// </summary>
     /// <returns>The regional objectName.</returns>
     public string CollectRegionalObject(string objectName) => Collect(BucketNameRegional, objectName);
+
+    /// <summary>
+    /// Add a object located in a hns bucket to delete
+    /// at the end of the test.
+    /// </summary>
+    /// <returns>The objectName.</returns>
+    public string CollectHnsObject(string objectName) => Collect(BucketNameHns, objectName);
 
     public void DeleteHmacKey(string accessId, bool isActive)
     {
