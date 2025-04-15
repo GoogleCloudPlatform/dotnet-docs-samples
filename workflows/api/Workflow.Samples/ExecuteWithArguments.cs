@@ -16,6 +16,7 @@
 
 using Google.Cloud.Workflows.Common.V1;
 using Google.Cloud.Workflows.Executions.V1;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -62,14 +63,14 @@ public class ExecuteWorkfloWithArgumentswSample
 
         // TODO(developer): Adjust the following time parameters according to your Workflow timeout settings.
         // backoffDelay start value is 1000 milliseconds (1 second).
-        int backoffDelay = 1000;
+        TimeSpan backoffDelay = TimeSpan.FromSeconds(1);
 
         // Loop to check whether the execution state is different from Active.
         while (execution.State == Execution.Types.State.Active)
         {
             await Task.Delay(backoffDelay);
             // Exponential delay by doubling the current value (capped in 16 seconds).
-            if (backoffDelay <= 8000)
+            if (backoffDelay < TimeSpan.FromSeconds(16))
             {
                 backoffDelay *= 2;
             }
