@@ -28,13 +28,11 @@ public class CreateParameterVersionSample
     /// <param name="projectId">The ID of the project where the parameter is located.</param>
     /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
     /// <param name="versionId">The ID of the version to be created.</param>
-    /// <param name="payload">The unformatted string payload to be stored in the new parameter version.</param>
     /// <returns>The created ParameterVersion object.</returns>
     public ParameterVersion CreateParameterVersion(
         string projectId,
         string parameterId,
-        string versionId,
-        string payload)
+        string versionId)
     {
         // Create the client.
         ParameterManagerClient client = ParameterManagerClient.Create();
@@ -43,6 +41,7 @@ public class CreateParameterVersionSample
         ParameterName parent = new ParameterName(projectId, "global", parameterId);
 
         // Convert the payload to bytes.
+        string payload = "test123";
         ByteString data = ByteString.CopyFrom(payload, Encoding.UTF8);
 
         // Build the parameter version with the unformatted payload.

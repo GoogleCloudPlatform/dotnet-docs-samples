@@ -33,9 +33,8 @@ public class CreateStructureParameterVersionTests
     {
         ParameterVersionName parameterVersionName = new ParameterVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, _fixture.RandomId(), _fixture.RandomId());
         Parameter parameter = _fixture.CreateParameter(parameterVersionName.ParameterId, ParameterFormat.Json);
-        string payload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
         ParameterVersion result = _sample.CreateStructuredParameterVersion(
-            projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId, payload: payload);
+            projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
         _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
         Assert.NotNull(result);
