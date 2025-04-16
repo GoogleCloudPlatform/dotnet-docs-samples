@@ -19,7 +19,7 @@
 using Google.Cloud.StorageTransfer.V1;
 using System;
 
-public class QuickstartSample
+public class QuickStartSample
 {
     /// <summary>
     /// Creates an one-time transfer job from a Google Cloud storage bucket to another bucket.
@@ -27,7 +27,7 @@ public class QuickstartSample
     /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sourceBucket">The GCS bucket to transfer data from.</param>
     /// <param name="sinkBucket">The GCS bucket to transfer data to.</param>
-    public TransferJob Quickstart(
+    public TransferJob QuickStart(
         string projectId = "my-project-id",
         string sourceBucket = "my-source-bucket",
         string sinkBucket = "my-sink-bucket")

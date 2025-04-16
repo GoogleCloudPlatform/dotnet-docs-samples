@@ -21,14 +21,14 @@ using Xunit;
 namespace StorageTransfer.Samples.Tests
 {
     [Collection(nameof(StorageFixture))]
-    public class QuickstartTest : IDisposable
+    public class QuickStartTest : IDisposable
     {
         private readonly StorageFixture _fixture;
         private string _transferJobName;
         private readonly string _sourceBucket;
         private readonly string _sinkBucket;
 
-        public QuickstartTest(StorageFixture fixture)
+        public QuickStartTest(StorageFixture fixture)
         {
             _fixture = fixture;
             _sourceBucket = _fixture.GenerateBucketName();
@@ -38,10 +38,10 @@ namespace StorageTransfer.Samples.Tests
         }
 
         [Fact]
-        public void TestQuickstart()
+        public void QuickStart()
         {
-            QuickstartSample quickstartSample = new QuickstartSample();
-            var transferJob = quickstartSample.Quickstart(_fixture.ProjectId, _sourceBucket, _sinkBucket);
+            QuickStartSample quickStartSample = new QuickStartSample();
+            var transferJob = quickStartSample.QuickStart(_fixture.ProjectId, _sourceBucket, _sinkBucket);
             Assert.Contains("transferJobs/", transferJob.Name);
             _transferJobName = transferJob.Name;
         }

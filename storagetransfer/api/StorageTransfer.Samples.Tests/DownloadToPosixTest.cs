@@ -27,16 +27,16 @@ public class DownloadToPosixTest : IDisposable
     private string _transferJobName;
     private readonly string _tempDirectory;
     private readonly string _gcsSourcePath;
-    private readonly string _bucketNamePosixSource;
+    private readonly string _sourceBucket;
 
     public DownloadToPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _bucketNamePosixSource = _fixture.GenerateBucketName();
-        _fixture.CreateBucketAndGrantStsPermissions(_bucketNamePosixSource);
+        _sourceBucket = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_sourceBucket);
         _tempDirectory = _fixture.GenerateTempFolderPath();
         _gcsSourcePath = $"{Guid.NewGuid()}/{Guid.NewGuid()}/";
-        UploadObjectToPosixBucket(_bucketNamePosixSource);
+        UploadObjectToBucket(_sourceBucket);
     }
 
     [Fact]
@@ -44,13 +44,13 @@ public class DownloadToPosixTest : IDisposable
     {
         DownloadToPosixSample downloadToPosixSample = new DownloadToPosixSample();
         Directory.CreateDirectory(_tempDirectory);
-        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _bucketNamePosixSource, _gcsSourcePath, _tempDirectory);
+        var transferJob = downloadToPosixSample.DownloadToPosix(_fixture.ProjectId, _fixture.SinkAgentPoolName, _sourceBucket, _gcsSourcePath, _tempDirectory);
         Assert.Contains("transferJobs/", transferJob.Name);
         Assert.True(Directory.Exists(_tempDirectory));
         _transferJobName = transferJob.Name;
     }
 
-    private void UploadObjectToPosixBucket(string bucketName)
+    private void UploadObjectToBucket(string bucketName)
     {
         byte[] byteArray = System.Text.Encoding.UTF8.GetBytes($@"{Guid.NewGuid()}.jpeg");
         MemoryStream stream = new MemoryStream(byteArray);
@@ -73,7 +73,7 @@ public class DownloadToPosixTest : IDisposable
                 }
             });
             Directory.Delete(_tempDirectory, true);
-            _fixture.Storage.DeleteBucket(_bucketNamePosixSource, new DeleteBucketOptions { DeleteObjects = true });
+            _fixture.Storage.DeleteBucket(_sourceBucket, new DeleteBucketOptions { DeleteObjects = true });
         }
         catch (Exception)
         {
