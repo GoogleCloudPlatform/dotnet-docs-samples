@@ -41,8 +41,5 @@ public class EnableParameterVersionTests
 
         Assert.NotNull(result);
         Assert.False(result.Disabled);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion.ParameterVersionName);
     }
 }

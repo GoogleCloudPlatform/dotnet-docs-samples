@@ -25,8 +25,9 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public string ProjectId { get; }
     public const string LocationId = "global";
 
-    internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
-    internal List<ParameterVersionName> ParameterVersionsToDelete = new List<ParameterVersionName>();
+    public ParameterManagerClient client { get; }
+    internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerFixture()
     {
@@ -35,6 +36,8 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
+        client = ParameterManagerClient.Create();
     }
 
     public void Dispose()
@@ -56,7 +59,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 
     public Parameter CreateParameter(string parameterId, ParameterFormat format)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         LocationName projectName = new LocationName(ProjectId, LocationId);
 
         Parameter parameter = new Parameter
@@ -64,13 +66,13 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             Format = format
         };
 
-        return client.CreateParameter(projectName, parameter, parameterId);
+        Parameter Parameter = client.CreateParameter(projectName, parameter, parameterId);
+        ParametersToDelete.Add(Parameter.ParameterName);
+        return Parameter;
     }
 
     public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
-
         ParameterName parameterName = new ParameterName(ProjectId, LocationId, parameterId);
         ParameterVersion parameterVersion = new ParameterVersion
         {
@@ -80,12 +82,13 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             }
         };
 
-        return client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersion ParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
+        return ParameterVersion;
     }
 
     private void DeleteParameter(ParameterName name)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         try
         {
             client.DeleteParameter(name);
@@ -98,7 +101,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 
     private void DeleteParameterVersion(ParameterVersionName name)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         try
         {
             client.DeleteParameterVersion(name);
