@@ -51,7 +51,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         }
     }
 
-    public String RandomId()
+    public string RandomId()
     {
         return $"csharp-{System.Guid.NewGuid()}";
     }
