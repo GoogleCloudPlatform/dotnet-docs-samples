@@ -73,7 +73,9 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             Format = format
         };
 
-        return client.CreateParameter(parent, parameter, parameterId);
+        Parameter Parameter = client.CreateParameter(parent, parameter, parameterId);
+        ParametersToDelete.Add(Parameter.ParameterName);
+        return Parameter;
     }
 
     public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
@@ -87,7 +89,9 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             }
         };
 
-        return client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersion ParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
+        return ParameterVersion;
     }
 
     private void DeleteParameter(ParameterName name)
