@@ -29,8 +29,8 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
     private string _transferJobName;
     private readonly string _sourceBucket;
     private readonly string _sinkBucket;
-    private string TopicId { get; } = Guid.NewGuid().ToString();
-    private string SubscriptionId { get; } = Guid.NewGuid().ToString();
+    private string TopicId { get; } = $"Topic-{Guid.NewGuid().ToString()}";
+    private string SubscriptionId { get; } = $"Subscription-{Guid.NewGuid().ToString()}";
     private SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
     private PublisherServiceApiClient PublisherClient { get; } = PublisherServiceApiClient.Create();
 
