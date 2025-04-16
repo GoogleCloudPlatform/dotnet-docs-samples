@@ -33,12 +33,11 @@ public class CreateRegionalParameterSampleTests
     {
         ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, _fixture.RandomId());
         Parameter result = _sample.CreateRegionalParameter(
-          projectId: parameterName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterName.ParameterId);
+            projectId: parameterName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterName.ParameterId);
+        _fixture.ParametersToDelete.Add(parameterName);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
         Assert.Equal(ParameterFormat.Unformatted, result.Format);
-
-        _fixture.ParametersToDelete.Add(parameterName);
     }
 }

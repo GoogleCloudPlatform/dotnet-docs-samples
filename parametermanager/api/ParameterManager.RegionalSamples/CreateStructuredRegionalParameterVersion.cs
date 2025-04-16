@@ -29,14 +29,12 @@ public class CreateStructuredRegionalParameterVersionSample
     /// <param name="locationId">The ID of the region where the parameter is located.</param>
     /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
     /// <param name="versionId">The ID of the version to be created.</param>
-    /// <param name="payload">The JSON dictionary payload to be stored in the new parameter version.</param>
     /// <returns>The created ParameterVersion object.</returns>
     public ParameterVersion CreateStructuredRegionalParameterVersion(
         string projectId,
         string locationId,
         string parameterId,
-        string versionId,
-        string payload)
+        string versionId)
     {
         // Define the regional endpoint
         string regionalEndpoint = $"parametermanager.{locationId}.rep.googleapis.com";
@@ -51,6 +49,7 @@ public class CreateStructuredRegionalParameterVersionSample
         ParameterName parent = new ParameterName(projectId, locationId, parameterId);
 
         // Convert the JSON payload to bytes
+        string payload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
         ByteString data = ByteString.CopyFrom(payload, Encoding.UTF8);
 
         // Build the parameter version with the JSON payload

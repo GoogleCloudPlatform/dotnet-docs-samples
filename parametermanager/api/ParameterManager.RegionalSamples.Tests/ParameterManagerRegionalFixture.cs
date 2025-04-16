@@ -25,8 +25,9 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public string ProjectId { get; }
     public const string LocationId = "us-central1";
 
-    internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
-    internal List<ParameterVersionName> ParameterVersionsToDelete = new List<ParameterVersionName>();
+    public ParameterManagerClient client { get; }
+    internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerRegionalFixture()
     {
@@ -35,6 +36,15 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
+        // Define the regional endpoint
+        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
+
+        // Create the client with the regional endpoint
+        client = new ParameterManagerClientBuilder
+        {
+            Endpoint = regionalEndpoint
+        }.Build();
     }
 
     public void Dispose()
@@ -49,22 +59,13 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         }
     }
 
-    public String RandomId()
+    public string RandomId()
     {
         return $"csharp-{System.Guid.NewGuid()}";
     }
 
     public Parameter CreateParameter(string parameterId, ParameterFormat format)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
         LocationName parent = new LocationName(ProjectId, LocationId);
 
         Parameter parameter = new Parameter
@@ -72,19 +73,13 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             Format = format
         };
 
-        return client.CreateParameter(parent, parameter, parameterId);
+        Parameter Parameter = client.CreateParameter(parent, parameter, parameterId);
+        ParametersToDelete.Add(Parameter.ParameterName);
+        return Parameter;
     }
 
     private void DeleteParameter(ParameterName name)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
         try
         {
             client.DeleteParameter(name);
@@ -97,14 +92,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     private void DeleteParameterVersion(ParameterVersionName name)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
         try
         {
             client.DeleteParameterVersion(name);

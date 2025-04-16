@@ -33,12 +33,11 @@ public class CreateStructuredRegionalParameterTests
     {
         ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, _fixture.RandomId());
         Parameter result = _sample.CreateStructuredRegionalParameter(
-          projectId: parameterName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
+            projectId: parameterName.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterName.ParameterId, format: ParameterFormat.Json);
+        _fixture.ParametersToDelete.Add(parameterName);
 
         Assert.NotNull(result);
         Assert.Equal(ParameterFormat.Json, result.Format);
         Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
-
-        _fixture.ParametersToDelete.Add(parameterName);
     }
 }
