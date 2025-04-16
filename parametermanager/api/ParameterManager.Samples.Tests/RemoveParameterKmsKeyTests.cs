@@ -37,17 +37,15 @@ public class RemoveParameterKmsKeyTests
         string KeyId = _fixture.RandomId();
         CryptoKey cryptoKey = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId, "csharp-test-key-ring");
         CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, "csharp-test-key-ring", KeyId, "1");
+        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
 
         string parameterId = _fixture.RandomId();
         _fixture.CreateParameterWithKmsKey(parameterId, ParameterFormat.Unformatted, cryptoKey.Name);
 
         Parameter result = _sample.RemoveParameterKmsKey(
-          projectId: _fixture.ProjectId, parameterId: parameterId);
+            projectId: _fixture.ProjectId, parameterId: parameterId);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterName.ParameterId, parameterId);
-
-        _fixture.ParametersToDelete.Add(result.ParameterName);
-        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
     }
 }
