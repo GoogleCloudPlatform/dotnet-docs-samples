@@ -36,7 +36,9 @@ public class RegionalQuickstartTests
         ParameterVersionName parameterVersionName = new ParameterVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, parameterId, _fixture.RandomId());
        
         _sample.RegionalQuickstart(
-          projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, locationId: ParameterManagerRegionalFixture.LocationId, versionId: parameterVersionName.ParameterVersionId);
+            projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, locationId: ParameterManagerRegionalFixture.LocationId, versionId: parameterVersionName.ParameterVersionId);
+        _fixture.ParametersToDelete.Add(parameterName);
+        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
         // Define the regional endpoint
         string regionalEndpoint = $"parametermanager.{ParameterManagerRegionalFixture.LocationId}.rep.googleapis.com";
@@ -50,8 +52,5 @@ public class RegionalQuickstartTests
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
-
-        _fixture.ParametersToDelete.Add(parameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
     }
 }

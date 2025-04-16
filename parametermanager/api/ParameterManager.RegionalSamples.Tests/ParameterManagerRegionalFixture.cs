@@ -25,8 +25,9 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public string ProjectId { get; }
     public const string LocationId = "us-central1";
 
-    internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
-    internal List<ParameterVersionName> ParameterVersionsToDelete = new List<ParameterVersionName>();
+    public ParameterManagerClient client { get; }
+    internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerRegionalFixture()
     {
@@ -35,6 +36,15 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
+        // Define the regional endpoint
+        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
+
+        // Create the client with the regional endpoint
+        client = new ParameterManagerClientBuilder
+        {
+            Endpoint = regionalEndpoint
+        }.Build();
     }
 
     public void Dispose()
@@ -56,14 +66,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     private void DeleteParameter(ParameterName name)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
         try
         {
             client.DeleteParameter(name);
@@ -76,14 +78,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     private void DeleteParameterVersion(ParameterVersionName name)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
         try
         {
             client.DeleteParameterVersion(name);

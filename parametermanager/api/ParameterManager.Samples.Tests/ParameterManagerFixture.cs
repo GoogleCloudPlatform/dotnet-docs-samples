@@ -25,8 +25,9 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public string ProjectId { get; }
     public const string LocationId = "global";
 
-    internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
-    internal List<ParameterVersionName> ParameterVersionsToDelete = new List<ParameterVersionName>();
+    public ParameterManagerClient client { get; }
+    internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerFixture()
     {
@@ -35,6 +36,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+        client = ParameterManagerClient.Create();
     }
 
     public void Dispose()
@@ -56,7 +58,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 
     private void DeleteParameter(ParameterName name)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         try
         {
             client.DeleteParameter(name);
@@ -69,7 +70,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 
     private void DeleteParameterVersion(ParameterVersionName name)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         try
         {
             client.DeleteParameterVersion(name);

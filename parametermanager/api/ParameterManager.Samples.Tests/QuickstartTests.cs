@@ -35,15 +35,14 @@ public class QuickstartTests
         ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerFixture.LocationId, parameterId);
         ParameterVersionName parameterVersionName = new ParameterVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, parameterId, _fixture.RandomId());
         _sample.Quickstart(
-          projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
+            projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, versionId: parameterVersionName.ParameterVersionId);
+        _fixture.ParametersToDelete.Add(parameterName);
+        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
         ParameterManagerClient client = ParameterManagerClient.Create();
         ParameterVersion result = client.GetParameterVersion(parameterVersionName);
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
-
-        _fixture.ParametersToDelete.Add(parameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
     }
 }
