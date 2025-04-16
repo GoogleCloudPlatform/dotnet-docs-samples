@@ -40,6 +40,8 @@ public class UpdateRegionalParameterKmsKeyTests
         CryptoKey cryptoKey1 = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId1, "csharp-test-key-ring");
         CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, "csharp-test-key-ring", KeyId, "1");
         CryptoKeyVersionName cryptoKeyVersionName1 = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, "csharp-test-key-ring", KeyId1, "1");
+        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
+        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName1);
 
         string parameterId = _fixture.RandomId();
         _fixture.CreateParameterWithKmsKey(parameterId, ParameterFormat.Unformatted, cryptoKey.Name);
