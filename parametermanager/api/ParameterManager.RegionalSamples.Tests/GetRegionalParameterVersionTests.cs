@@ -40,8 +40,5 @@ public class GetRegionalParameterVersionTests
 
         Assert.NotNull(result);
         Assert.Equal(result.ParameterVersionName.ParameterVersionId, versionId);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion.ParameterVersionName);
     }
 }

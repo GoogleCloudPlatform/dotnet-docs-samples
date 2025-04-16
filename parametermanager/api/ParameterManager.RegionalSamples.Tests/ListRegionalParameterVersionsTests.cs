@@ -39,9 +39,5 @@ public class ListRegionalParameterVersionsTests
     
         IEnumerable<ParameterVersion> result = _sample.ListRegionalParameterVersions(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId);
         Assert.NotNull(result);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion.ParameterVersionName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion1.ParameterVersionName);
     }
 }

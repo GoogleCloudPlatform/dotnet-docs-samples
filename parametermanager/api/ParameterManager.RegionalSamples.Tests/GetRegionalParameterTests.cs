@@ -36,7 +36,5 @@ public class GetRegionalParameterTests
         Parameter result = _sample.GetRegionalParameter(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId);
 
         Assert.NotNull(result);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
     }
 }

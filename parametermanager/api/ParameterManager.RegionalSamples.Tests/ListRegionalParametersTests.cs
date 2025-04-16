@@ -35,8 +35,5 @@ public class ListRegionalParametersTests
         Parameter parameter1 = _fixture.CreateParameter(_fixture.RandomId(), ParameterFormat.Json);
         IEnumerable<Parameter> result = _sample.ListRegionalParameters(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId);
         Assert.NotNull(result);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParametersToDelete.Add(parameter1.ParameterName);
     }
 }

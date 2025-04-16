@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 using Google.Cloud.SecretManager.V1;
 using Google.Cloud.Iam.V1;
-using Google.Protobuf;
-using System.Text;
 
 [Collection(nameof(ParameterManagerRegionalFixture))]
 public class RenderRegionalParameterVersionTests
@@ -33,80 +30,6 @@ public class RenderRegionalParameterVersionTests
         _sample = new RenderRegionalParameterVersionSample();
     }
 
-    public Secret CreateSecret(string secretId)
-    {
-        string regionalEndpoint = $"secretmanager.{ParameterManagerRegionalFixture.LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        LocationName parent = new LocationName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId);
-
-        Secret secret = new Secret();
-
-        return client.CreateSecret(parent, secretId, secret);
-    }
-
-    public Policy GrantIAMAccess(SecretName secretName, string member)
-    {
-        string regionalEndpoint = $"secretmanager.{ParameterManagerRegionalFixture.LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        // Get current policy.
-        Policy policy = client.GetIamPolicy(new GetIamPolicyRequest
-        {
-            ResourceAsResourceName = secretName,
-        });
-
-        // Add the user to the list of bindings.
-        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
-
-        // Save the updated policy.
-        policy = client.SetIamPolicy(new SetIamPolicyRequest
-        {
-            ResourceAsResourceName = secretName,
-            Policy = policy,
-        });
-        return policy;
-    }
-    private SecretVersion AddSecretVersion(Secret secret)
-    {
-        string regionalEndpoint = $"secretmanager.{ParameterManagerRegionalFixture.LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        SecretPayload payload = new SecretPayload
-        {
-            Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
-        };
-
-        return client.AddSecretVersion(secret.SecretName, payload);
-    }
-
-    private void DeleteSecret(SecretName name)
-    {
-        string regionalEndpoint = $"secretmanager.{ParameterManagerRegionalFixture.LocationId}.rep.googleapis.com";
-        SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
-        try
-        {
-            client.DeleteSecret(name);
-        }
-        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
-        {
-            // Ignore error - secret was already deleted
-        }
-    }
-
     [Fact]
     public void RenderRegionalParameterVersion()
     {
@@ -114,10 +37,10 @@ public class RenderRegionalParameterVersionTests
         string versionId = _fixture.RandomId();
         Parameter parameter = _fixture.CreateParameter(parameterId, ParameterFormat.Unformatted);
 
-        Secret secret = CreateSecret(_fixture.RandomId());
-        AddSecretVersion(secret);
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+        _fixture.AddSecretVersion(secret);
         string payload = $"{{\"username\": \"test-user\", \"password\": \"__REF__(//secretmanager.googleapis.com/{secret.SecretName}/versions/latest)\"}}";
-        GrantIAMAccess(secret.SecretName, parameter.PolicyMember.IamPolicyUidPrincipal);
+        _fixture.GrantIAMAccess(secret.SecretName, parameter.PolicyMember.IamPolicyUidPrincipal);
         Thread.Sleep(120000);
 
         ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
@@ -125,9 +48,5 @@ public class RenderRegionalParameterVersionTests
         string result = _sample.RenderRegionalParameterVersion(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId, versionId: versionId);
 
         Assert.NotNull(result);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion.ParameterVersionName);
-        DeleteSecret(secret.SecretName);
     }
 }

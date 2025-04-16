@@ -25,8 +25,11 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public string ProjectId { get; }
     public const string LocationId = "us-central1";
 
-    internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
-    internal List<ParameterVersionName> ParameterVersionsToDelete = new List<ParameterVersionName>();
+    public ParameterManagerClient client { get; }
+    public SecretManagerServiceClient secretClient { get; }
+    internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<SecretName> SecretsToDelete { get; } = new List<SecretName>();
+    internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerRegionalFixture()
     {
@@ -35,6 +38,21 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
+        // Define the regional endpoint
+        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
+
+        // Create the client with the regional endpoint
+        client = new ParameterManagerClientBuilder
+        {
+            Endpoint = regionalEndpoint
+        }.Build();
+
+        string regionalSecretEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
+        secretClient = new SecretManagerServiceClientBuilder
+        {
+            Endpoint = regionalSecretEndpoint
+        }.Build();
     }
 
     public void Dispose()
@@ -47,6 +65,10 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         {
             DeleteParameter(parameter);
         }
+        foreach (var secret in SecretsToDelete)
+        {
+            DeleteSecret(secret);
+        }
     }
 
     public String RandomId()
@@ -56,15 +78,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     public Parameter CreateParameter(string parameterId, ParameterFormat format)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
         LocationName parent = new LocationName(ProjectId, LocationId);
 
         Parameter parameter = new Parameter
@@ -72,20 +85,13 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             Format = format
         };
 
-        return client.CreateParameter(parent, parameter, parameterId);
+        Parameter Parameter = client.CreateParameter(parent, parameter, parameterId);
+        ParametersToDelete.Add(Parameter.ParameterName);
+        return Parameter;
     }
 
     public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
-
         ParameterName parameterName = new ParameterName(ProjectId, LocationId, parameterId);
         ParameterVersion parameterVersion = new ParameterVersion
         {
@@ -95,19 +101,13 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             }
         };
 
-        return client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersion ParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
+        return ParameterVersion;
     }
 
     private void DeleteParameter(ParameterName name)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
         try
         {
             client.DeleteParameter(name);
@@ -120,14 +120,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     private void DeleteParameterVersion(ParameterVersionName name)
     {
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
         try
         {
             client.DeleteParameterVersion(name);
@@ -135,6 +127,58 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
             // Ignore error - Parameter version was already deleted
+        }
+    }
+
+    public Secret CreateSecret(string secretId)
+    {
+        LocationName parent = new LocationName(ProjectId, LocationId);
+
+        Secret secret = new Secret();
+
+        Secret Secret = secretClient.CreateSecret(parent, secretId, secret);
+        SecretsToDelete.Add(Secret.SecretName);
+        return Secret;
+    }
+
+    public Policy GrantIAMAccess(SecretName secretName, string member)
+    {
+        // Get current policy.
+        Policy policy = secretClient.GetIamPolicy(new GetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+        });
+
+        // Add the user to the list of bindings.
+        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
+
+        // Save the updated policy.
+        policy = secretClient.SetIamPolicy(new SetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+            Policy = policy,
+        });
+        return policy;
+    }
+    public SecretVersion AddSecretVersion(Secret secret)
+    {
+        SecretPayload payload = new SecretPayload
+        {
+            Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
+        };
+
+        return secretClient.AddSecretVersion(secret.SecretName, payload);
+    }
+
+    private void DeleteSecret(SecretName name)
+    {
+        try
+        {
+            secretClient.DeleteSecret(name);
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            // Ignore error - secret was already deleted
         }
     }
 }
