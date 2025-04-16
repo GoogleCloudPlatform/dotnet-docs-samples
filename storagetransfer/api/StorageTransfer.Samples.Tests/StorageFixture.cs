@@ -35,14 +35,12 @@ namespace StorageTransfer.Samples.Tests
         public string BucketNameSink { get; set; }
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
-        public StorageClient Client { get; }
         public StorageClient Storage { get; } = StorageClient.Create();
         public StorageTransferServiceClient Sts { get; } = StorageTransferServiceClient.Create();
         private readonly List<string> _bucketsToDelete = [];
 
         public StorageFixture()
         {
-            Client = StorageClient.Create();
             ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
             SourceAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
             SinkAgentPoolName = $"projects/{ProjectId}/agentPools/transfer_service_default";
@@ -116,7 +114,7 @@ namespace StorageTransfer.Samples.Tests
         {
             foreach (var bucket in _bucketsToDelete)
             {
-                DeleteBucket(Client, bucket, null);
+                DeleteBucket(Storage, bucket, null);
             }
         }
 

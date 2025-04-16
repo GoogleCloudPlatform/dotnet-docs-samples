@@ -42,15 +42,14 @@ public class TransferBetweenPosixTest : IDisposable
         TransferBetweenPosixSample transferBetweenPosixSample = new TransferBetweenPosixSample();
         Directory.CreateDirectory(_tempDirectory);
         Directory.CreateDirectory(_tempDestinationDirectory);
-        string fileName = Path.Combine(_tempDirectory, "test.txt");
-        // Check if file already exists. If yes, delete it.
+        string fileName = Path.Combine(_tempDirectory, $"{Guid.NewGuid().ToString()}.txt");
         if (File.Exists(fileName))
         {
             File.Delete(fileName);
         }
         using (StreamWriter sw = new StreamWriter(fileName))
         {
-            sw.WriteLine("test message");
+            sw.WriteLine(Guid.NewGuid().ToString());
         }
         var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.SinkAgentPoolName, _tempDirectory, _tempDestinationDirectory, _fixture.BucketNameSource);
         Assert.Contains("transferJobs/", transferJob.Name);
