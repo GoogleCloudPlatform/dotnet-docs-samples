@@ -24,12 +24,13 @@ public class TransferFromPosixTest : IDisposable
     private readonly StorageFixture _fixture;
     private string _transferJobName;
     private readonly string _rootDirectory;
+    private readonly string _bucket;
 
     public TransferFromPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _fixture.BucketNameSink = _fixture.GenerateBucketName();
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
+        _bucket = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_bucket);
         _rootDirectory = fixture.GetCurrentUserTempFolderPath();
     }
 
@@ -37,7 +38,7 @@ public class TransferFromPosixTest : IDisposable
     public void TransferFromPosix()
     {
         TransferFromPosixSample transferFromPosixSample = new TransferFromPosixSample();
-        var transferJob = transferFromPosixSample.TransferFromPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _fixture.BucketNameSink);
+        var transferJob = transferFromPosixSample.TransferFromPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _bucket);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }
@@ -56,6 +57,7 @@ public class TransferFromPosixTest : IDisposable
                     Status = TransferJob.Types.Status.Deleted
                 }
             });
+            _fixture.Storage.DeleteBucket(_bucket);
         }
         catch (Exception)
         {

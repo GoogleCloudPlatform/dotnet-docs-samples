@@ -24,17 +24,17 @@ public class DownloadToPosixSample
     /// </summary>
     /// <param name="projectId">The ID of the Google Cloud project.</param>
     /// <param name="sinkAgentPoolName">The agent pool associated with the POSIX data sink. If not provided, defaults to the default agent.</param>
-    /// <param name="gcsSourceBucket">Your GCS source bucket name.</param>
+    /// <param name="sourceBucket">Your GCS source bucket name.</param>
     /// <param name="gcsSourcePath">An optional path on the Google Cloud Storage bucket to download from.</param>
     /// <param name="rootDirectory">The root directory path on the source filesystem.</param>
     public TransferJob DownloadToPosix(
         string projectId = "my-project-id",
         string sinkAgentPoolName = "projects/my-project-id/agentPools/transfer_service_default",
-        string gcsSourceBucket = "my-gcs-source-bucket",
+        string sourceBucket = "my-source-bucket",
         string gcsSourcePath = "foo/bar/",
         string rootDirectory = "/tmp/uploads")
     {
-        string jobDescription = $"Download objects from a GCS source bucket ({gcsSourceBucket}/{gcsSourcePath}) to the root directory of POSIX file system";
+        string jobDescription = $"Download objects from a GCS source bucket ({sourceBucket}/{gcsSourcePath}) to the root directory of POSIX file system";
 
         TransferJob transferJob = new TransferJob
         {
@@ -42,7 +42,7 @@ public class DownloadToPosixSample
             Description = jobDescription,
             TransferSpec = new TransferSpec
             {
-                GcsDataSource = new GcsData { BucketName = gcsSourceBucket, Path = gcsSourcePath },
+                GcsDataSource = new GcsData { BucketName = sourceBucket, Path = gcsSourcePath },
                 SinkAgentPoolName = sinkAgentPoolName,
                 PosixDataSink = new PosixFilesystem { RootDirectory = rootDirectory }
             },
@@ -57,7 +57,7 @@ public class DownloadToPosixSample
             ProjectId = projectId
         });
 
-        Console.WriteLine($"Created and ran transfer job from ({gcsSourceBucket}/{gcsSourcePath}) to {rootDirectory} with the name {response.Name}");
+        Console.WriteLine($"Created and ran transfer job from ({sourceBucket}/{gcsSourcePath}) to {rootDirectory} with the name {response.Name}");
         return response;
     }
 }

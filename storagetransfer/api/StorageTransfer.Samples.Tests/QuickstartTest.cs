@@ -25,21 +25,23 @@ namespace StorageTransfer.Samples.Tests
     {
         private readonly StorageFixture _fixture;
         private string _transferJobName;
+        private readonly string _sourceBucket;
+        private readonly string _sinkBucket;
 
         public QuickstartTest(StorageFixture fixture)
         {
             _fixture = fixture;
-            _fixture.BucketNameSource = _fixture.GenerateBucketName();
-            _fixture.BucketNameSink = _fixture.GenerateBucketName();
-            _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
-            _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
+            _sourceBucket = _fixture.GenerateBucketName();
+            _sinkBucket = _fixture.GenerateBucketName();
+            _fixture.CreateBucketAndGrantStsPermissions(_sourceBucket);
+            _fixture.CreateBucketAndGrantStsPermissions(_sinkBucket);
         }
 
         [Fact]
         public void TestQuickstart()
         {
             QuickstartSample quickstartSample = new QuickstartSample();
-            var transferJob = quickstartSample.Quickstart(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink);
+            var transferJob = quickstartSample.Quickstart(_fixture.ProjectId, _sourceBucket, _sinkBucket);
             Assert.Contains("transferJobs/", transferJob.Name);
             _transferJobName = transferJob.Name;
         }
@@ -58,6 +60,8 @@ namespace StorageTransfer.Samples.Tests
                         Status = TransferJob.Types.Status.Deleted
                     }
                 });
+                _fixture.Storage.DeleteBucket(_sourceBucket);
+                _fixture.Storage.DeleteBucket(_sinkBucket);
             }
             catch (Exception)
             {

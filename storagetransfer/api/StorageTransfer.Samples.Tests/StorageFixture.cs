@@ -31,8 +31,6 @@ namespace StorageTransfer.Samples.Tests
     public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     {
         public string ProjectId { get; }
-        public string BucketNameSource { get; set; }
-        public string BucketNameSink { get; set; }
         public string SourceAgentPoolName { get; }
         public string SinkAgentPoolName { get; }
         public StorageClient Storage { get; } = StorageClient.Create();

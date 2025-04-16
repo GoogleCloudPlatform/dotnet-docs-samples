@@ -24,14 +24,16 @@ public class TransferToNearlineTest : IDisposable
 {
     private readonly StorageFixture _fixture;
     private string _transferJobName;
+    private readonly string _sourceBucket;
+    private readonly string _sinkBucket;
 
     public TransferToNearlineTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _fixture.BucketNameSource = _fixture.GenerateBucketName();
-        _fixture.BucketNameSink = _fixture.GenerateBucketName();
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
+        _sourceBucket = _fixture.GenerateBucketName();
+        _sinkBucket = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_sourceBucket);
+        _fixture.CreateBucketAndGrantStsPermissions(_sinkBucket);
     }
 
     [Fact]
@@ -39,11 +41,11 @@ public class TransferToNearlineTest : IDisposable
     {
         TransferToNearlineSample transferToNearlineSample = new TransferToNearlineSample();
         var storage = _fixture.Storage;
-        var bucket = storage.GetBucket(_fixture.BucketNameSink);
+        var bucket = storage.GetBucket(_sinkBucket);
         string storageClass = StorageClasses.Nearline;
         bucket.StorageClass = storageClass;
         storage.UpdateBucket(bucket);
-        var transferJob = transferToNearlineSample.TransferToNearline(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink);
+        var transferJob = transferToNearlineSample.TransferToNearline(_fixture.ProjectId, _sourceBucket, _sinkBucket);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }
@@ -62,6 +64,8 @@ public class TransferToNearlineTest : IDisposable
                     Status = TransferJob.Types.Status.Deleted
                 }
             });
+            _fixture.Storage.DeleteBucket(_sourceBucket);
+            _fixture.Storage.DeleteBucket(_sinkBucket);
         }
         catch (Exception)
         {

@@ -26,12 +26,13 @@ public class TransferBetweenPosixTest : IDisposable
     private string _transferJobName;
     private readonly string _tempDirectory;
     private readonly string _tempDestinationDirectory;
+    private readonly string _bucket;
 
     public TransferBetweenPosixTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _fixture.BucketNameSource = _fixture.GenerateBucketName();
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
+        _bucket = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_bucket);
         _tempDirectory = fixture.GenerateTempFolderPath();
         _tempDestinationDirectory = fixture.GenerateTempFolderPath();
     }
@@ -51,7 +52,7 @@ public class TransferBetweenPosixTest : IDisposable
         {
             sw.WriteLine(Guid.NewGuid().ToString());
         }
-        var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.SinkAgentPoolName, _tempDirectory, _tempDestinationDirectory, _fixture.BucketNameSource);
+        var transferJob = transferBetweenPosixSample.TransferBetweenPosix(_fixture.ProjectId, _fixture.SourceAgentPoolName, _fixture.SinkAgentPoolName, _tempDirectory, _tempDestinationDirectory, _bucket);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
         Assert.True(Directory.Exists(_tempDirectory));
@@ -75,6 +76,7 @@ public class TransferBetweenPosixTest : IDisposable
             });
             Directory.Delete(_tempDirectory, true);
             Directory.Delete(_tempDestinationDirectory, true);
+            _fixture.Storage.DeleteBucket(_bucket);
         }
         catch (Exception)
         {

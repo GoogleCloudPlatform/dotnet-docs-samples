@@ -27,25 +27,26 @@ public class TransferUsingManifestTest : IDisposable
     private string _transferJobName;
     private readonly string _rootDirectory;
     private readonly string _manifestObjectName;
-    private readonly string _bucketNameManifestSource;
+    private readonly string _manifestBucket;
+    private readonly string _sinkBucket;
 
     public TransferUsingManifestTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _bucketNameManifestSource = _fixture.GenerateBucketName();
-        _fixture.BucketNameSink = _fixture.GenerateBucketName();
-        _fixture.CreateBucketAndGrantStsPermissions(_bucketNameManifestSource);
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
+        _manifestBucket = _fixture.GenerateBucketName();
+        _sinkBucket = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_manifestBucket);
+        _fixture.CreateBucketAndGrantStsPermissions(_sinkBucket);
         _rootDirectory = fixture.GetCurrentUserTempFolderPath();
         _manifestObjectName = $@"{Guid.NewGuid()}.csv";
-        UploadObjectToManifestBucket(_bucketNameManifestSource);
+        UploadObjectToManifestBucket(_manifestBucket);
     }
 
     [Fact]
     public void TransferUsingManifest()
     {
         TransferUsingManifestSample transferUsingManifestSample = new TransferUsingManifestSample();
-        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _bucketNameManifestSource, _fixture.BucketNameSink, _manifestObjectName);
+        var transferJob = transferUsingManifestSample.TransferUsingManifest(_fixture.ProjectId, _fixture.SourceAgentPoolName, _rootDirectory, _manifestBucket, _sinkBucket, _manifestObjectName);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }
@@ -71,7 +72,8 @@ public class TransferUsingManifestTest : IDisposable
                     Status = TransferJob.Types.Status.Deleted
                 }
             });
-            _fixture.Storage.DeleteBucket(_bucketNameManifestSource, new DeleteBucketOptions { DeleteObjects = true });
+            _fixture.Storage.DeleteBucket(_manifestBucket, new DeleteBucketOptions { DeleteObjects = true });
+            _fixture.Storage.DeleteBucket(_sinkBucket, new DeleteBucketOptions { DeleteObjects = true });
         }
         catch (Exception)
         {

@@ -24,14 +24,16 @@ public class CheckLatestTransferOperationTest : IDisposable
     private readonly StorageFixture _fixture;
     private string _jobName;
     private readonly string _transferJobName;
+    private readonly string _sourceBucket;
+    private readonly string _sinkBucket;
 
     public CheckLatestTransferOperationTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _fixture.BucketNameSource = _fixture.GenerateBucketName();
-        _fixture.BucketNameSink = _fixture.GenerateBucketName();
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
+        _sourceBucket = _fixture.GenerateBucketName();
+        _sinkBucket = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_sourceBucket);
+        _fixture.CreateBucketAndGrantStsPermissions(_sinkBucket);
         _transferJobName = CreateTransferJob();
     }
 
@@ -51,8 +53,8 @@ public class CheckLatestTransferOperationTest : IDisposable
             ProjectId = _fixture.ProjectId,
             TransferSpec = new TransferSpec
             {
-                GcsDataSink = new GcsData { BucketName = _fixture.BucketNameSource },
-                GcsDataSource = new GcsData { BucketName = _fixture.BucketNameSink }
+                GcsDataSink = new GcsData { BucketName = _sinkBucket },
+                GcsDataSource = new GcsData { BucketName = _sourceBucket }
             },
             Status = TransferJob.Types.Status.Enabled
         };
@@ -79,6 +81,8 @@ public class CheckLatestTransferOperationTest : IDisposable
                     Status = TransferJob.Types.Status.Deleted
                 }
             });
+            _fixture.Storage.DeleteBucket(_sourceBucket);
+            _fixture.Storage.DeleteBucket(_sinkBucket);
         }
         catch (Exception)
         {

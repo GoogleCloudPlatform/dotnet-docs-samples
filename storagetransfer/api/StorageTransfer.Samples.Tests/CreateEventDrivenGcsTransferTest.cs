@@ -27,6 +27,8 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
     private readonly StorageFixture _fixture;
     private readonly string _pubSubId;
     private string _transferJobName;
+    private readonly string _sourceBucket;
+    private readonly string _sinkBucket;
     private string TopicId { get; } = Guid.NewGuid().ToString();
     private string SubscriptionId { get; } = Guid.NewGuid().ToString();
     private SubscriberServiceApiClient SubscriberClient { get; } = SubscriberServiceApiClient.Create();
@@ -35,10 +37,10 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
     public CreateEventDrivenGcsTransferTest(StorageFixture fixture)
     {
         _fixture = fixture;
-        _fixture.BucketNameSource = _fixture.GenerateBucketName();
-        _fixture.BucketNameSink = _fixture.GenerateBucketName();
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSource);
-        _fixture.CreateBucketAndGrantStsPermissions(_fixture.BucketNameSink);
+        _sourceBucket = _fixture.GenerateBucketName();
+        _sinkBucket = _fixture.GenerateBucketName();
+        _fixture.CreateBucketAndGrantStsPermissions(_sourceBucket);
+        _fixture.CreateBucketAndGrantStsPermissions(_sinkBucket);
         _pubSubId = $"projects/{_fixture.ProjectId}/subscriptions/{SubscriptionId}";
         CreatePubSubResourcesAndGrantStsPermissions();
     }
@@ -47,7 +49,7 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
     public void CreateEventDrivenGcsTransfer()
     {
         CreateEventDrivenGcsTransferSample createEventDrivenGcsTransferSample = new CreateEventDrivenGcsTransferSample();
-        var transferJob = createEventDrivenGcsTransferSample.CreateEventDrivenGcsTransfer(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink, _pubSubId);
+        var transferJob = createEventDrivenGcsTransferSample.CreateEventDrivenGcsTransfer(_fixture.ProjectId, _sourceBucket, _sinkBucket, _pubSubId);
         Assert.Contains("transferJobs/", transferJob.Name);
         _transferJobName = transferJob.Name;
     }
@@ -101,6 +103,8 @@ public class CreateEventDrivenGcsTransferTest : IDisposable
             PublisherClient.DeleteTopic(topicName);
             SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(_fixture.ProjectId, SubscriptionId);
             SubscriberClient.DeleteSubscription(subscriptionName);
+            _fixture.Storage.DeleteBucket(_sourceBucket);
+            _fixture.Storage.DeleteBucket(_sinkBucket);
         }
         catch (Exception)
         {
