@@ -41,8 +41,5 @@ public class DisableRegionalParameterVersionTests
 
         Assert.NotNull(result);
         Assert.True(result.Disabled);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion.ParameterVersionName);
     }
 }
