@@ -14,6 +14,8 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
+using Google.Cloud.SecretManager.V1;
+using Google.Cloud.Iam.V1;
 using Google.Protobuf;
 using System.Text;
 
@@ -23,8 +25,11 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public string ProjectId { get; }
     public const string LocationId = "global";
 
-    internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
-    internal List<ParameterVersionName> ParameterVersionsToDelete = new List<ParameterVersionName>();
+    public ParameterManagerClient client { get; }
+    public SecretManagerServiceClient secretClient { get; }
+    internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<SecretName> SecretsToDelete { get; } = new List<SecretName>();
+    internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerFixture()
     {
@@ -33,6 +38,9 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
+        client = ParameterManagerClient.Create();
+        secretClient = SecretManagerServiceClient.Create();
     }
 
     public void Dispose()
@@ -45,16 +53,19 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             DeleteParameter(parameter);
         }
+        foreach (var secret in SecretsToDelete)
+        {
+            DeleteSecret(secret);
+        }
     }
 
-    public String RandomId()
+    public string RandomId()
     {
         return $"csharp-{System.Guid.NewGuid()}";
     }
 
     public Parameter CreateParameter(string parameterId, ParameterFormat format)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         LocationName projectName = new LocationName(ProjectId, LocationId);
 
         Parameter parameter = new Parameter
@@ -62,13 +73,13 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             Format = format
         };
 
-        return client.CreateParameter(projectName, parameter, parameterId);
+        Parameter Parameter = client.CreateParameter(projectName, parameter, parameterId);
+        ParametersToDelete.Add(Parameter.ParameterName);
+        return Parameter;
     }
 
     public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
-
         ParameterName parameterName = new ParameterName(ProjectId, LocationId, parameterId);
         ParameterVersion parameterVersion = new ParameterVersion
         {
@@ -78,12 +89,13 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             }
         };
 
-        return client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersion ParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
+        return ParameterVersion;
     }
 
     private void DeleteParameter(ParameterName name)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         try
         {
             client.DeleteParameter(name);
@@ -96,7 +108,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 
     private void DeleteParameterVersion(ParameterVersionName name)
     {
-        ParameterManagerClient client = ParameterManagerClient.Create();
         try
         {
             client.DeleteParameterVersion(name);
@@ -104,6 +115,65 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
             // Ignore error - Parameter version was already deleted
+        }
+    }
+
+
+    public Secret CreateSecret(string secretId)
+    {
+        ProjectName projectName = new ProjectName(ProjectId);
+
+        Secret secret = new Secret
+        {
+            Replication = new Replication
+            {
+                Automatic = new Replication.Types.Automatic(),
+            },
+        };
+        Secret Secret = secretClient.CreateSecret(projectName, secretId, secret);
+        SecretsToDelete.Add(Secret.SecretName);
+        return Secret;
+    }
+
+    public Policy GrantIAMAccess(SecretName secretName, string member)
+    {
+        // Get current policy.
+        Policy policy = secretClient.GetIamPolicy(new GetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+        });
+
+        // Add the user to the list of bindings.
+        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
+
+        // Save the updated policy.
+        policy = secretClient.SetIamPolicy(new SetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+            Policy = policy,
+        });
+        return policy;
+    }
+
+    public SecretVersion AddSecretVersion(Secret secret)
+    {
+        SecretPayload payload = new SecretPayload
+        {
+            Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
+        };
+
+        return secretClient.AddSecretVersion(secret.SecretName, payload);
+    }
+
+    private void DeleteSecret(SecretName name)
+    {
+        try
+        {
+            secretClient.DeleteSecret(name);
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            // Ignore error - secret was already deleted
         }
     }
 }

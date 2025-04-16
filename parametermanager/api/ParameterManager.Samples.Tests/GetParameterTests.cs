@@ -36,7 +36,5 @@ public class GetParameterTests
         Parameter result = _sample.GetParameter(projectId: _fixture.ProjectId, parameterId: parameterId);
 
         Assert.NotNull(result);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
     }
 }

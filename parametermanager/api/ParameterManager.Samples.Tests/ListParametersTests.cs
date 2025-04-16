@@ -35,8 +35,5 @@ public class ListParametersTests
         Parameter parameter1 = _fixture.CreateParameter(_fixture.RandomId(), ParameterFormat.Json);
         IEnumerable<Parameter> result = _sample.ListParameters(projectId: _fixture.ProjectId);
         Assert.NotNull(result);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParametersToDelete.Add(parameter1.ParameterName);
     }
 }

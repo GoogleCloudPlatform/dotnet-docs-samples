@@ -39,9 +39,5 @@ public class ListParameterVersionsTests
 
         IEnumerable<ParameterVersion> result = _sample.ListParameterVersions(projectId: _fixture.ProjectId, parameterId: parameterId);
         Assert.NotNull(result);
-
-        _fixture.ParametersToDelete.Add(parameter.ParameterName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion.ParameterVersionName);
-        _fixture.ParameterVersionsToDelete.Add(parameterVersion1.ParameterVersionName);
     }
 }
