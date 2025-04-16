@@ -50,9 +50,5 @@ public class UpdateRegionalParameterKmsKeyTests
         Assert.NotNull(result);
         Assert.Equal(result.ParameterName.ParameterId, parameterId);
         Assert.Equal(result.KmsKey, cryptoKey1.Name);
-
-        _fixture.ParametersToDelete.Add(result.ParameterName);
-        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
-        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName1);
     }
 }
