@@ -32,7 +32,6 @@ public class MoveObjectWithPreconditionsMatchTest
         UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
         ListFilesSample listFilesSample = new ListFilesSample();
-        DownloadObjectIntoMemorySample downloadObjectIntoMemory = new DownloadObjectIntoMemorySample();
         var originName = Guid.NewGuid().ToString();
         var originContent = Guid.NewGuid().ToString();
         var destinationName = Guid.NewGuid().ToString();
