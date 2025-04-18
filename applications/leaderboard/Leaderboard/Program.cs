@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (c) 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
@@ -223,9 +223,10 @@ namespace GoogleCloudSamples.Leaderboard
                     // for each PlayerName to be inserted.
                     var cmd = connection.CreateSelectCommand(
                         @"SELECT Count(PlayerId) as PlayerCount FROM Players");
+                    cmd.Transaction = transaction;
                     numberOfPlayers = await cmd.ExecuteScalarAsync<long>();
                     // Insert 100 player records into the Players table.
-                    SpannerBatchCommand cmdBatch = connection.CreateBatchDmlCommand();
+                    SpannerBatchCommand cmdBatch = transaction.CreateBatchDmlCommand();
                     for (int i = 0; i < 100; i++)
                     {
                         numberOfPlayers++;
@@ -264,10 +265,9 @@ namespace GoogleCloudSamples.Leaderboard
                 {
                     Random r = new Random();
                     bool playerRecordsFound = false;
-                    SpannerBatchCommand cmdBatch =
-                                connection.CreateBatchDmlCommand();
-                    var cmdLookup =
-                    connection.CreateSelectCommand("SELECT * FROM Players");
+                    SpannerBatchCommand cmdBatch = transaction.CreateBatchDmlCommand();
+                    var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Players");
+                    cmdLookup.Transaction = transaction;
                     using (var reader = await cmdLookup.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
@@ -395,9 +395,9 @@ namespace GoogleCloudSamples.Leaderboard
         private static async Task DeleteAsync(string projectId,
             string instanceId, string databaseId)
         {
-            string AdminConnectionString = $"Data Source=projects/{projectId}/"
+            string adminConnectionString = $"Data Source=projects/{projectId}/"
                 + $"instances/{instanceId}";
-            using (var connection = new SpannerConnection(AdminConnectionString))
+            using (var connection = new SpannerConnection(adminConnectionString))
             using (var cmd = connection.CreateDdlCommand(
                 $@"DROP DATABASE {databaseId}"))
             {
