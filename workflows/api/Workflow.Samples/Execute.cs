@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START workflows_api_quickstart]
+// [START workflows_execute_without_arguments]
 
 using Google.Cloud.Workflows.Common.V1;
 using Google.Cloud.Workflows.Executions.V1;
@@ -72,4 +72,4 @@ public class ExecuteWorkflowSample
         return execution;
     }
 }
-// [END workflows_api_quickstart]
+// [END workflows_execute_without_arguments]

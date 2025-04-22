@@ -21,6 +21,8 @@ using System;
 using System.Text.Json;
 using System.Threading.Tasks;
 
+// [START workflows_execute_with_arguments]
+
 public class ExecuteWorkfloWithArgumentswSample
 {
     /// <summary>
@@ -82,3 +84,4 @@ public class ExecuteWorkfloWithArgumentswSample
         return execution;
     }
 }
+// [END workflows_execute_with_arguments]
