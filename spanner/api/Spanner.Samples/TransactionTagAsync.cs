@@ -30,7 +30,7 @@ public class TransactionTagAsyncSample
             // Sets the transaction tag to "app=concert,env=dev".
             // This transaction tag will be applied to all the individual operations inside
             // the transaction.
-            transaction.Tag = "app=concert,env=dev";
+            transaction.TransactionOptions.Tag = "app=concert,env=dev";
             
             // Sets the request tag to "app=concert,env=dev,action=update".
             // This request tag will only be set on this request.
