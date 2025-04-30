@@ -39,6 +39,6 @@ public class GetRegionalParameterVersionTests
         ParameterVersion result = _sample.GetRegionalParameterVersion(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId, versionId: versionId);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterVersionName.ParameterVersionId, versionId);
+        Assert.Equal(versionId, result.ParameterVersionName.ParameterVersionId);
     }
 }

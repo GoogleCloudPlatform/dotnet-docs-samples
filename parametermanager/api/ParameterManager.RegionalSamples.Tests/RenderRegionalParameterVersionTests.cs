@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+using Google.Cloud.Iam.V1;
 using Google.Cloud.ParameterManager.V1;
 using Google.Cloud.SecretManager.V1;
-using Google.Cloud.Iam.V1;
 
 [Collection(nameof(ParameterManagerRegionalFixture))]
 public class RenderRegionalParameterVersionTests
@@ -44,7 +44,7 @@ public class RenderRegionalParameterVersionTests
         Thread.Sleep(120000);
 
         ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
-        
+
         string result = _sample.RenderRegionalParameterVersion(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId, versionId: versionId);
 
         Assert.NotNull(result);

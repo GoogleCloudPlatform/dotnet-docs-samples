@@ -25,8 +25,8 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public string ProjectId { get; }
     public const string LocationId = "us-central1";
 
-    public ParameterManagerClient client { get; }
-    public SecretManagerServiceClient secretClient { get; }
+    public ParameterManagerClient Client { get; }
+    public SecretManagerServiceClient SecretClient { get; }
     internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
     internal List<SecretName> SecretsToDelete { get; } = new List<SecretName>();
     internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
@@ -43,13 +43,13 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
 
         // Create the client with the regional endpoint
-        client = new ParameterManagerClientBuilder
+        Client = new ParameterManagerClientBuilder
         {
             Endpoint = regionalEndpoint
         }.Build();
 
         string regionalSecretEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
-        secretClient = new SecretManagerServiceClientBuilder
+        SecretClient = new SecretManagerServiceClientBuilder
         {
             Endpoint = regionalSecretEndpoint
         }.Build();
@@ -85,7 +85,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             Format = format
         };
 
-        Parameter Parameter = client.CreateParameter(parent, parameter, parameterId);
+        Parameter Parameter = Client.CreateParameter(parent, parameter, parameterId);
         ParametersToDelete.Add(Parameter.ParameterName);
         return Parameter;
     }
@@ -101,7 +101,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             }
         };
 
-        ParameterVersion ParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersion ParameterVersion = Client.CreateParameterVersion(parameterName, parameterVersion, versionId);
         ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
         return ParameterVersion;
     }
@@ -110,7 +110,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     {
         try
         {
-            client.DeleteParameter(name);
+            Client.DeleteParameter(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -122,7 +122,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     {
         try
         {
-            client.DeleteParameterVersion(name);
+            Client.DeleteParameterVersion(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -136,7 +136,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
         Secret secret = new Secret();
 
-        Secret Secret = secretClient.CreateSecret(parent, secretId, secret);
+        Secret Secret = SecretClient.CreateSecret(parent, secretId, secret);
         SecretsToDelete.Add(Secret.SecretName);
         return Secret;
     }
@@ -144,7 +144,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public Policy GrantIAMAccess(SecretName secretName, string member)
     {
         // Get current policy.
-        Policy policy = secretClient.GetIamPolicy(new GetIamPolicyRequest
+        Policy policy = SecretClient.GetIamPolicy(new GetIamPolicyRequest
         {
             ResourceAsResourceName = secretName,
         });
@@ -153,7 +153,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
 
         // Save the updated policy.
-        policy = secretClient.SetIamPolicy(new SetIamPolicyRequest
+        policy = SecretClient.SetIamPolicy(new SetIamPolicyRequest
         {
             ResourceAsResourceName = secretName,
             Policy = policy,
@@ -167,14 +167,14 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
         };
 
-        return secretClient.AddSecretVersion(secret.SecretName, payload);
+        return SecretClient.AddSecretVersion(secret.SecretName, payload);
     }
 
     private void DeleteSecret(SecretName name)
     {
         try
         {
-            secretClient.DeleteSecret(name);
+            SecretClient.DeleteSecret(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
