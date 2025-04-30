@@ -30,7 +30,7 @@ public class DisableRegionalParameterVersionTests
 
     [Fact]
     public void DisableRegionalParameterVersion()
-    {        
+    {
         string parameterId = _fixture.RandomId();
         string versionId = _fixture.RandomId();
         Parameter parameter = _fixture.CreateParameter(parameterId, ParameterFormat.Unformatted);
