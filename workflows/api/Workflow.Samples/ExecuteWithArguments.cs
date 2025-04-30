@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     https:*www.apache.org/licenses/LICENSE-2.0
+ *     https:www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,7 @@ public class ExecuteWorkfloWithArgumentswSample
     /// </summary>
     /// <param name="projectID">Your Google Cloud Project ID.</param>
     /// <param name="locationID">The region where your workflow is located.</param>
-    /// <param name="workflowID">Your Google Cloud Workflow ID.</param>
+    /// <param name="workflowID">Your Workflow ID.</param>
     /// 
     public async Task<Execution> ExecuteWorkflowWithArguments(
         string projectId = "YOUR-PROJECT-ID",
@@ -49,7 +49,7 @@ public class ExecuteWorkfloWithArgumentswSample
             searchTerm = "Cloud"
         });
 
-        // Craete te execution request.
+        // Create an execution request.
         CreateExecutionRequest createExecutionRequest = new CreateExecutionRequest
         {
             ParentAsWorkflowName = parent,
@@ -63,11 +63,9 @@ public class ExecuteWorkfloWithArgumentswSample
         Execution execution = await client.CreateExecutionAsync(createExecutionRequest);
         Console.WriteLine("- Execution started...");
 
-        // TODO(developer): Adjust the following time parameters according to your Workflow timeout settings.
-        // backoffDelay start value is 1000 milliseconds (1 second).
         TimeSpan backoffDelay = TimeSpan.FromSeconds(1);
 
-        // Loop to check whether the execution state is different from Active.
+        // Keep polling the state until the execution finishes, using exponential backoff.
         while (execution.State == Execution.Types.State.Active)
         {
             await Task.Delay(backoffDelay);

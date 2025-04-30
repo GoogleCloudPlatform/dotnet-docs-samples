@@ -52,14 +52,7 @@ public class ExecuteWithArgumentsTests
         }
         ;
 
-        try
-        {
-            Assert.Equal(Execution.Types.State.Succeeded, execution.State);
-            Assert.Contains("Cloud", execution.Argument);
-        }
-        catch
-        {
-
-        }
+        // When creating an execution a name is assigned, so check if it is not null.
+        Assert.NotNull(execution.Name);
     }
 }
