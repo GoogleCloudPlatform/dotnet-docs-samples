@@ -37,7 +37,7 @@ public class CreateRegionalParameterSampleTests
         _fixture.ParametersToDelete.Add(parameterName);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
+        Assert.Equal(parameterName.ParameterId, result.ParameterName.ParameterId);
         Assert.Equal(ParameterFormat.Unformatted, result.Format);
     }
 }

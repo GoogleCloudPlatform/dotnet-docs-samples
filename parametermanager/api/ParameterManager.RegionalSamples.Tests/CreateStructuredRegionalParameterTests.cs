@@ -38,6 +38,6 @@ public class CreateStructuredRegionalParameterTests
 
         Assert.NotNull(result);
         Assert.Equal(ParameterFormat.Json, result.Format);
-        Assert.Equal(result.ParameterName.ParameterId, parameterName.ParameterId);
+        Assert.Equal(parameterName.ParameterId, result.ParameterName.ParameterId);
     }
 }
