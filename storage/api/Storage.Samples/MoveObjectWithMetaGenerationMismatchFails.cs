@@ -29,7 +29,7 @@ public class MoveObjectMetaGenerationMismatchFailsSample
        string sourceBucketName = "source-bucket-name",
        string sourceObjectName = "source-object-name",
        string destinationObjectName = "destination-object-name",
-       long? metaGeneration = 1579287380533984)
+       long metaGeneration = 1579287380533984)
     {
         var storage = StorageClient.Create();
         var moveOptions = new MoveObjectOptions
