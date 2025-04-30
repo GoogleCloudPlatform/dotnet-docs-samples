@@ -25,7 +25,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public string ProjectId { get; }
     public const string LocationId = "us-central1";
 
-    public ParameterManagerClient client { get; }
+    public ParameterManagerClient Client { get; }
     internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
     internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
@@ -41,7 +41,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
 
         // Create the client with the regional endpoint
-        client = new ParameterManagerClientBuilder
+        Client = new ParameterManagerClientBuilder
         {
             Endpoint = regionalEndpoint
         }.Build();
@@ -68,7 +68,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     {
         try
         {
-            client.DeleteParameter(name);
+            Client.DeleteParameter(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -80,7 +80,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     {
         try
         {
-            client.DeleteParameterVersion(name);
+            Client.DeleteParameterVersion(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {

@@ -34,7 +34,7 @@ public class RegionalQuickstartTests
         string parameterId = _fixture.RandomId();
         ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, parameterId);
         ParameterVersionName parameterVersionName = new ParameterVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, parameterId, _fixture.RandomId());
-       
+
         _sample.RegionalQuickstart(
             projectId: parameterVersionName.ProjectId, parameterId: parameterVersionName.ParameterId, locationId: ParameterManagerRegionalFixture.LocationId, versionId: parameterVersionName.ParameterVersionId);
         _fixture.ParametersToDelete.Add(parameterName);
@@ -51,6 +51,6 @@ public class RegionalQuickstartTests
         ParameterVersion result = client.GetParameterVersion(parameterVersionName);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
+        Assert.Equal(parameterVersionName.ParameterVersionId, result.ParameterVersionName.ParameterVersionId);
     }
 }

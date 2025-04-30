@@ -43,6 +43,6 @@ public class QuickstartTests
         ParameterVersion result = client.GetParameterVersion(parameterVersionName);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
+        Assert.Equal(parameterVersionName.ParameterVersionId, result.ParameterVersionName.ParameterVersionId);
     }
 }
