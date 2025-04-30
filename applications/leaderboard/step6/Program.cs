@@ -180,9 +180,10 @@ namespace GoogleCloudSamples.Leaderboard
                     // for each PlayerName to be inserted.
                     var cmd = connection.CreateSelectCommand(
                         @"SELECT Count(PlayerId) as PlayerCount FROM Players");
+                    cmd.Transaction = transaction;
                     numberOfPlayers = await cmd.ExecuteScalarAsync<long>();
                     // Insert 100 player records into the Players table.
-                    SpannerBatchCommand cmdBatch = connection.CreateBatchDmlCommand();
+                    SpannerBatchCommand cmdBatch = transaction.CreateBatchDmlCommand();
                     for (int i = 0; i < 100; i++)
                     {
                         numberOfPlayers++;
@@ -221,10 +222,9 @@ namespace GoogleCloudSamples.Leaderboard
                 {
                     Random r = new Random();
                     bool playerRecordsFound = false;
-                    SpannerBatchCommand cmdBatch =
-                                connection.CreateBatchDmlCommand();
-                    var cmdLookup =
-                    connection.CreateSelectCommand("SELECT * FROM Players");
+                    SpannerBatchCommand cmdBatch = transaction.CreateBatchDmlCommand();
+                    var cmdLookup = connection.CreateSelectCommand("SELECT * FROM Players");
+                    cmdLookup.Transaction = transaction;
                     using (var reader = await cmdLookup.ExecuteReaderAsync())
                     {
                         while (await reader.ReadAsync())
