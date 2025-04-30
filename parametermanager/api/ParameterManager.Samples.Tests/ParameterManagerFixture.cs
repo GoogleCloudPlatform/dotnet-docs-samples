@@ -25,7 +25,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public string ProjectId { get; }
     public const string LocationId = "global";
 
-    public ParameterManagerClient client { get; }
+    public ParameterManagerClient Client { get; }
     internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
     internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
@@ -37,7 +37,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
 
-        client = ParameterManagerClient.Create();
+        Client = ParameterManagerClient.Create();
     }
 
     public void Dispose()
@@ -66,7 +66,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             Format = format
         };
 
-        Parameter Parameter = client.CreateParameter(projectName, parameter, parameterId);
+        Parameter Parameter = Client.CreateParameter(projectName, parameter, parameterId);
         ParametersToDelete.Add(Parameter.ParameterName);
         return Parameter;
     }
@@ -82,7 +82,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             }
         };
 
-        ParameterVersion ParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersion ParameterVersion = Client.CreateParameterVersion(parameterName, parameterVersion, versionId);
         ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
         return ParameterVersion;
     }
@@ -91,7 +91,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     {
         try
         {
-            client.DeleteParameter(name);
+            Client.DeleteParameter(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -103,7 +103,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     {
         try
         {
-            client.DeleteParameterVersion(name);
+            Client.DeleteParameterVersion(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
