@@ -39,6 +39,6 @@ public class GetParameterVersionTests
         ParameterVersion result = _sample.GetParameterVersion(projectId: _fixture.ProjectId, parameterId: parameterId, versionId: versionId);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterVersionName.ParameterVersionId, versionId);
+        Assert.Equal(versionId, result.ParameterVersionName.ParameterVersionId);
     }
 }

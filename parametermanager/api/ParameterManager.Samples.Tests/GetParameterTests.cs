@@ -36,5 +36,6 @@ public class GetParameterTests
         Parameter result = _sample.GetParameter(projectId: _fixture.ProjectId, parameterId: parameterId);
 
         Assert.NotNull(result);
+        Assert.Equal(parameterId, result.ParameterName.ParameterId);
     }
 }
