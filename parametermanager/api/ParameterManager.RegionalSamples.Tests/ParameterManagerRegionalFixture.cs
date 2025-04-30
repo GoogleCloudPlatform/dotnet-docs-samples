@@ -24,8 +24,8 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public string ProjectId { get; }
     public const string LocationId = "us-central1";
 
-    public ParameterManagerClient client { get; }
-    public KeyManagementServiceClient kmsClient { get; }
+    public ParameterManagerClient Client { get; }
+    public KeyManagementServiceClient KmsClient { get; }
     internal List<ParameterName> ParametersToDelete = new List<ParameterName>();
     internal List<CryptoKeyVersionName> CryptoKeyVersionsToDelete = new List<CryptoKeyVersionName>();
 
@@ -39,13 +39,13 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         // Define the regional endpoint
         string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
 
-        // Create the client with the regional endpoint
-        client = new ParameterManagerClientBuilder
+        // Create the Client with the regional endpoint
+        Client = new ParameterManagerClientBuilder
         {
             Endpoint = regionalEndpoint
         }.Build();
 
-        kmsClient = KeyManagementServiceClient.Create();
+        KmsClient = KeyManagementServiceClient.Create();
         KeyRing keyRing = CreateKeyRing(ProjectId, "csharp-test-key-ring");
     }
 
@@ -76,7 +76,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             KmsKey = kmsKey
         };
 
-        Parameter Parameter = client.CreateParameter(projectName, parameter, parameterId);
+        Parameter Parameter = Client.CreateParameter(projectName, parameter, parameterId);
         ParametersToDelete.Add(Parameter.ParameterName);
         return Parameter;
     }
@@ -85,7 +85,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     {
         try
         {
-            client.DeleteParameter(name);
+            Client.DeleteParameter(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -99,12 +99,12 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         LocationName parent = new LocationName(projectId, LocationId);
         try
         {
-            KeyRing resp = kmsClient.GetKeyRing(name);
+            KeyRing resp = KmsClient.GetKeyRing(name);
             return resp;
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
-            return kmsClient.CreateKeyRing(new CreateKeyRingRequest
+            return KmsClient.CreateKeyRing(new CreateKeyRingRequest
             {
                 ParentAsLocationName = parent,
                 KeyRingId = keyRingId,
@@ -134,12 +134,12 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         try
         {
             string name = $"projects/{projectId}/locations/{LocationId}/keyRings/{keyRingId}/cryptoKeys/{keyId}";
-            CryptoKey resp = kmsClient.GetCryptoKey(name);
+            CryptoKey resp = KmsClient.GetCryptoKey(name);
             return resp;
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
-            return kmsClient.CreateCryptoKey(request);
+            return KmsClient.CreateCryptoKey(request);
         }
     }
 
@@ -147,7 +147,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     {
         try
         {
-            kmsClient.DestroyCryptoKeyVersion(name);
+            KmsClient.DestroyCryptoKeyVersion(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {

@@ -46,6 +46,6 @@ public class RemoveRegionalParameterKmsKeyTests
           projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterName.ParameterId, parameterId);
+        Assert.Equal(parameterId, result.ParameterName.ParameterId);
     }
 }
