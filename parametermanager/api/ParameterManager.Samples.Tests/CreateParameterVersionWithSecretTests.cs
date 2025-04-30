@@ -39,6 +39,6 @@ public class CreateParameterVersionWithSecretTests
         _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterVersionName.ParameterVersionId, parameterVersionName.ParameterVersionId);
+        Assert.Equal(parameterVersionName.ParameterVersionId, result.ParameterVersionName.ParameterVersionId);
     }
 }
