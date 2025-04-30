@@ -46,6 +46,6 @@ public class RemoveParameterKmsKeyTests
             projectId: _fixture.ProjectId, parameterId: parameterId);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterName.ParameterId, parameterId);
+        Assert.Equal(parameterId, result.ParameterName.ParameterId);
     }
 }

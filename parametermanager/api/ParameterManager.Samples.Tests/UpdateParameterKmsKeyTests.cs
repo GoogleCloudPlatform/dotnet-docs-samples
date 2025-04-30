@@ -50,7 +50,7 @@ public class UpdateParameterKmsKeyTests
             projectId: _fixture.ProjectId, parameterId: parameterId, kmsKey: cryptoKey1.Name);
 
         Assert.NotNull(result);
-        Assert.Equal(result.ParameterName.ParameterId, parameterId);
-        Assert.Equal(result.KmsKey, cryptoKey1.Name);
+        Assert.Equal(parameterId, result.ParameterName.ParameterId);
+        Assert.Equal(cryptoKey1.Name, result.KmsKey);
     }
 }
