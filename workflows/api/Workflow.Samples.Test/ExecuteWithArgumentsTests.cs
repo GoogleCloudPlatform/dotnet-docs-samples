@@ -37,13 +37,13 @@ public class ExecuteWithArgumentsTests
 
         using (var timeoutCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
         {
-            Task<Execution> task = _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+            Task<Execution> taskExecution = _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
 
-            var completedTask = await Task.WhenAny(task, Task.Delay(TimeSpan.FromMinutes(10), timeoutCancellationTokenSource.Token));
-            if (completedTask == task)
+            var completedTask = await Task.WhenAny(taskExecution, Task.Delay(TimeSpan.FromMinutes(10), timeoutCancellationTokenSource.Token));
+            if (completedTask == taskExecution)
             {
                 timeoutCancellationTokenSource.Cancel();
-                execution = await task;
+                execution = await taskExecution;
             }
             else
             {
