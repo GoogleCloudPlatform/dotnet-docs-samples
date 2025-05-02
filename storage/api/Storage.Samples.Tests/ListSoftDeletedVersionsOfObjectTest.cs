@@ -30,7 +30,7 @@ public class ListSoftDeletedVersionOfObjectTest
     public void ListSoftDeletedVersionOfObject()
     {
         int i = 2;
-        ListSoftDeletedVersionOfObjectSample listSoftDeletedVersionOfObject = new ListSoftDeletedVersionOfObjectSample();
+        ListSoftDeletedVersionsOfObjectSample listSoftDeletedVersionOfObject = new ListSoftDeletedVersionsOfObjectSample();
         UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
         RestoreSoftDeletedObjectSample restoreSoftDeletedObjectSample = new RestoreSoftDeletedObjectSample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
@@ -47,7 +47,7 @@ public class ListSoftDeletedVersionOfObjectTest
             var restoredObject = restoreSoftDeletedObjectSample.RestoreSoftDeletedObject(bucketName, objectName, objectMetaData.Generation.Value);
             i--;
         }
-        var objects = listSoftDeletedVersionOfObject.ListSoftDeletedVersionOfObject(bucketName, objectName);
+        var objects = listSoftDeletedVersionOfObject.ListSoftDeletedVersionsOfObject(bucketName, objectName);
         Assert.Multiple(
             () => Assert.Contains(objects, obj => obj.Name == objectName && obj.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 1]),
             () => Assert.Contains(objects, obj => obj.Name == objectName && obj.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 2]),

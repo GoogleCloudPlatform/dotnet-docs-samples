@@ -20,11 +20,11 @@ using System;
 public class RestoreSoftDeletedObjectSample
 {
     /// <summary>
-    /// Restores a soft deleted object.
+    /// Restores a soft-deleted object.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the soft-deleted object to restore.</param>
-    /// <param name="generation">The generation number of the soft-deleted object to restore.</param>
+    /// <param name="generation">The generation of the soft-deleted object to restore.</param>
     public Google.Apis.Storage.v1.Data.Object RestoreSoftDeletedObject(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name",
