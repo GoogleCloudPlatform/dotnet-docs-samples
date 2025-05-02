@@ -36,6 +36,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
         Client = ParameterManagerClient.Create();
     }
 
@@ -54,6 +55,20 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public string RandomId()
     {
         return $"csharp-{System.Guid.NewGuid()}";
+    }
+
+    public Parameter CreateParameter(string parameterId, ParameterFormat format)
+    {
+        LocationName projectName = new LocationName(ProjectId, LocationId);
+
+        Parameter parameter = new Parameter
+        {
+            Format = format
+        };
+
+        Parameter Parameter = Client.CreateParameter(projectName, parameter, parameterId);
+        ParametersToDelete.Add(Parameter.ParameterName);
+        return Parameter;
     }
 
     private void DeleteParameter(ParameterName name)
