@@ -16,18 +16,18 @@ using System.Collections.Generic;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class ListSoftDeletedVersionOfObjectTest
+public class ListSoftDeletedVersionsOfObjectTest
 {
     private readonly StorageFixture _fixture;
     private IList<long> _softDeleteObjectGenerations { get; } = new List<long>();
 
-    public ListSoftDeletedVersionOfObjectTest(StorageFixture fixture)
+    public ListSoftDeletedVersionsOfObjectTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
     [Fact]
-    public void ListSoftDeletedVersionOfObject()
+    public void ListSoftDeletedVersionsOfObject()
     {
         int i = 2;
         ListSoftDeletedVersionsOfObjectSample listSoftDeletedVersionOfObject = new ListSoftDeletedVersionsOfObjectSample();
