@@ -52,13 +52,15 @@ public class ExecuteWorkflowSample
         Console.WriteLine("- Execution started...");
 
         TimeSpan backoffDelay = TimeSpan.FromSeconds(1);
+        TimeSpan maxBackoffDelay = TimeSpan.FromSeconds(16);
 
         // Keep polling the state until the execution finishes, using exponential backoff.
         while (execution.State == Execution.Types.State.Active)
         {
             await Task.Delay(backoffDelay);
-            // Exponential delay by doubling the current value (capped in 16 seconds).
-            if (backoffDelay < TimeSpan.FromSeconds(16))
+
+            // Implement exponential backoff by doubling the delay, ensuring it doesn't exceed the 16-second maximum.
+            if (backoffDelay < maxBackoffDelay)
             {
                 backoffDelay *= 2;
             }

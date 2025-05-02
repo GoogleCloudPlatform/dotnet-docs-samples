@@ -20,38 +20,25 @@ using Google.Cloud.Workflows.Executions.V1;
 [Collection(nameof(WorkflowFixture))]
 public class ExecuteWithArgumentsTests
 {
-    private readonly ExecuteWorkfloWithArgumentswSample _sample;
+    private readonly ExecuteWorkflowWithArgumentsSample _sample;
     private readonly WorkflowFixture _fixture;
 
     public ExecuteWithArgumentsTests(WorkflowFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ExecuteWorkfloWithArgumentswSample();
+        _sample = new ExecuteWorkflowWithArgumentsSample();
     }
 
     [Fact]
     public async Task ExecuteWithArguments()
     {
-        var cts = new CancellationTokenSource();
-        Execution execution = new Execution();
-
-        using (var timeoutCancellationTokenSource = CancellationTokenSource.CreateLinkedTokenSource(cts.Token))
+         Task<Execution> executionTask = _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+        var completedTask = await Task.WhenAny(executionTask, Task.Delay(TimeSpan.FromMinutes(10)));
+        if (completedTask != executionTask)
         {
-            Task<Execution> taskExecution = _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
-
-            var completedTask = await Task.WhenAny(taskExecution, Task.Delay(TimeSpan.FromMinutes(10), timeoutCancellationTokenSource.Token));
-            if (completedTask == taskExecution)
-            {
-                timeoutCancellationTokenSource.Cancel();
-                execution = await taskExecution;
-            }
-            else
-            {
-                throw new TimeoutException("The operation has timed out.");
-            }
+           throw new TimeoutException("The operation has timed out.");
         }
-        ;
-
+        var execution = await executionTask;
         // When creating an execution a name is assigned, so check if it is not null.
         Assert.NotNull(execution.Name);
     }

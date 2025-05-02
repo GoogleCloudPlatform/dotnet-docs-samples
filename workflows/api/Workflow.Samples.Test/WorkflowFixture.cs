@@ -31,7 +31,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (string.IsNullOrEmpty(ProjectId))
         {
-            throw new Exception("missing GOOGLE_PROJECT_ID");
+            throw new Exception("Missing GOOGLE_PROJECT_ID environment variable.");
         }
 
         Client = WorkflowsClient.Create();
@@ -77,7 +77,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     /// <summary>
     /// Delete a workflow by the given workflow name.
     /// </summary>
-    /// <param name="workflowName">The workflow's ID</param>
+    /// <param name="workflowName">The full workflow's name</param>
     public void DeleteWorkflow(string workflowName)
     {
         DeleteWorkflowRequest deleteWorkflowReq = new DeleteWorkflowRequest
@@ -91,7 +91,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
-            // Ignore error - secret was already deleted.
+            // Ignore error - workflow was already deleted.
         }
     }
 
