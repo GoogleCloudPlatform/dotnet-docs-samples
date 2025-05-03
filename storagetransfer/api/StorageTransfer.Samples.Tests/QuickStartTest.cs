@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Copyright 2021 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,28 +14,34 @@
  * limitations under the License.
  */
 
-using System;
 using Google.Cloud.StorageTransfer.V1;
+using System;
 using Xunit;
 
 namespace StorageTransfer.Samples.Tests
 {
     [Collection(nameof(StorageFixture))]
-    public class QuickstartTest : IDisposable
+    public class QuickStartTest : IDisposable
     {
         private readonly StorageFixture _fixture;
         private string _transferJobName;
+        private readonly string _sourceBucket;
+        private readonly string _sinkBucket;
 
-        public QuickstartTest(StorageFixture fixture)
+        public QuickStartTest(StorageFixture fixture)
         {
             _fixture = fixture;
+            _sourceBucket = _fixture.GenerateBucketName();
+            _sinkBucket = _fixture.GenerateBucketName();
+            _fixture.CreateBucketAndGrantStsPermissions(_sourceBucket);
+            _fixture.CreateBucketAndGrantStsPermissions(_sinkBucket);
         }
 
         [Fact]
-        public void TestQuickstart()
+        public void QuickStart()
         {
-            QuickstartSample quickstartSample = new QuickstartSample();
-            var transferJob = quickstartSample.Quickstart(_fixture.ProjectId, _fixture.BucketNameSource, _fixture.BucketNameSink);
+            QuickStartSample quickStartSample = new QuickStartSample();
+            var transferJob = quickStartSample.QuickStart(_fixture.ProjectId, _sourceBucket, _sinkBucket);
             Assert.Contains("transferJobs/", transferJob.Name);
             _transferJobName = transferJob.Name;
         }
@@ -54,6 +60,8 @@ namespace StorageTransfer.Samples.Tests
                         Status = TransferJob.Types.Status.Deleted
                     }
                 });
+                _fixture.Storage.DeleteBucket(_sourceBucket);
+                _fixture.Storage.DeleteBucket(_sinkBucket);
             }
             catch (Exception)
             {
