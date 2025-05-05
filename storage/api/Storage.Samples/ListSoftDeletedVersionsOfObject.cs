@@ -21,7 +21,7 @@ using System.Collections.Generic;
 public class ListSoftDeletedVersionsOfObjectSample
 {
     /// <summary>
-    /// List all soft-deleted versions of the object in a bucket.
+    /// List all soft-deleted versions of the object in the bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="objectName">The name of the object.</param>
@@ -30,10 +30,10 @@ public class ListSoftDeletedVersionsOfObjectSample
     {
         var storage = StorageClient.Create();
         var objects = storage.ListObjects(bucketName, null, new ListObjectsOptions { SoftDeletedOnly = true, MatchGlob = objectName });
-        Console.WriteLine("Soft Deleted Versions of the Object with the Name and Versions are as follows:");
+        Console.WriteLine($"Soft Deleted Versions of the Object exist in the {bucketName}, identified by their respective Names and Versions are as follows:");
         foreach (var obj in objects)
         {
-            Console.WriteLine($"Name: {obj.Name} and Version: {obj.Generation}");
+            Console.WriteLine($"Object Name: {obj.Name} and Version: {obj.Generation}");
         }
         return objects;
     }

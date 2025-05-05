@@ -23,8 +23,8 @@ public class RestoreSoftDeletedObjectSample
     /// Restores a soft-deleted object.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="objectName">The name of the soft-deleted object to restore.</param>
-    /// <param name="generation">The generation of the soft-deleted object to restore.</param>
+    /// <param name="objectName">The name of the soft-deleted object.</param>
+    /// <param name="generation">The generation of the soft-deleted object.</param>
     public Google.Apis.Storage.v1.Data.Object RestoreSoftDeletedObject(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name",
@@ -32,7 +32,7 @@ public class RestoreSoftDeletedObjectSample
     {
         var client = StorageClient.Create();
         var restoredObject = client.RestoreObject(bucketName, objectName, generation);
-        Console.WriteLine($"The Name of the Restored Previously Soft-deleted Object is : {restoredObject.Name}");
+        Console.WriteLine($"The Name of the Restored Object after being previously soft deleted is : {restoredObject.Name}");
         return restoredObject;
     }
 }

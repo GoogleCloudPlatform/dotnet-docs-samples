@@ -12,7 +12,9 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 
+using Google.Apis.Storage.v1.Data;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -29,7 +31,8 @@ public class ListSoftDeletedVersionsOfObjectTest
     [Fact]
     public void ListSoftDeletedVersionsOfObject()
     {
-        int i = 2;
+        int i = 3;
+        int preSoftDeleteObjectVersionsCount = i;
         ListSoftDeletedVersionsOfObjectSample listSoftDeletedVersionOfObject = new ListSoftDeletedVersionsOfObjectSample();
         UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
         RestoreSoftDeletedObjectSample restoreSoftDeletedObjectSample = new RestoreSoftDeletedObjectSample();
@@ -39,7 +42,7 @@ public class ListSoftDeletedVersionsOfObjectTest
         var objectName = _fixture.GenerateName();
         var objectContent = _fixture.GenerateContent();
         uploadObjectFromMemory.UploadObjectFromMemory(bucketName, objectName, objectContent);
-        while (i >= 0)
+        while (i >= 1)
         {
             var objectMetaData = getMetadataSample.GetMetadata(bucketName, objectName);
             _softDeleteObjectGenerations.Add(objectMetaData.Generation.Value);
@@ -47,12 +50,22 @@ public class ListSoftDeletedVersionsOfObjectTest
             var restoredObject = restoreSoftDeletedObjectSample.RestoreSoftDeletedObject(bucketName, objectName, objectMetaData.Generation.Value);
             i--;
         }
-        var objects = listSoftDeletedVersionOfObject.ListSoftDeletedVersionsOfObject(bucketName, objectName);
+        var softDeletedObjectVersions = listSoftDeletedVersionOfObject.ListSoftDeletedVersionsOfObject(bucketName, objectName);
+        int softDeletedObjectVersionsCount = softDeletedObjectVersions.Count();
+        Assert.Equal(preSoftDeleteObjectVersionsCount, softDeletedObjectVersionsCount);
+        Assert.All(softDeletedObjectVersions, AssertSoftDeletedVersionsOfObject);
         Assert.Multiple(
-            () => Assert.Contains(objects, obj => obj.Name == objectName && obj.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 1]),
-            () => Assert.Contains(objects, obj => obj.Name == objectName && obj.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 2]),
-            () => Assert.Contains(objects, obj => obj.Name == objectName && obj.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 3])
+            () => Assert.Contains(softDeletedObjectVersions, softDeletedObject => softDeletedObject.Name == objectName && softDeletedObject.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 1]),
+            () => Assert.Contains(softDeletedObjectVersions, softDeletedObject => softDeletedObject.Name == objectName && softDeletedObject.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 2]),
+            () => Assert.Contains(softDeletedObjectVersions, softDeletedObject => softDeletedObject.Name == objectName && softDeletedObject.Generation == _softDeleteObjectGenerations[_softDeleteObjectGenerations.Count - 3])
         );
         _fixture.Client.DeleteObject(bucketName, objectName);
+    }
+
+    private void AssertSoftDeletedVersionsOfObject(Object o)
+    {
+        Assert.NotNull(o.Generation);
+        Assert.NotNull(o.HardDeleteTimeDateTimeOffset);
+        Assert.NotNull(o.SoftDeleteTimeDateTimeOffset);
     }
 }

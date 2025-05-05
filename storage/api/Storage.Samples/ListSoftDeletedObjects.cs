@@ -21,17 +21,17 @@ using System.Collections.Generic;
 public class ListSoftDeletedObjectsSample
 {
     /// <summary>
-    /// List all of the soft-deleted objects in a bucket.
+    /// List all soft-deleted objects in the bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListSoftDeletedObjects(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var objects = storage.ListObjects(bucketName, null, new ListObjectsOptions { SoftDeletedOnly = true });
-        Console.WriteLine("Soft Deleted Objects with the Name are as follows:");
+        Console.WriteLine($"Soft Deleted Objects in the {bucketName}, identified by their respective Names are as follows:");
         foreach (var obj in objects)
         {
-            Console.WriteLine($"Name: {obj.Name}");
+            Console.WriteLine($"Object Name: {obj.Name}");
         }
         return objects;
     }

@@ -39,6 +39,7 @@ public class RestoreSoftDeletedObjectTest
         _fixture.Client.DeleteObject(bucketName, objectName);
         var restoredObject = restoreSoftDeletedObjectSample.RestoreSoftDeletedObject(bucketName, objectName, objectMetaData.Generation.Value);
         Assert.Equal(objectName, restoredObject.Name);
+        Assert.Equal(objectMetaData.Size, restoredObject.Size);
         _fixture.Client.DeleteObject(bucketName, objectName);
     }
 }

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and 
 // limitations under the License.
 
+using Google.Apis.Storage.v1.Data;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -37,12 +39,25 @@ public class ListSoftDeletedObjectsTest
         var objectTwoContent = _fixture.GenerateContent();
         uploadObjectFromMemory.UploadObjectFromMemory(bucketName, objectNameOne, objectOneContent);
         uploadObjectFromMemory.UploadObjectFromMemory(bucketName, objectNameTwo, objectTwoContent);
+        var preSoftDeleteObjects = _fixture.Client.ListObjects(bucketName);
+        int preSoftDeleteObjectsCount = preSoftDeleteObjects.Count();
         _fixture.Client.DeleteObject(bucketName, objectNameOne);
         _fixture.Client.DeleteObject(bucketName, objectNameTwo);
-        var objects = listSoftDeletedObjects.ListSoftDeletedObjects(bucketName);
+        var softDeletedObjects = listSoftDeletedObjects.ListSoftDeletedObjects(bucketName);
+        int softDeletedObjectsCount = softDeletedObjects.Count();
+        Assert.Equal(preSoftDeleteObjectsCount, softDeletedObjectsCount);
+        Assert.All(softDeletedObjects, AssertSoftDeletedObject);
         Assert.Multiple(
-            () => Assert.Contains(objects, obj => obj.Name == objectNameOne),
-            () => Assert.Contains(objects, obj => obj.Name == objectNameTwo)
+            () => Assert.Contains(softDeletedObjects, softDeletedObject => softDeletedObject.Name == objectNameOne),
+            () => Assert.Contains(softDeletedObjects, softDeletedObject => softDeletedObject.Name == objectNameTwo)
         );
+    }
+
+    // Validates that the given object is soft-deleted.
+    private void AssertSoftDeletedObject(Object o)
+    {
+        Assert.NotNull(o.Generation);
+        Assert.NotNull(o.HardDeleteTimeDateTimeOffset);
+        Assert.NotNull(o.SoftDeleteTimeDateTimeOffset);
     }
 }
