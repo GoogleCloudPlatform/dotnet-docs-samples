@@ -31,7 +31,6 @@ public class ExecuteWorkflowWithArgumentsSample
     /// <param name="projectID">Your Google Cloud Project ID.</param>
     /// <param name="locationID">The region where your workflow is located.</param>
     /// <param name="workflowID">Your Workflow ID.</param>
-    /// 
     public async Task<Execution> ExecuteWorkflowWithArguments(
         string projectId = "YOUR-PROJECT-ID",
         string locationID = "YOUR-LOCATION-ID",
@@ -71,11 +70,15 @@ public class ExecuteWorkflowWithArgumentsSample
         {
             await Task.Delay(backoffDelay);
 
-            // Implement exponential backoff by doubling the delay, ensuring it doesn't exceed the 16-second maximum.
-            backoffDelay = (backoffDelay < maxBackoffDelay) ? backoffDelay * 2 : maxBackoffDelay; 
+            // Implement exponential backoff by doubling the delay, but limiting it to a practical duration.
+            backoffDelay = (backoffDelay < maxBackoffDelay) ? backoffDelay * 2 : maxBackoffDelay;
 
             execution = await client.GetExecutionAsync(execution.Name);
         }
+
+        // Print results
+        Console.WriteLine($"Execution finished with state: {execution.State}");
+        Console.WriteLine($"Execution results: {execution.Result}");
 
         // Return the fetched execution.
         return execution;

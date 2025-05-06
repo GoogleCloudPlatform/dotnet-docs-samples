@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 using Google.Cloud.Workflows.Executions.V1;
 
 [Collection(nameof(WorkflowFixture))]
@@ -32,14 +31,19 @@ public class ExecuteWithArgumentsTests
     [Fact]
     public async Task ExecuteWithArguments()
     {
-         Task<Execution> executionTask = _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
+        Task<Execution> executionTask = _sample.ExecuteWorkflowWithArguments(_fixture.ProjectId, _fixture.LocationId, _fixture.WorkflowID);
         var completedTask = await Task.WhenAny(executionTask, Task.Delay(TimeSpan.FromMinutes(10)));
         if (completedTask != executionTask)
         {
-           throw new TimeoutException("The operation has timed out.");
+            throw new TimeoutException("The operation has timed out.");
         }
-        var execution = await executionTask;
-        // When creating an execution a name is assigned, so check if it is not null.
-        Assert.NotNull(execution.Name);
+
+        Execution execution = await executionTask;
+
+        // Validate if execution was successful
+        Assert.Equal(Execution.Types.State.Succeeded, execution.State);
+
+        // Validate if execution result contains expected value
+        Assert.Contains("Cloud", execution.Result);
     }
 }

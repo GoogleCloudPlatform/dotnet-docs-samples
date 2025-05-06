@@ -59,14 +59,15 @@ public class ExecuteWorkflowSample
         {
             await Task.Delay(backoffDelay);
 
-            // Implement exponential backoff by doubling the delay, ensuring it doesn't exceed the 16-second maximum.
-            if (backoffDelay < maxBackoffDelay)
-            {
-                backoffDelay *= 2;
-            }
+            // Implement exponential backoff by doubling the delay, but limiting it to a practical duration.
+            backoffDelay = (backoffDelay < maxBackoffDelay) ? backoffDelay * 2 : maxBackoffDelay;
 
             execution = await client.GetExecutionAsync(execution.Name);
         }
+
+        // Print results
+        Console.WriteLine($"Execution finished with state: {execution.State}");
+        Console.WriteLine($"Execution results: {execution.Result}");
 
         // Return the fetched execution.
         return execution;
