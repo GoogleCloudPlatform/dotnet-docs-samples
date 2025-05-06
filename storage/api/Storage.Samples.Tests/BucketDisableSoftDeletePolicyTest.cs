@@ -45,6 +45,7 @@ public class BucketDisableSoftDeletePolicyTest
         // To disable soft-delete policy for the bucket, set the soft delete retention duration to 0 days.
         var bucketPostDisableSoftDeletePolicy = bucketDisableSoftDeletePolicy.BucketDisableSoftDeletePolicy(bucketName, retentionDurationInDays);
         Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+        Assert.Null(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.EffectiveTimeRaw);
         _fixture.Client.DeleteObject(bucketName, originName);
         var exception = Assert.Throws<GoogleApiException>(() => _fixture.Client.RestoreObject(bucketName, originName, objectMetaData.Generation.Value));
         Assert.Equal(HttpStatusCode.BadRequest, exception.HttpStatusCode);

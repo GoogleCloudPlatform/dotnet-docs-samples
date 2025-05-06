@@ -37,5 +37,6 @@ public class BucketSetSoftDeletePolicyTest
         // Set soft-delete policy for the bucket.
         var bucketPostSetSoftDeletePolicy = bucketSetSoftDeletePolicy.BucketSetSoftDeletePolicy(bucketName, retentionDurationInDays);
         Assert.Equal(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+        Assert.NotNull(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.EffectiveTimeRaw);
     }
 }
