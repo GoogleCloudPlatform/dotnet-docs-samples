@@ -32,7 +32,7 @@ public class RestoreSoftDeletedObjectSample
     {
         var client = StorageClient.Create();
         var restoredObject = client.RestoreObject(bucketName, objectName, generation);
-        Console.WriteLine($"The Name of the Restored Object after being previously soft deleted is : {restoredObject.Name}");
+        Console.WriteLine($"The Name of the Restored Object which was previously Soft-deleted is : {restoredObject.Name}");
         return restoredObject;
     }
 }
