@@ -255,4 +255,10 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         var randomName = RandomName();
         return ($"test{caller}Topic{randomName}", $"test{caller}Subscription{randomName}", $"test{caller}Schema{randomName}");
     }
+
+    public (string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount) RandomKinesisIngestionParams([CallerMemberName] string caller = null)
+    {
+        var randomName = RandomName();
+        return ($"test{caller}StreamArn{randomName}", $"test{caller}ConsumerArn{randomName}", $"test{caller}AwsRoleArn{randomName}", $"test{caller}GcpServiceAccount{randomName}");
+    }
 }
