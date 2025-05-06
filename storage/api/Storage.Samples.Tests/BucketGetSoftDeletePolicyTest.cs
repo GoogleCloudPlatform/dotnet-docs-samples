@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google;
 using System;
-using System.Net;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -49,14 +47,12 @@ public class BucketGetSoftDeletePolicyTest
         setSoftDeletePolicy.BucketSetSoftDeletePolicy(bucketName, retentionDurationInDays);
         var bucketPostSetSoftDeletePolicy = getBucketSoftDeletePolicy.BucketGetSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
-        int disableSoftDeleteRetentionDurationInDay = 0;
-        long disableSoftDeleteRetentionDurationInSeconds = (long) TimeSpan.FromDays(disableSoftDeleteRetentionDurationInDay).TotalSeconds;
+        int disableSoftDeleteRetentionDurationInDays = 0;
+        long disableSoftDeleteRetentionDurationInSeconds = (long) TimeSpan.FromDays(disableSoftDeleteRetentionDurationInDays).TotalSeconds;
         Assert.NotEqual(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, disableSoftDeleteRetentionDurationInSeconds);
-        disableSoftDeletePolicy.BucketDisableSoftDeletePolicy(bucketName, disableSoftDeleteRetentionDurationInDay);
+        disableSoftDeletePolicy.BucketDisableSoftDeletePolicy(bucketName, disableSoftDeleteRetentionDurationInDays);
         var bucketPostDisableSoftDeletePolicy = getBucketSoftDeletePolicy.BucketGetSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, disableSoftDeleteRetentionDurationInSeconds);
         _fixture.Client.DeleteObject(bucketName, originName);
-        var exception = Assert.Throws<GoogleApiException>(() => _fixture.Client.RestoreObject(bucketName, originName, objectMetaData.Generation.Value));
-        Assert.Equal(HttpStatusCode.BadRequest, exception.HttpStatusCode);
     }
 }
