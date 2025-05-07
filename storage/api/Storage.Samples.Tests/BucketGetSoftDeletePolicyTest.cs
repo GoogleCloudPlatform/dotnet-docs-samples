@@ -44,12 +44,14 @@ public class BucketGetSoftDeletePolicyTest
         int retentionDurationInDays = 10;
         long retentionDurationInSeconds = (long) TimeSpan.FromDays(retentionDurationInDays).TotalSeconds;
         Assert.NotEqual(bucketPostFetchSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+        // Set soft-delete policy for the bucket with 10 days retention duration period.
         setSoftDeletePolicy.BucketSetSoftDeletePolicy(bucketName, retentionDurationInDays);
         var bucketPostSetSoftDeletePolicy = getBucketSoftDeletePolicy.BucketGetSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
         int disableSoftDeleteRetentionDurationInDays = 0;
         long disableSoftDeleteRetentionDurationInSeconds = (long) TimeSpan.FromDays(disableSoftDeleteRetentionDurationInDays).TotalSeconds;
         Assert.NotEqual(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, disableSoftDeleteRetentionDurationInSeconds);
+        // Disable soft-delete policy for the bucket with 0 days retention duration period.
         disableSoftDeletePolicy.BucketDisableSoftDeletePolicy(bucketName, disableSoftDeleteRetentionDurationInDays);
         var bucketPostDisableSoftDeletePolicy = getBucketSoftDeletePolicy.BucketGetSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, disableSoftDeleteRetentionDurationInSeconds);
