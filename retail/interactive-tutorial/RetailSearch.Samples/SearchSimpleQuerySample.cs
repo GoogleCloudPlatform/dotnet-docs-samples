@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START retail_search_simple_query]
+
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -23,7 +25,6 @@ using System.Linq;
 /// Search simple query sample class.
 /// </summary>
 
-// [START retail_search_simple_query]
 
 public class SearchSimpleQuerySample
 {
