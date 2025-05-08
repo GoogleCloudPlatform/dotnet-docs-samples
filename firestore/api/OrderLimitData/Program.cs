@@ -34,7 +34,6 @@ Where command is one of
     order-by-state-and-population-query
     where-order-by-limit-query
     range-order-by-query
-    invalid-range-order-by-query
 ";
 
         private static async Task OrderByNameLimitQuery(string project)
@@ -112,17 +111,6 @@ Where command is one of
             }
         }
 
-        private static void InvalidRangeOrderByQuery(string project)
-        {
-            FirestoreDb db = FirestoreDb.Create(project);
-            CollectionReference citiesRef = db.Collection("cities");
-            // [START firestore_query_order_field_invalid]
-            Query query = citiesRef
-                .WhereGreaterThan("Population", 2500000)
-                .OrderBy("Country");
-            // [END firestore_query_order_field_invalid]
-        }
-
         public static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -153,10 +141,6 @@ Where command is one of
 
                 case "range-order-by-query":
                     RangeOrderByQuery(project).Wait();
-                    break;
-
-                case "invalid-range-order-by-query":
-                    InvalidRangeOrderByQuery(project);
                     break;
 
                 default:

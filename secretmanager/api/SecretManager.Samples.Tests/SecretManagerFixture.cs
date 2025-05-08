@@ -12,18 +12,21 @@
 // License for the specific language governing permissions and limitations under
 // the License.
 
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.SecretManager.V1;
+using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Text;
 using Xunit;
 
-using Google.Api.Gax.ResourceNames;
-using Google.Cloud.SecretManager.V1;
-using Google.Protobuf;
 
 [CollectionDefinition(nameof(SecretManagerFixture))]
 public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManagerFixture>
 {
+    public SecretManagerServiceClient Client { get; }
     public string ProjectId { get; }
+    public ProjectName ProjectName { get; }
     public Secret Secret { get; }
     public Secret SecretToDelete { get; }
     public Secret SecretWithVersions { get; }
@@ -31,17 +34,21 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
     public SecretName SecretToCreateName { get; }
     public SecretName UserManagedReplicationSecretName { get; }
     public SecretVersion SecretVersion { get; }
-    public SecretVersion SecretVersionToDestroy { get; }
-    public SecretVersion SecretVersionToDisable { get; }
-    public SecretVersion SecretVersionToEnable { get; }
 
     public SecretManagerFixture()
     {
+        // Get the Google Cloud ProjectId.
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (String.IsNullOrEmpty(ProjectId))
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
+
+        // Get the ProjectName from ProjectId,
+        ProjectName = new ProjectName(ProjectId);
+
+        // Create the Regional Secret Manager Client
+        Client = SecretManagerServiceClient.Create();
 
         Secret = CreateSecret(RandomId());
         SecretToDelete = CreateSecret(RandomId());
@@ -51,10 +58,6 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
         UserManagedReplicationSecretName = new SecretName(ProjectId, RandomId());
 
         SecretVersion = AddSecretVersion(SecretWithVersions);
-        SecretVersionToDestroy = AddSecretVersion(SecretWithVersions);
-        SecretVersionToDisable = AddSecretVersion(SecretWithVersions);
-        SecretVersionToEnable = AddSecretVersion(SecretWithVersions);
-        DisableSecretVersion(SecretVersionToEnable);
     }
 
     public void Dispose()
@@ -74,9 +77,6 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
 
     public Secret CreateSecret(string secretId)
     {
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-        ProjectName projectName = new ProjectName(ProjectId);
-
         Secret secret = new Secret
         {
             Replication = new Replication
@@ -85,28 +85,41 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
             },
         };
 
-        return client.CreateSecret(projectName, secretId, secret);
+        return Client.CreateSecret(ProjectName, secretId, secret);
     }
 
-    private SecretVersion AddSecretVersion(Secret secret)
+    public Secret CreateSecretWithDelayedDestroy()
     {
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+        Secret secret = new Secret
+        {
+            Replication = new Replication
+            {
+                Automatic = new Replication.Types.Automatic(),
+            },
+            VersionDestroyTtl = new Duration
+            {
+                Seconds = 24 * 60 * 60,
+            }
 
+        };
+        return Client.CreateSecret(ProjectName, RandomId(), secret);
+    }
+
+    public SecretVersion AddSecretVersion(Secret secret)
+    {
         SecretPayload payload = new SecretPayload
         {
             Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
         };
 
-        return client.AddSecretVersion(secret.SecretName, payload);
+        return Client.AddSecretVersion(secret.SecretName, payload);
     }
 
-    private void DeleteSecret(SecretName name)
+    public void DeleteSecret(SecretName name)
     {
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-
         try
         {
-            client.DeleteSecret(name);
+            Client.DeleteSecret(name);
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
@@ -114,9 +127,13 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
         }
     }
 
-    private void DisableSecretVersion(SecretVersion version)
+    public SecretVersion DestroySecretVersion(SecretVersion version)
     {
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
-        client.DisableSecretVersion(version.SecretVersionName);
+        return Client.DestroySecretVersion(version.SecretVersionName);
+    }
+
+    public void DisableSecretVersion(SecretVersion version)
+    {
+        Client.DisableSecretVersion(version.SecretVersionName);
     }
 }
