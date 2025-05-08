@@ -30,7 +30,7 @@ public class BucketGetSoftDeletePolicySample
         var bucket = storage.GetBucket(bucketName);
         if (bucket.SoftDeletePolicy.RetentionDurationSeconds == 0)
         {
-            Console.WriteLine($"The Soft Delete Policy is disabled for the Bucket (Bucket Name: {bucketName})");
+            Console.WriteLine($"The Soft Delete Policy for the Bucket (Bucket Name: {bucketName}) is disabled");
         }
         else
         {
