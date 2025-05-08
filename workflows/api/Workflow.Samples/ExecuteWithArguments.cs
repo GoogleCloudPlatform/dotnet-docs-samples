@@ -31,6 +31,9 @@ public class ExecuteWorkflowWithArgumentsSample
     /// <param name="projectID">Your Google Cloud Project ID.</param>
     /// <param name="locationID">The region where your workflow is located.</param>
     /// <param name="workflowID">Your Workflow ID.</param>
+    /// <returns>
+    /// An Execute object representing the completed workflow execution.
+    /// </returns>
     public async Task<Execution> ExecuteWorkflowWithArguments(
         string projectId = "YOUR-PROJECT-ID",
         string locationID = "YOUR-LOCATION-ID",
