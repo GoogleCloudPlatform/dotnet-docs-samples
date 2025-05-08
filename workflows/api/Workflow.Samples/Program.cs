@@ -33,11 +33,7 @@ namespace GoogleCloudSamples
             string locationID = Environment.GetEnvironmentVariable("LOCATION");
 
             // Execute workflow.
-            Execution executionResult = await executeWorkflowSample.ExecuteWorkflow(projectID, locationID, workflowID);
-
-            // Print results.
-            Console.WriteLine($"Execution finished with state: {executionResult.State}\n");
-            Console.WriteLine($"Execution results: {executionResult.Result}");
+            await executeWorkflowSample.ExecuteWorkflow(projectID, locationID, workflowID);
         }
     }
 }
