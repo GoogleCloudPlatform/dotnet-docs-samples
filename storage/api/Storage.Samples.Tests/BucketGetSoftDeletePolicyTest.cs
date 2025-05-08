@@ -31,14 +31,8 @@ public class BucketGetSoftDeletePolicyTest
         BucketGetSoftDeletePolicySample getBucketSoftDeletePolicy = new BucketGetSoftDeletePolicySample();
         BucketSetSoftDeletePolicySample setSoftDeletePolicy = new BucketSetSoftDeletePolicySample();
         BucketDisableSoftDeletePolicySample disableSoftDeletePolicy = new BucketDisableSoftDeletePolicySample();
-        UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
-        GetMetadataSample getMetadataSample = new GetMetadataSample();
         var bucketName = _fixture.GenerateBucketName();
         var bucketPreFetchSoftDeletePolicy = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
-        var originName = _fixture.GenerateName();
-        var originContent = _fixture.GenerateContent();
-        uploadObjectFromMemory.UploadObjectFromMemory(bucketName, originName, originContent);
-        getMetadataSample.GetMetadata(bucketName, originName);
         var bucketPostFetchSoftDeletePolicy = getBucketSoftDeletePolicy.BucketGetSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPreFetchSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, bucketPostFetchSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds);
         int retentionDurationInDays = 10;
@@ -55,6 +49,5 @@ public class BucketGetSoftDeletePolicyTest
         disableSoftDeletePolicy.BucketDisableSoftDeletePolicy(bucketName, disableSoftDeleteRetentionDurationInDays);
         var bucketPostDisableSoftDeletePolicy = getBucketSoftDeletePolicy.BucketGetSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, disableSoftDeleteRetentionDurationInSeconds);
-        _fixture.Client.DeleteObject(bucketName, originName);
     }
 }
