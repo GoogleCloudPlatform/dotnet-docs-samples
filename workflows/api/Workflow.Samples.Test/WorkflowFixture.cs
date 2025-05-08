@@ -100,7 +100,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     }
 
     /// <summary>
-    /// Create a ID adding the prefix "workflow-cs-test-".
+    /// Create an unique ID adding the prefix "workflow-cs-test-".
     /// </summary>
     public string GetWorkflowId()
     {
