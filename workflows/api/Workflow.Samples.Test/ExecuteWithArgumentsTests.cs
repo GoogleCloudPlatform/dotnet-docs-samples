@@ -40,10 +40,10 @@ public class ExecuteWithArgumentsTests
 
         Execution execution = await executionTask;
 
-        // Validate if execution was successful
+        // Validate if execution was successful.
         Assert.Equal(Execution.Types.State.Succeeded, execution.State);
 
-        // Validate if execution result contains expected value
+        // Validate if execution result contains expected value.
         Assert.Contains("Cloud", execution.Result);
     }
 }

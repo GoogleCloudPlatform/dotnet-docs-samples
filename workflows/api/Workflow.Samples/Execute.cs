@@ -30,6 +30,9 @@ public class ExecuteWorkflowSample
     /// <param name="projectID">Your Google Cloud Project ID.</param>
     /// <param name="locationID">The region where your workflow is located.</param>
     /// <param name="workflowID">Your Workflow ID.</param>
+    /// <returns>
+    /// An Execute object representing the completed workflow execution.
+    /// </returns>
     public async Task<Execution> ExecuteWorkflow(
         string projectId = "YOUR-PROJECT-ID",
         string locationID = "YOUR-LOCATION-ID",
@@ -65,7 +68,7 @@ public class ExecuteWorkflowSample
             execution = await client.GetExecutionAsync(execution.Name);
         }
 
-        // Print results
+        // Print results.
         Console.WriteLine($"Execution finished with state: {execution.State}");
         Console.WriteLine($"Execution results: {execution.Result}");
 

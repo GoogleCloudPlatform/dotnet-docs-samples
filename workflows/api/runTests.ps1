@@ -12,7 +12,7 @@
 # License for the specific language governing permissions and limitations under
 # the License.
 
-# Set the tests timeout at 25 minutes.
+# Set the tests timeout at 25 minutes (1500 seconds).
 Set-TestTimeout 1500
 
 dotnet restore --force

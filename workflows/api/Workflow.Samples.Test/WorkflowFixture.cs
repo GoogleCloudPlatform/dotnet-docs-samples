@@ -1,4 +1,4 @@
-// Copyright(c) 2025 Google LLC.
+// Copyright(c) 2025 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not
 // use this file except in compliance with the License. You may obtain a copy of
@@ -37,7 +37,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         Client = WorkflowsClient.Create();
 
         // Generate a random ID for the testing workflow.
-        WorkflowID = GetRandomWorkflowId();
+        WorkflowID = GetWorkflowId();
 
         // Create workflow with the given ID.
         Workflow = CreateWorkflow(WorkflowID);
@@ -70,7 +70,6 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
         Operation<Workflow, OperationMetadata> operation = Client.CreateWorkflow(createWorkflowReq);
         Operation<Workflow, OperationMetadata> deployedWorkflow = operation.PollUntilCompleted();
 
-        // Get the deployed workflow once. 
         return deployedWorkflow.Result;
     }
 
@@ -103,7 +102,7 @@ public class WorkflowFixture : IDisposable, ICollectionFixture<WorkflowFixture>
     /// <summary>
     /// Create a random ID adding the prefix "workflow-cs-test-".
     /// </summary>
-    public string GetRandomWorkflowId()
+    public string GetWorkflowId()
     {
         return $"workflow-cs-test-{Guid.NewGuid()}";
     }

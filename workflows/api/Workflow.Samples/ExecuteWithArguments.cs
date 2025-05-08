@@ -76,7 +76,7 @@ public class ExecuteWorkflowWithArgumentsSample
             execution = await client.GetExecutionAsync(execution.Name);
         }
 
-        // Print results
+        // Print results.
         Console.WriteLine($"Execution finished with state: {execution.State}");
         Console.WriteLine($"Execution results: {execution.Result}");
 
