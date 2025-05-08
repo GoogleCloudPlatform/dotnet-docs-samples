@@ -33,7 +33,7 @@ public class BucketDisableSoftDeletePolicySample
         long retentionDurationInSeconds = (long) TimeSpan.FromDays(retentionDurationInDays).TotalSeconds;
         bucket.SoftDeletePolicy = new Bucket.SoftDeletePolicyData { RetentionDurationSeconds = retentionDurationInSeconds };
         bucket = storage.UpdateBucket(bucket);
-        Console.WriteLine($"Soft Delete Policy for the {bucketName} is disabled");
+        Console.WriteLine($"Soft Delete Policy for the Bucket (Bucket Name: {bucketName}) is disabled");
         return bucket;
     }
 }
