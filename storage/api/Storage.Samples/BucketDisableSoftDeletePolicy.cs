@@ -24,7 +24,7 @@ public class BucketDisableSoftDeletePolicySample
     /// Disable soft delete policy for the bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    /// <param name="retentionDurationInDays">The retention duration to disable soft-delete policy for the bucket.</param>
+    /// <param name="retentionDurationInDays">The retention duration in days to disable soft-delete policy for the bucket.</param>
     public Bucket BucketDisableSoftDeletePolicy(string bucketName = "your-unique-bucket-name",
         int retentionDurationInDays = 0)
     {
