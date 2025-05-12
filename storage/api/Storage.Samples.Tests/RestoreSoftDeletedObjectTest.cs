@@ -31,7 +31,7 @@ public class RestoreSoftDeletedObjectTest
         UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
         var bucketName = _fixture.GenerateBucketName();
-        _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
+        _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: false, registerForDeletion: true);
         var objectName = _fixture.GenerateName();
         var objectContent = _fixture.GenerateContent();
         uploadObjectFromMemory.UploadObjectFromMemory(bucketName, objectName, objectContent);

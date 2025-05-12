@@ -28,7 +28,7 @@ public class ListSoftDeletedObjectsSample
     {
         var storage = StorageClient.Create();
         var objects = storage.ListObjects(bucketName, null, new ListObjectsOptions { SoftDeletedOnly = true });
-        Console.WriteLine($"Names of the Soft Deleted Objects in the Bucket (Bucket Name: {bucketName}) are as follows:");
+        Console.WriteLine($"The Names of the Soft Deleted Objects in the Bucket (Bucket Name: {bucketName}) are as follows:");
         foreach (var obj in objects)
         {
             Console.WriteLine($"Object Name: {obj.Name}");
