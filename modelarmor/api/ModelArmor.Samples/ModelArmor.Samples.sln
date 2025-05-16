@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36109.1 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelArmor.Samples", "ModelArmor.Samples\ModelArmor.Samples.csproj", "{672B7B01-950F-4C50-8EEE-4061F9033FAA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModelArmor.Samples.Tests", "ModelArmor.Samples.Tests\ModelArmor.Samples.Tests.csproj", "{D86D3F60-1767-4515-880B-CE16AB26E41F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{672B7B01-950F-4C50-8EEE-4061F9033FAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{672B7B01-950F-4C50-8EEE-4061F9033FAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{672B7B01-950F-4C50-8EEE-4061F9033FAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{672B7B01-950F-4C50-8EEE-4061F9033FAA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D86D3F60-1767-4515-880B-CE16AB26E41F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D86D3F60-1767-4515-880B-CE16AB26E41F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D86D3F60-1767-4515-880B-CE16AB26E41F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D86D3F60-1767-4515-880B-CE16AB26E41F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {03E213DC-7B22-4973-B2C7-122E2B344116}
+	EndGlobalSection
+EndGlobal
