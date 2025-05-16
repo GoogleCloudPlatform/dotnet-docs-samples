@@ -45,6 +45,9 @@ public class PullAvroMessagesAsyncSample
         Task startTask = subscriber.StartAsync((PubsubMessage message, CancellationToken cancel) =>
         {
             string encoding = message.Attributes["googclient_schemaencoding"];
+            // AvroUtilities is a namespace. Below are files using the namespace.
+            // https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/main/pubsub/api/Pubsub.Samples/Utilities/State.cs
+            // https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/main/pubsub/api/Pubsub.Samples/Utilities/StateUtils.cs
             AvroUtilities.State state = new AvroUtilities.State();
             switch (encoding)
             {
