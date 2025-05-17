@@ -22,6 +22,9 @@ using System.Linq;
 /// <summary>
 /// Search simple query sample class.
 /// </summary>
+
+// [START retail_search_simple_query]
+
 public class SearchSimpleQuerySample
 {
     /// <summary>
@@ -92,6 +95,8 @@ public class SearchSimpleQuerySample
         return searchResultPages;
     }
 }
+
+// [END retail_search_simple_query]
 
 /// <summary>
 /// Search simple query tutorial.
