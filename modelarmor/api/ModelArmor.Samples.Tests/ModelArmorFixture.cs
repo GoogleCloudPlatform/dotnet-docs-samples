@@ -34,7 +34,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         }
 
         // Get location ID from environment variable or use default
-        LocationId = Environment.GetEnvironmentVariable("GCLOUD_LOCATION") ?? "us-central1";
+        LocationId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_LOCATION") ?? "us-central1";
 
         // Create client
         Client = ModelArmorClient.Create();

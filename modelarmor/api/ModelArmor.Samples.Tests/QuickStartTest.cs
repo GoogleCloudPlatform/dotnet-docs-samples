@@ -28,8 +28,5 @@ public class QuickstartTests
             locationId: templateName.LocationId,
             templateId: templateName.TemplateId
         );
-
-        // You can add assertions here if needed
-        _output.WriteLine($"Successfully ran quickstart with template {templateName}");
     }
 }
