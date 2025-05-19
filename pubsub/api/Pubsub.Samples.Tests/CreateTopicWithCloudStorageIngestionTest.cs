@@ -40,11 +40,11 @@ public class CreateTopicWithCloudStorageIngestionTest
         string minimumObjectCreateTime = "1970-01-01T00:00:00Z";
         Topic createdTopic = _createTopicWithCloudStorageIngestionSample.CreateTopicWithCloudStorageIngestion(_pubsubFixture.ProjectId, topicId, bucket, inputFormat, textDelimiter, matchGlob, minimumObjectCreateTime);
 
-        // confirm that the created topic and topic retrieved by ID are equal
+        // Confirm that the created topic and topic retrieved by ID are equal
         Topic retrievedTopic = _pubsubFixture.GetTopic(topicId);
         Assert.Equal(createdTopic, retrievedTopic);
 
-        // confirm that all Cloud Storage Ingestion params are equal to expected values
+        // Confirm that all Cloud Storage Ingestion params are equal to expected values
         Assert.Equal(bucket, createdTopic.IngestionDataSourceSettings.CloudStorage.Bucket);
         Assert.NotNull(createdTopic.IngestionDataSourceSettings.CloudStorage.TextFormat);
         Assert.Equal(textDelimiter, createdTopic.IngestionDataSourceSettings.CloudStorage.TextFormat.Delimiter);

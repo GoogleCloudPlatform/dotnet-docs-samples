@@ -60,10 +60,10 @@ public class CreateTopicWithCloudStorageIngestionSample
             Name = TopicName.FormatProjectTopic(projectId, topicId),
             IngestionDataSourceSettings = new IngestionDataSourceSettings() { CloudStorage = cloudStorageSettings }
         };
-        Topic receivedTopic = publisher.CreateTopic(topic);
-        Console.WriteLine($"Topic {topic.Name} created.");
+        Topic createdTopic = publisher.CreateTopic(topic);
+        Console.WriteLine($"Topic {createdTopic.Name} created.");
 
-        return receivedTopic;
+        return createdTopic;
     }
 }
 
