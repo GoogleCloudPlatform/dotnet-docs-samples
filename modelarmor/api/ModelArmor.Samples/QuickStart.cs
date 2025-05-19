@@ -15,6 +15,8 @@
  */
 
 //[START modelarmor_quickstart]
+using System;
+using System.Text;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
