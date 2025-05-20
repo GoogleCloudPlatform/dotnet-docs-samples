@@ -24,6 +24,9 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string LocationId { get; }
     public TemplateName TemplateForQuickstartName { get; }
 
+    public string InspectTemplateId => "dlp-inspect-template-1";
+    public string DeidentifyTemplateId => "dlp-deidentify-template-1";
+
     public ModelArmorFixture()
     {
         // Get the Google Cloud ProjectId
