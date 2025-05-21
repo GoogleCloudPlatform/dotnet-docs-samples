@@ -37,7 +37,7 @@ public class CreateTopicWithCloudStorageIngestionTest
         string inputFormat = "text";
         string textDelimiter = "\n";
         string matchGlob = "**.txt";
-        string minimumObjectCreateTime = "1970-01-01T00:00:00Z";
+        DateTimeOffset minimumObjectCreateTime = new DateTimeOffset(1970, 1, 1, 0, 0, 0, TimeSpan.Zero);
         Topic createdTopic = _createTopicWithCloudStorageIngestionSample.CreateTopicWithCloudStorageIngestion(_pubsubFixture.ProjectId, topicId, bucket, inputFormat, textDelimiter, matchGlob, minimumObjectCreateTime);
 
         // Confirm that the created topic and topic retrieved by ID are equal
@@ -49,6 +49,6 @@ public class CreateTopicWithCloudStorageIngestionTest
         Assert.NotNull(createdTopic.IngestionDataSourceSettings.CloudStorage.TextFormat);
         Assert.Equal(textDelimiter, createdTopic.IngestionDataSourceSettings.CloudStorage.TextFormat.Delimiter);
         Assert.Equal(matchGlob, createdTopic.IngestionDataSourceSettings.CloudStorage.MatchGlob);
-        Assert.Equal(Timestamp.FromDateTime(DateTime.Parse(minimumObjectCreateTime)), createdTopic.IngestionDataSourceSettings.CloudStorage.MinimumObjectCreateTime);
+        Assert.Equal(Timestamp.FromDateTimeOffset(minimumObjectCreateTime), createdTopic.IngestionDataSourceSettings.CloudStorage.MinimumObjectCreateTime);
     }
 }
