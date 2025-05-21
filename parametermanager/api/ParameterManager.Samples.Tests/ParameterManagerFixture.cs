@@ -118,7 +118,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         }
     }
 
-
     public Secret CreateSecret(string secretId)
     {
         ProjectName projectName = new ProjectName(ProjectId);

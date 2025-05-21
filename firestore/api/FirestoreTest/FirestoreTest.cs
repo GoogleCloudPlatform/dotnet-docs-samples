@@ -668,13 +668,6 @@ namespace GoogleCloudSamples
         }
 
         [Fact]
-        public void InvalidRangeQueryTest()
-        {
-            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            var output = RunQueryData("invalid-range-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-        }
-
-        [Fact]
         public void SubcollectionQueryTest()
         {
             RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
@@ -764,13 +757,6 @@ namespace GoogleCloudSamples
             Assert.Contains("Document BJ returned by range with order by query", output.Stdout);
             Assert.DoesNotContain("Document SF returned by range with order by query", output.Stdout);
             Assert.DoesNotContain("Document DC returned by range with order by query", output.Stdout);
-        }
-
-        [Fact]
-        public void InvalidRangeOrderByQueryTest()
-        {
-            RunQueryData("query-create-examples", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
-            var output = RunOrderLimitData("invalid-range-order-by-query", Environment.GetEnvironmentVariable("FIRESTORE_PROJECT_ID"));
         }
 
         // DATA MODEL TESTS

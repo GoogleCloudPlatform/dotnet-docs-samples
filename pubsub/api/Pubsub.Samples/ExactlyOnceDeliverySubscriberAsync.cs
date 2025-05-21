@@ -28,7 +28,12 @@ public class ExactlyOnceDeliverySubscriberAsyncSample
     {
         // subscriptionId should be the ID of an exactly-once delivery subscription.
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
-        SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
+        SubscriberClientBuilder builder = new SubscriberClientBuilder()
+        {
+            SubscriptionName = subscriptionName,
+            Endpoint = "us-west1-pubsub.googleapis.com:443"
+        };
+        SubscriberClient subscriber = await builder.BuildAsync();
         // To get the status of ACKnowledge (ACK) or Not ACKnowledge (NACK) request in exactly once delivery subscriptions,
         // create a subscription handler that inherits from Google.Cloud.PubSub.V1.SubscriptionHandler. 
         // For more information see Google.Cloud.PubSub.V1.SubscriptionHandler reference docs here:
