@@ -64,6 +64,20 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         return $"csharp-{System.Guid.NewGuid()}";
     }
 
+    public Parameter CreateParameter(string parameterId, ParameterFormat format)
+    {
+        LocationName parent = new LocationName(ProjectId, LocationId);
+
+        Parameter parameter = new Parameter
+        {
+            Format = format
+        };
+
+        Parameter Parameter = Client.CreateParameter(parent, parameter, parameterId);
+        ParametersToDelete.Add(Parameter.ParameterName);
+        return Parameter;
+    }
+
     private void DeleteParameter(ParameterName name)
     {
         try

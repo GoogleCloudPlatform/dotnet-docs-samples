@@ -33,7 +33,7 @@ public class IamGrantAccessTests
     [Fact]
     public void GrantsAccess()
     {
-        SecretName secretName = _fixture.SecretToCreateName;
+        SecretName secretName = _fixture.Secret.SecretName;
         Policy result = _sample.IamGrantAccess(
           projectId: secretName.ProjectId, secretId: secretName.SecretId,
           member: "group:test@google.com");

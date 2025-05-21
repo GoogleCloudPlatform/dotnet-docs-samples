@@ -2,11 +2,11 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <RootNamespace>HelloPubSubVb</RootNamespace>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Functions.Hosting" Version="2.2.1" />
-    <PackageReference Include="Google.Events.Protobuf" Version="1.7.0" />
+    <PackageReference Include="Google.Cloud.Functions.Hosting" Version="3.0.1" />
+    <PackageReference Include="Google.Events.Protobuf" Version="1.8.0" />
   </ItemGroup>
 </Project>
