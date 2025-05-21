@@ -21,10 +21,14 @@ using System;
 
 public class CreateTopicWithCloudStorageIngestionSample
 {
-    public Topic CreateTopicWithCloudStorageIngestion(string projectId, string topicId, string bucket, string inputFormat, string textDelimiter, string matchGlob, string minimumObjectCreateTime)
+    public Topic CreateTopicWithCloudStorageIngestion(string projectId, string topicId, string bucket, string inputFormat, string textDelimiter, string matchGlob, DateTimeOffset minimumObjectCreateTime)
     {
 
-        IngestionDataSourceSettings.Types.CloudStorage cloudStorageSettings = new IngestionDataSourceSettings.Types.CloudStorage { Bucket = bucket };
+        IngestionDataSourceSettings.Types.CloudStorage cloudStorageSettings = new IngestionDataSourceSettings.Types.CloudStorage
+        {
+            Bucket = bucket,
+            MinimumObjectCreateTime = Timestamp.FromDateTimeOffset(minimumObjectCreateTime),
+        };
 
         switch (inputFormat)
         {
@@ -47,11 +51,6 @@ public class CreateTopicWithCloudStorageIngestionSample
         if (!string.IsNullOrEmpty(matchGlob))
         {
             cloudStorageSettings.MatchGlob = matchGlob;
-        }
-
-        if (!string.IsNullOrEmpty(minimumObjectCreateTime))
-        {
-            cloudStorageSettings.MinimumObjectCreateTime = Timestamp.FromDateTime(DateTime.Parse(minimumObjectCreateTime));
         }
 
         PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
