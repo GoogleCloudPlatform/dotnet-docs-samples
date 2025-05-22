@@ -24,9 +24,9 @@ using System.Text;
 public class RegionalQuickstartSample
 {
     /// <summary>
-    /// This function demonstrates the quickstart for using the regional parameter manager using the Parameter Manager SDK for GCP.
-    /// It covers structured parameter creation, creation of parameter version with JSON format payload which has secret reference in it.
-    /// Finally, it fetches the simple and rendered payload and prints them.
+    /// This function demonstrates how to use the Parameter Manager API with the Parameter Manager SDK for Google Cloud.
+    /// It covers structured parameter creation and creation of parameter version with JSON format payload.
+    /// Finally, it fetches the decoded payload and prints them.
     /// </summary>
     /// <param name="projectId">The ID of the project where the parameter is located.</param>
     /// <param name="locationId">The ID of the region where the parameter is located.</param>
@@ -75,7 +75,7 @@ public class RegionalQuickstartSample
         };
 
         // Call the API to create the parameter version.
-        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parameterName.ToString(), parameterVersion, versionId);
+        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
         Console.WriteLine($"Created regional parameter version: {createdParameterVersion.Name}");
 
         // Fetch the parameter version data.

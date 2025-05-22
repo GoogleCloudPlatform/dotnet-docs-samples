@@ -3,7 +3,7 @@
 These samples demonstrate how to interact with the [Parameter Manager][parametermanager] using C# and
 the .NET client libraries to call the Parameter Manager API.
 
-The samples require [.NET Core 9.0][net-core] or later.
+The samples require [.NET Core 8.0][net-core] or later.
 
 ## Setup
 
@@ -14,17 +14,17 @@ The samples require [.NET Core 9.0][net-core] or later.
 
 ## Contributing changes
 
-* See [CONTRIBUTING.md](../../../CONTRIBUTING.md)
+* See [CONTRIBUTING.md](../../CONTRIBUTING.md)
 
 
 ## Licensing
 
-* See [LICENSE](../../../LICENSE)
+* See [LICENSE](../../LICENSE)
 
 
 ## Testing
 
-* See [TESTING.md](../../../TESTING.md)
+* See [TESTING.md](../../TESTING.md)
 
 
 [parametermanager]: https://cloud.google.com/secret-manager/parameter-manager/docs/overview

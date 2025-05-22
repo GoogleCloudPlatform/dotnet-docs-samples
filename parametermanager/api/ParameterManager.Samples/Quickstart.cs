@@ -24,9 +24,9 @@ using System.Text;
 public class QuickstartSample
 {
     /// <summary>
-    /// This function demonstrates the quickstart for using the parameter manager using the Parameter Manager SDK for GCP.
-    /// It covers structured parameter creation, creation of parameter version with JSON format payload which has secret reference in it.
-    /// Finally, it fetches the simple and decoded payload and prints them.
+    /// This function demonstrates how to use the Parameter Manager API with the Parameter Manager SDK for Google Cloud.
+    /// It covers structured parameter creation and creation of parameter version with JSON format payload.
+    /// Finally, it fetches the decoded payload and prints them.
     /// </summary>
     /// <param name="projectId">The ID of the project where the parameter is located.</param>
     /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
@@ -67,7 +67,7 @@ public class QuickstartSample
         };
 
         // Call the API to create the parameter version.
-        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parameterName.ToString(), parameterVersion, versionId);
+        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
         Console.WriteLine($"Created parameter version: {createdParameterVersion.Name}");
 
         // Fetch the parameter version data.

@@ -39,7 +39,7 @@ public class QuickstartTests
         _fixture.ParametersToDelete.Add(parameterName);
         _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
-        ParameterManagerClient client = ParameterManagerClient.Create();
+        ParameterManagerClient client = _fixture.Client;
         ParameterVersion result = client.GetParameterVersion(parameterVersionName);
 
         Assert.NotNull(result);

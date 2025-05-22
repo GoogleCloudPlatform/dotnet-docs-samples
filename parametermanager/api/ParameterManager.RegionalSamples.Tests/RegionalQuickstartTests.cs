@@ -40,14 +40,8 @@ public class RegionalQuickstartTests
         _fixture.ParametersToDelete.Add(parameterName);
         _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
 
-        // Define the regional endpoint
-        string regionalEndpoint = $"parametermanager.{ParameterManagerRegionalFixture.LocationId}.rep.googleapis.com";
-
         // Create the client with the regional endpoint
-        ParameterManagerClient client = new ParameterManagerClientBuilder
-        {
-            Endpoint = regionalEndpoint
-        }.Build();
+        ParameterManagerClient client = _fixture.Client;
         ParameterVersion result = client.GetParameterVersion(parameterVersionName);
 
         Assert.NotNull(result);
