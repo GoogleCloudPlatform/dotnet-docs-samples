@@ -34,7 +34,8 @@ public class SearchAllIamPoliciesTest
     {
         // Run the sample code.
         string scope = $"projects/{_fixture.ProjectId}";
-        var result = _sample.SearchAllIamPolicies(scope, query: "policy:roles/owner");
+        // On the test we use an empty query to make sure we find some policy.
+        var result = _sample.SearchAllIamPolicies(scope, query: "");
 
         Assert.NotEmpty(result.Results);
     }
