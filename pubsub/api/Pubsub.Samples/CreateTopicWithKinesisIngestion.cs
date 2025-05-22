@@ -14,15 +14,14 @@
 
 // [START pubsub_create_topic_with_kinesis_ingestion]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
 
 public class CreateTopicWithKinesisIngestionSample
 {
-    public Topic CreateTopicWithKinesisIngestion(string projectId, string topicId, string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount)
+    public Topic CreateTopicWithKinesisIngestion(string projectId, string topicId, string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount, EmulatorDetection emulatorDetection = EmulatorDetection.EmulatorOnly)
     {
-        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-
         // Define settings for Kinesis ingestion
         IngestionDataSourceSettings ingestionDataSourceSettings = new IngestionDataSourceSettings
         {
@@ -34,6 +33,11 @@ public class CreateTopicWithKinesisIngestionSample
                 StreamArn = streamArn
             }
         };
+
+        PublisherServiceApiClient publisher = new PublisherServiceApiClientBuilder
+        {
+            EmulatorDetection = emulatorDetection
+        }.Build();
 
         Topic topic = new Topic()
         {

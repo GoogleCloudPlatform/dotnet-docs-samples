@@ -31,7 +31,7 @@ public class CreateTopicWithKinesisIngestionTest
     public void CreateTopicWithKinesisIngestion()
     {
         string topicId = _pubsubFixture.RandomTopicId();
-        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.RandomKinesisIngestionParams();
+        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.KinesisIngestionParams();
         Topic createdTopic = _createTopicWithKinesisIngestionSample.CreateTopicWithKinesisIngestion(_pubsubFixture.ProjectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
 
         // Confirm that the created topic and topic retrieved by ID are equal

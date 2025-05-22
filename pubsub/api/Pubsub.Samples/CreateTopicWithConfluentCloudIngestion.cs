@@ -14,12 +14,13 @@
 
 // [START pubsub_create_topic_with_confluent_cloud_ingestion]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
 
 public class CreateTopicWithConfluentCloudIngestionSample
 {
-    public Topic CreateTopicWithConfluentCloudIngestion(string projectId, string topicId, string bootstrapServer, string clusterId, string confluentTopic, string identityPoolId, string gcpServiceAccount)
+    public Topic CreateTopicWithConfluentCloudIngestion(string projectId, string topicId, string bootstrapServer, string clusterId, string confluentTopic, string identityPoolId, string gcpServiceAccount, EmulatorDetection emulatorDetection = EmulatorDetection.EmulatorOnly)
     {
         // Define settings for Confluent Cloud ingestion
         IngestionDataSourceSettings ingestionDataSourceSettings = new IngestionDataSourceSettings
@@ -34,7 +35,11 @@ public class CreateTopicWithConfluentCloudIngestionSample
             }
         };
 
-        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
+        PublisherServiceApiClient publisher = new PublisherServiceApiClientBuilder
+        {
+            EmulatorDetection = emulatorDetection
+        }.Build();
+
         Topic topic = new Topic()
         {
             Name = TopicName.FormatProjectTopic(projectId, topicId),

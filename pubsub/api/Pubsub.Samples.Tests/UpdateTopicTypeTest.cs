@@ -33,7 +33,7 @@ public class UpdateTopicTypeTest
         string topicId = _pubsubFixture.RandomTopicId();
         _pubsubFixture.CreateTopic(topicId);
 
-        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.RandomKinesisIngestionParams();
+        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.KinesisIngestionParams();
         Topic updatedTopic = _updateTopicTypeSample.UpdateTopicType(_pubsubFixture.ProjectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
         Topic retrievedTopic = _pubsubFixture.GetTopic(topicId);
         Assert.Equal(updatedTopic, retrievedTopic);

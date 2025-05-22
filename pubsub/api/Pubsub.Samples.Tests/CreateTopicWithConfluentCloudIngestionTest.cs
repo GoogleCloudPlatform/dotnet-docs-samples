@@ -31,7 +31,7 @@ public class CreateTopicWithConfluentCloudIngestionTest
     public void CreateTopicWithConfluentCloudIngestion()
     {
         string topicId = _pubsubFixture.RandomTopicId();
-        var (bootstrapServer, clusterId, confluentTopic, identityPoolId, gcpServiceAccount) = _pubsubFixture.RandomConfluentCloudIngestionParams();
+        var (bootstrapServer, clusterId, confluentTopic, identityPoolId, gcpServiceAccount) = _pubsubFixture.ConfluentCloudIngestionParams();
         Topic createdTopic = _createTopicWithConfluentCloudIngestionSample.CreateTopicWithConfluentCloudIngestion(_pubsubFixture.ProjectId, topicId, bootstrapServer, clusterId, confluentTopic, identityPoolId, gcpServiceAccount);
 
         // Confirm that the created topic and topic retrieved by ID are equal

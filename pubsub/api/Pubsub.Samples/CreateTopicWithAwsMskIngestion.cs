@@ -14,12 +14,13 @@
 
 // [START pubsub_create_topic_with_aws_msk_ingestion]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
 
 public class CreateTopicWithAwsMskIngestionSample
 {
-    public Topic CreateTopicWithAwsMskIngestion(string projectId, string topicId, string clusterArn, string mskTopic, string awsRoleArn, string gcpServiceAccount)
+    public Topic CreateTopicWithAwsMskIngestion(string projectId, string topicId, string clusterArn, string mskTopic, string awsRoleArn, string gcpServiceAccount, EmulatorDetection emulatorDetection = EmulatorDetection.EmulatorOnly)
     {
         // Define settings for Amazon MSK ingestion
         IngestionDataSourceSettings ingestionDataSourceSettings = new IngestionDataSourceSettings
@@ -32,8 +33,12 @@ public class CreateTopicWithAwsMskIngestionSample
                 GcpServiceAccount = gcpServiceAccount
             }
         };
-        
-        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
+
+        PublisherServiceApiClient publisher = new PublisherServiceApiClientBuilder
+        {
+            EmulatorDetection = emulatorDetection
+        }.Build();
+
         Topic topic = new Topic()
         {
             Name = TopicName.FormatProjectTopic(projectId, topicId),

@@ -31,7 +31,7 @@ public class CreateTopicWithAzureEventHubsIngestionTest
     public void CreateTopicWithAzureEventHubsIngestion()
     {
         string topicId = _pubsubFixture.RandomTopicId();
-        var (resourceGroup, nameSpace, eventHub, clientId, tenantId, subscriptionId, gcpServiceAccount) = _pubsubFixture.RandomAzureEventHubsIngestionParams();
+        var (resourceGroup, nameSpace, eventHub, clientId, tenantId, subscriptionId, gcpServiceAccount) = _pubsubFixture.AzureEventHubsIngestionParams();
         Topic createdTopic = _createTopicWithAzureEventHubsIngestionSample.CreateTopicWithAzureEventHubsIngestion(_pubsubFixture.ProjectId, topicId, resourceGroup, nameSpace, eventHub, clientId, tenantId, subscriptionId, gcpServiceAccount);
 
         // Confirm that the created topic and topic retrieved by ID are equal
