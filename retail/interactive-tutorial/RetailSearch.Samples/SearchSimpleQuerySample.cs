@@ -17,6 +17,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+// [START retail_search_simple_query]
+
 // Calls the Retail API to search for products in a catalog using only a search query.
 
 /// <summary>
@@ -92,6 +94,8 @@ public class SearchSimpleQuerySample
         return searchResultPages;
     }
 }
+
+// [END retail_search_simple_query]
 
 /// <summary>
 /// Search simple query tutorial.
