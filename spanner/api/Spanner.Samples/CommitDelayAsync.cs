@@ -29,7 +29,7 @@ public class CommitDelayAsyncSample
 
         return await connection.RunWithRetriableTransactionAsync(async transaction =>
         {
-            transaction.MaxCommitDelay = TimeSpan.FromMilliseconds(100);
+            transaction.TransactionOptions.MaxCommitDelay = TimeSpan.FromMilliseconds(100);
 
             using var insertSingerCmd = connection.CreateInsertCommand("Singers",
                 new SpannerParameterCollection

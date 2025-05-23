@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
 using Google.Cloud.SecretManager.V1;
+using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
 public class DestroySecretVersionTests
@@ -32,9 +32,23 @@ public class DestroySecretVersionTests
     [Fact]
     public void DestroysSecretVersions()
     {
-        SecretVersionName secretVersionName = _fixture.SecretVersionToDestroy.SecretVersionName;
+        // Create the secret and add secret version.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+
+        // Add the secret version to the created secret.
+        SecretVersion version = _fixture.AddSecretVersion(secret);
+
+        // Get the secret version name.
+        SecretVersionName secretVersionName = version.SecretVersionName;
+
+        // Run the sample code.
         SecretVersion secretVersion = _sample.DestroySecretVersion(
           projectId: secretVersionName.ProjectId, secretId: secretVersionName.SecretId, secretVersionId: secretVersionName.SecretVersionId);
+
+        // Assert that the Secret is destroyed.
         Assert.Equal(SecretVersion.Types.State.Destroyed, secretVersion.State);
+
+        // Clean up the created resource
+        _fixture.DeleteSecret(secret.SecretName);
     }
 }
