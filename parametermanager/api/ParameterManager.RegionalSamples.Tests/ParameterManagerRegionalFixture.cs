@@ -78,6 +78,22 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         return Parameter;
     }
 
+    public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
+    {
+        ParameterName parameterName = new ParameterName(ProjectId, LocationId, parameterId);
+        ParameterVersion parameterVersion = new ParameterVersion
+        {
+            Payload = new ParameterVersionPayload
+            {
+                Data = ByteString.CopyFrom(payload, Encoding.UTF8)
+            }
+        };
+
+        ParameterVersion ParameterVersion = Client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
+        return ParameterVersion;
+    }
+
     private void DeleteParameter(ParameterName name)
     {
         try
