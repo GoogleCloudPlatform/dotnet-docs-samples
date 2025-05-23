@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-// [START parametermanager_create_structured_param_version]
+// [START parametermanager_quickstart]
 
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ParameterManager.V1;
 using Google.Protobuf;
 using System.Text;
 
-public class CreateStructuredParameterVersionSample
+public class QuickstartSample
 {
     /// <summary>
-    /// This function creates a parameter version with a JSON payload using the Parameter Manager SDK for GCP.
+    /// This function demonstrates how to use the Parameter Manager API with the Parameter Manager SDK for Google Cloud.
+    /// It covers structured parameter creation and creation of parameter version with JSON format payload.
+    /// Finally, it fetches the decoded payload and prints them.
     /// </summary>
     /// <param name="projectId">The ID of the project where the parameter is located.</param>
     /// <param name="parameterId">The ID of the parameter for which the version is to be created.</param>
     /// <param name="versionId">The ID of the version to be created.</param>
-    /// <returns>The created ParameterVersion object.</returns>
-    public ParameterVersion CreateStructuredParameterVersion(
+    public void Quickstart(
         string projectId,
         string parameterId,
         string versionId)
@@ -37,14 +39,25 @@ public class CreateStructuredParameterVersionSample
         // Create the client.
         ParameterManagerClient client = ParameterManagerClient.Create();
 
-        // Build the parent resource name.
-        ParameterName parent = new ParameterName(projectId, "global", parameterId);
+        // Build the parent resource name. 
+        LocationName parent = new LocationName(projectId, "global");
 
-        // Convert the JSON payload to bytes.
+        // Create a structured parameter.
+        Parameter parameter = new Parameter
+        {
+            Format = ParameterFormat.Json
+        };
+
+        // Call the API to create the parameter.
+        Parameter createdParameter = client.CreateParameter(parent, parameter, parameterId);
+        Console.WriteLine($"Created parameter {createdParameter.Name} with format {createdParameter.Format}");
+
+        // Build the parent resource name using ParameterName.
+        ParameterName parameterName = new ParameterName(projectId, "global", parameterId);
+
+        // Define the JSON payload
         string payload = "{\"username\": \"test-user\", \"host\": \"localhost\"}";
         ByteString data = ByteString.CopyFrom(payload, Encoding.UTF8);
-
-        // Build the parameter version with the JSON payload.
         ParameterVersion parameterVersion = new ParameterVersion
         {
             Payload = new ParameterVersionPayload
@@ -54,13 +67,13 @@ public class CreateStructuredParameterVersionSample
         };
 
         // Call the API to create the parameter version.
-        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parent, parameterVersion, versionId);
-
-        // Print the created parameter version name.
+        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parameterName, parameterVersion, versionId);
         Console.WriteLine($"Created parameter version: {createdParameterVersion.Name}");
 
-        // Return the created parameter version.
-        return createdParameterVersion;
+        // Fetch the parameter version data.
+        ParameterVersion getParameterVersion = client.GetParameterVersion(createdParameterVersion.Name);
+        string decodedData = Encoding.UTF8.GetString(getParameterVersion.Payload.Data.ToByteArray());
+        Console.WriteLine($"Payload: {decodedData}");
     }
 }
-// [END parametermanager_create_structured_param_version]
+// [END parametermanager_quickstart]

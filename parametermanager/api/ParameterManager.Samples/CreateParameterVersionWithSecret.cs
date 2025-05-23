@@ -56,7 +56,7 @@ public class CreateParameterVersionWithSecretSample
         };
 
         // Call the API to create the parameter version.
-        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parent.ToString(), parameterVersion, versionId);
+        ParameterVersion createdParameterVersion = client.CreateParameterVersion(parent, parameterVersion, versionId);
 
         // Print the created parameter version name.
         Console.WriteLine($"Created parameter version: {createdParameterVersion.Name}");
