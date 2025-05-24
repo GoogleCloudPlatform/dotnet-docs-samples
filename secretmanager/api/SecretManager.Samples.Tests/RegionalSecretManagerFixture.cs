@@ -15,6 +15,7 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
 using Google.Protobuf;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.Text;
 using Xunit;
@@ -90,6 +91,20 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         return Client.CreateSecret(locationName, secretId, secret);
     }
 
+    public Secret CreateSecretWithDelayedDestroy()
+    {
+        LocationName locationName = new LocationName(ProjectId, LocationId);
+
+        Secret secret = new Secret
+        {
+            VersionDestroyTtl = new Duration
+            {
+                Seconds = 24 * 60 * 60,
+            }
+        };
+        return Client.CreateSecret(locationName, RandomId(), secret);
+    }
+
     public SecretVersion AddSecretVersion(Secret secret)
     {
         SecretPayload payload = new SecretPayload
@@ -116,5 +131,10 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
     public SecretVersion DisableSecretVersion(SecretVersion version)
     {
         return Client.DisableSecretVersion(version.SecretVersionName);
+    }
+
+    public SecretVersion DestroySecretVersion(SecretVersion version)
+    {
+        return Client.DestroySecretVersion(version.SecretVersionName);
     }
 }
