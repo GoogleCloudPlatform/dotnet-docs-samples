@@ -44,6 +44,8 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string BigQueryTableId { get; } = $"testTable{Guid.NewGuid().ToString().Substring(24)}";
     public string BigQueryTableName { get; }
     public string CloudStorageBucketName { get; }
+    private readonly string AwsRoleArn = "arn:aws:iam::111111111111:role/fake-role-name";
+    private readonly string GcpServiceAccount;
 
     public RetryRobot Pull { get; } = new RetryRobot
     {
@@ -55,6 +57,7 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public PubsubFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
+        GcpServiceAccount = $"kokoro@{ProjectId}.iam.gserviceaccount.com";
         CreateTopic(DeadLetterTopic);
         BigQueryTableName = CreateBigQueryTable();
         CloudStorageBucketName = CreateCloudStorageBucket();
@@ -256,27 +259,11 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return ($"test{caller}Topic{randomName}", $"test{caller}Subscription{randomName}", $"test{caller}Schema{randomName}");
     }
 
-    public (string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount) RandomKinesisIngestionParams([CallerMemberName] string caller = null)
-    {
-        var randomName = RandomName();
-        return ($"test{caller}StreamArn{randomName}", $"test{caller}ConsumerArn{randomName}", $"test{caller}AwsRoleArn{randomName}", $"test{caller}GcpServiceAccount{randomName}");
-    }
+    public (string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount) KinesisIngestionParams() => ("arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name", "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/consumer/consumer-1:1111111111", AwsRoleArn, GcpServiceAccount);
 
-    public (string clusterArn, string mskTopic, string awsRoleArn, string gcpServiceAccount) RandomAwsMskIngestionParams([CallerMemberName] string caller = null)
-    {
-        var randomName = RandomName();
-        return ($"test{caller}ClusterArn{randomName}", $"test{caller}MskTopic{randomName}", $"test{caller}AwsRoleArn{randomName}", $"test{caller}GcpServiceAccount{randomName}");
-    }
+    public (string clusterArn, string mskTopic, string awsRoleArn, string gcpServiceAccount) AwsMskIngestionParams() => ("arn:aws:kafka:us-east-1:111111111111:cluster/fake-cluster-name/11111111-1111-1", "fake-msk-topic-name", AwsRoleArn, GcpServiceAccount);
 
-    public (string bootstrapServer, string clusterId, string confluentTopic, string identityPoolId, string gcpServiceAccount) RandomConfluentCloudIngestionParams([CallerMemberName] string caller = null)
-    {
-        var randomName = RandomName();
-        return ($"test{caller}BootstrapServer{randomName}", $"test{caller}ClusterId{randomName}", $"test{caller}ConfluentTopic{randomName}", $"test{caller}IdentityPoolId{randomName}", $"test{caller}GcpServiceAccount{randomName}");
-    }
+    public (string bootstrapServer, string clusterId, string confluentTopic, string identityPoolId, string gcpServiceAccount) ConfluentCloudIngestionParams() => ("fake-bootstrap-server-id.us-south1.gcp.confluent.cloud:9092", "fake-cluster-id", "fake-confluent-topic-name", "fake-identity-pool-id", GcpServiceAccount);
 
-    public (string resourceGroup, string nameSpace, string eventHub, string clientId, string tenantId, string subscriptionId, string gcpServiceAccount) RandomAzureEventHubsIngestionParams([CallerMemberName] string caller = null)
-    {
-        var randomName = RandomName();
-        return ($"test{caller}ResourceGroup{randomName}", $"test{caller}Namespace{randomName}", $"test{caller}EventHub{randomName}", $"test{caller}ClientId{randomName}", $"test{caller}TenantId{randomName}", $"test{caller}SubscriptionId{randomName}", $"test{caller}GcpServiceAccount{randomName}");
-    }
+    public (string resourceGroup, string nameSpace, string eventHub, string clientId, string tenantId, string subscriptionId, string gcpServiceAccount) AzureEventHubsIngestionParams() => ("fake-resource-group", "fake-namespace", "fake-event-hub", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", GcpServiceAccount);
 }

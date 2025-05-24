@@ -14,13 +14,14 @@
 
 // [START pubsub_update_topic_type]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
 public class UpdateTopicTypeSample
 {
-    public Topic UpdateTopicType(string projectId, string topicId, string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount)
+    public Topic UpdateTopicType(string projectId, string topicId, string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount, EmulatorDetection emulatorDetection = EmulatorDetection.EmulatorOnly)
     {
         // Define settings for Kinesis ingestion
         IngestionDataSourceSettings ingestionDataSourceSettings = new IngestionDataSourceSettings
@@ -40,7 +41,11 @@ public class UpdateTopicTypeSample
             IngestionDataSourceSettings = ingestionDataSourceSettings
         };
 
-        PublisherServiceApiClient client = PublisherServiceApiClient.Create();
+        PublisherServiceApiClient client = new PublisherServiceApiClientBuilder
+        {
+            EmulatorDetection = emulatorDetection
+        }.Build();
+
         UpdateTopicRequest updateTopicRequest = new UpdateTopicRequest
         {
             Topic = topic,

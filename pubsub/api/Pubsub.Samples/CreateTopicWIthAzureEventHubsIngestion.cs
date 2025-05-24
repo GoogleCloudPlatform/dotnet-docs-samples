@@ -14,12 +14,13 @@
 
 // [START pubsub_create_topic_with_azure_event_hubs_ingestion]
 
+using Google.Api.Gax;
 using Google.Cloud.PubSub.V1;
 using System;
 
 public class CreateTopicWithAzureEventHubsIngestionSample
 {
-    public Topic CreateTopicWithAzureEventHubsIngestion(string projectId, string topicId, string resourceGroup, string nameSpace, string eventHub, string clientId, string tenantId, string subscriptionId, string gcpServiceAccount)
+    public Topic CreateTopicWithAzureEventHubsIngestion(string projectId, string topicId, string resourceGroup, string nameSpace, string eventHub, string clientId, string tenantId, string subscriptionId, string gcpServiceAccount, EmulatorDetection emulatorDetection = EmulatorDetection.EmulatorOnly)
     {
         // Define settings for Azure Event Hubs ingestion
         IngestionDataSourceSettings ingestionDataSourceSettings = new IngestionDataSourceSettings
@@ -36,7 +37,11 @@ public class CreateTopicWithAzureEventHubsIngestionSample
             }
         };
 
-        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
+        PublisherServiceApiClient publisher = new PublisherServiceApiClientBuilder
+        {
+            EmulatorDetection = emulatorDetection
+        }.Build();
+        
         Topic topic = new Topic()
         {
             Name = TopicName.FormatProjectTopic(projectId, topicId),
