@@ -15,53 +15,79 @@
 */
 
 using System;
+using System.Collections.Generic;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
 [CollectionDefinition(nameof(ModelArmorFixture))]
 public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixture>
 {
+    // Environment variable names.
+    private const string EnvProjectId = "GOOGLE_PROJECT_ID";
+    private const string EnvLocation = "GOOGLE_CLOUD_LOCATION";
+
     public ModelArmorClient Client { get; }
     public string ProjectId { get; }
     public string LocationId { get; }
-    public TemplateName TemplateForQuickstartName { get; }
+    private readonly List<TemplateName> _resourcesToCleanup = new List<TemplateName>();
+    public string InspectTemplateId = "test-dotnet-dlp-inspect-template";
+    public string DeidentifyTemplateId = "test-dotnet-dlp-deidentify-template";
 
     public ModelArmorFixture()
     {
-        // Get the Google Cloud Project ID.
-        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        if (string.IsNullOrEmpty(ProjectId))
+        ProjectId = GetRequiredEnvVar(EnvProjectId);
+        LocationId = Environment.GetEnvironmentVariable(EnvLocation) ?? "us-central1";
+
+        // Create the client.
+        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
-            throw new Exception("Missing GOOGLE_PROJECT_ID environment variable");
+            Endpoint = $"modelarmor.{LocationId}.rep.googleapis.com",
+        };
+        Client = clientBuilder.Build();
+    }
+
+    private string GetRequiredEnvVar(string name)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new Exception($"Missing {name} environment variable");
         }
+        return value;
+    }
 
-        // Get location ID from environment variable or use default.
-        LocationId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_LOCATION") ?? "us-central1";
-
-        // Create client.
-        Client = ModelArmorClient.Create();
-
-        // Create a template name for quickstart test.
-        string templateId = $"test-csharp-{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        TemplateForQuickstartName = TemplateName.FromProjectLocationTemplate(
-            ProjectId,
-            LocationId,
-            templateId
-        );
+    public string GenerateUniqueId()
+    {
+        return Guid.NewGuid().ToString("N").Substring(0, 8);
     }
 
     public void Dispose()
     {
         // Clean up resources after tests.
-        try
+        foreach (var resourceName in _resourcesToCleanup)
         {
-            Client.DeleteTemplate(
-                new DeleteTemplateRequest { Name = TemplateForQuickstartName.ToString() }
-            );
+            try
+            {
+                Client.DeleteTemplate(new DeleteTemplateRequest { TemplateName = resourceName });
+            }
+            catch (Exception)
+            {
+                // Ignore errors during cleanup.
+            }
         }
-        catch (Exception)
+    }
+
+    public void RegisterTemplateForCleanup(TemplateName templateName)
+    {
+        if (templateName != null && !string.IsNullOrEmpty(templateName.ToString()))
         {
-            // Ignore errors during cleanup.
+            _resourcesToCleanup.Add(templateName);
         }
+    }
+
+    public TemplateName CreateTemplateName(string prefix = "test-dotnet")
+    {
+        string templateId = $"{prefix}-{GenerateUniqueId()}";
+        return new TemplateName(ProjectId, LocationId, templateId);
     }
 }
