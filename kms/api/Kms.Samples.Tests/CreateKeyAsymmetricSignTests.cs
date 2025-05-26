@@ -38,8 +38,7 @@ public class CreateKeyAsymmetricSignTest
             id: _fixture.RandomId());
 
         // Get the key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(result.CryptoKeyName);
+        var key = _fixture.KmsClient.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(CryptoKey.Types.CryptoKeyPurpose.AsymmetricSign, key.Purpose);
         Assert.Equal(CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.RsaSignPkcs12048Sha256, key.VersionTemplate.Algorithm);

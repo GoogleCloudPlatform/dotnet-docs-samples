@@ -38,8 +38,7 @@ public class CreateKeyLabelsTest
             id: _fixture.RandomId());
 
         // Get the key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(result.CryptoKeyName);
+        var key = _fixture.KmsClient.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal("alpha", key.Labels["team"]);
         Assert.Equal("cc1234", key.Labels["cost_center"]);

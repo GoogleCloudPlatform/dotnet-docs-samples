@@ -52,6 +52,8 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
     public string SymmetricKeyId { get; }
     public CryptoKeyName SymmetricKeyName { get; }
 
+    public KeyManagementServiceClient KmsClient { get; }
+
     public KmsFixture()
     {
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
@@ -60,6 +62,8 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
         ProjectName = new ProjectName(ProjectId);
+
+        KmsClient = KeyManagementServiceClient.Create();
 
         LocationId = "us-east1";
         LocationName = new LocationName(ProjectId, LocationId);
@@ -100,18 +104,16 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
 
     public void DisposeKeyRing(string keyRingId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
         var listKeysRequest = new ListCryptoKeysRequest
         {
             ParentAsKeyRingName = new KeyRingName(ProjectId, LocationId, keyRingId),
         };
 
-        foreach (var key in client.ListCryptoKeys(listKeysRequest))
+        foreach (var key in KmsClient.ListCryptoKeys(listKeysRequest))
         {
             if (key.RotationPeriod != null || key.NextRotationTime != null)
             {
-                client.UpdateCryptoKey(new UpdateCryptoKeyRequest
+                KmsClient.UpdateCryptoKey(new UpdateCryptoKeyRequest
                 {
                     CryptoKey = new CryptoKey
                     {
@@ -132,9 +134,9 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
                 Filter = "state != DESTROYED AND state != DESTROY_SCHEDULED",
             };
 
-            foreach (var keyVersion in client.ListCryptoKeyVersions(listKeyVersionsRequest))
+            foreach (var keyVersion in KmsClient.ListCryptoKeyVersions(listKeyVersionsRequest))
             {
-                client.DestroyCryptoKeyVersion(new DestroyCryptoKeyVersionRequest
+                KmsClient.DestroyCryptoKeyVersion(new DestroyCryptoKeyVersionRequest
                 {
                     CryptoKeyVersionName = keyVersion.CryptoKeyVersionName,
                 });
@@ -147,20 +149,14 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         return $"csharp-{System.Guid.NewGuid()}";
     }
 
-    public KeyRing CreateKeyRing(string keyRingId)
+    public KeyRing CreateKeyRing(string keyRingId) => KmsClient.CreateKeyRing(new CreateKeyRingRequest
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        return client.CreateKeyRing(new CreateKeyRingRequest
-        {
-            ParentAsLocationName = LocationName,
-            KeyRingId = keyRingId,
-        });
-    }
+        ParentAsLocationName = LocationName,
+        KeyRingId = keyRingId,
+    });
 
     public CryptoKey CreateAsymmetricDecryptKey(string keyId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
         var request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = KeyRingName,
@@ -177,13 +173,11 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         request.CryptoKey.Labels["foo"] = "bar";
         request.CryptoKey.Labels["zip"] = "zap";
 
-        return client.CreateCryptoKey(request);
+        return KmsClient.CreateCryptoKey(request);
     }
 
     public CryptoKey CreateAsymmetricSignEcKey(string keyId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
         var request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = KeyRingName,
@@ -200,13 +194,11 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         request.CryptoKey.Labels["foo"] = "bar";
         request.CryptoKey.Labels["zip"] = "zap";
 
-        return client.CreateCryptoKey(request);
+        return KmsClient.CreateCryptoKey(request);
     }
 
     public CryptoKey CreateAsymmetricSignRsaKey(string keyId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
         var request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = KeyRingName,
@@ -223,13 +215,11 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         request.CryptoKey.Labels["foo"] = "bar";
         request.CryptoKey.Labels["zip"] = "zap";
 
-        return client.CreateCryptoKey(request);
+        return KmsClient.CreateCryptoKey(request);
     }
 
     public CryptoKey CreateHsmKey(string keyId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
         var request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = KeyRingName,
@@ -247,13 +237,11 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         request.CryptoKey.Labels["foo"] = "bar";
         request.CryptoKey.Labels["zip"] = "zap";
 
-        return client.CreateCryptoKey(request);
+        return KmsClient.CreateCryptoKey(request);
     }
 
     public CryptoKey CreateMacKey(string keyId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
         var request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = KeyRingName,
@@ -271,13 +259,11 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         request.CryptoKey.Labels["foo"] = "bar";
         request.CryptoKey.Labels["zip"] = "zap";
 
-        return client.CreateCryptoKey(request);
+        return KmsClient.CreateCryptoKey(request);
     }
 
     public CryptoKey CreateSymmetricKey(string keyId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
         var request = new CreateCryptoKeyRequest
         {
             ParentAsKeyRingName = KeyRingName,
@@ -294,21 +280,19 @@ public class KmsFixture : IDisposable, ICollectionFixture<KmsFixture>
         request.CryptoKey.Labels["foo"] = "bar";
         request.CryptoKey.Labels["zip"] = "zap";
 
-        return client.CreateCryptoKey(request);
+        return KmsClient.CreateCryptoKey(request);
     }
 
     public CryptoKeyVersion CreateKeyVersion(string keyId)
     {
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-
-        var result = client.CreateCryptoKeyVersion(new CreateCryptoKeyVersionRequest
+        var result = KmsClient.CreateCryptoKeyVersion(new CreateCryptoKeyVersionRequest
         {
             ParentAsCryptoKeyName = new CryptoKeyName(ProjectId, LocationId, KeyRingId, keyId),
         });
 
         for (var i = 1; i <= 5; i++)
         {
-            var version = client.GetCryptoKeyVersion(new GetCryptoKeyVersionRequest
+            var version = KmsClient.GetCryptoKeyVersion(new GetCryptoKeyVersionRequest
             {
                 CryptoKeyVersionName = result.CryptoKeyVersionName,
             });

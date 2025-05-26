@@ -26,7 +26,7 @@ public class ControlledGeneration
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.5-flash-001")
+        string model = "gemini-2.0-flash-001")
     {
 
         var predictionServiceClient = new PredictionServiceClientBuilder
@@ -73,7 +73,7 @@ public class ControlledGeneration
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.5-pro-001")
+        string model = "gemini-2.0-flash-001")
     {
 
         var predictionServiceClient = new PredictionServiceClientBuilder
@@ -130,7 +130,7 @@ public class ControlledGeneration
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.5-pro-001")
+        string model = "gemini-2.0-flash-001")
     {
 
         var predictionServiceClient = new PredictionServiceClientBuilder
@@ -194,7 +194,7 @@ public class ControlledGeneration
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.5-pro-001")
+        string model = "gemini-2.0-flash-001")
     {
 
         var predictionServiceClient = new PredictionServiceClientBuilder
@@ -270,7 +270,7 @@ public class ControlledGeneration
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.5-pro-001")
+        string model = "gemini-2.0-flash-001")
     {
 
         var predictionServiceClient = new PredictionServiceClientBuilder
@@ -362,7 +362,7 @@ public class ControlledGeneration
         string projectId = "your-project-id",
         string location = "us-central1",
         string publisher = "google",
-        string model = "gemini-1.5-pro-001")
+        string model = "gemini-2.0-flash-001")
     {
 
         var predictionServiceClient = new PredictionServiceClientBuilder

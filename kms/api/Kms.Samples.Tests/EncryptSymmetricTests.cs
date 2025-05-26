@@ -41,8 +41,7 @@ public class EncryptSymmetricTest
             message: message);
 
         // Attempt to decrypt to verify success.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var response = client.Decrypt(_fixture.SymmetricKeyName, ByteString.CopyFrom(result));
+        var response = _fixture.KmsClient.Decrypt(_fixture.SymmetricKeyName, ByteString.CopyFrom(result));
 
         Assert.Equal(message, response.Plaintext.ToStringUtf8());
     }

@@ -32,7 +32,7 @@ public class UpdateSecretWithAliasTests
     [Fact]
     public void UpdatesSecrets()
     {
-        SecretName secretName = _fixture.Secret.SecretName;
+        SecretName secretName = _fixture.SecretWithVersions.SecretName;
         Secret result = _sample.UpdateSecret(projectId: secretName.ProjectId, secretId: secretName.SecretId);
         Assert.Equal(1, result.VersionAliases["test"]);
     }

@@ -38,8 +38,7 @@ public class CreateKeySymmetricEncryptDecryptTest
             id: _fixture.RandomId());
 
         // Get the key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(result.CryptoKeyName);
+        var key = _fixture.KmsClient.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt, key.Purpose);
         Assert.Equal(CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption, key.VersionTemplate.Algorithm);

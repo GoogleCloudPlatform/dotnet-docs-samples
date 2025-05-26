@@ -37,8 +37,7 @@ public class UpdateKeyAddRotationTest
             projectId: _fixture.ProjectId, locationId: _fixture.LocationId, keyRingId: _fixture.KeyRingId, keyId: _fixture.SymmetricKeyId);
 
         // Get the key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(result.CryptoKeyName);
+        var key = _fixture.KmsClient.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(2_592_000, key.RotationPeriod.Seconds);
         Assert.NotNull(key.NextRotationTime);

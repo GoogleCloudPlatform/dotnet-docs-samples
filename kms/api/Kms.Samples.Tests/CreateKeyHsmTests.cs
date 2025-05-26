@@ -38,8 +38,7 @@ public class CreateKeyHsmTest
             id: _fixture.RandomId());
 
         // Get the key.
-        KeyManagementServiceClient client = KeyManagementServiceClient.Create();
-        var key = client.GetCryptoKey(result.CryptoKeyName);
+        var key = _fixture.KmsClient.GetCryptoKey(result.CryptoKeyName);
 
         Assert.Equal(ProtectionLevel.Hsm, key.VersionTemplate.ProtectionLevel);
     }
