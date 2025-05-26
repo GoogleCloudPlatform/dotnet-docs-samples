@@ -31,15 +31,13 @@ public class DeleteParameterVersionTests
     [Fact]
     public void DeleteParameterVersion()
     {
-        string parameterId = _fixture.RandomId();
-        string versionId = _fixture.RandomId();
-        Parameter parameter = _fixture.CreateParameter(parameterId, ParameterFormat.Unformatted);
-        string payload = "test123";
-        ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
+        var (parameterId, versionId, parameter, payload) = _fixture.CreateParameterWithVersion();
 
+        ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
         _sample.DeleteParameterVersion(projectId: _fixture.ProjectId, parameterId: parameterId, versionId: versionId);
 
         ParameterManagerClient client = ParameterManagerClient.Create();
-        Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameterVersion(parameterVersion.ParameterVersionName));
+        var exception = Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameterVersion(parameterVersion.ParameterVersionName));
+        Assert.Equal(Grpc.Core.StatusCode.NotFound, exception.Status.StatusCode);
     }
 }
