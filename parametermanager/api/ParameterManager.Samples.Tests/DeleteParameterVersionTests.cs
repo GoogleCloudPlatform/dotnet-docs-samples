@@ -36,7 +36,7 @@ public class DeleteParameterVersionTests
         ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
         _sample.DeleteParameterVersion(projectId: _fixture.ProjectId, parameterId: parameterId, versionId: versionId);
 
-        ParameterManagerClient client = ParameterManagerClient.Create();
+        ParameterManagerClient client = _fixture.Client;
         var exception = Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameterVersion(parameterVersion.ParameterVersionName));
         Assert.Equal(Grpc.Core.StatusCode.NotFound, exception.Status.StatusCode);
     }

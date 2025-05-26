@@ -36,7 +36,7 @@ public class DeleteParameterTests
 
         _sample.DeleteParameter(projectId: _fixture.ProjectId, parameterId: parameterId);
 
-        ParameterManagerClient client = ParameterManagerClient.Create();
+        ParameterManagerClient client = _fixture.Client;
         var exception = Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameter(parameter.ParameterName));
         Assert.Equal(Grpc.Core.StatusCode.NotFound, exception.Status.StatusCode);
     }
