@@ -31,10 +31,7 @@ public class EnableRegionalParameterVersionTests
     [Fact]
     public void EnableRegionalParameterVersion()
     {
-        string parameterId = _fixture.RandomId();
-        string versionId = _fixture.RandomId();
-        Parameter parameter = _fixture.CreateParameter(parameterId, ParameterFormat.Unformatted);
-        string payload = "test123";
+        var (parameterId, versionId, parameter, payload) = _fixture.CreateParameterWithVersion();
 
         ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
         ParameterVersion result = _sample.EnableRegionalParameterVersion(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId, versionId: versionId);

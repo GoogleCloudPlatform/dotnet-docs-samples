@@ -36,7 +36,8 @@ public class DeleteRegionalParameterTests
 
         _sample.DeleteRegionalParameter(projectId: _fixture.ProjectId, locationId: ParameterManagerRegionalFixture.LocationId, parameterId: parameterId);
 
-        ParameterManagerClient client = ParameterManagerClient.Create();
-        Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameter(parameter.ParameterName));
+        ParameterManagerClient client = _fixture.Client;
+        var exception = Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameter(parameter.ParameterName));
+        Assert.Equal(Grpc.Core.StatusCode.NotFound, exception.Status.StatusCode);
     }
 }
