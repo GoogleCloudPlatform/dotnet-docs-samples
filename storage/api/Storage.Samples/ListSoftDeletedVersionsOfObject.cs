@@ -29,7 +29,7 @@ public class ListSoftDeletedVersionsOfObjectSample
         string objectName = "your-object-name")
     {
         var storage = StorageClient.Create();
-        var objects = storage.ListObjects(bucketName, null, new ListObjectsOptions { SoftDeletedOnly = true, MatchGlob = objectName });
+        var objects = storage.ListObjects(bucketName, prefix: null, new ListObjectsOptions { SoftDeletedOnly = true, MatchGlob = objectName });
         Console.WriteLine($"The Name and Versions of the Soft Deleted Object in the Bucket (Bucket Name: {bucketName}) are as follows:");
         foreach (var obj in objects)
         {

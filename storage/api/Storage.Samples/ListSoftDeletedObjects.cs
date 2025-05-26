@@ -27,7 +27,7 @@ public class ListSoftDeletedObjectsSample
     public IEnumerable<Google.Apis.Storage.v1.Data.Object> ListSoftDeletedObjects(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
-        var objects = storage.ListObjects(bucketName, null, new ListObjectsOptions { SoftDeletedOnly = true });
+        var objects = storage.ListObjects(bucketName, prefix: null, new ListObjectsOptions { SoftDeletedOnly = true });
         Console.WriteLine($"The Names of the Soft Deleted Objects in the Bucket (Bucket Name: {bucketName}) are as follows:");
         foreach (var obj in objects)
         {
