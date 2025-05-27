@@ -17,26 +17,27 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class GetParameterVersionTests
+public class DeleteParameterVersionTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly GetParameterVersionSample _sample;
+    private readonly DeleteParameterVersionSample _sample;
 
-    public GetParameterVersionTests(ParameterManagerFixture fixture)
+    public DeleteParameterVersionTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new GetParameterVersionSample();
+        _sample = new DeleteParameterVersionSample();
     }
 
     [Fact]
-    public void GetParameterVersion()
+    public void DeleteParameterVersion()
     {
         var (parameterId, versionId, parameter, payload) = _fixture.CreateParameterWithVersion();
 
         ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
-        ParameterVersion result = _sample.GetParameterVersion(projectId: _fixture.ProjectId, parameterId: parameterId, versionId: versionId);
+        _sample.DeleteParameterVersion(projectId: _fixture.ProjectId, parameterId: parameterId, versionId: versionId);
 
-        Assert.NotNull(result);
-        Assert.Equal(versionId, result.ParameterVersionName.ParameterVersionId);
+        ParameterManagerClient client = _fixture.Client;
+        var exception = Assert.Throws<Grpc.Core.RpcException>(() => client.GetParameterVersion(parameterVersion.ParameterVersionName));
+        Assert.Equal(Grpc.Core.StatusCode.NotFound, exception.Status.StatusCode);
     }
 }

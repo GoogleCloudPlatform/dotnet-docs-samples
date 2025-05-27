@@ -17,26 +17,26 @@
 using Google.Cloud.ParameterManager.V1;
 
 [Collection(nameof(ParameterManagerFixture))]
-public class GetParameterVersionTests
+public class DisableParameterVersionTests
 {
     private readonly ParameterManagerFixture _fixture;
-    private readonly GetParameterVersionSample _sample;
+    private readonly DisableParameterVersionSample _sample;
 
-    public GetParameterVersionTests(ParameterManagerFixture fixture)
+    public DisableParameterVersionTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new GetParameterVersionSample();
+        _sample = new DisableParameterVersionSample();
     }
 
     [Fact]
-    public void GetParameterVersion()
+    public void DisableParameterVersion()
     {
         var (parameterId, versionId, parameter, payload) = _fixture.CreateParameterWithVersion();
 
         ParameterVersion parameterVersion = _fixture.CreateParameterVersion(parameterId, versionId, payload);
-        ParameterVersion result = _sample.GetParameterVersion(projectId: _fixture.ProjectId, parameterId: parameterId, versionId: versionId);
+        ParameterVersion result = _sample.DisableParameterVersion(projectId: _fixture.ProjectId, parameterId: parameterId, versionId: versionId);
 
         Assert.NotNull(result);
-        Assert.Equal(versionId, result.ParameterVersionName.ParameterVersionId);
+        Assert.True(result.Disabled);
     }
 }
