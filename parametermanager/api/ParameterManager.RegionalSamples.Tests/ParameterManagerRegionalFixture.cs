@@ -26,7 +26,9 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public const string LocationId = "us-central1";
 
     public ParameterManagerClient Client { get; }
+    public SecretManagerServiceClient SecretClient { get; }
     internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<SecretName> SecretsToDelete { get; } = new List<SecretName>();
     internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerRegionalFixture()
@@ -45,6 +47,12 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         {
             Endpoint = regionalEndpoint
         }.Build();
+
+        string regionalSecretEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
+        SecretClient = new SecretManagerServiceClientBuilder
+        {
+            Endpoint = regionalSecretEndpoint
+        }.Build();
     }
 
     public void Dispose()
@@ -56,6 +64,10 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         foreach (var parameter in ParametersToDelete)
         {
             DeleteParameter(parameter);
+        }
+        foreach (var secret in SecretsToDelete)
+        {
+            DeleteSecret(secret);
         }
     }
 
@@ -76,6 +88,22 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         Parameter Parameter = Client.CreateParameter(parent, parameter, parameterId);
         ParametersToDelete.Add(Parameter.ParameterName);
         return Parameter;
+    }
+
+    public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
+    {
+        ParameterName parameterName = new ParameterName(ProjectId, LocationId, parameterId);
+        ParameterVersion parameterVersion = new ParameterVersion
+        {
+            Payload = new ParameterVersionPayload
+            {
+                Data = ByteString.CopyFrom(payload, Encoding.UTF8)
+            }
+        };
+
+        ParameterVersion ParameterVersion = Client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
+        return ParameterVersion;
     }
 
     private void DeleteParameter(ParameterName name)
@@ -99,6 +127,58 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
             // Ignore error - Parameter version was already deleted
+        }
+    }
+
+    public Secret CreateSecret(string secretId)
+    {
+        LocationName parent = new LocationName(ProjectId, LocationId);
+
+        Secret secret = new Secret();
+
+        Secret Secret = SecretClient.CreateSecret(parent, secretId, secret);
+        SecretsToDelete.Add(Secret.SecretName);
+        return Secret;
+    }
+
+    public Policy GrantIAMAccess(SecretName secretName, string member)
+    {
+        // Get current policy.
+        Policy policy = SecretClient.GetIamPolicy(new GetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+        });
+
+        // Add the user to the list of bindings.
+        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
+
+        // Save the updated policy.
+        policy = SecretClient.SetIamPolicy(new SetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+            Policy = policy,
+        });
+        return policy;
+    }
+    public SecretVersion AddSecretVersion(Secret secret)
+    {
+        SecretPayload payload = new SecretPayload
+        {
+            Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
+        };
+
+        return SecretClient.AddSecretVersion(secret.SecretName, payload);
+    }
+
+    private void DeleteSecret(SecretName name)
+    {
+        try
+        {
+            SecretClient.DeleteSecret(name);
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            // Ignore error - secret was already deleted
         }
     }
 }
