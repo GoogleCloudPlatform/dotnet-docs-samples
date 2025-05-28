@@ -255,4 +255,28 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         var randomName = RandomName();
         return ($"test{caller}Topic{randomName}", $"test{caller}Subscription{randomName}", $"test{caller}Schema{randomName}");
     }
+
+    public (string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount) RandomKinesisIngestionParams([CallerMemberName] string caller = null)
+    {
+        var randomName = RandomName();
+        return ($"test{caller}StreamArn{randomName}", $"test{caller}ConsumerArn{randomName}", $"test{caller}AwsRoleArn{randomName}", $"test{caller}GcpServiceAccount{randomName}");
+    }
+
+    public (string clusterArn, string mskTopic, string awsRoleArn, string gcpServiceAccount) RandomAwsMskIngestionParams([CallerMemberName] string caller = null)
+    {
+        var randomName = RandomName();
+        return ($"test{caller}ClusterArn{randomName}", $"test{caller}MskTopic{randomName}", $"test{caller}AwsRoleArn{randomName}", $"test{caller}GcpServiceAccount{randomName}");
+    }
+
+    public (string bootstrapServer, string clusterId, string confluentTopic, string identityPoolId, string gcpServiceAccount) RandomConfluentCloudIngestionParams([CallerMemberName] string caller = null)
+    {
+        var randomName = RandomName();
+        return ($"test{caller}BootstrapServer{randomName}", $"test{caller}ClusterId{randomName}", $"test{caller}ConfluentTopic{randomName}", $"test{caller}IdentityPoolId{randomName}", $"test{caller}GcpServiceAccount{randomName}");
+    }
+
+    public (string resourceGroup, string nameSpace, string eventHub, string clientId, string tenantId, string subscriptionId, string gcpServiceAccount) RandomAzureEventHubsIngestionParams([CallerMemberName] string caller = null)
+    {
+        var randomName = RandomName();
+        return ($"test{caller}ResourceGroup{randomName}", $"test{caller}Namespace{randomName}", $"test{caller}EventHub{randomName}", $"test{caller}ClientId{randomName}", $"test{caller}TenantId{randomName}", $"test{caller}SubscriptionId{randomName}", $"test{caller}GcpServiceAccount{randomName}");
+    }
 }

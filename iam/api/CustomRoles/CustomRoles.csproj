@@ -2,11 +2,11 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
-    <PackageReference Include="Google.Apis.Iam.v1" Version="1.69.0.3724" />
+    <PackageReference Include="Google.Apis.Iam.v1" Version="1.69.0.3781" />
   </ItemGroup>
 </Project>

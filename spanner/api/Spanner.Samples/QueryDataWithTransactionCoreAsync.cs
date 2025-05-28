@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,7 +38,10 @@ public class QueryDataWithTransactionCoreAsyncSample
         await connection.OpenAsync();
 
         // Open a new read only transaction.
-        using var transaction = await connection.BeginTransactionAsync(SpannerTransactionCreationOptions.ReadOnly, cancellationToken: default);
+        using var transaction = await connection.BeginTransactionAsync(
+            SpannerTransactionCreationOptions.ReadOnly,
+            transactionOptions: null,
+            cancellationToken: default);
         using var cmd = connection.CreateSelectCommand("SELECT SingerId, AlbumId, AlbumTitle FROM Albums");
         cmd.Transaction = transaction;
 
