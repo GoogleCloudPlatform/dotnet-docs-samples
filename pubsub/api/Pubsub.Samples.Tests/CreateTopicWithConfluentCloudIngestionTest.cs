@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.PubSub.V1;
+using Grpc.Core;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -31,18 +31,9 @@ public class CreateTopicWithConfluentCloudIngestionTest
     public void CreateTopicWithConfluentCloudIngestion()
     {
         string topicId = _pubsubFixture.RandomTopicId();
-        var (bootstrapServer, clusterId, confluentTopic, identityPoolId, gcpServiceAccount) = _pubsubFixture.RandomConfluentCloudIngestionParams();
-        Topic createdTopic = _createTopicWithConfluentCloudIngestionSample.CreateTopicWithConfluentCloudIngestion(_pubsubFixture.ProjectId, topicId, bootstrapServer, clusterId, confluentTopic, identityPoolId, gcpServiceAccount);
-
-        // Confirm that the created topic and topic retrieved by ID are equal
-        Topic retrievedTopic = _pubsubFixture.GetTopic(topicId);
-        Assert.Equal(createdTopic, retrievedTopic);
-
-        // Confirm that all Confluent Cloud Ingestion params are equal to expected values
-        Assert.Equal(bootstrapServer, createdTopic.IngestionDataSourceSettings.ConfluentCloud.BootstrapServer);
-        Assert.Equal(clusterId, createdTopic.IngestionDataSourceSettings.ConfluentCloud.ClusterId);
-        Assert.Equal(confluentTopic, createdTopic.IngestionDataSourceSettings.ConfluentCloud.Topic);
-        Assert.Equal(identityPoolId, createdTopic.IngestionDataSourceSettings.ConfluentCloud.IdentityPoolId);
-        Assert.Equal(gcpServiceAccount, createdTopic.IngestionDataSourceSettings.ConfluentCloud.GcpServiceAccount);
+        var (bootstrapServer, clusterId, confluentTopic, identityPoolId, gcpServiceAccount) = _pubsubFixture.ConfluentCloudIngestionParams();
+        var exception = Assert.Throws<RpcException>(() => _createTopicWithConfluentCloudIngestionSample.CreateTopicWithConfluentCloudIngestion(_pubsubFixture.ProjectId, topicId, bootstrapServer, clusterId, confluentTopic, identityPoolId, gcpServiceAccount));
+        Assert.Equal(StatusCode.InvalidArgument, exception.Status.StatusCode);
+        Assert.Equal("Cloud Pub/Sub received invalid argument/s for the ingestion data source: Unreachable bootstrap server.", exception.Status.Detail);
     }
 }

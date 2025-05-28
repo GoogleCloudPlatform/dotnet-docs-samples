@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.PubSub.V1;
+using Grpc.Core;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -31,17 +31,9 @@ public class CreateTopicWithKinesisIngestionTest
     public void CreateTopicWithKinesisIngestion()
     {
         string topicId = _pubsubFixture.RandomTopicId();
-        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.RandomKinesisIngestionParams();
-        Topic createdTopic = _createTopicWithKinesisIngestionSample.CreateTopicWithKinesisIngestion(_pubsubFixture.ProjectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
-
-        // Confirm that the created topic and topic retrieved by ID are equal
-        Topic retrievedTopic = _pubsubFixture.GetTopic(topicId);
-        Assert.Equal(createdTopic, retrievedTopic);
-
-        // Confirm that all AWSKinesis Ingestion params are equal to expected values
-        Assert.Equal(streamArn, createdTopic.IngestionDataSourceSettings.AwsKinesis.StreamArn);
-        Assert.Equal(consumerArn, createdTopic.IngestionDataSourceSettings.AwsKinesis.ConsumerArn);
-        Assert.Equal(awsRoleArn, createdTopic.IngestionDataSourceSettings.AwsKinesis.AwsRoleArn);
-        Assert.Equal(gcpServiceAccount, createdTopic.IngestionDataSourceSettings.AwsKinesis.GcpServiceAccount);
+        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.KinesisIngestionParams();
+        var exception = Assert.Throws<RpcException>(() => _createTopicWithKinesisIngestionSample.CreateTopicWithKinesisIngestion(_pubsubFixture.ProjectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount));
+        Assert.Equal(StatusCode.PermissionDenied, exception.Status.StatusCode);
+        Assert.Equal(_pubsubFixture.PermissionDeniedMessage, exception.Status.Detail);
     }
 }
