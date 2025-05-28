@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-//[START modelarmor_quickstart]
-using System;
-using System.Text;
+// [START modelarmor_create_template]
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
-public class QuickstartSample
+public class CreateTemplateSample
 {
-    public void Quickstart(
+    public Template CreateTemplate(
         string projectId = "my-project",
         string locationId = "us-central1",
         string templateId = "my-template"
     )
     {
+        // Construct the API endpoint URL.
         ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
@@ -36,9 +35,15 @@ public class QuickstartSample
         // Create the client.
         Google.Cloud.ModelArmor.V1.ModelArmorClient client = clientBuilder.Build();
 
+        // Build the parent resource name.
         LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
-        // Build the Model Armor template with preferred filters
+        // Build the Model Armor template with your preferred filters.
+        // For more details on filters, please refer to the following doc:
+        // https://cloud.google.com/security-command-center/docs/key-concepts-model-armor#ma-filters
+
+        // Configure Responsible AI filter with multiple categories and their confidence
+        // levels.
         RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
         raiFilterSettings.RaiFilters.Add(
             new RaiFilterSettings.Types.RaiFilter
@@ -51,14 +56,14 @@ public class QuickstartSample
             new RaiFilterSettings.Types.RaiFilter
             {
                 FilterType = RaiFilterType.HateSpeech,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                ConfidenceLevel = DetectionConfidenceLevel.High,
             }
         );
         raiFilterSettings.RaiFilters.Add(
             new RaiFilterSettings.Types.RaiFilter
             {
                 FilterType = RaiFilterType.SexuallyExplicit,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                ConfidenceLevel = DetectionConfidenceLevel.LowAndAbove,
             }
         );
         raiFilterSettings.RaiFilters.Add(
@@ -69,13 +74,13 @@ public class QuickstartSample
             }
         );
 
-        // Create the filter config with RAI settings
+        // Create the filter config with RAI settings.
         FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
 
-        // Create the template
+        // Create the template.
         Template template = new Template { FilterConfig = modelArmorFilter };
 
-        // Create the request
+        // Prepare the request.
         CreateTemplateRequest request = new CreateTemplateRequest
         {
             ParentAsLocationName = parent,
@@ -83,46 +88,11 @@ public class QuickstartSample
             Template = template,
         };
 
-        // Send the request
+        // Send the request.
         Template createdTemplate = client.CreateTemplate(request);
+        System.Console.WriteLine($"Created template: {createdTemplate.Name}");
 
-        Console.WriteLine($"Created template: {createdTemplate.Name}");
-
-        // Sanitize a user prompt using the created template
-        string userPrompt = "Unsafe user prompt";
-
-        TemplateName templateName = TemplateName.FromProjectLocationTemplate(
-            projectId,
-            locationId,
-            templateId
-        );
-
-        SanitizeUserPromptRequest userPromptSanitizeRequest = new SanitizeUserPromptRequest
-        {
-            TemplateName = templateName,
-            UserPromptData = new DataItem { Text = userPrompt },
-        };
-
-        SanitizeUserPromptResponse userPromptSanitizeResponse = client.SanitizeUserPrompt(
-            userPromptSanitizeRequest
-        );
-
-        Console.WriteLine($"Result for User Prompt Sanitization: {userPromptSanitizeResponse}");
-
-        // Sanitize a model response using the created template
-        string modelResponse = "Unsanitized model output";
-
-        SanitizeModelResponseRequest modelSanitizeRequest = new SanitizeModelResponseRequest
-        {
-            TemplateName = templateName,
-            ModelResponseData = new DataItem { Text = modelResponse },
-        };
-
-        SanitizeModelResponseResponse modelSanitizeResponse = client.SanitizeModelResponse(
-            modelSanitizeRequest
-        );
-
-        Console.WriteLine($"Result for Model Response Sanitization: {modelSanitizeResponse}");
+        return createdTemplate;
     }
 }
-// [END modelarmor_quickstart]
+// [END modelarmor_create_template]
