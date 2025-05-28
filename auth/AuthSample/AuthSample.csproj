@@ -1,13 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.9.1" />
     <PackageReference Include="Google.Cloud.Language.V1" Version="3.7.0" />
-    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.11.0" />
+    <PackageReference Include="Google.Cloud.Storage.V1" Version="4.13.0" />
   </ItemGroup>
 </Project>

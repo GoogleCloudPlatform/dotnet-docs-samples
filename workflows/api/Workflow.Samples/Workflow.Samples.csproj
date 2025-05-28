@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Cloud.Workflows.Executions.V1" Version="2.6.0" />
+    <PackageReference Include="Google.Cloud.Workflows.V1" Version="2.6.0" />
+  </ItemGroup>
+</Project>
