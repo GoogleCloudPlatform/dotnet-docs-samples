@@ -36,3 +36,4 @@ public class TextTests
         Assert.Contains("Hello friends!", translationResult.TranslatedText);
     }
 }
+// [START translate_translate_text]

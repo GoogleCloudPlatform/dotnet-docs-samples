@@ -16,7 +16,7 @@
 public class TranslateFixture : IDisposable, ICollectionFixture<TranslateFixture>
 {
 
-    public TranslateFixture(){}
+    public TranslateFixture() { }
 
-    public void Dispose(){}
+    public void Dispose() { }
 }
