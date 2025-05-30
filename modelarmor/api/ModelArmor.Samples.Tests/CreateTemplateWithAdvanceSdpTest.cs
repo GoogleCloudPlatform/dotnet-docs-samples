@@ -14,73 +14,58 @@
  * limitations under the License.
 */
 
-using Google.Cloud.Dlp.V2;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
-namespace ModelArmor.Samples.Tests
+
+public class CreateTemplateWithAdvancedSdpTests : IClassFixture<ModelArmorFixture>
 {
-    public class CreateTemplateWithAdvancedSdpTests : IClassFixture<ModelArmorFixture>
+    private readonly ModelArmorFixture _fixture;
+    private readonly CreateTemplateWithAdvancedSdpSample _sample;
+
+    public CreateTemplateWithAdvancedSdpTests(ModelArmorFixture fixture)
     {
-        private readonly ModelArmorFixture _fixture;
-        private readonly CreateTemplateWithAdvancedSdpSample _sample;
+        _fixture = fixture;
+        _sample = new CreateTemplateWithAdvancedSdpSample();
+    }
 
-        public CreateTemplateWithAdvancedSdpTests(ModelArmorFixture fixture)
-        {
-            _fixture = fixture;
-            _sample = new CreateTemplateWithAdvancedSdpSample();
-        }
+    [Fact]
+    public void CreateTemplateWithAdvancedSdpTest()
+    {
+        string projectId = _fixture.ProjectId;
+        string locationId = _fixture.LocationId;
 
-        [Fact]
-        public void CreateTemplateWithAdvancedSdpTest()
-        {
-            string inspectTemplateId = _fixture.InspectTemplateId;
-            string deidentifyTemplateId = _fixture.DeidentifyTemplateId;
+        TemplateName templateName = _fixture.CreateTemplateName();
+        _fixture.RegisterTemplateForCleanup(templateName);
+        string templateId = templateName.TemplateId;
 
-            string projectId = _fixture.ProjectId;
-            string locationId = _fixture.LocationId;
+        string inspectTemplateName = _fixture.CreateInspectTemplate();
+        _fixture.RegisterDlpTemplateForCleanup(inspectTemplateName);
 
-            TemplateName templateName = _fixture.CreateTemplateName();
-            string templateId = templateName.TemplateId;
+        string deidentifyTemplateName = _fixture.CreateDeidentifyTemplate();
+        _fixture.RegisterDlpTemplateForCleanup(deidentifyTemplateName);
 
-            // Build the inspect template name.
-            string inspectTemplateName = DeidentifyTemplateName
-                .FormatProjectLocationDeidentifyTemplate(projectId, locationId, inspectTemplateId)
-                .ToString();
+        // Run the sample.
+        Template template = _sample.CreateTemplateWithAdvancedSdp(
+            projectId: projectId,
+            locationId: locationId,
+            templateId: templateId,
+            inspectTemplateName: inspectTemplateName,
+            deidentifyTemplateName: deidentifyTemplateName
+        );
 
-            // Build the deidentify template name.
-            string deidentifyTemplateName = DeidentifyTemplateName
-                .FormatProjectLocationDeidentifyTemplate(
-                    projectId,
-                    locationId,
-                    deidentifyTemplateId
-                )
-                .ToString();
+        // Verify that template was created successfully.
+        Assert.NotNull(template);
+        Assert.Contains(templateId, template.Name);
 
-            // Run the sample.
-            Template template = _sample.CreateTemplateWithAdvancedSdp(
-                projectId: projectId,
-                locationId: locationId,
-                templateId: templateId,
-                inspectTemplateId: inspectTemplateId,
-                deidentifyTemplateId: deidentifyTemplateId
-            );
+        // Verify that created template has the expected filter configuration.
+        Assert.NotNull(template.FilterConfig);
+        Assert.NotNull(template.FilterConfig.SdpSettings);
+        Assert.NotNull(template.FilterConfig.SdpSettings.AdvancedConfig);
 
-            // Verify that template was created successfully.
-            Assert.NotNull(template);
-            Assert.Contains(templateId, template.Name);
-
-            // Verify that created template has the expected filter configuration.
-            Assert.NotNull(template.FilterConfig);
-            Assert.NotNull(template.FilterConfig.SdpSettings);
-            Assert.NotNull(template.FilterConfig.SdpSettings.AdvancedConfig);
-
-            // Verify the advanced SDP configuration of the created template.
-            var advancedConfig = template.FilterConfig.SdpSettings.AdvancedConfig;
-            Assert.Equal(inspectTemplateName, advancedConfig.InspectTemplate);
-            Assert.Equal(deidentifyTemplateName, advancedConfig.DeidentifyTemplate);
-
-            _fixture.RegisterTemplateForCleanup(templateName);
-        }
+        // Verify the advanced SDP configuration of the created template.
+        var advancedConfig = template.FilterConfig.SdpSettings.AdvancedConfig;
+        Assert.Equal(inspectTemplateName, advancedConfig.InspectTemplate);
+        Assert.Equal(deidentifyTemplateName, advancedConfig.DeidentifyTemplate);
     }
 }

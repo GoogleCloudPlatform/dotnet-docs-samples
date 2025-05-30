@@ -17,7 +17,6 @@
 // [START modelarmor_create_template_with_advanced_sdp]
 using System;
 using Google.Api.Gax.ResourceNames;
-using Google.Cloud.Dlp.V2;
 using Google.Cloud.ModelArmor.V1;
 
 public class CreateTemplateWithAdvancedSdpSample
@@ -26,9 +25,8 @@ public class CreateTemplateWithAdvancedSdpSample
         string projectId = "my-project",
         string locationId = "us-central1",
         string templateId = "my-template",
-        string inspectTemplateId = "inspect-template-id",
-        string deidentifyTemplateId = "deidentify-template-id"
-    )
+        string inspectTemplateName = "projects/my_project/locations/us-central1/inspectTemplates/inspect_template_id",
+        string deidentifyTemplateName = "projects/my_project/locations/us-central1/deidentifyTemplates/de-identify_template_id")
     {
         // Construct the API endpoint URL.
         ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
@@ -41,16 +39,6 @@ public class CreateTemplateWithAdvancedSdpSample
 
         // Build the parent resource name.
         LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
-
-        // Build the inspect template name.
-        string inspectTemplateName = DeidentifyTemplateName
-            .FormatProjectLocationDeidentifyTemplate(projectId, locationId, inspectTemplateId)
-            .ToString();
-
-        // Build the deidentify template name.
-        string deidentifyTemplateName = DeidentifyTemplateName
-            .FormatProjectLocationDeidentifyTemplate(projectId, locationId, deidentifyTemplateId)
-            .ToString();
 
         // Build the Model Armor template with Advanced SDP Filter.
 

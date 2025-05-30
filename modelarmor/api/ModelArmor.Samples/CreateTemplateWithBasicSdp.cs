@@ -19,54 +19,50 @@ using System;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
-namespace ModelArmor.Samples
+public class CreateTemplateWithBasicSdpSample
 {
-    public class CreateTemplateWithBasicSdpSample
+    public Template CreateTemplateWithBasicSdp(
+        string projectId = "my-project",
+        string locationId = "us-central1",
+        string templateId = "my-template")
     {
-        public Template CreateTemplateWithBasicSdp(
-            string projectId = "my-project",
-            string locationId = "us-central1",
-            string templateId = "my-template"
-        )
+        // Construct the API endpoint URL.
+        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
-            // Construct the API endpoint URL.
-            ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
-            {
-                Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-            };
+            Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
+        };
 
-            // Create the client.
-            ModelArmorClient client = clientBuilder.Build();
+        // Create the client.
+        ModelArmorClient client = clientBuilder.Build();
 
-            // Build the parent resource name.
-            LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
+        // Build the parent resource name.
+        LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
-            // Build the Model Armor template with Basic SDP Filter.
-            // For more details on filters, please refer to:
-            // https://cloud.google.com/security-command-center/docs/key-concepts-model-armor#ma-filters
-            SdpBasicConfig basicSdpConfig = new SdpBasicConfig
-            {
-                FilterEnforcement = SdpBasicConfig.Types.SdpBasicConfigEnforcement.Enabled,
-            };
+        // Build the Model Armor template with Basic SDP Filter.
+        // For more details on filters, please refer to:
+        // https://cloud.google.com/security-command-center/docs/key-concepts-model-armor#ma-filters
+        SdpBasicConfig basicSdpConfig = new SdpBasicConfig
+        {
+            FilterEnforcement = SdpBasicConfig.Types.SdpBasicConfigEnforcement.Enabled,
+        };
 
-            SdpFilterSettings sdpSettings = new SdpFilterSettings { BasicConfig = basicSdpConfig };
+        SdpFilterSettings sdpSettings = new SdpFilterSettings { BasicConfig = basicSdpConfig };
 
-            FilterConfig filterConfig = new FilterConfig { SdpSettings = sdpSettings };
+        FilterConfig filterConfig = new FilterConfig { SdpSettings = sdpSettings };
 
-            // Build the request.
-            CreateTemplateRequest request = new CreateTemplateRequest
-            {
-                ParentAsLocationName = parent,
-                TemplateId = templateId,
-                Template = new Template { FilterConfig = filterConfig },
-            };
+        // Build the request.
+        CreateTemplateRequest request = new CreateTemplateRequest
+        {
+            ParentAsLocationName = parent,
+            TemplateId = templateId,
+            Template = new Template { FilterConfig = filterConfig },
+        };
 
-            Template createdTemplate = client.CreateTemplate(request);
+        Template createdTemplate = client.CreateTemplate(request);
 
-            Console.WriteLine($"Created template with Basic SDP filter: {createdTemplate.Name}");
+        Console.WriteLine($"Created template with Basic SDP filter: {createdTemplate.Name}");
 
-            return createdTemplate;
-        }
+        return createdTemplate;
     }
 }
 // [END modelarmor_create_template_with_basic_sdp]

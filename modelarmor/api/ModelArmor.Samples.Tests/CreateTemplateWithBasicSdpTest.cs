@@ -17,49 +17,46 @@
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
-namespace ModelArmor.Samples.Tests
+
+public class CreateTemplateWithBasicSdpTests : IClassFixture<ModelArmorFixture>
 {
-    public class CreateTemplateWithBasicSdpTests : IClassFixture<ModelArmorFixture>
+    private readonly ModelArmorFixture _fixture;
+    private readonly CreateTemplateWithBasicSdpSample _sample;
+
+    public CreateTemplateWithBasicSdpTests(ModelArmorFixture fixture)
     {
-        private readonly ModelArmorFixture _fixture;
-        private readonly CreateTemplateWithBasicSdpSample _sample;
+        _fixture = fixture;
+        _sample = new CreateTemplateWithBasicSdpSample();
+    }
 
-        public CreateTemplateWithBasicSdpTests(ModelArmorFixture fixture)
-        {
-            _fixture = fixture;
-            _sample = new CreateTemplateWithBasicSdpSample();
-        }
+    [Fact]
+    public void CreateTemplateWithBasicSdpTest()
+    {
+        string projectId = _fixture.ProjectId;
+        string locationId = _fixture.LocationId;
 
-        [Fact]
-        public void CreateTemplateWithBasicSdpTest()
-        {
-            string projectId = _fixture.ProjectId;
-            string locationId = _fixture.LocationId;
+        TemplateName templateName = _fixture.CreateTemplateName();
+        _fixture.RegisterTemplateForCleanup(templateName);
+        string templateId = templateName.TemplateId;
 
-            TemplateName templateName = _fixture.CreateTemplateName();
-            string templateId = templateName.TemplateId;
+        // Run the sample.
+        Template template = _sample.CreateTemplateWithBasicSdp(
+            projectId: projectId,
+            locationId: locationId,
+            templateId: templateId
+        );
 
-            // Run the sample.
-            Template template = _sample.CreateTemplateWithBasicSdp(
-                projectId: projectId,
-                locationId: locationId,
-                templateId: templateId
-            );
+        // Verify that template was created successfully.
+        Assert.NotNull(template);
+        Assert.Contains(templateId, template.Name);
 
-            // Verify that template was created successfully.
-            Assert.NotNull(template);
-            Assert.Contains(templateId, template.Name);
-
-            // Verify that created template has the expected filter configuration.
-            Assert.NotNull(template.FilterConfig);
-            Assert.NotNull(template.FilterConfig.SdpSettings);
-            Assert.NotNull(template.FilterConfig.SdpSettings.BasicConfig);
-            Assert.Equal(
-                SdpBasicConfig.Types.SdpBasicConfigEnforcement.Enabled,
-                template.FilterConfig.SdpSettings.BasicConfig.FilterEnforcement
-            );
-
-            _fixture.RegisterTemplateForCleanup(templateName);
-        }
+        // Verify that created template has the expected filter configuration.
+        Assert.NotNull(template.FilterConfig);
+        Assert.NotNull(template.FilterConfig.SdpSettings);
+        Assert.NotNull(template.FilterConfig.SdpSettings.BasicConfig);
+        Assert.Equal(
+            SdpBasicConfig.Types.SdpBasicConfigEnforcement.Enabled,
+            template.FilterConfig.SdpSettings.BasicConfig.FilterEnforcement
+        );
     }
 }
