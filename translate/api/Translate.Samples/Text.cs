@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,4 +50,4 @@ public class TranslateTextSample
         return translationResult;
     }
 }
-// [START translate_translate_text]
+// [END translate_translate_text]
