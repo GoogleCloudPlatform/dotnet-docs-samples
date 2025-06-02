@@ -15,58 +15,50 @@
  */
 
 // [START modelarmor_sanitize_prompt_and_response]
-using System;
-using System.Collections.Generic;
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
-using Newtonsoft.Json;
+using ModelArmor.Samples;
 
-namespace ModelArmor.Samples
+public class SanitizeModelResponseWithUserPromptSample
 {
-    public class SanitizeModelResponseWithUserPromptSample
+    public SanitizeModelResponseResponse SanitizeModelResponseWithUserPrompt(
+        string projectId = "my-project",
+        string locationId = "us-central1",
+        string templateId = "my-template",
+        string userPrompt = "My email is user@example.com and my phone is 555-123-4567",
+        string modelResponse = "I found your ITIN: 988-86-1234 in our records"
+    )
     {
-        public SanitizeModelResponseResponse SanitizeModelResponseWithUserPromptWithSdp(
-            string projectId = "my-project",
-            string locationId = "us-central1",
-            string templateId = "my-template",
-            string userPrompt = "My email is user@example.com and my phone is 555-123-4567",
-            string modelResponse = "I found your ITIN: 988-86-1234 in our records"
-        )
+        // Endpoint to call the Model Armor server.
+        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
-            // Endpoint to call the Model Armor server.
-            ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
-            {
-                Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-            };
+            Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
+        };
 
-            // Create the client.
-            ModelArmorClient client = clientBuilder.Build();
+        // Create the client.
+        ModelArmorClient client = clientBuilder.Build();
 
-            // Build the resource name of the template.
-            TemplateName templateName = TemplateName.FromProjectLocationTemplate(
+        // Build the resource name of the template.
+        TemplateName templateName = TemplateName.FromProjectLocationTemplate(
+            projectId,
+            locationId,
+            templateId
+        );
+
+        // Prepare and send the user prompt sanitization request
+        SanitizeModelResponseRequest request = new SanitizeModelResponseRequest
+        {
+            TemplateName = TemplateName.FromProjectLocationTemplate(
                 projectId,
                 locationId,
                 templateId
-            );
+            ),
+            ModelResponseData = new DataItem { Text = modelResponse },
+            UserPrompt = userPrompt,
+        };
 
-            // Prepare and send the user prompt sanitization request
-            SanitizeModelResponseRequest request = new SanitizeModelResponseRequest
-            {
-                TemplateName = TemplateName.FromProjectLocationTemplate(
-                    projectId,
-                    locationId,
-                    templateId
-                ),
-                ModelResponseData = new DataItem { Text = modelResponse },
-                UserPrompt = userPrompt,
-            };
+        SanitizeModelResponseResponse modelResponseResult = client.SanitizeModelResponse(request);
 
-            SanitizeModelResponseResponse modelResponseResult = client.SanitizeModelResponse(
-                request
-            );
-
-            return modelResponseResult;
-        }
+        return modelResponseResult;
     }
 }
 // [END modelarmor_sanitize_prompt_and_response]

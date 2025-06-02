@@ -14,250 +14,240 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
+using ModelArmor.Samples;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ModelArmor.Samples.Tests
+public class SanitizeModelResponseTests : IClassFixture<ModelArmorFixture>
 {
-    public class SanitizeModelResponseTests : IClassFixture<ModelArmorFixture>
+    private readonly ModelArmorFixture _fixture;
+    private readonly SanitizeModelResponseSample _sample;
+    private readonly ITestOutputHelper _output;
+
+    public SanitizeModelResponseTests(ModelArmorFixture fixture, ITestOutputHelper output)
     {
-        private readonly ModelArmorFixture _fixture;
-        private readonly SanitizeModelResponseSample _sample;
-        private readonly ITestOutputHelper _output;
+        _fixture = fixture;
+        _sample = new SanitizeModelResponseSample();
+        _output = output;
+    }
 
-        public SanitizeModelResponseTests(ModelArmorFixture fixture, ITestOutputHelper output)
+    [Fact]
+    public void SanitizeModelResponseWithRaiTemplates()
+    {
+        // Arrange
+        string safeResponse =
+            "To make cheesecake without oven, you'll need to follow these steps...";
+        Template template = _fixture.CreateBaseTemplate();
+        string templateId = TemplateName.Parse(template.Name).TemplateId;
+
+        // Act
+        SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
+            _fixture.ProjectId,
+            _fixture.LocationId,
+            templateId,
+            safeResponse
+        );
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.SanitizationResult);
+        Assert.Equal(FilterMatchState.NoMatchFound, response.SanitizationResult.FilterMatchState);
+        Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
+
+        // Verify Rai filter results
+        if (response.SanitizationResult.FilterResults.ContainsKey("rai"))
         {
-            _fixture = fixture;
-            _sample = new SanitizeModelResponseSample();
-            _output = output;
-        }
+            var filterResult = response.SanitizationResult.FilterResults["rai"];
 
-        [Fact]
-        public void SanitizeModelResponseWithRaiTemplates()
-        {
-            // Arrange
-            string safeResponse =
-                "To make cheesecake without oven, you'll need to follow these steps...";
-            Template template = _fixture.CreateBaseTemplate();
-            string templateId = TemplateName.Parse(template.Name).TemplateId;
-
-            // Act
-            SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
-                _fixture.ProjectId,
-                _fixture.LocationId,
-                templateId,
-                safeResponse
-            );
-
-            // Assert
-            Assert.NotNull(response);
-            Assert.NotNull(response.SanitizationResult);
-            Assert.Equal(
-                FilterMatchState.NoMatchFound,
-                response.SanitizationResult.FilterMatchState
-            );
-            Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-
-            // Verify Rai filter results
-            if (response.SanitizationResult.FilterResults.ContainsKey("rai"))
+            // Check if the filter result has RAI filter result
+            if (filterResult.RaiFilterResult != null)
             {
-                var filterResult = response.SanitizationResult.FilterResults["rai"];
+                var raiFilterResult = filterResult.RaiFilterResult;
+                Assert.Equal(FilterMatchState.NoMatchFound, raiFilterResult.MatchState);
 
-                // Check if the filter result has RAI filter result
-                if (filterResult.RaiFilterResult != null)
+                // Iterate through all RAI filter type results
+                foreach (var entry in raiFilterResult.RaiFilterTypeResults)
                 {
-                    var raiFilterResult = filterResult.RaiFilterResult;
-                    Assert.Equal(FilterMatchState.NoMatchFound, raiFilterResult.MatchState);
-
-                    // Iterate through all RAI filter type results
-                    foreach (var entry in raiFilterResult.RaiFilterTypeResults)
-                    {
-                        string raiFilterType = entry.Key;
-                        Assert.Equal(FilterMatchState.NoMatchFound, entry.Value.MatchState);
-                    }
+                    string raiFilterType = entry.Key;
+                    Assert.Equal(FilterMatchState.NoMatchFound, entry.Value.MatchState);
                 }
             }
         }
+    }
 
-        [Fact]
-        public void SanitizeModelResponseWithMaliciousUrlTemplate()
+    [Fact]
+    public void SanitizeModelResponseWithMaliciousUrlTemplate()
+    {
+        // Arrange
+        string unsafeResponse =
+            "You can use this to make a cake: https://testsafebrowsing.appspot.com/s/malware.html";
+        Template template = _fixture.CreateTemplateWithMaliciousUri();
+        string templateId = TemplateName.Parse(template.Name).TemplateId;
+
+        // Act
+        SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
+            _fixture.ProjectId,
+            _fixture.LocationId,
+            templateId,
+            unsafeResponse
+        );
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.SanitizationResult);
+        Assert.Equal(FilterMatchState.MatchFound, response.SanitizationResult.FilterMatchState);
+        Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
+
+        if (response.SanitizationResult.FilterResults.ContainsKey("malicious_uris"))
         {
-            // Arrange
-            string unsafeResponse =
-                "You can use this to make a cake: https://testsafebrowsing.appspot.com/s/malware.html";
-            Template template = _fixture.CreateTemplateWithMaliciousUri();
-            string templateId = TemplateName.Parse(template.Name).TemplateId;
+            var filterResult = response.SanitizationResult.FilterResults["malicious_uris"];
 
-            // Act
-            SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
-                _fixture.ProjectId,
-                _fixture.LocationId,
-                templateId,
-                unsafeResponse
-            );
-
-            // Assert
-            Assert.NotNull(response);
-            Assert.NotNull(response.SanitizationResult);
-            Assert.Equal(FilterMatchState.MatchFound, response.SanitizationResult.FilterMatchState);
-            Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-
-            if (response.SanitizationResult.FilterResults.ContainsKey("malicious_uris"))
+            // Check if the filter result has malicious URI filter result
+            if (filterResult.MaliciousUriFilterResult != null)
             {
-                var filterResult = response.SanitizationResult.FilterResults["malicious_uris"];
+                // Assert that the match state is MATCH_FOUND
+                Assert.Equal(
+                    FilterMatchState.MatchFound,
+                    filterResult.MaliciousUriFilterResult.MatchState
+                );
 
-                // Check if the filter result has malicious URI filter result
-                if (filterResult.MaliciousUriFilterResult != null)
-                {
-                    // Assert that the match state is MATCH_FOUND
-                    Assert.Equal(
-                        FilterMatchState.MatchFound,
-                        filterResult.MaliciousUriFilterResult.MatchState
-                    );
+                // You can also verify the matched items if needed
+                Assert.NotEmpty(filterResult.MaliciousUriFilterResult.MaliciousUriMatchedItems);
 
-                    // You can also verify the matched items if needed
-                    Assert.NotEmpty(filterResult.MaliciousUriFilterResult.MaliciousUriMatchedItems);
+                // Check the specific URI that was matched
+                var matchedItem = filterResult.MaliciousUriFilterResult.MaliciousUriMatchedItems[0];
+                Assert.Equal(
+                    "https://testsafebrowsing.appspot.com/s/malware.html",
+                    matchedItem.Uri
+                );
 
-                    // Check the specific URI that was matched
-                    var matchedItem = filterResult
-                        .MaliciousUriFilterResult
-                        .MaliciousUriMatchedItems[0];
-                    Assert.Equal(
-                        "https://testsafebrowsing.appspot.com/s/malware.html",
-                        matchedItem.Uri
-                    );
-
-                    // Check the location of the match
-                    Assert.NotEmpty(matchedItem.Locations);
-                    var location = matchedItem.Locations[0];
-                    Assert.True(location.Start >= 0);
-                    Assert.True(location.End > location.Start);
-                }
+                // Check the location of the match
+                Assert.NotEmpty(matchedItem.Locations);
+                var location = matchedItem.Locations[0];
+                Assert.True(location.Start >= 0);
+                Assert.True(location.End > location.Start);
             }
         }
+    }
 
-        [Fact]
-        public void testSanitizeModelResponseWithBasicSdpTemplate()
+    [Fact]
+    public void testSanitizeModelResponseWithBasicSdpTemplate()
+    {
+        // Arrange
+        string modelResponse =
+            "For following email 1l6Y2@example.com found following"
+            + " associated phone number: 954-321-7890 and this ITIN: 988-86-1234";
+        Template template = _fixture.CreateBasicSdpTemplate();
+        string templateId = TemplateName.Parse(template.Name).TemplateId;
+
+        // Act
+        SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
+            _fixture.ProjectId,
+            _fixture.LocationId,
+            templateId,
+            modelResponse
+        );
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.SanitizationResult);
+        Assert.Equal(FilterMatchState.MatchFound, response.SanitizationResult.FilterMatchState);
+        Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
+
+        // Verify SDP filter results
+        if (response.SanitizationResult.FilterResults.ContainsKey("sdp"))
         {
-            // Arrange
-            string modelResponse =
-                "For following email 1l6Y2@example.com found following"
-                + " associated phone number: 954-321-7890 and this ITIN: 988-86-1234";
-            Template template = _fixture.CreateBasicSdpTemplate();
-            string templateId = TemplateName.Parse(template.Name).TemplateId;
-
-            // Act
-            SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
-                _fixture.ProjectId,
-                _fixture.LocationId,
-                templateId,
-                modelResponse
-            );
-
-            // Assert
-            Assert.NotNull(response);
-            Assert.NotNull(response.SanitizationResult);
-            Assert.Equal(FilterMatchState.MatchFound, response.SanitizationResult.FilterMatchState);
-            Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-
-            // Verify SDP filter results
-            if (response.SanitizationResult.FilterResults.ContainsKey("sdp"))
+            var filterResultsMap = response.SanitizationResult.FilterResults;
+            foreach (var entry in filterResultsMap)
             {
-                var filterResultsMap = response.SanitizationResult.FilterResults;
-                foreach (var entry in filterResultsMap)
-                {
-                    string filterName = entry.Key;
-                    var filterResult = entry.Value;
+                string filterName = entry.Key;
+                var filterResult = entry.Value;
 
-                    if (filterResult.SdpFilterResult != null)
+                if (filterResult.SdpFilterResult != null)
+                {
+                    if (filterResult.SdpFilterResult.InspectResult != null)
                     {
-                        if (filterResult.SdpFilterResult.InspectResult != null)
+                        Assert.Equal(
+                            FilterMatchState.MatchFound,
+                            filterResult.SdpFilterResult.InspectResult.MatchState
+                        );
+
+                        var findings = filterResult.SdpFilterResult.InspectResult.Findings;
+                        foreach (var finding in findings)
                         {
                             Assert.Equal(
-                                FilterMatchState.MatchFound,
-                                filterResult.SdpFilterResult.InspectResult.MatchState
+                                "US_INDIVIDUAL_TAXPAYER_IDENTIFICATION_NUMBER",
+                                finding.InfoType
                             );
-
-                            var findings = filterResult.SdpFilterResult.InspectResult.Findings;
-                            foreach (var finding in findings)
-                            {
-                                Assert.Equal(
-                                    "US_INDIVIDUAL_TAXPAYER_IDENTIFICATION_NUMBER",
-                                    finding.InfoType
-                                );
-                            }
                         }
                     }
                 }
             }
         }
+    }
 
-        [Fact]
-        public void testSanitizeModelResponseWithAdvancedSdpTemplate()
+    [Fact]
+    public void testSanitizeModelResponseWithAdvancedSdpTemplate()
+    {
+        // Arrange
+        string modelResponse =
+            "For following email 1l6Y2@example.com found following"
+            + " associated phone number: 954-321-7890 and this ITIN: 988-86-1234";
+        Template template = _fixture.CreateBasicSdpTemplate();
+        string templateId = TemplateName.Parse(template.Name).TemplateId;
+
+        // Act
+        SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
+            _fixture.ProjectId,
+            _fixture.LocationId,
+            templateId,
+            modelResponse
+        );
+
+        // Assert
+        Assert.NotNull(response);
+        Assert.NotNull(response.SanitizationResult);
+        Assert.Equal(FilterMatchState.MatchFound, response.SanitizationResult.FilterMatchState);
+        Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
+
+        // Verify SDP filter results
+        if (response.SanitizationResult.FilterResults.ContainsKey("sdp"))
         {
-            // Arrange
-            string modelResponse =
-                "For following email 1l6Y2@example.com found following"
-                + " associated phone number: 954-321-7890 and this ITIN: 988-86-1234";
-            Template template = _fixture.CreateBasicSdpTemplate();
-            string templateId = TemplateName.Parse(template.Name).TemplateId;
-
-            // Act
-            SanitizeModelResponseResponse response = _sample.SanitizeModelResponse(
-                _fixture.ProjectId,
-                _fixture.LocationId,
-                templateId,
-                modelResponse
-            );
-
-            // Assert
-            Assert.NotNull(response);
-            Assert.NotNull(response.SanitizationResult);
-            Assert.Equal(FilterMatchState.MatchFound, response.SanitizationResult.FilterMatchState);
-            Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-
-            // Verify SDP filter results
-            if (response.SanitizationResult.FilterResults.ContainsKey("sdp"))
+            var filterResultsMap = response.SanitizationResult.FilterResults;
+            foreach (var entry in filterResultsMap)
             {
-                var filterResultsMap = response.SanitizationResult.FilterResults;
-                foreach (var entry in filterResultsMap)
+                string filterName = entry.Key;
+                var filterResult = entry.Value;
+
+                if (filterResult.SdpFilterResult != null)
                 {
-                    string filterName = entry.Key;
-                    var filterResult = entry.Value;
-
-                    if (filterResult.SdpFilterResult != null)
+                    // Verify Inspect Result
+                    if (filterResult.SdpFilterResult.InspectResult != null)
                     {
-                        // Verify Inspect Result
-                        if (filterResult.SdpFilterResult.InspectResult != null)
+                        Assert.Equal(
+                            FilterMatchState.MatchFound,
+                            filterResult.SdpFilterResult.InspectResult.MatchState
+                        );
+
+                        var findings = filterResult.SdpFilterResult.InspectResult.Findings;
+                        foreach (var finding in findings)
                         {
                             Assert.Equal(
-                                FilterMatchState.MatchFound,
-                                filterResult.SdpFilterResult.InspectResult.MatchState
+                                "US_INDIVIDUAL_TAXPAYER_IDENTIFICATION_NUMBER",
+                                finding.InfoType
                             );
-
-                            var findings = filterResult.SdpFilterResult.InspectResult.Findings;
-                            foreach (var finding in findings)
-                            {
-                                Assert.Equal(
-                                    "US_INDIVIDUAL_TAXPAYER_IDENTIFICATION_NUMBER",
-                                    finding.InfoType
-                                );
-                            }
                         }
+                    }
 
-                        // Verify De-identified Result
-                        if (filterResult.SdpFilterResult.DeidentifyResult != null)
-                        {
-                            Assert.Equal(
-                                FilterMatchState.MatchFound,
-                                filterResult.SdpFilterResult.DeidentifyResult.MatchState
-                            );
-                            Assert.NotNull(filterResult.SdpFilterResult.DeidentifyResult.Data.Text);
-                        }
+                    // Verify De-identified Result
+                    if (filterResult.SdpFilterResult.DeidentifyResult != null)
+                    {
+                        Assert.Equal(
+                            FilterMatchState.MatchFound,
+                            filterResult.SdpFilterResult.DeidentifyResult.MatchState
+                        );
+                        Assert.NotNull(filterResult.SdpFilterResult.DeidentifyResult.Data.Text);
                     }
                 }
             }

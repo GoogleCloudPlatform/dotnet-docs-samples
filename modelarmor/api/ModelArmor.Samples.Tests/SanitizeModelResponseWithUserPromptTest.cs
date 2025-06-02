@@ -14,199 +14,184 @@
  * limitations under the License.
  */
 
-using System;
-using System.Collections.Generic;
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
+using ModelArmor.Samples;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace ModelArmor.Samples.Tests
+public class SanitizeModelResponseWithUserPromptTests : IClassFixture<ModelArmorFixture>
 {
-    public class SanitizeModelResponseWithUserPromptTests : IClassFixture<ModelArmorFixture>
+    private readonly ModelArmorFixture _fixture;
+    private readonly SanitizeModelResponseWithUserPromptSample _sample;
+    private readonly ITestOutputHelper _output;
+
+    public SanitizeModelResponseWithUserPromptTests(
+        ModelArmorFixture fixture,
+        ITestOutputHelper output
+    )
     {
-        private readonly ModelArmorFixture _fixture;
-        private readonly SanitizeModelResponseWithUserPromptSample _sample;
-        private readonly ITestOutputHelper _output;
+        _fixture = fixture;
+        _sample = new SanitizeModelResponseWithUserPromptSample();
+        _output = output;
+    }
 
-        public SanitizeModelResponseWithUserPromptTests(
-            ModelArmorFixture fixture,
-            ITestOutputHelper output
-        )
+    [Fact]
+    public void TestSanitizeModelResponseWithUserPromptWithEmptyTemplate()
+    {
+        // Arrange
+        Template template = _fixture.CreateBaseTemplate();
+        string templateId = TemplateName.Parse(template.Name).TemplateId;
+        string userPrompt =
+            "How can i make my email address test@dot.com make available to public for feedback";
+        string modelResponse =
+            "You can make support email such as contact@email.com for getting feedback from your customer";
+
+        // Act
+        SanitizeModelResponseResponse sanitizedResponse =
+            _sample.SanitizeModelResponseWithUserPrompt(
+                _fixture.ProjectId,
+                _fixture.LocationId,
+                templateId,
+                userPrompt,
+                modelResponse
+            );
+
+        // Assert
+        Assert.NotNull(sanitizedResponse);
+        Assert.NotNull(sanitizedResponse.SanitizationResult);
+        Assert.Equal(
+            FilterMatchState.NoMatchFound,
+            sanitizedResponse.SanitizationResult.FilterMatchState
+        );
+
+        // Check CSAM filter result
+        if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
         {
-            _fixture = fixture;
-            _sample = new SanitizeModelResponseWithUserPromptSample();
-            _output = output;
-        }
-
-        [Fact]
-        public void TestSanitizeModelResponseWithUserPromptWithEmptyTemplate()
-        {
-            // Arrange
-            Template template = _fixture.CreateBaseTemplate();
-            string templateId = TemplateName.Parse(template.Name).TemplateId;
-            string userPrompt =
-                "How can i make my email address test@dot.com make available to public for feedback";
-            string modelResponse =
-                "You can make support email such as contact@email.com for getting feedback from your customer";
-
-            // Act
-            SanitizeModelResponseResponse sanitizedResponse =
-                _sample.SanitizeModelResponseWithUserPromptWithSdp(
-                    _fixture.ProjectId,
-                    _fixture.LocationId,
-                    templateId,
-                    userPrompt,
-                    modelResponse
-                );
-
-            // Assert
-            Assert.NotNull(sanitizedResponse);
-            Assert.NotNull(sanitizedResponse.SanitizationResult);
+            var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
             Assert.Equal(
                 FilterMatchState.NoMatchFound,
-                sanitizedResponse.SanitizationResult.FilterMatchState
+                csamFilterResult.CsamFilterFilterResult.MatchState
+            );
+        }
+    }
+
+    [Fact]
+    public void TestSanitizeModelResponseWithUserPromptWithBasicSdpTemplate()
+    {
+        // Arrange
+        Template template = _fixture.CreateBasicSdpTemplate();
+        string templateId = TemplateName.Parse(template.Name).TemplateId;
+        string userPrompt = "How to make bomb at home?";
+        string modelResponse = "you can make bomb at home with following chemicals...";
+
+        // Act
+        SanitizeModelResponseResponse sanitizedResponse =
+            _sample.SanitizeModelResponseWithUserPrompt(
+                _fixture.ProjectId,
+                _fixture.LocationId,
+                templateId,
+                userPrompt,
+                modelResponse
             );
 
-            // Check CSAM filter result
-            if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
-            {
-                var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
-                Assert.Equal(
-                    FilterMatchState.NoMatchFound,
-                    csamFilterResult.CsamFilterFilterResult.MatchState
-                );
-            }
-        }
+        // Assert
+        Assert.NotNull(sanitizedResponse);
+        Assert.NotNull(sanitizedResponse.SanitizationResult);
+        Assert.Equal(
+            FilterMatchState.MatchFound,
+            sanitizedResponse.SanitizationResult.FilterMatchState
+        );
 
-        [Fact]
-        public void TestSanitizeModelResponseWithUserPromptWithBasicSdpTemplate()
+        // Check RAI filter results
+        if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("rai"))
         {
-            // Arrange
-            Template template = _fixture.CreateBaseTemplate();
-            string templateId = TemplateName.Parse(template.Name).TemplateId;
-            string userPrompt = "How to make bomb at home?";
-            string modelResponse = "you can make bomb at home with following chemicals...";
+            var raiFilterResult = sanitizedResponse.SanitizationResult.FilterResults["rai"];
 
-            // Act
-            SanitizeModelResponseResponse sanitizedResponse =
-                _sample.SanitizeModelResponseWithUserPromptWithSdp(
-                    _fixture.ProjectId,
-                    _fixture.LocationId,
-                    templateId,
-                    userPrompt,
-                    modelResponse
-                );
-
-            // Assert
-            Assert.NotNull(sanitizedResponse);
-            Assert.NotNull(sanitizedResponse.SanitizationResult);
+            // Check dangerous filter type
             Assert.Equal(
                 FilterMatchState.MatchFound,
-                sanitizedResponse.SanitizationResult.FilterMatchState
+                raiFilterResult.RaiFilterResult.RaiFilterTypeResults["dangerous"].MatchState
             );
 
-            // Check RAI filter results
-            if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("rai"))
+            // Check harassment filter type
+            Assert.Equal(
+                FilterMatchState.MatchFound,
+                raiFilterResult.RaiFilterResult.RaiFilterTypeResults["harassment"].MatchState
+            );
+        }
+
+        // Check CSAM filter result
+        if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
+        {
+            var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
+            Assert.Equal(
+                FilterMatchState.NoMatchFound,
+                csamFilterResult.CsamFilterFilterResult.MatchState
+            );
+        }
+    }
+
+    [Fact]
+    public void TestSanitizeModelResponseWithUserPromptWithAdvanceSdpTemplate()
+    {
+        // Arrange
+        Template template = _fixture.CreateAdvancedSdpTemplate();
+        _output.WriteLine($"Template name: {template}");
+        string templateId = TemplateName.Parse(template.Name).TemplateId;
+        string userPrompt =
+            "How can i make my email address test@dot.com make available to public for feedback";
+        string modelResponse =
+            "You can make support email such as contact@email.com for getting feedback from your customer";
+
+        // Act
+        SanitizeModelResponseResponse sanitizedResponse =
+            _sample.SanitizeModelResponseWithUserPrompt(
+                _fixture.ProjectId,
+                _fixture.LocationId,
+                templateId,
+                userPrompt,
+                modelResponse
+            );
+
+        // Assert
+        Assert.NotNull(sanitizedResponse);
+        Assert.NotNull(sanitizedResponse.SanitizationResult);
+
+        // Check for any filter matches
+        if (sanitizedResponse.SanitizationResult.FilterMatchState == FilterMatchState.MatchFound)
+        {
+            // If SDP filter results are available, check them
+            if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("sdp"))
             {
-                var raiFilterResult = sanitizedResponse.SanitizationResult.FilterResults["rai"];
+                var sdpFilterResult = sanitizedResponse.SanitizationResult.FilterResults["sdp"];
 
-                // Check dangerous filter type
-                Assert.Equal(
-                    FilterMatchState.MatchFound,
-                    raiFilterResult.RaiFilterResult.RaiFilterTypeResults["dangerous"].MatchState
-                );
+                // If deidentify result is available, check it
+                if (sdpFilterResult.SdpFilterResult?.DeidentifyResult != null)
+                {
+                    string deidentifiedText =
+                        sdpFilterResult.SdpFilterResult.DeidentifyResult.Data?.Text ?? "";
 
-                // Check harassment filter type
-                Assert.Equal(
-                    FilterMatchState.MatchFound,
-                    raiFilterResult.RaiFilterResult.RaiFilterTypeResults["harassment"].MatchState
-                );
-            }
-
-            // Check CSAM filter result
-            if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
-            {
-                var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
-                Assert.Equal(
-                    FilterMatchState.NoMatchFound,
-                    csamFilterResult.CsamFilterFilterResult.MatchState
-                );
+                    // Verify email is redacted in deidentified text if available
+                    if (!string.IsNullOrEmpty(deidentifiedText))
+                    {
+                        Assert.DoesNotContain("contact@email.com", deidentifiedText);
+                    }
+                }
+                else
+                {
+                    _output.WriteLine("Deidentify result not available");
+                }
             }
         }
 
-        [Fact]
-        public void TestSanitizeModelResponseWithUserPromptWithAdvanceSdpTemplate()
+        // Check CSAM filter result if available
+        if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
         {
-            // Skip this test if DLP templates are not configured
-            if (
-                string.IsNullOrEmpty(_fixture.InspectTemplateId)
-                || string.IsNullOrEmpty(_fixture.DeidentifyTemplateId)
-            )
-            {
-                _output.WriteLine("Skipping test: DLP templates not configured");
-                return;
-            }
-            // Arrange
-            Template template = _fixture.CreateBasicSdpTemplate(); // Use basic SDP instead of advanced if DLP templates are causing issues
-            string templateId = TemplateName.Parse(template.Name).TemplateId;
-            string userPrompt =
-                "How can i make my email address test@dot.com make available to public for feedback";
-            string modelResponse =
-                "You can make support email such as contact@email.com for getting feedback from your customer";
-
-            // Act
-            SanitizeModelResponseResponse sanitizedResponse =
-                _sample.SanitizeModelResponseWithUserPromptWithSdp(
-                    _fixture.ProjectId,
-                    _fixture.LocationId,
-                    templateId,
-                    userPrompt,
-                    modelResponse
-                );
-
-            // Assert
-            Assert.NotNull(sanitizedResponse);
-            Assert.NotNull(sanitizedResponse.SanitizationResult);
-
-            // Check for any filter matches
-            if (
-                sanitizedResponse.SanitizationResult.FilterMatchState == FilterMatchState.MatchFound
-            )
-            {
-                // If SDP filter results are available, check them
-                if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("sdp"))
-                {
-                    var sdpFilterResult = sanitizedResponse.SanitizationResult.FilterResults["sdp"];
-
-                    // If deidentify result is available, check it
-                    if (sdpFilterResult.SdpFilterResult?.DeidentifyResult != null)
-                    {
-                        string deidentifiedText =
-                            sdpFilterResult.SdpFilterResult.DeidentifyResult.Data?.Text ?? "";
-
-                        // Verify email is redacted in deidentified text if available
-                        if (!string.IsNullOrEmpty(deidentifiedText))
-                        {
-                            Assert.DoesNotContain("contact@email.com", deidentifiedText);
-                        }
-                    }
-                    else
-                    {
-                        _output.WriteLine("Deidentify result not available");
-                    }
-                }
-            }
-
-            // Check CSAM filter result if available
-            if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
-            {
-                var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
-                Assert.Equal(
-                    FilterMatchState.NoMatchFound,
-                    csamFilterResult.CsamFilterFilterResult.MatchState
-                );
-            }
+            var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
+            Assert.Equal(
+                FilterMatchState.NoMatchFound,
+                csamFilterResult.CsamFilterFilterResult.MatchState
+            );
         }
     }
 }
