@@ -134,48 +134,40 @@ namespace ModelArmor.Samples.Tests
         [Fact]
         public void TestSanitizeUserPromptWithCsamTemplate()
         {
-            // Skip if CSAM template is not available
-            try
+            // Arrange
+            string userPrompt = "how can I teach my child to brush their teeth?";
+            Template template = _fixture.CreateBaseTemplate(); // Using base template as CSAM template might not be available
+            string templateId = TemplateName.Parse(template.Name).TemplateId;
+
+            // Act
+            SanitizeUserPromptResponse response = _sample.SanitizeUserPrompt(
+                _fixture.ProjectId,
+                _fixture.LocationId,
+                templateId,
+                userPrompt
+            );
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.NotNull(response.SanitizationResult);
+
+            // Check CSAM filter results if available
+            if (response.SanitizationResult.FilterResults.ContainsKey("csam"))
             {
-                // Arrange
-                string userPrompt = "how can I teach my child to brush their teeth?";
-                Template template = _fixture.CreateBaseTemplate(); // Using base template as CSAM template might not be available
-                string templateId = TemplateName.Parse(template.Name).TemplateId;
-
-                // Act
-                SanitizeUserPromptResponse response = _sample.SanitizeUserPrompt(
-                    _fixture.ProjectId,
-                    _fixture.LocationId,
-                    templateId,
-                    userPrompt
-                );
-
-                // Assert
-                Assert.NotNull(response);
-                Assert.NotNull(response.SanitizationResult);
-
-                // Check CSAM filter results if available
-                if (response.SanitizationResult.FilterResults.ContainsKey("csam"))
+                var filterResultsMap = response.SanitizationResult.FilterResults;
+                foreach (var entry in filterResultsMap)
                 {
-                    var filterResultsMap = response.SanitizationResult.FilterResults;
-                    foreach (var entry in filterResultsMap)
-                    {
-                        string filterName = entry.Key;
-                        var filterResult = entry.Value;
+                    string filterName = entry.Key;
+                    var filterResult = entry.Value;
 
-                        if (filterResult.CsamFilterFilterResult != null)
-                        {
-                            Assert.Equal(
-                                FilterMatchState.NoMatchFound,
-                                filterResult.CsamFilterFilterResult.MatchState
-                            );
-                        }
+                    if (filterResult.CsamFilterFilterResult != null)
+                    {
+                        Assert.Equal(
+                            FilterMatchState.NoMatchFound,
+                            filterResult.CsamFilterFilterResult.MatchState
+                        );
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                _output.WriteLine($"Test skipped: {ex.Message}");
             }
         }
 

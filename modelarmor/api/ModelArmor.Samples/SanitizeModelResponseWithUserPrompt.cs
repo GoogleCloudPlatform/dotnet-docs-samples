@@ -23,9 +23,9 @@ using Newtonsoft.Json;
 
 namespace ModelArmor.Samples
 {
-    public class SanitizePromptAndResponseSample
+    public class SanitizeModelResponseWithUserPromptSample
     {
-        public SanitizeModelResponseResponse SanitizePromptAndResponseWithSdp(
+        public SanitizeModelResponseResponse SanitizeModelResponseWithUserPromptWithSdp(
             string projectId = "my-project",
             string locationId = "us-central1",
             string templateId = "my-template",

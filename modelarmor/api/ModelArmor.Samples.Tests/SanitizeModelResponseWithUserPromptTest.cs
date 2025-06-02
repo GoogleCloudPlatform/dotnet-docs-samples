@@ -23,16 +23,19 @@ using Xunit.Abstractions;
 
 namespace ModelArmor.Samples.Tests
 {
-    public class SanitizePromptAndResponseTests : IClassFixture<ModelArmorFixture>
+    public class SanitizeModelResponseWithUserPromptTests : IClassFixture<ModelArmorFixture>
     {
         private readonly ModelArmorFixture _fixture;
-        private readonly SanitizePromptAndResponseSample _sample;
+        private readonly SanitizeModelResponseWithUserPromptSample _sample;
         private readonly ITestOutputHelper _output;
 
-        public SanitizePromptAndResponseTests(ModelArmorFixture fixture, ITestOutputHelper output)
+        public SanitizeModelResponseWithUserPromptTests(
+            ModelArmorFixture fixture,
+            ITestOutputHelper output
+        )
         {
             _fixture = fixture;
-            _sample = new SanitizePromptAndResponseSample();
+            _sample = new SanitizeModelResponseWithUserPromptSample();
             _output = output;
         }
 
@@ -49,7 +52,7 @@ namespace ModelArmor.Samples.Tests
 
             // Act
             SanitizeModelResponseResponse sanitizedResponse =
-                _sample.SanitizePromptAndResponseWithSdp(
+                _sample.SanitizeModelResponseWithUserPromptWithSdp(
                     _fixture.ProjectId,
                     _fixture.LocationId,
                     templateId,
@@ -87,7 +90,7 @@ namespace ModelArmor.Samples.Tests
 
             // Act
             SanitizeModelResponseResponse sanitizedResponse =
-                _sample.SanitizePromptAndResponseWithSdp(
+                _sample.SanitizeModelResponseWithUserPromptWithSdp(
                     _fixture.ProjectId,
                     _fixture.LocationId,
                     templateId,
@@ -144,80 +147,65 @@ namespace ModelArmor.Samples.Tests
                 _output.WriteLine("Skipping test: DLP templates not configured");
                 return;
             }
+            // Arrange
+            Template template = _fixture.CreateBasicSdpTemplate(); // Use basic SDP instead of advanced if DLP templates are causing issues
+            string templateId = TemplateName.Parse(template.Name).TemplateId;
+            string userPrompt =
+                "How can i make my email address test@dot.com make available to public for feedback";
+            string modelResponse =
+                "You can make support email such as contact@email.com for getting feedback from your customer";
 
-            try
+            // Act
+            SanitizeModelResponseResponse sanitizedResponse =
+                _sample.SanitizeModelResponseWithUserPromptWithSdp(
+                    _fixture.ProjectId,
+                    _fixture.LocationId,
+                    templateId,
+                    userPrompt,
+                    modelResponse
+                );
+
+            // Assert
+            Assert.NotNull(sanitizedResponse);
+            Assert.NotNull(sanitizedResponse.SanitizationResult);
+
+            // Check for any filter matches
+            if (
+                sanitizedResponse.SanitizationResult.FilterMatchState == FilterMatchState.MatchFound
+            )
             {
-                // Arrange
-                Template template = _fixture.CreateBasicSdpTemplate(); // Use basic SDP instead of advanced if DLP templates are causing issues
-                string templateId = TemplateName.Parse(template.Name).TemplateId;
-                string userPrompt =
-                    "How can i make my email address test@dot.com make available to public for feedback";
-                string modelResponse =
-                    "You can make support email such as contact@email.com for getting feedback from your customer";
-
-                // Act
-                SanitizeModelResponseResponse sanitizedResponse =
-                    _sample.SanitizePromptAndResponseWithSdp(
-                        _fixture.ProjectId,
-                        _fixture.LocationId,
-                        templateId,
-                        userPrompt,
-                        modelResponse
-                    );
-
-                // Assert
-                Assert.NotNull(sanitizedResponse);
-                Assert.NotNull(sanitizedResponse.SanitizationResult);
-
-                // Check for any filter matches
-                if (
-                    sanitizedResponse.SanitizationResult.FilterMatchState
-                    == FilterMatchState.MatchFound
-                )
+                // If SDP filter results are available, check them
+                if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("sdp"))
                 {
-                    // If SDP filter results are available, check them
-                    if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("sdp"))
+                    var sdpFilterResult = sanitizedResponse.SanitizationResult.FilterResults["sdp"];
+
+                    // If deidentify result is available, check it
+                    if (sdpFilterResult.SdpFilterResult?.DeidentifyResult != null)
                     {
-                        var sdpFilterResult = sanitizedResponse.SanitizationResult.FilterResults[
-                            "sdp"
-                        ];
+                        string deidentifiedText =
+                            sdpFilterResult.SdpFilterResult.DeidentifyResult.Data?.Text ?? "";
 
-                        // If deidentify result is available, check it
-                        if (sdpFilterResult.SdpFilterResult?.DeidentifyResult != null)
+                        // Verify email is redacted in deidentified text if available
+                        if (!string.IsNullOrEmpty(deidentifiedText))
                         {
-                            string deidentifiedText =
-                                sdpFilterResult.SdpFilterResult.DeidentifyResult.Data?.Text ?? "";
-
-                            // Verify email is redacted in deidentified text if available
-                            if (!string.IsNullOrEmpty(deidentifiedText))
-                            {
-                                Assert.DoesNotContain("contact@email.com", deidentifiedText);
-                            }
-                        }
-                        else
-                        {
-                            _output.WriteLine("Deidentify result not available");
+                            Assert.DoesNotContain("contact@email.com", deidentifiedText);
                         }
                     }
-                }
-
-                // Check CSAM filter result if available
-                if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
-                {
-                    var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults[
-                        "csam"
-                    ];
-                    Assert.Equal(
-                        FilterMatchState.NoMatchFound,
-                        csamFilterResult.CsamFilterFilterResult.MatchState
-                    );
+                    else
+                    {
+                        _output.WriteLine("Deidentify result not available");
+                    }
                 }
             }
-            catch (Exception ex)
+
+            // Check CSAM filter result if available
+            if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
             {
-                _output.WriteLine($"Test failed with exception: {ex.Message}");
-                _output.WriteLine($"Stack trace: {ex.StackTrace}");
-                throw;
+                var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
+                Assert.Equal(
+                    FilterMatchState.NoMatchFound,
+                    csamFilterResult.CsamFilterFilterResult.MatchState
+                );
             }
         }
     }
