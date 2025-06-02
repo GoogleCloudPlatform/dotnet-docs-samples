@@ -39,14 +39,7 @@ namespace ModelArmor.Samples.Tests
         public void UpdateFolderFloorSettingTest()
         {
             // Get folder ID from environment variable
-            string folderId = Environment.GetEnvironmentVariable("MA_FOLDER_ID");
-
-            // Skip test if folder ID is not set
-            if (string.IsNullOrEmpty(folderId))
-            {
-                _output.WriteLine("Skipping test: MA_FOLDER_ID environment variable not set");
-                return;
-            }
+            string folderId = _fixture.GetRequiredEnvVar("MA_FOLDER_ID");
 
             // Run the sample
             FloorSetting response = _sample.UpdateFolderFloorSetting(folderId);

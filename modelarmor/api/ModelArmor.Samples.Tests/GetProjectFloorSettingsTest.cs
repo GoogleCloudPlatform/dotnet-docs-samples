@@ -39,14 +39,7 @@ namespace ModelArmor.Samples.Tests
         public void GetProjectFloorSettingTest()
         {
             // Get project ID from environment variable
-            string projectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-
-            // Skip test if project ID is not set
-            if (string.IsNullOrEmpty(projectId))
-            {
-                _output.WriteLine("Skipping test: GOOGLE_PROJECT_ID environment variable not set");
-                return;
-            }
+            string projectId = _fixture.GetRequiredEnvVar("GOOGLE_PROJECT_ID");
 
             // Run the sample
             FloorSetting response = _sample.GetProjectFloorSetting(projectId);

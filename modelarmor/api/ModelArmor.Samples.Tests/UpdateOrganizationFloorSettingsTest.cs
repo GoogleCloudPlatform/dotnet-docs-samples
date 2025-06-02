@@ -42,14 +42,7 @@ namespace ModelArmor.Samples.Tests
         public void UpdateOrganizationFloorSettingTest()
         {
             // Get organization ID from environment variable
-            string organizationId = Environment.GetEnvironmentVariable("MA_ORG_ID");
-
-            // Skip test if organization ID is not set
-            if (string.IsNullOrEmpty(organizationId))
-            {
-                _output.WriteLine("Skipping test: MA_ORG_ID environment variable not set");
-                return;
-            }
+            string organizationId = _fixture.GetRequiredEnvVar("MA_ORG_ID");
 
             // Run the sample
             FloorSetting response = _sample.UpdateOrganizationFloorSetting(organizationId);
