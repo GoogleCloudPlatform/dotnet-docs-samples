@@ -33,7 +33,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string ProjectId { get; }
     public string LocationId { get; }
     private readonly List<TemplateName> _maTemplatesToCleanup = new List<TemplateName>();
-    private readonly List<string> _dlpTemplatesToCleanup = new List<string>();
+    private readonly List<TemplateName> _dlpTemplatesToCleanup = new List<TemplateName>();
 
     public ModelArmorFixture()
     {
@@ -70,7 +70,11 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string CreateInspectTemplate(string displayName = "Test Inspect Template")
     {
         var parent = new LocationName(ProjectId, LocationId).ToString();
-        var templateId = $"inspect-{GenerateUniqueId()}";
+        TemplateName templateName = CreateTemplateName();
+        RegisterDlpTemplateForCleanup(templateName);
+
+        string templateId = templateName.TemplateId;
+
         var request = new CreateInspectTemplateRequest
         {
             Parent = parent,
@@ -91,8 +95,6 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         };
         var response = DlpClient.CreateInspectTemplate(request);
 
-        // RegisterDlpTemplateForCleanup(response.Name);
-
         return response.Name;
     }
 
@@ -100,7 +102,10 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string CreateDeidentifyTemplate(string displayName = "Test Deidentify Template")
     {
         var parent = new LocationName(ProjectId, LocationId).ToString();
-        var templateId = $"deidentify-{GenerateUniqueId()}";
+        TemplateName templateName = CreateTemplateName();
+        RegisterDlpTemplateForCleanup(templateName);
+
+        string templateId = templateName.TemplateId;
 
         var request = new CreateDeidentifyTemplateRequest
         {
@@ -131,7 +136,6 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateDeidentifyTemplate(request);
-        // RegisterDlpTemplateForCleanup(response.Name);
 
         return response.Name;
     }
@@ -156,16 +160,16 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         {
             try
             {
-                if (dlpTemplateName.Contains("inspectTemplates/"))
+                if (dlpTemplateName.ToString().Contains("inspectTemplates/"))
                 {
                     DlpClient.DeleteInspectTemplate(
-                        new DeleteInspectTemplateRequest { Name = dlpTemplateName }
+                        new DeleteInspectTemplateRequest { Name = dlpTemplateName.ToString() }
                     );
                 }
-                else if (dlpTemplateName.Contains("deidentifyTemplates/"))
+                else if (dlpTemplateName.ToString().Contains("deidentifyTemplates/"))
                 {
                     DlpClient.DeleteDeidentifyTemplate(
-                        new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName }
+                        new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName.ToString() }
                     );
                 }
             }
@@ -184,9 +188,9 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         }
     }
 
-    public void RegisterDlpTemplateForCleanup(string templateName)
+    public void RegisterDlpTemplateForCleanup(TemplateName templateName)
     {
-        if (!string.IsNullOrEmpty(templateName))
+        if (templateName != null && !string.IsNullOrEmpty(templateName.ToString()))
         {
             _dlpTemplatesToCleanup.Add(templateName);
         }
