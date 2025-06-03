@@ -23,7 +23,7 @@ using System.Collections.Generic;
 public class ListBatchJobsSample
 {
     /// <summary>
-    /// List storage batch operation jobs.
+    /// Lists storage batch operation jobs.
     /// </summary>
     /// <param name="locationName">A resource name with pattern <c>projects/{project}/locations/{location}</c>.</param>
     /// <param name="filter">The field to filter the list of storage batch operation jobs.</param>
@@ -35,7 +35,6 @@ public class ListBatchJobsSample
         string orderBy = "name")
     {
         StorageBatchOperationsClient storageBatchOperationsClient = StorageBatchOperationsClient.Create();
-
         ListJobsRequest request = new ListJobsRequest
         {
             ParentAsLocationName = locationName,

@@ -58,7 +58,7 @@ public class CreateBatchJobTest
     {
         CreateBatchJobSample createJob = new CreateBatchJobSample();
         var jobId = _fixture.GenerateJobId();
-        var jobTransformationCase = "PutObjectHold";
+        var jobTransformationCase = "DeleteObject";
         var holdState = "EventBasedHoldSet";
         string jobType;
         if (jobTransformationCase == "PutObjectHold")

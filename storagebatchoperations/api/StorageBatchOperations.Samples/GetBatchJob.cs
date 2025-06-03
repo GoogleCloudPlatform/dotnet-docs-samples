@@ -20,7 +20,7 @@ using System;
 public class GetBatchJobSample
 {
     /// <summary>
-    /// Get a storage batch operation job.
+    /// Gets a storage batch operation job.
     /// </summary>
     /// <param name="jobName">The name of the job to get. Format: projects/{project_id}/locations/{location_id}/jobs/{job_id}.</param>
     public Job GetBatchJob(string jobName = "projects/{project_id}/locations/{location_id}/jobs/{job_id}")
@@ -30,7 +30,6 @@ public class GetBatchJobSample
         {
             Name = jobName
         };
-
         var response = storageBatchOperationsClient.GetJob(request);
         Console.WriteLine($"The Name of Storage Batch Operation Job is : {response.Name}");
         return response;

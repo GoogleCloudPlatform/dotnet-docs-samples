@@ -15,6 +15,7 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.StorageBatchOperations.V1;
 using Google.LongRunning;
+using System;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -76,7 +77,6 @@ public class CancelBatchJobTest
         string jobId = "12345678910")
     {
         StorageBatchOperationsClient storageBatchOperationsClient = StorageBatchOperationsClient.Create();
-
         CreateJobRequest request = new CreateJobRequest
         {
             ParentAsLocationName = locationName,
@@ -90,21 +90,23 @@ public class CancelBatchJobTest
         };
 
         Operation<Job, OperationMetadata> response = storageBatchOperationsClient.CreateJob(request);
-
         string operationName = response.Name;
         Operation<Job, OperationMetadata> retrievedResponse = storageBatchOperationsClient.PollOnceCreateJob(operationName);
 
-        if (retrievedResponse.IsCompleted)
-        {
-            string jobName = retrievedResponse.Metadata.Job.Name;
-            return jobName;
-        }
-        else
+        while (true)
         {
             retrievedResponse = retrievedResponse.PollOnce();
-            string jobName = retrievedResponse.Metadata.Job.Name;
-            return jobName;
+            if (string.IsNullOrEmpty(retrievedResponse.Metadata.ToString()))
+            {
+                continue;
+            }
+            else
+            {
+                break;
+            }
         }
+        string jobName = retrievedResponse.Metadata.Job.Name;
+        return jobName;
     }
 
     /// <summary>
