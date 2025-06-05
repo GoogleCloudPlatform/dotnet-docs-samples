@@ -36,9 +36,6 @@ public class DisableRegionalSecretDelayedDestroySample
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
         }.Build();
 
-        // Build the parent resource name.
-        LocationName location = new LocationName(projectId, locationId);
-
         // Build the secret with updated fields.
         Secret secret = new Secret
         {
