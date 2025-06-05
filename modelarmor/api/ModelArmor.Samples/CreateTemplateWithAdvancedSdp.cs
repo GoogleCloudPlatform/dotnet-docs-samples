@@ -25,8 +25,11 @@ public class CreateTemplateWithAdvancedSdpSample
         string projectId = "my-project",
         string locationId = "us-central1",
         string templateId = "my-template",
-        string inspectTemplateName = "projects/my_project/locations/us-central1/inspectTemplates/inspect_template_id",
-        string deidentifyTemplateName = "projects/my_project/locations/us-central1/deidentifyTemplates/de-identify_template_id")
+        string inspectTemplateName =
+            "projects/my_project/locations/us-central1/inspectTemplates/inspect_template_id",
+        string deidentifyTemplateName =
+            "projects/my_project/locations/us-central1/deidentifyTemplates/de-identify_template_id"
+    )
     {
         // Construct the API endpoint URL.
         ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
@@ -70,9 +73,7 @@ public class CreateTemplateWithAdvancedSdpSample
 
         Template createdTemplate = client.CreateTemplate(request);
 
-        Console.WriteLine(
-            $"Created template with Advanced SDP filter: {createdTemplate.Name}"
-        );
+        Console.WriteLine($"Created template with Advanced SDP filter: {createdTemplate.Name}");
 
         return createdTemplate;
     }

@@ -17,7 +17,6 @@
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
-
 public class CreateTemplateWithBasicSdpTests : IClassFixture<ModelArmorFixture>
 {
     private readonly ModelArmorFixture _fixture;

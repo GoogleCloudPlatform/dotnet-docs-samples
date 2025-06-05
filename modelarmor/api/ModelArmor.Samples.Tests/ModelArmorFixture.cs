@@ -17,8 +17,8 @@
 using System;
 using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
-using Google.Cloud.ModelArmor.V1;
 using Google.Cloud.Dlp.V2;
+using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
 [CollectionDefinition(nameof(ModelArmorFixture))]
@@ -48,10 +48,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         Client = clientBuilder.Build();
 
         // Create the DLP client.
-        DlpClient = new DlpServiceClientBuilder
-        {
-            Endpoint = $"dlp.{LocationId}.googleapis.com"
-        }.Build();
+        DlpClient = new DlpServiceClientBuilder { Endpoint = $"dlp.googleapis.com" }.Build();
     }
 
     private string GetRequiredEnvVar(string name)
@@ -82,17 +79,15 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
                 DisplayName = displayName,
                 InspectConfig = new InspectConfig
                 {
-                    InfoTypes = {
+                    InfoTypes =
+                    {
                         new InfoType { Name = "PERSON_NAME" },
                         new InfoType { Name = "EMAIL_ADDRESS" },
-                        new InfoType { Name = "US_INDIVIDUAL_TAXPAYER_IDENTIFICATION_NUMBER" }
+                        new InfoType { Name = "US_INDIVIDUAL_TAXPAYER_IDENTIFICATION_NUMBER" },
                     },
-                    MinLikelihood = Likelihood.Possible,
-                    Limits = new InspectConfig.Types.FindingLimits { MaxFindingsPerRequest = 5 },
-                    IncludeQuote = true
-                }
+                },
             },
-            TemplateId = templateId
+            TemplateId = templateId,
         };
         var response = DlpClient.CreateInspectTemplate(request);
         return response.Name;
@@ -121,15 +116,15 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
                                 {
                                     ReplaceConfig = new ReplaceValueConfig
                                     {
-                                        NewValue = new Value { StringValue = "[REDACTED]" }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
+                                        NewValue = new Value { StringValue = "[REDACTED]" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
             },
-            TemplateId = templateId
+            TemplateId = templateId,
         };
         var response = DlpClient.CreateDeidentifyTemplate(request);
         return response.Name;
@@ -157,11 +152,15 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             {
                 if (dlpTemplateName.Contains("inspectTemplates/"))
                 {
-                    DlpClient.DeleteInspectTemplate(new DeleteInspectTemplateRequest { Name = dlpTemplateName });
+                    DlpClient.DeleteInspectTemplate(
+                        new DeleteInspectTemplateRequest { Name = dlpTemplateName }
+                    );
                 }
                 else if (dlpTemplateName.Contains("deidentifyTemplates/"))
                 {
-                    DlpClient.DeleteDeidentifyTemplate(new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName });
+                    DlpClient.DeleteDeidentifyTemplate(
+                        new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName }
+                    );
                 }
             }
             catch (Exception)
