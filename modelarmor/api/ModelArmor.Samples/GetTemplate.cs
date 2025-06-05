@@ -31,7 +31,15 @@ public class GetTemplateSample
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
         }.Build();
 
-        GetTemplateRequest request = new GetTemplateRequest { TemplateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId) };
+        GetTemplateRequest request = new GetTemplateRequest
+        {
+            TemplateName = TemplateName.FromProjectLocationTemplate(
+                projectId,
+                locationId,
+                templateId
+            ),
+        };
+
         Template template = client.GetTemplate(request);
         Console.WriteLine($"Retrieved template: {template.Name}");
 

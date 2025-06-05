@@ -31,10 +31,17 @@ public class DeleteTemplateSample
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
         }.Build();
 
-        DeleteTemplateRequest request = new DeleteTemplateRequest { TemplateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId) };
+        DeleteTemplateRequest request = new DeleteTemplateRequest
+        {
+            TemplateName = TemplateName.FromProjectLocationTemplate(
+                projectId,
+                locationId,
+                templateId
+            ),
+        };
 
         client.DeleteTemplate(request);
-        Console.WriteLine($"Deleted template: {name}");
+        Console.WriteLine($"Deleted template: {templateId}");
     }
 }
 // [END modelarmor_delete_template]

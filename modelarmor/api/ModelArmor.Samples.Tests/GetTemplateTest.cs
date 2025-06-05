@@ -22,6 +22,13 @@ public class GetTemplateTests : IClassFixture<ModelArmorFixture>
     private readonly ModelArmorFixture _fixture;
     private readonly CreateTemplateSample _create_template_sample;
     private readonly GetTemplateSample _get_template_sample;
+    private readonly (RaiFilterType, DetectionConfidenceLevel)[] expectedFilters =
+    [
+        (RaiFilterType.Dangerous, DetectionConfidenceLevel.High),
+        (RaiFilterType.HateSpeech, DetectionConfidenceLevel.High),
+        (RaiFilterType.Harassment, DetectionConfidenceLevel.MediumAndAbove),
+        (RaiFilterType.SexuallyExplicit, DetectionConfidenceLevel.LowAndAbove),
+    ];
 
     public GetTemplateTests(ModelArmorFixture fixture)
     {
@@ -50,14 +57,6 @@ public class GetTemplateTests : IClassFixture<ModelArmorFixture>
         );
 
         var retrievedRaiFilters = retrievedTemplate.FilterConfig.RaiSettings.RaiFilters;
-
-        var expectedFilters = new[]
-        {
-            (RaiFilterType.Dangerous, DetectionConfidenceLevel.High),
-            (RaiFilterType.HateSpeech, DetectionConfidenceLevel.High),
-            (RaiFilterType.Harassment, DetectionConfidenceLevel.MediumAndAbove),
-            (RaiFilterType.SexuallyExplicit, DetectionConfidenceLevel.LowAndAbove),
-        };
 
         foreach (var (type, confidence) in expectedFilters)
         {

@@ -32,7 +32,6 @@ public class CreateTemplateSample
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
         }.Build();
 
-
         // Build the Model Armor template with your preferred filters.
         // For more details on filters, please refer to the following doc:
         // https://cloud.google.com/security-command-center/docs/key-concepts-model-armor#ma-filters
@@ -67,7 +66,10 @@ public class CreateTemplateSample
 
         raiFilterSettings.RaiFilters.Add(filters);
 
-        Template template = new Template { FilterConfig = new FilterConfig { RaiSettings = raiFilterSettings } };
+        Template template = new Template
+        {
+            FilterConfig = new FilterConfig { RaiSettings = raiFilterSettings },
+        };
 
         CreateTemplateRequest request = new CreateTemplateRequest
         {

@@ -32,7 +32,11 @@ public class ListTemplatesSample
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
         }.Build();
-        ListTemplatesRequest request = new ListTemplatesRequest { ParentAsLocationName = LocationName.FromProjectLocation(projectId, locationId) };
+
+        ListTemplatesRequest request = new ListTemplatesRequest
+        {
+            ParentAsLocationName = LocationName.FromProjectLocation(projectId, locationId),
+        };
 
         PagedEnumerable<ListTemplatesResponse, Template> response = client.ListTemplates(request);
 
