@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google;
-using System;
 using System.Net;
 using Xunit;
 
@@ -28,25 +27,32 @@ public class BucketDisableSoftDeletePolicyTest
     }
 
     [Fact]
-    public void BucketDisableSoftDeletePolicy()
+    public void TestBucketDisableSoftDeletePolicy()
     {
-        BucketDisableSoftDeletePolicySample bucketDisableSoftDeletePolicy = new BucketDisableSoftDeletePolicySample();
-        UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
+        BucketDisableSoftDeletePolicySample disableSample = new BucketDisableSoftDeletePolicySample();
+        UploadObjectFromMemorySample uploadObjectSample = new UploadObjectFromMemorySample();
         GetMetadataSample getMetadataSample = new GetMetadataSample();
         var bucketName = _fixture.GenerateBucketName();
-        var bucketPreDisableSoftDeletePolicy = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
-        var originName = _fixture.GenerateName();
-        var originContent = _fixture.GenerateContent();
-        uploadObjectFromMemory.UploadObjectFromMemory(bucketName, originName, originContent);
+        var bucketWithDefaultSoftDeletePolicy = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
+
+        var originName = _fixture.GenerateGuid();
+        var originContent = _fixture.GenerateGuid();
+
+        uploadObjectSample.UploadObjectFromMemory(bucketName, originName, originContent);
         var objectMetaData = getMetadataSample.GetMetadata(bucketName, originName);
-        int retentionDurationInDays = 0;
-        long retentionDurationInSeconds = (long) TimeSpan.FromDays(retentionDurationInDays).TotalSeconds;
-        Assert.NotEqual(bucketPreDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+
+        // Initializing zero with value 0 indicates that the retention duration for the bucket. 
+        long zero = 0;
+        Assert.NotEqual(bucketWithDefaultSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, zero);
+
         // To disable soft-delete policy for the bucket, set the soft delete retention duration to 0 days.
-        var bucketPostDisableSoftDeletePolicy = bucketDisableSoftDeletePolicy.BucketDisableSoftDeletePolicy(bucketName, retentionDurationInDays);
-        Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+        var bucketPostDisableSoftDeletePolicy = disableSample.BucketDisableSoftDeletePolicy(bucketName, (int) zero);
+        Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, zero);
+
+        // After disabling soft-delete policy for the bucket, EffectiveTimeRaw property will be null.
         Assert.Null(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.EffectiveTimeRaw);
-        _fixture.Client.DeleteObject(bucketName, originName);
+
+        // After disabling soft-delete policy for the bucket, objects in the bucket can not be restored.
         var exception = Assert.Throws<GoogleApiException>(() => _fixture.Client.RestoreObject(bucketName, originName, objectMetaData.Generation.Value));
         Assert.Equal(HttpStatusCode.BadRequest, exception.HttpStatusCode);
     }

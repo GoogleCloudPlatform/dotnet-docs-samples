@@ -26,17 +26,22 @@ public class BucketSetSoftDeletePolicyTest
     }
 
     [Fact]
-    public void BucketSetSoftDeletePolicy()
+    public void TestBucketSetSoftDeletePolicy()
     {
-        BucketSetSoftDeletePolicySample bucketSetSoftDeletePolicy = new BucketSetSoftDeletePolicySample();
+        BucketSetSoftDeletePolicySample setSample = new BucketSetSoftDeletePolicySample();
         var bucketName = _fixture.GenerateBucketName();
-        var bucketPreSetSoftDeletePolicy = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
+        var bucketWithDefaultSoftDeletePolicy = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
+
         int retentionDurationInDays = 10;
         long retentionDurationInSeconds = (long) TimeSpan.FromDays(retentionDurationInDays).TotalSeconds;
-        Assert.NotEqual(bucketPreSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+
+        Assert.NotEqual(bucketWithDefaultSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+
         // Set soft-delete policy for the bucket with a retention duration of 10 days.
-        var bucketPostSetSoftDeletePolicy = bucketSetSoftDeletePolicy.BucketSetSoftDeletePolicy(bucketName, retentionDurationInDays);
+        var bucketPostSetSoftDeletePolicy = setSample.BucketSetSoftDeletePolicy(bucketName, retentionDurationInDays);
+
         Assert.Equal(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
+        // After setting soft-delete policy for the bucket, EffectiveTimeRaw property will be not null.
         Assert.NotNull(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.EffectiveTimeRaw);
     }
 }

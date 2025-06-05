@@ -33,6 +33,8 @@ public class BucketSetSoftDeletePolicySample
         long retentionDurationInSeconds = (long) TimeSpan.FromDays(retentionDurationInDays).TotalSeconds;
         if (retentionDurationInDays < 7 || retentionDurationInDays > 90)
         {
+            // The maximum retention duration you can set is 90 days and the minimum retention duration you can set is 7 days.
+            // For more information, please refer to https://cloud.google.com/storage/docs/soft-delete#retention-duration
             Console.WriteLine($"The Soft Delete Policy for the Bucket (Bucket Name: {bucketName}) must have a retention duration between 7 days and 90 days");
             return bucket;
         }
