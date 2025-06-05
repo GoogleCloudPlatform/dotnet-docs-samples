@@ -27,14 +27,11 @@ public class CreateTemplateSample
         string templateId = "my-template"
     )
     {
-        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
+        ModelArmorClient client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-        };
+        }.Build();
 
-        Google.Cloud.ModelArmor.V1.ModelArmorClient client = clientBuilder.Build();
-
-        LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
         // Build the Model Armor template with your preferred filters.
         // For more details on filters, please refer to the following doc:
@@ -70,13 +67,11 @@ public class CreateTemplateSample
 
         raiFilterSettings.RaiFilters.Add(filters);
 
-        FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
-
-        Template template = new Template { FilterConfig = modelArmorFilter };
+        Template template = new Template { FilterConfig = new FilterConfig { RaiSettings = raiFilterSettings } };
 
         CreateTemplateRequest request = new CreateTemplateRequest
         {
-            ParentAsLocationName = parent,
+            ParentAsLocationName = LocationName.FromProjectLocation(projectId, locationId),
             TemplateId = templateId,
             Template = template,
         };

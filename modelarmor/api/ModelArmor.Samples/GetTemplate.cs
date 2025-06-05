@@ -26,20 +26,12 @@ public class GetTemplateSample
         string templateId = "my-template"
     )
     {
-        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
+        ModelArmorClient client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-        };
+        }.Build();
 
-        ModelArmorClient client = clientBuilder.Build();
-
-        TemplateName name = TemplateName.FromProjectLocationTemplate(
-            projectId,
-            locationId,
-            templateId
-        );
-
-        GetTemplateRequest request = new GetTemplateRequest { TemplateName = name };
+        GetTemplateRequest request = new GetTemplateRequest { TemplateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId) };
         Template template = client.GetTemplate(request);
         Console.WriteLine($"Retrieved template: {template.Name}");
 

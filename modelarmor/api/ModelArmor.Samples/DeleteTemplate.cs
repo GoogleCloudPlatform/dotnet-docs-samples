@@ -26,20 +26,12 @@ public class DeleteTemplateSample
         string templateId = "my-template"
     )
     {
-        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
+        ModelArmorClient client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-        };
+        }.Build();
 
-        ModelArmorClient client = clientBuilder.Build();
-
-        TemplateName name = TemplateName.FromProjectLocationTemplate(
-            projectId,
-            locationId,
-            templateId
-        );
-
-        DeleteTemplateRequest request = new DeleteTemplateRequest { TemplateName = name };
+        DeleteTemplateRequest request = new DeleteTemplateRequest { TemplateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId) };
 
         client.DeleteTemplate(request);
         Console.WriteLine($"Deleted template: {name}");
