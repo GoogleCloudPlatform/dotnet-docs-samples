@@ -18,38 +18,31 @@
 using System;
 using Google.Cloud.ModelArmor.V1;
 
-namespace ModelArmor.Samples
+public class DeleteTemplateSample
 {
-    public class DeleteTemplateSample
+    public void DeleteTemplate(
+        string projectId = "my-project",
+        string locationId = "us-central1",
+        string templateId = "my-template"
+    )
     {
-        public void DeleteTemplate(
-            string projectId = "my-project",
-            string locationId = "us-central1",
-            string templateId = "my-template"
-        )
+        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
-            // Construct the API endpoint URL.
-            ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
-            {
-                Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-            };
+            Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
+        };
 
-            // Create the client.
-            ModelArmorClient client = clientBuilder.Build();
+        ModelArmorClient client = clientBuilder.Build();
 
-            TemplateName name = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            );
+        TemplateName name = TemplateName.FromProjectLocationTemplate(
+            projectId,
+            locationId,
+            templateId
+        );
 
-            // Prepare the request.
-            DeleteTemplateRequest request = new DeleteTemplateRequest { TemplateName = name };
+        DeleteTemplateRequest request = new DeleteTemplateRequest { TemplateName = name };
 
-            // Delete the template.
-            client.DeleteTemplate(request);
-            Console.WriteLine($"Deleted template: {name}");
-        }
+        client.DeleteTemplate(request);
+        Console.WriteLine($"Deleted template: {name}");
     }
 }
 // [END modelarmor_delete_template]

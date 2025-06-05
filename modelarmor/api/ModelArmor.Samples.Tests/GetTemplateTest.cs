@@ -17,74 +17,55 @@
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
-namespace ModelArmor.Samples.Tests
+public class GetTemplateTests : IClassFixture<ModelArmorFixture>
 {
-    public class GetTemplateTests : IClassFixture<ModelArmorFixture>
+    private readonly ModelArmorFixture _fixture;
+    private readonly CreateTemplateSample _create_template_sample;
+    private readonly GetTemplateSample _get_template_sample;
+
+    public GetTemplateTests(ModelArmorFixture fixture)
     {
-        private readonly ModelArmorFixture _fixture;
-        private readonly CreateTemplateSample _create_template_sample;
-        private readonly GetTemplateSample _get_template_sample;
+        _fixture = fixture;
+        _create_template_sample = new CreateTemplateSample();
+        _get_template_sample = new GetTemplateSample();
+    }
 
-        public GetTemplateTests(ModelArmorFixture fixture)
+    [Fact]
+    public void GetTemplateTest()
+    {
+        // Create a template for testing purpose.
+        TemplateName templateName = _fixture.CreateTemplateName();
+        _fixture.RegisterTemplateForCleanup(templateName);
+
+        Template createdTemplate = _create_template_sample.CreateTemplate(
+            projectId: _fixture.ProjectId,
+            locationId: _fixture.LocationId,
+            templateId: templateName.TemplateId
+        );
+
+        Template retrievedTemplate = _get_template_sample.GetTemplate(
+            projectId: _fixture.ProjectId,
+            locationId: _fixture.LocationId,
+            templateId: templateName.TemplateId
+        );
+
+        var retrievedRaiFilters = retrievedTemplate.FilterConfig.RaiSettings.RaiFilters;
+
+        var expectedFilters = new[]
         {
-            _fixture = fixture;
-            _create_template_sample = new CreateTemplateSample();
-            _get_template_sample = new GetTemplateSample();
-        }
+            (RaiFilterType.Dangerous, DetectionConfidenceLevel.High),
+            (RaiFilterType.HateSpeech, DetectionConfidenceLevel.High),
+            (RaiFilterType.Harassment, DetectionConfidenceLevel.MediumAndAbove),
+            (RaiFilterType.SexuallyExplicit, DetectionConfidenceLevel.LowAndAbove),
+        };
 
-        [Fact]
-        public void GetTemplateTest()
+        foreach (var (type, confidence) in expectedFilters)
         {
-            // Create a template for testing purpose.
-            TemplateName templateName = _fixture.CreateTemplateName();
-            Template createdTemplate = _create_template_sample.CreateTemplate(
-                projectId: _fixture.ProjectId,
-                locationId: _fixture.LocationId,
-                templateId: templateName.TemplateId
-            );
-
-            Template retrievedTemplate = _get_template_sample.GetTemplate(
-                projectId: _fixture.ProjectId,
-                locationId: _fixture.LocationId,
-                templateId: templateName.TemplateId
-            );
-
-            var retrievedRaiFilters = retrievedTemplate.FilterConfig.RaiSettings.RaiFilters;
-
-            Assert.Contains(retrievedRaiFilters, f => f.FilterType == RaiFilterType.Dangerous);
+            Assert.Contains(retrievedRaiFilters, f => f.FilterType == type);
             Assert.Contains(
                 retrievedRaiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.Dangerous
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.High
+                f => f.FilterType == type && f.ConfidenceLevel == confidence
             );
-
-            Assert.Contains(retrievedRaiFilters, f => f.FilterType == RaiFilterType.HateSpeech);
-            Assert.Contains(
-                retrievedRaiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.HateSpeech
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.High
-            );
-
-            Assert.Contains(retrievedRaiFilters, f => f.FilterType == RaiFilterType.Harassment);
-            Assert.Contains(
-                retrievedRaiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.Harassment
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.MediumAndAbove
-            );
-
-            Assert.Contains(retrievedRaiFilters, f => f.FilterType == RaiFilterType.SexuallyExplicit);
-            Assert.Contains(
-                retrievedRaiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.SexuallyExplicit
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.LowAndAbove
-            );
-
-
-            _fixture.RegisterTemplateForCleanup(templateName);
         }
     }
 }

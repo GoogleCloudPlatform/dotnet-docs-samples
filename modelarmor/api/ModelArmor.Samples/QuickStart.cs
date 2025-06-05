@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-//[START modelarmor_quickstart]
+// [START modelarmor_quickstart]
 using System;
-using System.Text;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
@@ -33,12 +32,11 @@ public class QuickstartSample
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
         };
 
-        // Create the client.
-        Google.Cloud.ModelArmor.V1.ModelArmorClient client = clientBuilder.Build();
+        ModelArmorClient client = clientBuilder.Build();
 
         LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
-        // Build the Model Armor template with preferred filters
+        // Build the Model Armor template with preferred filters.
         RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
         raiFilterSettings.RaiFilters.Add(
             new RaiFilterSettings.Types.RaiFilter
@@ -69,13 +67,10 @@ public class QuickstartSample
             }
         );
 
-        // Create the filter config with RAI settings
         FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
 
-        // Create the template
         Template template = new Template { FilterConfig = modelArmorFilter };
 
-        // Create the request
         CreateTemplateRequest request = new CreateTemplateRequest
         {
             ParentAsLocationName = parent,
@@ -83,12 +78,11 @@ public class QuickstartSample
             Template = template,
         };
 
-        // Send the request
         Template createdTemplate = client.CreateTemplate(request);
 
         Console.WriteLine($"Created template: {createdTemplate.Name}");
 
-        // Sanitize a user prompt using the created template
+        // Sanitize a user prompt using the created template.
         string userPrompt = "Unsafe user prompt";
 
         TemplateName templateName = TemplateName.FromProjectLocationTemplate(

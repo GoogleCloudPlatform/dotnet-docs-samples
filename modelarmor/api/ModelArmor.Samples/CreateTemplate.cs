@@ -15,6 +15,7 @@
  */
 
 // [START modelarmor_create_template]
+using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
@@ -26,16 +27,13 @@ public class CreateTemplateSample
         string templateId = "my-template"
     )
     {
-        // Construct the API endpoint URL.
         ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
         };
 
-        // Create the client.
         Google.Cloud.ModelArmor.V1.ModelArmorClient client = clientBuilder.Build();
 
-        // Build the parent resource name.
         LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
         // Build the Model Armor template with your preferred filters.
@@ -45,42 +43,37 @@ public class CreateTemplateSample
         // Configure Responsible AI filter with multiple categories and their confidence
         // levels.
         RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
+        List<RaiFilterSettings.Types.RaiFilter> filters =
+            new List<RaiFilterSettings.Types.RaiFilter>
             {
-                FilterType = RaiFilterType.Dangerous,
-                ConfidenceLevel = DetectionConfidenceLevel.High,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.HateSpeech,
-                ConfidenceLevel = DetectionConfidenceLevel.High,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.SexuallyExplicit,
-                ConfidenceLevel = DetectionConfidenceLevel.LowAndAbove,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.Harassment,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-            }
-        );
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.Dangerous,
+                    ConfidenceLevel = DetectionConfidenceLevel.High,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.HateSpeech,
+                    ConfidenceLevel = DetectionConfidenceLevel.High,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.SexuallyExplicit,
+                    ConfidenceLevel = DetectionConfidenceLevel.LowAndAbove,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.Harassment,
+                    ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                },
+            };
 
-        // Create the filter config with RAI settings.
+        raiFilterSettings.RaiFilters.Add(filters);
+
         FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
 
-        // Create the template.
         Template template = new Template { FilterConfig = modelArmorFilter };
 
-        // Prepare the request.
         CreateTemplateRequest request = new CreateTemplateRequest
         {
             ParentAsLocationName = parent,
@@ -88,7 +81,6 @@ public class CreateTemplateSample
             Template = template,
         };
 
-        // Send the request.
         Template createdTemplate = client.CreateTemplate(request);
         System.Console.WriteLine($"Created template: {createdTemplate.Name}");
 

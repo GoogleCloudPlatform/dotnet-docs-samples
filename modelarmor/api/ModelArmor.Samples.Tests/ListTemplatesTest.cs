@@ -19,51 +19,38 @@ using System.Linq;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
-namespace ModelArmor.Samples.Tests
+public class ListTemplatesTests : IClassFixture<ModelArmorFixture>
 {
-    public class ListTemplatesTests : IClassFixture<ModelArmorFixture>
+    private readonly ModelArmorFixture _fixture;
+    private readonly CreateTemplateSample _create_template_sample;
+    private readonly ListTemplatesSample _list_templates_sample;
+
+    public ListTemplatesTests(ModelArmorFixture fixture)
     {
-        private readonly ModelArmorFixture _fixture;
-        private readonly CreateTemplateSample _create_template_sample;
-        private readonly ListTemplatesSample _list_templates_sample;
+        _fixture = fixture;
+        _create_template_sample = new CreateTemplateSample();
+        _list_templates_sample = new ListTemplatesSample();
+    }
 
-        public ListTemplatesTests(ModelArmorFixture fixture)
-        {
-            _fixture = fixture;
-            _create_template_sample = new CreateTemplateSample();
-            _list_templates_sample = new ListTemplatesSample();
-        }
+    [Fact]
+    public void ListTemplatesTest()
+    {
+        // Create a template for testing purpose.
+        TemplateName templateName = _fixture.CreateTemplateName();
+        _fixture.RegisterTemplateForCleanup(templateName);
 
-        [Fact]
-        public void ListTemplatesTest()
-        {
-            // Create a template for testing purpose.
-            TemplateName templateName = _fixture.CreateTemplateName();
-            Template createdTemplate = _create_template_sample.CreateTemplate(
-                projectId: _fixture.ProjectId,
-                locationId: _fixture.LocationId,
-                templateId: templateName.TemplateId
-            );
+        Template createdTemplate = _create_template_sample.CreateTemplate(
+            projectId: _fixture.ProjectId,
+            locationId: _fixture.LocationId,
+            templateId: templateName.TemplateId
+        );
 
-            IEnumerable<Template> templates = _list_templates_sample.ListTemplates(
-                projectId: _fixture.ProjectId,
-                locationId: _fixture.LocationId
-            );
+        IEnumerable<Template> templates = _list_templates_sample.ListTemplates(
+            projectId: _fixture.ProjectId,
+            locationId: _fixture.LocationId
+        );
 
-            Assert.NotNull(templates);
-            List<Template> templateList = templates.ToList();
-            bool templateFound = false;
-            foreach (Template template in templateList)
-            {
-                if (template.Name == templateName.ToString())
-                {
-                    templateFound = true;
-                    break;
-                }
-            }
-            Assert.True(templateFound);
-
-            _fixture.RegisterTemplateForCleanup(templateName);
-        }
+        Assert.NotNull(templates);
+        Assert.Contains(templates, template => template.Name == templateName.ToString());
     }
 }

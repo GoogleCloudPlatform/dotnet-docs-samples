@@ -18,42 +18,32 @@
 using System;
 using Google.Cloud.ModelArmor.V1;
 
-namespace ModelArmor.Samples
+public class GetTemplateSample
 {
-    public class GetTemplateSample
+    public Template GetTemplate(
+        string projectId = "my-project",
+        string locationId = "us-central1",
+        string templateId = "my-template"
+    )
     {
-        public Template GetTemplate(
-            string projectId = "my-project",
-            string locationId = "us-central1",
-            string templateId = "my-template"
-        )
+        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
-            // Construct the API endpoint URL.
-            ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
-            {
-                Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-            };
+            Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
+        };
 
-            // Create the client.
-            ModelArmorClient client = clientBuilder.Build();
+        ModelArmorClient client = clientBuilder.Build();
 
-            TemplateName name = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            );
+        TemplateName name = TemplateName.FromProjectLocationTemplate(
+            projectId,
+            locationId,
+            templateId
+        );
 
-            // Prepare the request.
-            GetTemplateRequest request = new GetTemplateRequest { TemplateName = name };
+        GetTemplateRequest request = new GetTemplateRequest { TemplateName = name };
+        Template template = client.GetTemplate(request);
+        Console.WriteLine($"Retrieved template: {template.Name}");
 
-            // Call the API to get the template.
-            Template template = client.GetTemplate(request);
-
-            // Print template details.
-            Console.WriteLine($"Retrieved template: {template.Name}");
-
-            return template;
-        }
+        return template;
     }
 }
 // [END modelarmor_get_template]

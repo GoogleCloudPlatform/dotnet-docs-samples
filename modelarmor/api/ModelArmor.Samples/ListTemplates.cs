@@ -21,46 +21,30 @@ using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
-namespace ModelArmor.Samples
+public class ListTemplatesSample
 {
-    public class ListTemplatesSample
+    public IEnumerable<Template> ListTemplates(
+        string projectId = "my-project",
+        string locationId = "us-central1"
+    )
     {
-        public IEnumerable<Template> ListTemplates(
-            string projectId = "my-project",
-            string locationId = "us-central1"
-        )
+        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
-            // Construct the API endpoint URL.
-            ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
-            {
-                Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-            };
+            Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
+        };
 
-            // Create the client.
-            ModelArmorClient client = clientBuilder.Build();
+        ModelArmorClient client = clientBuilder.Build();
+        LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
+        ListTemplatesRequest request = new ListTemplatesRequest { ParentAsLocationName = parent };
 
-            // Build the parent resource name.
-            LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
+        PagedEnumerable<ListTemplatesResponse, Template> response = client.ListTemplates(request);
 
-            // Create the list request.
-            ListTemplatesRequest request = new ListTemplatesRequest
-            {
-                ParentAsLocationName = parent,
-            };
-
-            // List all templates.
-            PagedEnumerable<ListTemplatesResponse, Template> response = client.ListTemplates(
-                request
-            );
-
-            // Display the templates.
-            foreach (Template template in response)
-            {
-                Console.WriteLine($"Template: {template.Name}");
-            }
-
-            return response;
+        foreach (Template template in response)
+        {
+            Console.WriteLine($"Template: {template.Name}");
         }
+
+        return response;
     }
 }
 // [END modelarmor_list_templates]
