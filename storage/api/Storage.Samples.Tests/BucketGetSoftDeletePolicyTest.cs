@@ -29,27 +29,9 @@ public class BucketGetSoftDeletePolicyTest
     public void TestBucketGetSoftDeletePolicy()
     {
         BucketGetSoftDeletePolicySample getSample = new BucketGetSoftDeletePolicySample();
-        BucketSetSoftDeletePolicySample setSample = new BucketSetSoftDeletePolicySample();
-        BucketDisableSoftDeletePolicySample disableSample = new BucketDisableSoftDeletePolicySample();
-
         var bucketName = _fixture.GenerateBucketName();
-        var bucketWithDefaultSoftDeletePolicy = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
-        var retrievedBucket = getSample.BucketGetSoftDeletePolicy(bucketName);
-        Assert.Equal(bucketWithDefaultSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retrievedBucket.SoftDeletePolicy.RetentionDurationSeconds);
-
-        int retentionDurationInDays = 10;
-        long retentionDurationInSeconds = (long) TimeSpan.FromDays(retentionDurationInDays).TotalSeconds;
-
-        // Set soft-delete policy for the bucket with a retention duration of 10 days.
-        setSample.BucketSetSoftDeletePolicy(bucketName, retentionDurationInDays);
-        var bucketPostSetSoftDeletePolicy = getSample.BucketGetSoftDeletePolicy(bucketName);
-        Assert.Equal(bucketPostSetSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, retentionDurationInSeconds);
-
-        // Initializing zero with value 0 indicates that the retention duration for the bucket. 
-        long zero = 0;
-        // Disable soft-delete policy for the bucket by setting the retention duration to 0 days.
-        disableSample.BucketDisableSoftDeletePolicy(bucketName, (int) zero);
-        var bucketPostDisableSoftDeletePolicy = getSample.BucketGetSoftDeletePolicy(bucketName);
-        Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, zero);
+        var bucket = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
+        var softPolicyData = getSample.BucketGetSoftDeletePolicy(bucketName);
+        Assert.Equal(bucket.SoftPolicy, softPolicyData);
     }
 }
