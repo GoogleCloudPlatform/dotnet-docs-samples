@@ -41,11 +41,10 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         LocationId = Environment.GetEnvironmentVariable(EnvLocation) ?? "us-central1";
 
         // Create the Model Armor client.
-        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
+        ModelArmorClient Client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{LocationId}.rep.googleapis.com",
-        };
-        Client = clientBuilder.Build();
+        }.Build();
 
         // Create the DLP client.
         DlpClient = new DlpServiceClientBuilder { Endpoint = $"dlp.googleapis.com" }.Build();
@@ -90,6 +89,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateInspectTemplate(request);
+        RegisterDlpTemplateForCleanup(response.Name);
         return response.Name;
     }
 
@@ -127,6 +127,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateDeidentifyTemplate(request);
+        RegisterDlpTemplateForCleanup(response.Name);
         return response.Name;
     }
 

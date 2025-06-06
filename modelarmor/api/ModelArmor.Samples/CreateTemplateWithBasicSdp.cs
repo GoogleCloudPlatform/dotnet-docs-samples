@@ -26,16 +26,11 @@ public class CreateTemplateWithBasicSdpSample
         string locationId = "us-central1",
         string templateId = "my-template")
     {
-        // Construct the API endpoint URL.
-        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
+        ModelArmorClient client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-        };
+        }.Build();
 
-        // Create the client.
-        ModelArmorClient client = clientBuilder.Build();
-
-        // Build the parent resource name.
         LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
         // Build the Model Armor template with Basic SDP Filter.
@@ -50,7 +45,6 @@ public class CreateTemplateWithBasicSdpSample
 
         FilterConfig filterConfig = new FilterConfig { SdpSettings = sdpSettings };
 
-        // Build the request.
         CreateTemplateRequest request = new CreateTemplateRequest
         {
             ParentAsLocationName = parent,

@@ -39,10 +39,8 @@ public class CreateTemplateWithAdvancedSdpTests : IClassFixture<ModelArmorFixtur
         string templateId = templateName.TemplateId;
 
         string inspectTemplateName = _fixture.CreateInspectTemplate();
-        _fixture.RegisterDlpTemplateForCleanup(inspectTemplateName);
 
         string deidentifyTemplateName = _fixture.CreateDeidentifyTemplate();
-        _fixture.RegisterDlpTemplateForCleanup(deidentifyTemplateName);
 
         // Run the sample.
         Template template = _sample.CreateTemplateWithAdvancedSdp(

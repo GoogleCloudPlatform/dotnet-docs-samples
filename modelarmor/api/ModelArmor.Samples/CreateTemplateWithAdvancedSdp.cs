@@ -31,16 +31,11 @@ public class CreateTemplateWithAdvancedSdpSample
             "projects/my_project/locations/us-central1/deidentifyTemplates/de-identify_template_id"
     )
     {
-        // Construct the API endpoint URL.
-        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
+        ModelArmorClient client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
-        };
+        }.Build();
 
-        // Create the client.
-        ModelArmorClient client = clientBuilder.Build();
-
-        // Build the parent resource name.
         LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
         // Build the Model Armor template with Advanced SDP Filter.
@@ -63,7 +58,6 @@ public class CreateTemplateWithAdvancedSdpSample
         FilterConfig filterConfig = new FilterConfig { SdpSettings = sdpSettings };
         Template template = new Template { FilterConfig = filterConfig };
 
-        // Build the request.
         CreateTemplateRequest request = new CreateTemplateRequest
         {
             ParentAsLocationName = parent,
