@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System;
+using Newtonsoft.Json;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -32,6 +32,8 @@ public class BucketGetSoftDeletePolicyTest
         var bucketName = _fixture.GenerateBucketName();
         var bucket = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
         var softPolicyData = getSample.BucketGetSoftDeletePolicy(bucketName);
-        Assert.Equal(bucket.SoftPolicy, softPolicyData);
+        var bucketSoftDeletePolicy = JsonConvert.SerializeObject(bucket.SoftDeletePolicy);
+        var softDeletePolicyData = JsonConvert.SerializeObject(softPolicyData);
+        Assert.Equal(bucketSoftDeletePolicy, softDeletePolicyData);
     }
 }

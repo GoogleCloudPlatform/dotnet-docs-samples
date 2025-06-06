@@ -24,7 +24,7 @@ public class BucketGetSoftDeletePolicySample
     /// Get soft delete policy of the bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    public Bucket BucketGetSoftDeletePolicy(string bucketName = "your-unique-bucket-name")
+    public Bucket.SoftDeletePolicyData BucketGetSoftDeletePolicy(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
