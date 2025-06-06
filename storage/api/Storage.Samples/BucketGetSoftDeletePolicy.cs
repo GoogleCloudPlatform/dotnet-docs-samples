@@ -37,7 +37,7 @@ public class BucketGetSoftDeletePolicySample
             int retentionDuration = (int) TimeSpan.FromSeconds((double) bucket.SoftDeletePolicy.RetentionDurationSeconds).TotalDays;
             Console.WriteLine($"The Soft Delete Policy for the Bucket (Bucket Name: {bucketName}) is : {retentionDuration} days");
         }
-        return bucket;
+        return bucket.SoftDeletePolicy;
     }
 }
 // [END storage_get_soft_delete_policy]
