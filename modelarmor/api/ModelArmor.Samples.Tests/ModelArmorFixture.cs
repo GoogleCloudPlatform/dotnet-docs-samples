@@ -15,53 +15,124 @@
 */
 
 using System;
+using System.Collections.Generic;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
 [CollectionDefinition(nameof(ModelArmorFixture))]
 public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixture>
 {
+    // Environment variable names.
+    private const string EnvProjectId = "GOOGLE_PROJECT_ID";
+    private const string EnvLocation = "GOOGLE_CLOUD_LOCATION";
+
     public ModelArmorClient Client { get; }
     public string ProjectId { get; }
     public string LocationId { get; }
-    public TemplateName TemplateForQuickstartName { get; }
+    private readonly List<TemplateName> _resourcesToCleanup = new List<TemplateName>();
 
     public ModelArmorFixture()
     {
-        // Get the Google Cloud Project ID.
-        ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
-        if (string.IsNullOrEmpty(ProjectId))
+        ProjectId = GetRequiredEnvVar(EnvProjectId);
+        LocationId = Environment.GetEnvironmentVariable(EnvLocation) ?? "us-central1";
+
+        // Create the client.
+        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
         {
-            throw new Exception("Missing GOOGLE_PROJECT_ID environment variable");
-        }
-
-        // Get location ID from environment variable or use default.
-        LocationId = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_LOCATION") ?? "us-central1";
-
-        // Create client.
-        Client = ModelArmorClient.Create();
-
-        // Create a template name for quickstart test.
-        string templateId = $"test-csharp-{Guid.NewGuid().ToString("N").Substring(0, 8)}";
-        TemplateForQuickstartName = TemplateName.FromProjectLocationTemplate(
-            ProjectId,
-            LocationId,
-            templateId
-        );
+            Endpoint = $"modelarmor.{LocationId}.rep.googleapis.com",
+        };
+        Client = clientBuilder.Build();
     }
 
+    /// <summary>
+    /// Gets an environment variable or throws an exception if it is not defined.
+    /// </summary>
+    /// <param name="name">The name of the environment variable.</param>
+    /// <returns>The value of the environment variable.</returns>
+    /// <exception cref="Exception">Thrown if the environment variable is not defined.</exception>
+    private string GetRequiredEnvVar(string name)
+    {
+        var value = Environment.GetEnvironmentVariable(name);
+        if (string.IsNullOrEmpty(value))
+        {
+            throw new Exception($"Missing {name} environment variable");
+        }
+        return value;
+    }
+
+    /// <summary>
+    /// Generates a unique identifier. This identifier is used to ensure
+    /// that resources created by tests are unique and can be cleaned up
+    /// successfully.
+    /// </summary>
+    /// <returns>A unique identifier.</returns>
+    public string GenerateUniqueId()
+    {
+        return Guid.NewGuid().ToString("N").Substring(0, 8);
+    }
+
+    /// <summary>
+    /// Clean up resources after tests.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// This method is called automatically by the test framework after all tests
+    /// in the test class have been completed. It is not intended to be called
+    /// directly.
+    /// </para>
+    /// <para>
+    /// This method is implemented according to the <see cref="IDisposable"/> interface.
+    /// </para>
+    /// </remarks>
     public void Dispose()
     {
         // Clean up resources after tests.
-        try
+        foreach (var resourceName in _resourcesToCleanup)
         {
-            Client.DeleteTemplate(
-                new DeleteTemplateRequest { Name = TemplateForQuickstartName.ToString() }
-            );
+            try
+            {
+                Client.DeleteTemplate(new DeleteTemplateRequest { TemplateName = resourceName });
+            }
+            catch (Exception)
+            {
+                // Ignore errors during cleanup.
+            }
         }
-        catch (Exception)
+    }
+
+    /// <summary>
+    /// Registers a template for cleanup. The template will be deleted after the test fixture is disposed.
+    /// </summary>
+    /// <param name="templateName">The name of the template to register.</param>
+    public void RegisterTemplateForCleanup(TemplateName templateName)
+    {
+        if (templateName != null && !string.IsNullOrEmpty(templateName.ToString()))
         {
-            // Ignore errors during cleanup.
+            _resourcesToCleanup.Add(templateName);
         }
+    }
+
+    /// <summary>
+    /// Creates a template name from the provided prefix and a random, unique suffix.
+    /// </summary>
+    /// <param name="prefix">The prefix to use for the template name.</param>
+    /// <returns>The created template name.</returns>
+    public TemplateName CreateTemplateName(string prefix = "test-dotnet")
+    {
+        string templateId = $"{prefix}-{GenerateUniqueId()}";
+        return new TemplateName(ProjectId, LocationId, templateId);
+    }
+
+
+    /// <summary>
+    /// Gets a template by name.
+    /// </summary>
+    /// <param name="templateName">The name of the template to get.</param>
+    /// <returns>The template if found, otherwise null.</returns>
+    public Template GetTemplate(TemplateName templateName)
+    {
+        GetTemplateRequest request = new GetTemplateRequest { TemplateName = templateName };
+
+        return Client.GetTemplate(request);
     }
 }

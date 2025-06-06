@@ -16,7 +16,6 @@
 
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
-using Xunit.Abstractions;
 
 [Collection(nameof(ModelArmorFixture))]
 public class QuickstartTests
@@ -24,7 +23,7 @@ public class QuickstartTests
     private readonly ModelArmorFixture _fixture;
     private readonly QuickstartSample _sample;
 
-    public QuickstartTests(ModelArmorFixture fixture, ITestOutputHelper output)
+    public QuickstartTests(ModelArmorFixture fixture)
     {
         _fixture = fixture;
         _sample = new QuickstartSample();
@@ -34,7 +33,7 @@ public class QuickstartTests
     public void Runs()
     {
         // Get template name from fixture
-        TemplateName templateName = _fixture.TemplateForQuickstartName;
+        TemplateName templateName = _fixture.CreateTemplateName();
 
         // Run the quickstart sample
         _sample.Quickstart(
@@ -42,5 +41,7 @@ public class QuickstartTests
             locationId: templateName.LocationId,
             templateId: templateName.TemplateId
         );
+
+        _fixture.RegisterTemplateForCleanup(templateName);
     }
 }
