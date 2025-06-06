@@ -41,12 +41,12 @@ public class BucketDisableSoftDeletePolicyTest
         uploadObjectSample.UploadObjectFromMemory(bucketName, originName, originContent);
         var objectMetaData = getMetadataSample.GetMetadata(bucketName, originName);
 
-        // Initializing zero with value 0 indicates that the retention duration for the bucket. 
+        // Initializing zero with a value 0 indicates the retention duration for the bucket. 
         long zero = 0;
         Assert.NotEqual(bucketWithDefaultSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, zero);
 
-        // To disable soft-delete policy for the bucket, set the soft delete retention duration to 0 days.
-        var bucketPostDisableSoftDeletePolicy = disableSample.BucketDisableSoftDeletePolicy(bucketName, (int) zero);
+        // Disable soft-delete policy for the bucket.
+        var bucketPostDisableSoftDeletePolicy = disableSample.BucketDisableSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, zero);
 
         // After disabling soft-delete policy for the bucket, EffectiveTimeRaw property will be null.
