@@ -17,6 +17,7 @@
 using Google.Cloud.Video.Stitcher.V1;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -135,90 +136,43 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
 
     public async Task CleanOutdatedResources()
     {
-        int TWO_HOURS_IN_SECS = 7200;
-        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        // Slates don't include creation time information, so encode it
-        // in the slate name. Slates have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
         var slates = _listSlatesSample.ListSlates(ProjectId, LocationId);
         foreach (Slate slate in slates)
         {
             string id = slate.SlateName.SlateId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteSlate(id);
-                    }
-                }
+                await DeleteSlate(id);
             }
         }
-        // CDN keys don't include creation time information, so encode it
-        // in the key name. CDN keys have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
+
         var cdnKeys = _listCdnKeysSample.ListCdnKeys(ProjectId, LocationId);
         foreach (CdnKey cdnKey in cdnKeys)
         {
             string id = cdnKey.CdnKeyName.CdnKeyId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteCdnKey(id);
-                    }
-                }
+                await DeleteCdnKey(id);
             }
         }
-        // Live configs don't include creation time information, so encode it
-        // in the config name. Live configs have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
+
         var liveConfigs = _listLiveConfigsSample.ListLiveConfigs(ProjectId, LocationId);
         foreach (LiveConfig liveConfig in liveConfigs)
         {
             string id = liveConfig.LiveConfigName.LiveConfigId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteLiveConfig(id);
-                    }
-                }
+                await DeleteLiveConfig(id);
             }
         }
-        // VOD configs don't include creation time information, so encode it
-        // in the config name. VOD configs have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
+
         var vodConfigs = _listVodConfigsSample.ListVodConfigs(ProjectId, LocationId);
         foreach (VodConfig vodConfig in vodConfigs)
         {
             string id = vodConfig.VodConfigName.VodConfigId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteVodConfig(id);
-                    }
-                }
+                await DeleteVodConfig(id);
             }
         }
     }
@@ -297,22 +251,28 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     }
 
     public static string GetTimestampId() => $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    {
-        return $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    }
 
-    public string RandomId()
+    private static bool IsOldEnoughForDeletion(string resourceId)
     {
-        return $"{System.Guid.NewGuid()}";
+        string[] resourceIdParts = resourceId.Split('-');
+
+        string unixTimeMillisecondsTxt = resourceIdParts.Last();
+        if (long.TryParse(unixTimeMillisecondsTxt, out long unixTimeMilliseconds))
+        {
+            DateTimeOffset creationTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMilliseconds);
+            return DateTimeOffset.UtcNow - creationTime > TimeSpan.FromHours(2);
+        }
+
+        return false;
     }
 
     public static string GetRandomId() => $"{Guid.NewGuid()}";
 
     public async Task<string> GetHttpResponse(string url)
-        {
+    {
         using var response = await _httpClient.GetAsync(url);
-            return await response.Content.ReadAsStringAsync();
-        }
+        return await response.Content.ReadAsStringAsync();
+    }
 
     public async Task GetManifestAndRendition(string playUri)
     {
