@@ -44,7 +44,7 @@ public class EditSecretAnnotationsTests
         string oldAnnotationKey = _fixture.AnnotationKey;
         string oldAnnotationValue = _fixture.AnnotationValue;
 
-        // Create the secret with the specificed fields.
+        // Call the code sample function.
         Secret result = _sample.EditSecretAnnotations(
           projectId: secretName.ProjectId, secretId: secretName.SecretId, annotationKey: newAnnotationKey, annotationValue: newAnnotationValue);
 

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
 using Google.Cloud.SecretManager.V1;
+using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
 public class CreateSecretTests
@@ -32,9 +32,17 @@ public class CreateSecretTests
     [Fact]
     public void CreatesSecrets()
     {
-        SecretName secretName = _fixture.SecretToCreateName;
+        // Get the SecretName.
+        SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
+
+        // Run the code sample.
         Secret result = _sample.CreateSecret(
           projectId: secretName.ProjectId, secretId: secretName.SecretId);
+
+        // Assert expected result is observed.
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
+
+        // Cleanup the created resource.
+        _fixture.DeleteSecret(secretName);
     }
 }
