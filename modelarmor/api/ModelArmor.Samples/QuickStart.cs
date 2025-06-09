@@ -12,11 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
-*/
+ */
 
-//[START modelarmor_quickstart]
+// [START modelarmor_quickstart]
 using System;
-using System.Text;
+using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
@@ -33,49 +33,44 @@ public class QuickstartSample
             Endpoint = $"modelarmor.{locationId}.rep.googleapis.com",
         };
 
-        // Create the client.
-        Google.Cloud.ModelArmor.V1.ModelArmorClient client = clientBuilder.Build();
+        ModelArmorClient client = clientBuilder.Build();
 
         LocationName parent = LocationName.FromProjectLocation(projectId, locationId);
 
-        // Build the Model Armor template with preferred filters
+        // Build the Model Armor template with preferred filters.
         RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
+        List<RaiFilterSettings.Types.RaiFilter> filters =
+            new List<RaiFilterSettings.Types.RaiFilter>
             {
-                FilterType = RaiFilterType.Dangerous,
-                ConfidenceLevel = DetectionConfidenceLevel.High,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.HateSpeech,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.SexuallyExplicit,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.Harassment,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-            }
-        );
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.Dangerous,
+                    ConfidenceLevel = DetectionConfidenceLevel.High,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.HateSpeech,
+                    ConfidenceLevel = DetectionConfidenceLevel.High,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.SexuallyExplicit,
+                    ConfidenceLevel = DetectionConfidenceLevel.LowAndAbove,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.Harassment,
+                    ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                },
+            };
 
-        // Create the filter config with RAI settings
-        FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
+        raiFilterSettings.RaiFilters.Add(filters);
 
-        // Create the template
-        Template template = new Template { FilterConfig = modelArmorFilter };
+        Template template = new Template
+        {
+            FilterConfig = new FilterConfig { RaiSettings = raiFilterSettings },
+        };
 
-        // Create the request
         CreateTemplateRequest request = new CreateTemplateRequest
         {
             ParentAsLocationName = parent,
@@ -83,12 +78,11 @@ public class QuickstartSample
             Template = template,
         };
 
-        // Send the request
         Template createdTemplate = client.CreateTemplate(request);
 
         Console.WriteLine($"Created template: {createdTemplate.Name}");
 
-        // Sanitize a user prompt using the created template
+        // Sanitize a user prompt using the created template.
         string userPrompt = "Unsafe user prompt";
 
         TemplateName templateName = TemplateName.FromProjectLocationTemplate(
@@ -109,7 +103,7 @@ public class QuickstartSample
 
         Console.WriteLine($"Result for User Prompt Sanitization: {userPromptSanitizeResponse}");
 
-        // Sanitize a model response using the created template
+        // Sanitize a model response using the created template.
         string modelResponse = "Unsanitized model output";
 
         SanitizeModelResponseRequest modelSanitizeRequest = new SanitizeModelResponseRequest
