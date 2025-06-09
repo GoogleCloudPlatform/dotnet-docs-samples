@@ -35,6 +35,11 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
     public SecretName UserManagedReplicationSecretName { get; }
     public SecretVersion SecretVersion { get; }
 
+    public string AnnotationKey { get; }
+    public string AnnotationValue { get; }
+    public string LabelKey { get; }
+    public string LabelValue { get; }
+
     public SecretManagerFixture()
     {
         // Get the Google Cloud ProjectId.
@@ -49,6 +54,14 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
 
         // Create the Regional Secret Manager Client
         Client = SecretManagerServiceClient.Create();
+
+        // Setting the AnnotationKey and AnnotationValue
+        AnnotationKey = "my-annotation-key";
+        AnnotationValue = "my-annotation-value";
+
+        // Setting the LabelKey and LabelValue
+        LabelKey = "my-label-key";
+        LabelValue = "my-label-value";
 
         Secret = CreateSecret(RandomId());
         SecretToDelete = CreateSecret(RandomId());
@@ -83,6 +96,14 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
             {
                 Automatic = new Replication.Types.Automatic(),
             },
+            Labels =
+            {
+                { LabelKey, LabelValue }
+            },
+            Annotations =
+            {
+              { AnnotationKey, AnnotationValue }
+            }
         };
 
         return Client.CreateSecret(ProjectName, secretId, secret);
