@@ -50,5 +50,7 @@ public class CreateSecretWithLabelsTests
         // Assert that the annotation values matches with the expected value.
         Assert.Equal(result.Labels[labelKey], labelValue);
 
+        // Clean the created secret.
+        _fixture.DeleteSecret(secretName);
     }
 }
