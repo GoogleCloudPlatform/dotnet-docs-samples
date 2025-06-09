@@ -31,7 +31,7 @@ namespace Stitcher.Samples.Tests
         {
             _fixture = fixture;
             _createSample = new CreateVodConfigSample();
-            _vodConfigId = $"{_fixture.VodConfigIdPrefix}-{_fixture.RandomId()}-{_fixture.TimestampId()}";
+            _vodConfigId = $"{_fixture.VodConfigIdPrefix}-{StitcherFixture.GetRandomId()}-{StitcherFixture.GetTimestampId()}";
         }
 
         [Fact]
