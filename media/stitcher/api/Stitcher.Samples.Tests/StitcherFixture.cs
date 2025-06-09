@@ -92,7 +92,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     private readonly ListVodConfigsSample _listVodConfigsSample = new ListVodConfigsSample();
     private readonly DeleteVodConfigSample _deleteVodConfigSample = new DeleteVodConfigSample();
 
-    private HttpClient httpClient;
+    private HttpClient _httpClient;
 
     public StitcherFixture()
     {
@@ -106,31 +106,31 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     {
         await CleanOutdatedResources();
 
-        TestSlateId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestSlateId = $"{SlateIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         SlateIds.Add(TestSlateId);
         TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
 
-        TestSlateForLiveConfigId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestSlateForLiveConfigId = $"{SlateIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         SlateIds.Add(TestSlateForLiveConfigId);
         TestSlateForLiveConfig = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateForLiveConfigId, TestSlateUri);
 
-        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
         TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
 
-        TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         CdnKeyIds.Add(TestAkamaiCdnKeyId);
         TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
 
-        TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestLiveConfigId = $"{LiveConfigIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
         TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateForLiveConfigId);
 
-        TestVodConfigId = $"{VodConfigIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestVodConfigId = $"{VodConfigIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         VodConfigIds.Add(TestVodConfigId);
         TestVodConfig = await _createVodConfigSample.CreateVodConfigAsync(ProjectId, LocationId, TestVodConfigId, VodSourceUri, VodAdTagUri);
 
-        httpClient = new HttpClient();
+        _httpClient = new HttpClient();
     }
 
     public async Task CleanOutdatedResources()
@@ -223,10 +223,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         }
     }
 
-    public void Dispose()
-    {
-        httpClient.Dispose();
-    }
+    public void Dispose() => _httpClient.Dispose();
 
     public async Task DisposeAsync()
     {
@@ -299,7 +296,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         }
     }
 
-    public string TimestampId()
+    public static string GetTimestampId() => $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     {
         return $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
     }
@@ -309,13 +306,13 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         return $"{System.Guid.NewGuid()}";
     }
 
-    public async Task<String> GetHttpResponse(string url)
-    {
-        using (var response = await httpClient.GetAsync(url))
+    public static string GetRandomId() => $"{Guid.NewGuid()}";
+
+    public async Task<string> GetHttpResponse(string url)
         {
+        using var response = await _httpClient.GetAsync(url);
             return await response.Content.ReadAsStringAsync();
         }
-    }
 
     public async Task GetManifestAndRendition(string playUri)
     {
