@@ -19,6 +19,8 @@ using System.Linq;
 
 // Calls the Retail API to search for products in a catalog using only a search query.
 
+// [START retail_search_simple_query]
+
 /// <summary>
 /// Search simple query sample class.
 /// </summary>
@@ -106,3 +108,5 @@ public static class SearchSimpleQueryTutorial
         return sample.Search(projectId);
     }
 }
+
+// [END retail_search_simple_query]
