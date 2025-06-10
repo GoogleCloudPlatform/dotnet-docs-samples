@@ -16,6 +16,7 @@
 
 // [START modelarmor_quickstart]
 using System;
+using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 
@@ -38,38 +39,37 @@ public class QuickstartSample
 
         // Build the Model Armor template with preferred filters.
         RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
+        List<RaiFilterSettings.Types.RaiFilter> filters =
+            new List<RaiFilterSettings.Types.RaiFilter>
             {
-                FilterType = RaiFilterType.Dangerous,
-                ConfidenceLevel = DetectionConfidenceLevel.High,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.HateSpeech,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.SexuallyExplicit,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-            }
-        );
-        raiFilterSettings.RaiFilters.Add(
-            new RaiFilterSettings.Types.RaiFilter
-            {
-                FilterType = RaiFilterType.Harassment,
-                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-            }
-        );
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.Dangerous,
+                    ConfidenceLevel = DetectionConfidenceLevel.High,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.HateSpeech,
+                    ConfidenceLevel = DetectionConfidenceLevel.High,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.SexuallyExplicit,
+                    ConfidenceLevel = DetectionConfidenceLevel.LowAndAbove,
+                },
+                new RaiFilterSettings.Types.RaiFilter
+                {
+                    FilterType = RaiFilterType.Harassment,
+                    ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                },
+            };
 
-        FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
+        raiFilterSettings.RaiFilters.Add(filters);
 
-        Template template = new Template { FilterConfig = modelArmorFilter };
+        Template template = new Template
+        {
+            FilterConfig = new FilterConfig { RaiSettings = raiFilterSettings },
+        };
 
         CreateTemplateRequest request = new CreateTemplateRequest
         {
@@ -103,7 +103,7 @@ public class QuickstartSample
 
         Console.WriteLine($"Result for User Prompt Sanitization: {userPromptSanitizeResponse}");
 
-        // Sanitize a model response using the created template
+        // Sanitize a model response using the created template.
         string modelResponse = "Unsanitized model output";
 
         SanitizeModelResponseRequest modelSanitizeRequest = new SanitizeModelResponseRequest
