@@ -36,6 +36,8 @@ applications/googlehome-meets-dotnetcontainers/  @meteatamel @GoogleCloudPlatfor
 run/                                             @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 aiplatform/                                      @meteatamel @GoogleCloudPlatform/dotnet-samples-reviewers
 
+modelarmor/      @GoogleCloudPlatform/dotnet-samples-reviewers @GoogleCloudPlatform/cloud-modelarmor-team
+
 retail/ @chenlei1216 @GoogleCloudPlatform/dotnet-samples-reviewers
 
 logging/         @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers

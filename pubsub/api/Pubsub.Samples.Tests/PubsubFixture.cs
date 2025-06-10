@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Auth.OAuth2;
 using Google.Apis.Bigquery.v2.Data;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.BigQuery.V2;
@@ -23,11 +24,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 using Xunit;
 using Xunit.Sdk;
 
 [CollectionDefinition(nameof(PubsubFixture))]
-public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
+public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>, IAsyncLifetime
 {
     public string ProjectId { get; }
     public List<string> TempTopicIds { get; } = new List<string>();
@@ -44,6 +46,9 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
     public string BigQueryTableId { get; } = $"testTable{Guid.NewGuid().ToString().Substring(24)}";
     public string BigQueryTableName { get; }
     public string CloudStorageBucketName { get; }
+    public string PermissionDeniedMessage { get; } = "Cloud Pub/Sub does not have the necessary permissions settings on the ingestion data source: AccessDenied: Not authorized to perform sts:AssumeRoleWithWebIdentity.";
+    private const string AwsRoleArn = "arn:aws:iam::111111111111:role/fake-role-name";
+    private string _gcpServiceAccount = "";
 
     public RetryRobot Pull { get; } = new RetryRobot
     {
@@ -256,9 +261,27 @@ public class PubsubFixture : IDisposable, ICollectionFixture<PubsubFixture>
         return ($"test{caller}Topic{randomName}", $"test{caller}Subscription{randomName}", $"test{caller}Schema{randomName}");
     }
 
-    public (string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount) RandomKinesisIngestionParams([CallerMemberName] string caller = null)
+    public (string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount) KinesisIngestionParams() => ("arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name", "arn:aws:kinesis:us-west-2:111111111111:stream/fake-stream-name/consumer/consumer-1:1111111111", AwsRoleArn, _gcpServiceAccount);
+
+    public (string clusterArn, string mskTopic, string awsRoleArn, string gcpServiceAccount) AwsMskIngestionParams() => ("arn:aws:kafka:us-east-1:111111111111:cluster/fake-cluster-name/11111111-1111-1", "fake-msk-topic-name", AwsRoleArn, _gcpServiceAccount);
+
+    public (string bootstrapServer, string clusterId, string confluentTopic, string identityPoolId, string gcpServiceAccount) ConfluentCloudIngestionParams() => ("fake-bootstrap-server-id.us-south1.gcp.confluent.cloud:9092", "fake-cluster-id", "fake-confluent-topic-name", "fake-identity-pool-id", _gcpServiceAccount);
+
+    public (string resourceGroup, string nameSpace, string eventHub, string clientId, string tenantId, string subscriptionId, string gcpServiceAccount) AzureEventHubsIngestionParams() => ("fake-resource-group", "fake-namespace", "fake-event-hub", "11111111-1111-1111-1111-111111111111", "22222222-2222-2222-2222-222222222222", "33333333-3333-3333-3333-333333333333", _gcpServiceAccount);
+
+    public async Task InitializeAsync()
     {
-        var randomName = RandomName();
-        return ($"test{caller}StreamArn{randomName}", $"test{caller}ConsumerArn{randomName}", $"test{caller}AwsRoleArn{randomName}", $"test{caller}GcpServiceAccount{randomName}");
+        GoogleCredential appDefaultCredentials = GoogleCredential.GetApplicationDefault();
+        if (appDefaultCredentials.UnderlyingCredential is ServiceAccountCredential sac)
+        {
+            _gcpServiceAccount = sac.Id;
+        }
+        else if (appDefaultCredentials.UnderlyingCredential is ComputeCredential cc)
+        {
+            _gcpServiceAccount = await cc.GetDefaultServiceAccountEmailAsync();
+        }
+        return;
     }
+
+    public Task DisposeAsync() => Task.CompletedTask;
 }

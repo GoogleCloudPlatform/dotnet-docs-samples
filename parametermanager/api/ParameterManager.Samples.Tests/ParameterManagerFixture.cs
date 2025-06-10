@@ -26,7 +26,9 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
     public const string LocationId = "global";
 
     public ParameterManagerClient Client { get; }
+    public SecretManagerServiceClient SecretClient { get; }
     internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
+    internal List<SecretName> SecretsToDelete { get; } = new List<SecretName>();
     internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
 
     public ParameterManagerFixture()
@@ -38,6 +40,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         }
 
         Client = ParameterManagerClient.Create();
+        SecretClient = SecretManagerServiceClient.Create();
     }
 
     public void Dispose()
@@ -50,11 +53,24 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         {
             DeleteParameter(parameter);
         }
+        foreach (var secret in SecretsToDelete)
+        {
+            DeleteSecret(secret);
+        }
     }
 
     public string RandomId()
     {
         return $"csharp-{System.Guid.NewGuid()}";
+    }
+
+    public (string parameterId, string versionId, Parameter parameter, string payload) CreateParameterWithVersion()
+    {
+        string parameterId = RandomId();
+        string versionId = RandomId();
+        Parameter parameter = CreateParameter(parameterId, ParameterFormat.Unformatted);
+        string payload = "test123";
+        return (parameterId, versionId, parameter, payload);
     }
 
     public Parameter CreateParameter(string parameterId, ParameterFormat format)
@@ -69,6 +85,22 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         Parameter Parameter = Client.CreateParameter(projectName, parameter, parameterId);
         ParametersToDelete.Add(Parameter.ParameterName);
         return Parameter;
+    }
+
+    public ParameterVersion CreateParameterVersion(string parameterId, string versionId, string payload)
+    {
+        ParameterName parameterName = new ParameterName(ProjectId, LocationId, parameterId);
+        ParameterVersion parameterVersion = new ParameterVersion
+        {
+            Payload = new ParameterVersionPayload
+            {
+                Data = ByteString.CopyFrom(payload, Encoding.UTF8)
+            }
+        };
+
+        ParameterVersion ParameterVersion = Client.CreateParameterVersion(parameterName, parameterVersion, versionId);
+        ParameterVersionsToDelete.Add(ParameterVersion.ParameterVersionName);
+        return ParameterVersion;
     }
 
     private void DeleteParameter(ParameterName name)
@@ -92,6 +124,64 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
             // Ignore error - Parameter version was already deleted
+        }
+    }
+
+    public Secret CreateSecret(string secretId)
+    {
+        ProjectName projectName = new ProjectName(ProjectId);
+
+        Secret secret = new Secret
+        {
+            Replication = new Replication
+            {
+                Automatic = new Replication.Types.Automatic(),
+            },
+        };
+        Secret Secret = SecretClient.CreateSecret(projectName, secretId, secret);
+        SecretsToDelete.Add(Secret.SecretName);
+        return Secret;
+    }
+
+    public Policy GrantIAMAccess(SecretName secretName, string member)
+    {
+        // Get current policy.
+        Policy policy = SecretClient.GetIamPolicy(new GetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+        });
+
+        // Add the user to the list of bindings.
+        policy.AddRoleMember("roles/secretmanager.secretAccessor", member);
+
+        // Save the updated policy.
+        policy = SecretClient.SetIamPolicy(new SetIamPolicyRequest
+        {
+            ResourceAsResourceName = secretName,
+            Policy = policy,
+        });
+        return policy;
+    }
+
+    public SecretVersion AddSecretVersion(Secret secret)
+    {
+        SecretPayload payload = new SecretPayload
+        {
+            Data = ByteString.CopyFrom("my super secret data", Encoding.UTF8),
+        };
+
+        return SecretClient.AddSecretVersion(secret.SecretName, payload);
+    }
+
+    private void DeleteSecret(SecretName name)
+    {
+        try
+        {
+            SecretClient.DeleteSecret(name);
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            // Ignore error - secret was already deleted
         }
     }
 }

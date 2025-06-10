@@ -247,6 +247,18 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     internal string GenerateBucketName() => Guid.NewGuid().ToString();
 
     /// <summary>
+    /// Generate the name of the object.
+    /// </summary>
+    /// <returns>The objectName.</returns>
+    internal string GenerateName() => Guid.NewGuid().ToString();
+
+    /// <summary>
+    /// Generate the content of the object.
+    /// </summary>
+    /// <returns>The objectContent.</returns>
+    internal string GenerateContent() => Guid.NewGuid().ToString();
+
+    /// <summary>
     /// Bucket creation/update/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
     /// </summary>
     internal void SleepAfterBucketCreateUpdateDelete() => Thread.Sleep(2000);
