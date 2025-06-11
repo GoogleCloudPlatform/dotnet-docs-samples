@@ -24,12 +24,14 @@ namespace ModelArmor.Samples.Tests
     {
         private readonly ModelArmorFixture _fixture;
         private readonly CreateTemplateSample _create_template_sample;
+        private readonly GetTemplateSample _get_template_sample;
         private readonly UpdateTemplateWithLabelsSample _update_template_sample;
 
         public UpdateTemplateWithLabelsTests(ModelArmorFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _create_template_sample = new CreateTemplateSample();
+            _get_template_sample = new GetTemplateSample();
             _update_template_sample = new UpdateTemplateWithLabelsSample();
         }
 
@@ -57,8 +59,10 @@ namespace ModelArmor.Samples.Tests
             Assert.Equal(originalTemplate.Name, updatedTemplate.Name);
 
             // Get template details for assertion of labels.
-            Template getUpdatedTemplate = _fixture.GetTemplate(
-                TemplateName.Parse(originalTemplate.Name)
+            Template getUpdatedTemplate = _get_template_sample.GetTemplate(
+                projectId: _fixture.ProjectId,
+                locationId: _fixture.LocationId,
+                templateId: templateName.TemplateId
             );
 
             Assert.NotNull(getUpdatedTemplate.Labels);
