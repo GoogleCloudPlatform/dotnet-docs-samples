@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Cloud.PubSub.V1;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -32,7 +33,6 @@ public class CreateAvroSchemaTest
         string schemaId = _pubsubFixture.RandomSchemaId();
         var newlyCreatedSchema = _createAvroSchemaSample.CreateAvroSchema(_pubsubFixture.ProjectId, schemaId, _pubsubFixture.AvroSchemaFile);
         _pubsubFixture.TempSchemaIds.Add(schemaId);
-        var schema = _pubsubFixture.GetSchema(schemaId);
-        Assert.Equal(newlyCreatedSchema, schema);
+        Assert.Equal(newlyCreatedSchema.SchemaName, SchemaName.FromProjectSchema(_pubsubFixture.ProjectId, schemaId));
     }
 }

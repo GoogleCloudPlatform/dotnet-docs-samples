@@ -108,6 +108,7 @@ namespace Pubsub.Controllers
         }
         /// <summary>
         /// Handle authenticated push request coming from pubsub.
+        /// See the full sample in https://github.com/GoogleCloudPlatform/dotnet-docs-samples/blob/main/appengine/flexible/Pubsub/Pubsub.Sample/Controllers/HomeController.cs
         /// </summary>
         [HttpPost]
         [Route("/AuthPush")]

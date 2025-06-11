@@ -33,7 +33,7 @@ namespace Stitcher.Samples.Tests
             _fixture = fixture;
             _createSample = new CreateLiveConfigSample();
             _deleteSample = new DeleteLiveConfigSample();
-            _liveConfigId = $"{_fixture.LiveConfigIdPrefix}-{_fixture.RandomId()}-{_fixture.TimestampId()}";
+            _liveConfigId = $"{_fixture.LiveConfigIdPrefix}-{StitcherFixture.GetRandomId()}-{StitcherFixture.GetTimestampId()}";
             _fixture.LiveConfigIds.Add(_liveConfigId);
         }
 
