@@ -16,6 +16,8 @@
 // limit the number of the products per page and go to the next page using "NextPageToken"
 // or jump to chosen page using "Offset".
 
+// [START retail_search_for_products_with_pagination]
+
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -104,6 +106,8 @@ public class SearchWithPaginationSample
         return searchResultPages;
     }
 }
+
+// [END retail_search_for_products_with_pagination]
 
 /// <summary>
 /// Search with page size tutorial.
