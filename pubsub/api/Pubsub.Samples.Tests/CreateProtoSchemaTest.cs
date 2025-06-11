@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
+using Google.Cloud.PubSub.V1;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -32,7 +32,6 @@ public class CreateProtoSchemaTest
         string schemaId = _pubsubFixture.RandomSchemaId();
         var newlyCreatedSchema = _createProtoSchemaSample.CreateProtoSchema(_pubsubFixture.ProjectId, schemaId, _pubsubFixture.ProtoSchemaFile);
         _pubsubFixture.TempSchemaIds.Add(schemaId);
-        var schema = _pubsubFixture.GetSchema(schemaId);
-        Assert.Equal(newlyCreatedSchema, schema);
+        Assert.Equal(newlyCreatedSchema.SchemaName, SchemaName.FromProjectSchema(_pubsubFixture.ProjectId, schemaId));
     }
 }

@@ -22,12 +22,14 @@ public class OptimisticSubscribeTest
     private readonly PubsubFixture _pubsubFixture;
     private readonly PublishMessagesAsyncSample _publishMessagesAsyncSample;
     private readonly OptimisticSubscribeSample _optimisticSubscribeSample;
+    private readonly DeleteSubscriptionSample _deleteSubscriptionSample;
 
     public OptimisticSubscribeTest(PubsubFixture pubsubFixture)
     {
         _pubsubFixture = pubsubFixture;
         _publishMessagesAsyncSample = new PublishMessagesAsyncSample();
         _optimisticSubscribeSample = new OptimisticSubscribeSample();
+        _deleteSubscriptionSample = new DeleteSubscriptionSample();
     }
 
     [Fact]
@@ -38,10 +40,17 @@ public class OptimisticSubscribeTest
 
         _pubsubFixture.CreateTopic(topicId);
 
+        // Publish messages and call OptimisticSubscribe before subscription creation
         await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
+        var result1 = await _optimisticSubscribeSample.OptimisticSubscribe(_pubsubFixture.ProjectId, topicId, subscriptionId);
+        // Existing messages before subscription creation would not be received
+        Assert.Equal(0, result1);
 
-        var result = await _optimisticSubscribeSample.OptimisticSubscribe(_pubsubFixture.ProjectId, topicId, subscriptionId);
+        await _publishMessagesAsyncSample.PublishMessagesAsync(_pubsubFixture.ProjectId, topicId, messages);
+        var result2 = await _optimisticSubscribeSample.OptimisticSubscribe(_pubsubFixture.ProjectId, topicId, subscriptionId);
+        // Messages published after subscription creation should be received
+        Assert.Equal(messages.Count, result2);
 
-        Assert.Equal(messages.Count, result);
+        _deleteSubscriptionSample.DeleteSubscription(_pubsubFixture.ProjectId, subscriptionId);
     }
 }

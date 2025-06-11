@@ -16,6 +16,8 @@
 
 using System;
 using System.Collections.Generic;
+using Google.Api.Gax.ResourceNames;
+using Google.Cloud.Dlp.V2;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
@@ -27,21 +29,25 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     private const string EnvLocation = "GOOGLE_CLOUD_LOCATION";
 
     public ModelArmorClient Client { get; }
+    public DlpServiceClient DlpClient { get; }
     public string ProjectId { get; }
     public string LocationId { get; }
-    private readonly List<TemplateName> _resourcesToCleanup = new List<TemplateName>();
+    private readonly List<TemplateName> _maTemplatesToCleanup = new List<TemplateName>();
+    private readonly List<string> _dlpTemplatesToCleanup = new List<string>();
 
     public ModelArmorFixture()
     {
         ProjectId = GetRequiredEnvVar(EnvProjectId);
         LocationId = Environment.GetEnvironmentVariable(EnvLocation) ?? "us-central1";
 
-        // Create the client.
-        ModelArmorClientBuilder clientBuilder = new ModelArmorClientBuilder
+        // Create the Model Armor client.
+        ModelArmorClient Client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{LocationId}.rep.googleapis.com",
-        };
-        Client = clientBuilder.Build();
+        }.Build();
+
+        // Create the DLP client.
+        DlpClient = new DlpServiceClientBuilder { Endpoint = $"dlp.googleapis.com" }.Build();
     }
 
     private string GetRequiredEnvVar(string name)
@@ -59,14 +65,104 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         return Guid.NewGuid().ToString("N").Substring(0, 8);
     }
 
+    // Creates a DLP Inspect Template and returns its name.
+    public string CreateInspectTemplate(string displayName = "Test Inspect Template")
+    {
+        var parent = new LocationName(ProjectId, LocationId).ToString();
+        var templateId = $"inspect-{GenerateUniqueId()}";
+        var request = new CreateInspectTemplateRequest
+        {
+            Parent = parent,
+            InspectTemplate = new InspectTemplate
+            {
+                DisplayName = displayName,
+                InspectConfig = new InspectConfig
+                {
+                    InfoTypes =
+                    {
+                        new InfoType { Name = "PERSON_NAME" },
+                        new InfoType { Name = "EMAIL_ADDRESS" },
+                        new InfoType { Name = "US_INDIVIDUAL_TAXPAYER_IDENTIFICATION_NUMBER" },
+                    },
+                },
+            },
+            TemplateId = templateId,
+        };
+        var response = DlpClient.CreateInspectTemplate(request);
+        RegisterDlpTemplateForCleanup(response.Name);
+        return response.Name;
+    }
+
+    // Creates a DLP Deidentify Template and returns its name.
+    public string CreateDeidentifyTemplate(string displayName = "Test Deidentify Template")
+    {
+        var parent = new LocationName(ProjectId, LocationId).ToString();
+        var templateId = $"deidentify-{GenerateUniqueId()}";
+        var request = new CreateDeidentifyTemplateRequest
+        {
+            Parent = parent,
+            DeidentifyTemplate = new DeidentifyTemplate
+            {
+                DisplayName = displayName,
+                DeidentifyConfig = new DeidentifyConfig
+                {
+                    InfoTypeTransformations = new InfoTypeTransformations
+                    {
+                        Transformations =
+                        {
+                            new InfoTypeTransformations.Types.InfoTypeTransformation
+                            {
+                                PrimitiveTransformation = new PrimitiveTransformation
+                                {
+                                    ReplaceConfig = new ReplaceValueConfig
+                                    {
+                                        NewValue = new Value { StringValue = "[REDACTED]" },
+                                    },
+                                },
+                            },
+                        },
+                    },
+                },
+            },
+            TemplateId = templateId,
+        };
+        var response = DlpClient.CreateDeidentifyTemplate(request);
+        RegisterDlpTemplateForCleanup(response.Name);
+        return response.Name;
+    }
+
     public void Dispose()
     {
         // Clean up resources after tests.
-        foreach (var resourceName in _resourcesToCleanup)
+        foreach (var resourceName in _maTemplatesToCleanup)
         {
             try
             {
                 Client.DeleteTemplate(new DeleteTemplateRequest { TemplateName = resourceName });
+            }
+            catch (Exception)
+            {
+                // Ignore errors during cleanup.
+            }
+        }
+
+        // Clean up DLP templates.
+        foreach (var dlpTemplateName in _dlpTemplatesToCleanup)
+        {
+            try
+            {
+                if (dlpTemplateName.Contains("inspectTemplates/"))
+                {
+                    DlpClient.DeleteInspectTemplate(
+                        new DeleteInspectTemplateRequest { Name = dlpTemplateName }
+                    );
+                }
+                else if (dlpTemplateName.Contains("deidentifyTemplates/"))
+                {
+                    DlpClient.DeleteDeidentifyTemplate(
+                        new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName }
+                    );
+                }
             }
             catch (Exception)
             {
@@ -79,7 +175,15 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     {
         if (templateName != null && !string.IsNullOrEmpty(templateName.ToString()))
         {
-            _resourcesToCleanup.Add(templateName);
+            _maTemplatesToCleanup.Add(templateName);
+        }
+    }
+
+    public void RegisterDlpTemplateForCleanup(string templateName)
+    {
+        if (!string.IsNullOrEmpty(templateName))
+        {
+            _dlpTemplatesToCleanup.Add(templateName);
         }
     }
 

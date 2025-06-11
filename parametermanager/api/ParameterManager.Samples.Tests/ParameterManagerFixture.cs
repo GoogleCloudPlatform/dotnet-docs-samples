@@ -64,6 +64,15 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         return $"csharp-{System.Guid.NewGuid()}";
     }
 
+    public (string parameterId, string versionId, Parameter parameter, string payload) CreateParameterWithVersion()
+    {
+        string parameterId = RandomId();
+        string versionId = RandomId();
+        Parameter parameter = CreateParameter(parameterId, ParameterFormat.Unformatted);
+        string payload = "test123";
+        return (parameterId, versionId, parameter, payload);
+    }
+
     public Parameter CreateParameter(string parameterId, ParameterFormat format)
     {
         LocationName projectName = new LocationName(ProjectId, LocationId);

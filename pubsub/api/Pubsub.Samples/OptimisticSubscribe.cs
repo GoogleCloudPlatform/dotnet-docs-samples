@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 public class OptimisticSubscribeSample
 {
     public async Task<int> OptimisticSubscribe(string projectId, string topicId, string subscriptionId)
-    { 
+    {
         SubscriptionName subscriptionName = SubscriptionName.FromProjectSubscription(projectId, subscriptionId);
         SubscriberClient subscriber = await SubscriberClient.CreateAsync(subscriptionName);
 
@@ -48,12 +48,12 @@ public class OptimisticSubscribeSample
         {
             Console.WriteLine($"Message: {e.Message}");
             Console.WriteLine($"StackTrace: {e.StackTrace}");
-            
+
             SubscriberServiceApiClient subscriberServiceApiClient = SubscriberServiceApiClient.Create();
             TopicName topicName = TopicName.FromProjectTopic(projectId, topicId);
             Subscription subscription = subscriberServiceApiClient.CreateSubscription(subscriptionName, topicName, pushConfig: null, ackDeadlineSeconds: 60);
             // Recursively call OptimisticSubscribe to restart the subscriber
-            return await OptimisticSubscribe(projectId, subscriptionId, topicId);
+            return await OptimisticSubscribe(projectId, topicId, subscriptionId);
         }
         return messageCount;
     }

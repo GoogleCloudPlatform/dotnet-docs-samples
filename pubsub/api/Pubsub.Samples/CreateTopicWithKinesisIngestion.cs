@@ -21,8 +21,6 @@ public class CreateTopicWithKinesisIngestionSample
 {
     public Topic CreateTopicWithKinesisIngestion(string projectId, string topicId, string streamArn, string consumerArn, string awsRoleArn, string gcpServiceAccount)
     {
-        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
-
         // Define settings for Kinesis ingestion
         IngestionDataSourceSettings ingestionDataSourceSettings = new IngestionDataSourceSettings
         {
@@ -35,12 +33,12 @@ public class CreateTopicWithKinesisIngestionSample
             }
         };
 
+        PublisherServiceApiClient publisher = PublisherServiceApiClient.Create();
         Topic topic = new Topic()
         {
             Name = TopicName.FormatProjectTopic(projectId, topicId),
             IngestionDataSourceSettings = ingestionDataSourceSettings
         };
-
         Topic createdTopic = publisher.CreateTopic(topic);
         Console.WriteLine($"Topic {topic.Name} created.");
 
