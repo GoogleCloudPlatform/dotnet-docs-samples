@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START retail_search_simple_query]
+
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 // Calls the Retail API to search for products in a catalog using only a search query.
-
-// [START retail_search_simple_query]
 
 /// <summary>
 /// Search simple query sample class.
