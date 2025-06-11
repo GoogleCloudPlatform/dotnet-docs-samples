@@ -34,6 +34,7 @@ public class QuickstartTests
     {
         // Get template name from fixture
         TemplateName templateName = _fixture.CreateTemplateName();
+        _fixture.RegisterTemplateForCleanup(templateName);
 
         // Run the quickstart sample
         _sample.Quickstart(
@@ -41,7 +42,5 @@ public class QuickstartTests
             locationId: templateName.LocationId,
             templateId: templateName.TemplateId
         );
-
-        _fixture.RegisterTemplateForCleanup(templateName);
     }
 }

@@ -33,7 +33,7 @@ public class CreateTopicWithCloudStorageIngestionTest
     public void CreateTopicWithCloudStorageIngestion()
     {
         string topicId = _pubsubFixture.RandomTopicId();
-        string bucket = _pubsubFixture.RandomName("Bucket");
+        string bucket = _pubsubFixture.CloudStorageBucketName;
         string inputFormat = "text";
         string textDelimiter = "\n";
         string matchGlob = "**.txt";
