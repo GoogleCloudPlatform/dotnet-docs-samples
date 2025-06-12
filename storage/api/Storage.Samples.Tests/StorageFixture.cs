@@ -92,7 +92,6 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
 
     public void Dispose()
     {
-        DeleteBucketSample deleteBucketSample = new DeleteBucketSample();
         DeleteFileSample deleteFileSample = new DeleteFileSample();
         DeleteFileArchivedGenerationSample deleteFileArchivedGenerationSample = new DeleteFileArchivedGenerationSample();
         foreach (var bucket in TempBucketFiles)
@@ -132,7 +131,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         {
             try
             {
-                deleteBucketSample.DeleteBucket(bucketName);
+                Client.DeleteBucket(bucketName, new DeleteBucketOptions { DeleteObjects = true });
                 SleepAfterBucketCreateUpdateDelete();
             }
             catch (Exception)
@@ -257,6 +256,12 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     /// </summary>
     /// <returns>The objectContent.</returns>
     internal string GenerateContent() => Guid.NewGuid().ToString();
+
+    /// <summary>
+    /// Generates a new globally unique identifier (GUID).
+    /// </summary>
+    /// <returns>A new randomly generated GUID as string.</returns>
+    internal string GenerateGuid() => Guid.NewGuid().ToString();
 
     /// <summary>
     /// Bucket creation/update/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
