@@ -32,9 +32,14 @@ public class AccessSecretVersionTests
     [Fact]
     public void AddsSecretVersions()
     {
+        // Get the SecretVersionName.
         SecretVersionName secretVersionName = _fixture.SecretVersion.SecretVersionName;
+
+        // Run the code sample.
         string result = _sample.AccessSecretVersion(
           projectId: secretVersionName.ProjectId, secretId: secretVersionName.SecretId, secretVersionId: secretVersionName.SecretVersionId);
+
+        // Assert that expected result is observed.
         Assert.Equal("my super secret data", result);
     }
 }
