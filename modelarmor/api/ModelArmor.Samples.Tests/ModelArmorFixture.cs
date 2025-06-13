@@ -54,7 +54,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         DlpClient = new DlpServiceClientBuilder { Endpoint = $"dlp.googleapis.com" }.Build();
     }
 
-    private string GetRequiredEnvVar(string name)
+    public string GetRequiredEnvVar(string name)
     {
         var value = Environment.GetEnvironmentVariable(name);
         if (string.IsNullOrEmpty(value))

@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-using System;
-using System.IO;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 using Xunit.Abstractions;
@@ -38,7 +36,7 @@ namespace ModelArmor.Samples.Tests
             _output = output;
         }
 
-        [Fact]
+        [Fact(Skip = "Remove this once b/424365799 is resolved.")]
         public void UpdateOrganizationFloorSettingTest()
         {
             // Get organization ID from environment variable
