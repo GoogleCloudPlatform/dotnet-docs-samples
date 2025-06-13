@@ -15,6 +15,8 @@
 
 // Create product in a catalog using Retail API
 
+// [START retail_create_product]
+
 using Google.Cloud.Retail.V2;
 using System;
 
@@ -126,3 +128,4 @@ public static class CreateProductTutorial
         DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }
+// [END retail_create_product]
