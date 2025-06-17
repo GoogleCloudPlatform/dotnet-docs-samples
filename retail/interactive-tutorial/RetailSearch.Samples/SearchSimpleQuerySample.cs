@@ -21,6 +21,7 @@ using System.Linq;
 
 // Calls the Retail API to search for products in a catalog using only a search query.
 
+
 /// <summary>
 /// Search simple query sample class.
 /// </summary>
