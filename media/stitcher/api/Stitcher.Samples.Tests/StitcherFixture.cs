@@ -17,6 +17,7 @@
 using Google.Cloud.Video.Stitcher.V1;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -92,7 +93,7 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     private readonly ListVodConfigsSample _listVodConfigsSample = new ListVodConfigsSample();
     private readonly DeleteVodConfigSample _deleteVodConfigSample = new DeleteVodConfigSample();
 
-    private HttpClient httpClient;
+    private HttpClient _httpClient;
 
     public StitcherFixture()
     {
@@ -106,127 +107,77 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
     {
         await CleanOutdatedResources();
 
-        TestSlateId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestSlateId = $"{SlateIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         SlateIds.Add(TestSlateId);
         TestSlate = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateId, TestSlateUri);
 
-        TestSlateForLiveConfigId = $"{SlateIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestSlateForLiveConfigId = $"{SlateIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         SlateIds.Add(TestSlateForLiveConfigId);
         TestSlateForLiveConfig = await _createSlateSample.CreateSlateAsync(ProjectId, LocationId, TestSlateForLiveConfigId, TestSlateUri);
 
-        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestCloudCdnKeyId = $"{CloudCdnKeyIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         CdnKeyIds.Add(TestCloudCdnKeyId);
         TestCloudCdnKey = await _createCdnKeySample.CreateCdnKeyAsync(ProjectId, LocationId, TestCloudCdnKeyId, Hostname, KeyName, CloudCdnPrivateKey, false);
 
-        TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestAkamaiCdnKeyId = $"{AkamaiCdnKeyIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         CdnKeyIds.Add(TestAkamaiCdnKeyId);
         TestAkamaiCdnKey = await _createCdnKeyAkamaiSample.CreateCdnKeyAkamaiAsync(ProjectId, LocationId, TestAkamaiCdnKeyId, Hostname, AkamaiTokenKey);
 
-        TestLiveConfigId = $"{LiveConfigIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestLiveConfigId = $"{LiveConfigIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         LiveConfigIds.Add(TestLiveConfigId);
         TestLiveConfig = await _createLiveConfigSample.CreateLiveConfigAsync(ProjectId, LocationId, TestLiveConfigId, LiveSourceUri, LiveAdTagUri, TestSlateForLiveConfigId);
 
-        TestVodConfigId = $"{VodConfigIdPrefix}-{RandomId()}-{TimestampId()}";
+        TestVodConfigId = $"{VodConfigIdPrefix}-{GetRandomId()}-{GetTimestampId()}";
         VodConfigIds.Add(TestVodConfigId);
         TestVodConfig = await _createVodConfigSample.CreateVodConfigAsync(ProjectId, LocationId, TestVodConfigId, VodSourceUri, VodAdTagUri);
 
-        httpClient = new HttpClient();
+        _httpClient = new HttpClient();
     }
 
     public async Task CleanOutdatedResources()
     {
-        int TWO_HOURS_IN_SECS = 7200;
-        long now = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
-        // Slates don't include creation time information, so encode it
-        // in the slate name. Slates have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
         var slates = _listSlatesSample.ListSlates(ProjectId, LocationId);
         foreach (Slate slate in slates)
         {
             string id = slate.SlateName.SlateId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteSlate(id);
-                    }
-                }
+                await DeleteSlate(id);
             }
         }
-        // CDN keys don't include creation time information, so encode it
-        // in the key name. CDN keys have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
+
         var cdnKeys = _listCdnKeysSample.ListCdnKeys(ProjectId, LocationId);
         foreach (CdnKey cdnKey in cdnKeys)
         {
             string id = cdnKey.CdnKeyName.CdnKeyId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteCdnKey(id);
-                    }
-                }
+                await DeleteCdnKey(id);
             }
         }
-        // Live configs don't include creation time information, so encode it
-        // in the config name. Live configs have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
+
         var liveConfigs = _listLiveConfigsSample.ListLiveConfigs(ProjectId, LocationId);
         foreach (LiveConfig liveConfig in liveConfigs)
         {
             string id = liveConfig.LiveConfigName.LiveConfigId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteLiveConfig(id);
-                    }
-                }
+                await DeleteLiveConfig(id);
             }
         }
-        // VOD configs don't include creation time information, so encode it
-        // in the config name. VOD configs have a low quota limit, so we need to
-        // remove outdated ones before the test begins (and creates more).
+
         var vodConfigs = _listVodConfigsSample.ListVodConfigs(ProjectId, LocationId);
         foreach (VodConfig vodConfig in vodConfigs)
         {
             string id = vodConfig.VodConfigName.VodConfigId;
-            string[] subs = id.Split('-');
-            if (subs.Length > 0)
+            if (IsOldEnoughForDeletion(id))
             {
-                string temp = subs[(subs.Length - 1)];
-                bool success = long.TryParse(temp, out long creation);
-                if (success)
-                {
-                    if ((now - creation) >= TWO_HOURS_IN_SECS)
-                    {
-                        await DeleteVodConfig(id);
-                    }
-                }
+                await DeleteVodConfig(id);
             }
         }
     }
 
-    public void Dispose()
-    {
-        httpClient.Dispose();
-    }
+    public void Dispose() => _httpClient.Dispose();
 
     public async Task DisposeAsync()
     {
@@ -299,22 +250,28 @@ public class StitcherFixture : IDisposable, IAsyncLifetime, ICollectionFixture<S
         }
     }
 
-    public string TimestampId()
-    {
-        return $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
-    }
+    public static string GetTimestampId() => $"{DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()}";
 
-    public string RandomId()
+    private static bool IsOldEnoughForDeletion(string resourceId)
     {
-        return $"{System.Guid.NewGuid()}";
-    }
+        string[] resourceIdParts = resourceId.Split('-');
 
-    public async Task<String> GetHttpResponse(string url)
-    {
-        using (var response = await httpClient.GetAsync(url))
+        string unixTimeMillisecondsTxt = resourceIdParts.Last();
+        if (long.TryParse(unixTimeMillisecondsTxt, out long unixTimeMilliseconds))
         {
-            return await response.Content.ReadAsStringAsync();
+            DateTimeOffset creationTime = DateTimeOffset.FromUnixTimeMilliseconds(unixTimeMilliseconds);
+            return DateTimeOffset.UtcNow - creationTime > TimeSpan.FromHours(2);
         }
+
+        return false;
+    }
+
+    public static string GetRandomId() => $"{Guid.NewGuid()}";
+
+    public async Task<string> GetHttpResponse(string url)
+    {
+        using var response = await _httpClient.GetAsync(url);
+        return await response.Content.ReadAsStringAsync();
     }
 
     public async Task GetManifestAndRendition(string playUri)

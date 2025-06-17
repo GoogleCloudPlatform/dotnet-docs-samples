@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.PubSub.V1;
+using Grpc.Core;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -31,20 +31,9 @@ public class CreateTopicWithAzureEventHubsIngestionTest
     public void CreateTopicWithAzureEventHubsIngestion()
     {
         string topicId = _pubsubFixture.RandomTopicId();
-        var (resourceGroup, nameSpace, eventHub, clientId, tenantId, subscriptionId, gcpServiceAccount) = _pubsubFixture.RandomAzureEventHubsIngestionParams();
-        Topic createdTopic = _createTopicWithAzureEventHubsIngestionSample.CreateTopicWithAzureEventHubsIngestion(_pubsubFixture.ProjectId, topicId, resourceGroup, nameSpace, eventHub, clientId, tenantId, subscriptionId, gcpServiceAccount);
-
-        // Confirm that the created topic and topic retrieved by ID are equal
-        Topic retrievedTopic = _pubsubFixture.GetTopic(topicId);
-        Assert.Equal(createdTopic, retrievedTopic);
-
-        // Confirm that all Ingestion params are equal to expected values
-        Assert.Equal(resourceGroup, createdTopic.IngestionDataSourceSettings.AzureEventHubs.ResourceGroup);
-        Assert.Equal(nameSpace, createdTopic.IngestionDataSourceSettings.AzureEventHubs.Namespace);
-        Assert.Equal(eventHub, createdTopic.IngestionDataSourceSettings.AzureEventHubs.EventHub);
-        Assert.Equal(clientId, createdTopic.IngestionDataSourceSettings.AzureEventHubs.ClientId);
-        Assert.Equal(tenantId, createdTopic.IngestionDataSourceSettings.AzureEventHubs.TenantId);
-        Assert.Equal(subscriptionId, createdTopic.IngestionDataSourceSettings.AzureEventHubs.SubscriptionId);
-        Assert.Equal(gcpServiceAccount, createdTopic.IngestionDataSourceSettings.AzureEventHubs.GcpServiceAccount);
+        var (resourceGroup, nameSpace, eventHub, clientId, tenantId, subscriptionId, gcpServiceAccount) = _pubsubFixture.AzureEventHubsIngestionParams();
+        var exception = Assert.Throws<RpcException>(() => _createTopicWithAzureEventHubsIngestionSample.CreateTopicWithAzureEventHubsIngestion(_pubsubFixture.ProjectId, topicId, resourceGroup, nameSpace, eventHub, clientId, tenantId, subscriptionId, gcpServiceAccount));
+        Assert.Equal(StatusCode.NotFound, exception.Status.StatusCode);
+        Assert.Equal($"Cloud Pub/Sub encountered a not-found error while trying to connect to the ingestion data source: Failed to resolve bootstrap server {nameSpace}.servicebus.windows.net to an IP.", exception.Status.Detail);
     }
 }

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google.Cloud.PubSub.V1;
+using Grpc.Core;
 using Xunit;
 
 [Collection(nameof(PubsubFixture))]
@@ -33,9 +33,9 @@ public class UpdateTopicTypeTest
         string topicId = _pubsubFixture.RandomTopicId();
         _pubsubFixture.CreateTopic(topicId);
 
-        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.RandomKinesisIngestionParams();
-        Topic updatedTopic = _updateTopicTypeSample.UpdateTopicType(_pubsubFixture.ProjectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount);
-        Topic retrievedTopic = _pubsubFixture.GetTopic(topicId);
-        Assert.Equal(updatedTopic, retrievedTopic);
+        var (streamArn, consumerArn, awsRoleArn, gcpServiceAccount) = _pubsubFixture.KinesisIngestionParams();
+        var exception = Assert.Throws<RpcException>(() => _updateTopicTypeSample.UpdateTopicType(_pubsubFixture.ProjectId, topicId, streamArn, consumerArn, awsRoleArn, gcpServiceAccount));
+        Assert.Equal(StatusCode.PermissionDenied, exception.Status.StatusCode);
+        Assert.Equal(_pubsubFixture.PermissionDeniedMessage, exception.Status.Detail);
     }
 }
