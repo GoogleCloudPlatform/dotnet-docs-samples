@@ -15,6 +15,7 @@
 
 // Delete product from a catalog using Retail API
 
+// [START retail_delete_product]
 using Google.Cloud.Retail.V2;
 using System;
 
@@ -79,3 +80,4 @@ public static class DeleteProductTutorial
         DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }
+// [END retail_delete_product]
