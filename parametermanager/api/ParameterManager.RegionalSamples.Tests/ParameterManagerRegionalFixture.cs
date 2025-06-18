@@ -49,7 +49,6 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         }.Build();
 
         KmsClient = KeyManagementServiceClient.Create();
-        KeyRing keyRing = CreateKeyRing(ProjectId, "csharp-test-key-ring");
         string regionalSecretEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
         SecretClient = new SecretManagerServiceClientBuilder
         {
@@ -147,10 +146,9 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         }
     }
 
-    public KeyRing CreateKeyRing(string projectId, string keyRingId)
+    public KeyRing GetKeyRing(string projectId, string keyRingId)
     {
         string name = $"projects/{projectId}/locations/{LocationId}/keyRings/{keyRingId}";
-        LocationName parent = new LocationName(projectId, LocationId);
         try
         {
             KeyRing resp = KmsClient.GetKeyRing(name);
@@ -158,11 +156,7 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
-            return KmsClient.CreateKeyRing(new CreateKeyRingRequest
-            {
-                ParentAsLocationName = parent,
-                KeyRingId = keyRingId,
-            });
+            throw new Exception($"KeyRing with ID '{keyRingId}' in project '{projectId}' and location '{LocationId}' does not exist.");
         }
     }
 

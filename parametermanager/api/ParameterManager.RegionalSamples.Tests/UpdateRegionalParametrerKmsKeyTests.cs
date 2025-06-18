@@ -24,11 +24,13 @@ public class UpdateRegionalParameterKmsKeyTests
 {
     private readonly ParameterManagerRegionalFixture _fixture;
     private readonly UpdateRegionalParameterKmsKeySample _sample;
+    readonly string keyRingId = "csharp-test-key-ring";
 
     public UpdateRegionalParameterKmsKeyTests(ParameterManagerRegionalFixture fixture)
     {
         _fixture = fixture;
         _sample = new UpdateRegionalParameterKmsKeySample();
+        _fixture.GetKeyRing(_fixture.ProjectId, keyRingId);
     }
 
     [Fact]
@@ -36,10 +38,10 @@ public class UpdateRegionalParameterKmsKeyTests
     {
         string KeyId = _fixture.RandomId();
         string KeyId1 = _fixture.RandomId();
-        CryptoKey cryptoKey = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId, "csharp-test-key-ring");
-        CryptoKey cryptoKey1 = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId1, "csharp-test-key-ring");
-        CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, "csharp-test-key-ring", KeyId, "1");
-        CryptoKeyVersionName cryptoKeyVersionName1 = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, "csharp-test-key-ring", KeyId1, "1");
+        CryptoKey cryptoKey = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId, keyRingId);
+        CryptoKey cryptoKey1 = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId1, keyRingId);
+        CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, keyRingId, KeyId, "1");
+        CryptoKeyVersionName cryptoKeyVersionName1 = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerRegionalFixture.LocationId, keyRingId, KeyId1, "1");
         _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
         _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName1);
 
