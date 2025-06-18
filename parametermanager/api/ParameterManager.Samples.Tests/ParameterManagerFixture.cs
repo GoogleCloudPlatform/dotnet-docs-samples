@@ -44,7 +44,6 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 
         Client = ParameterManagerClient.Create();
         KmsClient = KeyManagementServiceClient.Create();
-        KeyRing keyRing = CreateKeyRing(ProjectId, "csharp-test-key-ring");
         SecretClient = SecretManagerServiceClient.Create();
     }
 
@@ -139,10 +138,9 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         }
     }
 
-    public KeyRing CreateKeyRing(string projectId, string keyRingId)
+    public KeyRing GetKeyRing(string projectId, string keyRingId)
     {
         string name = $"projects/{projectId}/locations/global/keyRings/{keyRingId}";
-        LocationName parent = new LocationName(projectId, "global");
         try
         {
             KeyRing resp = KmsClient.GetKeyRing(name);
@@ -150,11 +148,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
         }
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
-            return KmsClient.CreateKeyRing(new CreateKeyRingRequest
-            {
-                ParentAsLocationName = parent,
-                KeyRingId = keyRingId,
-            });
+            throw new Exception($"KeyRing with ID '{keyRingId}' in project '{projectId}' does not exist.");
         }
     }
 
