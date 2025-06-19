@@ -32,12 +32,16 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public DlpServiceClient DlpClient { get; }
     public string ProjectId { get; }
     public string LocationId { get; }
+    public string FolderId { get; }
+    public string OrganizationId { get; }
     private readonly List<TemplateName> _maTemplatesToCleanup = new List<TemplateName>();
-    private readonly List<string> _dlpTemplatesToCleanup = new List<string>();
+    private readonly List<TemplateName> _dlpTemplatesToCleanup = new List<TemplateName>();
 
     public ModelArmorFixture()
     {
         ProjectId = GetRequiredEnvVar(EnvProjectId);
+        FolderId = GetRequiredEnvVar("MA_FOLDER_ID");
+        OrganizationId = GetRequiredEnvVar("MA_ORG_ID");
         LocationId = Environment.GetEnvironmentVariable(EnvLocation) ?? "us-central1";
 
         // Create the Model Armor client.
@@ -50,7 +54,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         DlpClient = new DlpServiceClientBuilder { Endpoint = $"dlp.googleapis.com" }.Build();
     }
 
-    private string GetRequiredEnvVar(string name)
+    public string GetRequiredEnvVar(string name)
     {
         var value = Environment.GetEnvironmentVariable(name);
         if (string.IsNullOrEmpty(value))
@@ -69,7 +73,11 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string CreateInspectTemplate(string displayName = "Test Inspect Template")
     {
         var parent = new LocationName(ProjectId, LocationId).ToString();
-        var templateId = $"inspect-{GenerateUniqueId()}";
+        TemplateName templateName = CreateTemplateName();
+        RegisterDlpTemplateForCleanup(templateName);
+
+        string templateId = templateName.TemplateId;
+
         var request = new CreateInspectTemplateRequest
         {
             Parent = parent,
@@ -89,7 +97,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateInspectTemplate(request);
-        RegisterDlpTemplateForCleanup(response.Name);
+
         return response.Name;
     }
 
@@ -97,7 +105,11 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string CreateDeidentifyTemplate(string displayName = "Test Deidentify Template")
     {
         var parent = new LocationName(ProjectId, LocationId).ToString();
-        var templateId = $"deidentify-{GenerateUniqueId()}";
+        TemplateName templateName = CreateTemplateName();
+        RegisterDlpTemplateForCleanup(templateName);
+
+        string templateId = templateName.TemplateId;
+
         var request = new CreateDeidentifyTemplateRequest
         {
             Parent = parent,
@@ -127,7 +139,6 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateDeidentifyTemplate(request);
-        RegisterDlpTemplateForCleanup(response.Name);
         return response.Name;
     }
 
@@ -146,21 +157,23 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             }
         }
 
+        ResetFloorSettings();
+
         // Clean up DLP templates.
         foreach (var dlpTemplateName in _dlpTemplatesToCleanup)
         {
             try
             {
-                if (dlpTemplateName.Contains("inspectTemplates/"))
+                if (dlpTemplateName.ToString().Contains("inspectTemplates/"))
                 {
                     DlpClient.DeleteInspectTemplate(
-                        new DeleteInspectTemplateRequest { Name = dlpTemplateName }
+                        new DeleteInspectTemplateRequest { Name = dlpTemplateName.ToString() }
                     );
                 }
-                else if (dlpTemplateName.Contains("deidentifyTemplates/"))
+                else if (dlpTemplateName.ToString().Contains("deidentifyTemplates/"))
                 {
                     DlpClient.DeleteDeidentifyTemplate(
-                        new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName }
+                        new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName.ToString() }
                     );
                 }
             }
@@ -168,6 +181,123 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             {
                 // Ignore errors during cleanup.
             }
+        }
+    }
+
+    // Reset floor settings to default values for project, folder, and organization
+    private void ResetFloorSettings()
+    {
+        // Reset project floor settings if project ID is available
+        if (!string.IsNullOrEmpty(ProjectId))
+        {
+            ResetProjectFloorSettings(ProjectId);
+        }
+
+        // Reset folder floor settings if folder ID is available
+        string folderId = FolderId;
+        if (!string.IsNullOrEmpty(folderId))
+        {
+            ResetFolderFloorSettings(folderId);
+        }
+
+        // Reset organization floor settings if organization ID is available
+        string organizationId = OrganizationId;
+        if (!string.IsNullOrEmpty(organizationId))
+        {
+            ResetOrganizationFloorSettings(organizationId);
+        }
+    }
+
+    // Reset project floor settings to default
+    public void ResetProjectFloorSettings(string projectId)
+    {
+        try
+        {
+            // Add a small delay to avoid rate limiting
+            System.Threading.Thread.Sleep(2000);
+
+            // Create default floor setting with empty RAI filters and enforcement disabled
+            FloorSetting defaultFloorSetting = new FloorSetting
+            {
+                Name = $"projects/{projectId}/locations/global/floorSetting",
+                FilterConfig = new FilterConfig
+                {
+                    RaiSettings = new RaiFilterSettings { RaiFilters = { } },
+                },
+                EnableFloorSettingEnforcement = false,
+            };
+
+            // Update the floor setting to reset it
+            Client.UpdateFloorSetting(
+                new UpdateFloorSettingRequest { FloorSetting = defaultFloorSetting }
+            );
+        }
+        catch (Exception ex)
+        {
+            // Log but don't throw to avoid breaking test cleanup
+            Console.WriteLine($"Error resetting project floor settings: {ex.Message}");
+        }
+    }
+
+    // Reset folder floor settings to default
+    public void ResetFolderFloorSettings(string folderId)
+    {
+        try
+        {
+            // Add a small delay to avoid rate limiting
+            System.Threading.Thread.Sleep(2000);
+
+            // Create default floor setting with empty RAI filters and enforcement disabled
+            FloorSetting defaultFloorSetting = new FloorSetting
+            {
+                Name = $"folders/{folderId}/locations/global/floorSetting",
+                FilterConfig = new FilterConfig
+                {
+                    RaiSettings = new RaiFilterSettings { RaiFilters = { } },
+                },
+                EnableFloorSettingEnforcement = false,
+            };
+
+            // Update the floor setting to reset it
+            Client.UpdateFloorSetting(
+                new UpdateFloorSettingRequest { FloorSetting = defaultFloorSetting }
+            );
+        }
+        catch (Exception ex)
+        {
+            // Log but don't throw to avoid breaking test cleanup
+            Console.WriteLine($"Error resetting folder floor settings: {ex.Message}");
+        }
+    }
+
+    // Reset organization floor settings to default
+    public void ResetOrganizationFloorSettings(string organizationId)
+    {
+        try
+        {
+            // Add a small delay to avoid rate limiting
+            System.Threading.Thread.Sleep(2000);
+
+            // Create default floor setting with empty RAI filters and enforcement disabled
+            FloorSetting defaultFloorSetting = new FloorSetting
+            {
+                Name = $"organizations/{organizationId}/locations/global/floorSetting",
+                FilterConfig = new FilterConfig
+                {
+                    RaiSettings = new RaiFilterSettings { RaiFilters = { } },
+                },
+                EnableFloorSettingEnforcement = false,
+            };
+
+            // Update the floor setting to reset it
+            Client.UpdateFloorSetting(
+                new UpdateFloorSettingRequest { FloorSetting = defaultFloorSetting }
+            );
+        }
+        catch (Exception ex)
+        {
+            // Log but don't throw to avoid breaking test cleanup
+            Console.WriteLine($"Error resetting organization floor settings: {ex.Message}");
         }
     }
 
@@ -179,9 +309,9 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         }
     }
 
-    public void RegisterDlpTemplateForCleanup(string templateName)
+    public void RegisterDlpTemplateForCleanup(TemplateName templateName)
     {
-        if (!string.IsNullOrEmpty(templateName))
+        if (templateName != null && !string.IsNullOrEmpty(templateName.ToString()))
         {
             _dlpTemplatesToCleanup.Add(templateName);
         }
@@ -191,5 +321,177 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     {
         string templateId = $"{prefix}-{GenerateUniqueId()}";
         return new TemplateName(ProjectId, LocationId, templateId);
+    }
+
+    // Base method to create a template with basic RAI settings
+    public Template ConfigureBaseTemplate()
+    {
+        RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.Dangerous,
+                ConfidenceLevel = DetectionConfidenceLevel.High,
+            }
+        );
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.HateSpeech,
+                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+            }
+        );
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.SexuallyExplicit,
+                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+            }
+        );
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.Harassment,
+                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+            }
+        );
+
+        // Create the filter config with RAI settings
+        FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
+
+        // Create the template
+        Template template = new Template { FilterConfig = modelArmorFilter };
+        return template;
+    }
+
+    // Create a template with Basic SDP configuration
+    public Template ConfigureBasicSdpTemplate()
+    {
+        // First create a base template
+        Template template = ConfigureBaseTemplate();
+
+        // Add Basic SDP configuration
+        SdpBasicConfig basicSdpConfig = new SdpBasicConfig
+        {
+            FilterEnforcement = SdpBasicConfig.Types.SdpBasicConfigEnforcement.Enabled,
+        };
+
+        SdpFilterSettings sdpSettings = new SdpFilterSettings { BasicConfig = basicSdpConfig };
+        template.FilterConfig.SdpSettings = sdpSettings;
+
+        return template;
+    }
+
+    public Template ConfigureAdvancedSdpTemplate()
+    {
+        // First create a base template
+        Template template = ConfigureBaseTemplate();
+
+        string inspectTemplateName = CreateInspectTemplate();
+        string deidentifyTemplateName = CreateDeidentifyTemplate();
+
+        // Add Advanced SDP configuration
+        SdpAdvancedConfig advancedSdpConfig = new SdpAdvancedConfig
+        {
+            InspectTemplate = inspectTemplateName,
+            DeidentifyTemplate = deidentifyTemplateName,
+        };
+
+        SdpFilterSettings sdpSettings = new SdpFilterSettings
+        {
+            AdvancedConfig = advancedSdpConfig,
+        };
+
+        template.FilterConfig.SdpSettings = sdpSettings;
+
+        return template;
+    }
+
+    public Template ConfigureTemplateWithMaliciousUri()
+    {
+        Template template = ConfigureBaseTemplate();
+
+        template.FilterConfig.MaliciousUriFilterSettings = new MaliciousUriFilterSettings
+        {
+            FilterEnforcement = MaliciousUriFilterSettings
+                .Types
+                .MaliciousUriFilterEnforcement
+                .Enabled,
+        };
+
+        return template;
+    }
+
+    public Template ConfigureTemplateWithPiAndJailbreak()
+    {
+        Template template = ConfigureBaseTemplate();
+
+        template.FilterConfig.PiAndJailbreakFilterSettings = new PiAndJailbreakFilterSettings
+        {
+            ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+            FilterEnforcement = PiAndJailbreakFilterSettings
+                .Types
+                .PiAndJailbreakFilterEnforcement
+                .Enabled,
+        };
+        return template;
+    }
+
+    // Create a template on GCP and register it for cleanup
+    public Template CreateTemplate(Template templateConfig, string templateId = null)
+    {
+        // Generate a unique template ID if none provided
+        templateId ??= $"test-{GenerateUniqueId()}";
+
+        // Create the parent resource name
+        LocationName parent = LocationName.FromProjectLocation(ProjectId, LocationId);
+
+        // Create the template
+        Template createdTemplate = Client.CreateTemplate(
+            new CreateTemplateRequest
+            {
+                ParentAsLocationName = parent,
+                Template = templateConfig,
+                TemplateId = templateId,
+            }
+        );
+
+        // Register the template for cleanup
+        RegisterTemplateForCleanup(TemplateName.Parse(createdTemplate.Name));
+
+        return createdTemplate;
+    }
+
+    // Create a base template on GCP
+    public Template CreateBaseTemplate(string templateId = null)
+    {
+        Template templateConfig = ConfigureBaseTemplate();
+        return CreateTemplate(templateConfig, templateId);
+    }
+
+    // Create a template with Basic SDP on GCP
+    public Template CreateBasicSdpTemplate(string templateId = null)
+    {
+        Template templateConfig = ConfigureBasicSdpTemplate();
+        return CreateTemplate(templateConfig, templateId);
+    }
+
+    // Create a template with Advanced SDP on GCP
+    public Template CreateAdvancedSdpTemplate(string templateId = null)
+    {
+        Template templateConfig = ConfigureAdvancedSdpTemplate();
+        return CreateTemplate(templateConfig, templateId);
+    }
+
+    public Template CreateTemplateWithMaliciousUri(string templateId = null)
+    {
+        Template templateConfig = ConfigureTemplateWithMaliciousUri();
+        return CreateTemplate(templateConfig, templateId);
+    }
+
+    public Template CreateTemplateWithPiAndJailbreak(string templateId = null)
+    {
+        Template templateConfig = ConfigureTemplateWithPiAndJailbreak();
+        return CreateTemplate(templateConfig, templateId);
     }
 }
