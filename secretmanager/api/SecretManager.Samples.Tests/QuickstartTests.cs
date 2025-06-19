@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
 using Google.Cloud.SecretManager.V1;
+using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
 public class QuickstartTests
@@ -32,7 +32,10 @@ public class QuickstartTests
     [Fact]
     public void Runs()
     {
-        SecretName secretName = _fixture.SecretForQuickstartName;
+        SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
+
         _sample.Quickstart(projectId: secretName.ProjectId, secretId: secretName.SecretId);
+
+        _fixture.DeleteSecret(secretName);
     }
 }

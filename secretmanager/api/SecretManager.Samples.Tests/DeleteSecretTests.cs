@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
 using Google.Cloud.SecretManager.V1;
+using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
 public class DeleteSecretTests
@@ -32,10 +32,17 @@ public class DeleteSecretTests
     [Fact]
     public void DeletesSecrets()
     {
-        SecretName secretName = _fixture.SecretToDelete.SecretName;
+        // Create the secret.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+
+        // Get the secretName from the created secret.
+        SecretName secretName = secret.SecretName;
+
+        // Call the code sample function.
         _sample.DeleteSecret(projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+        // Assert expected behavior is seen.
+        SecretManagerServiceClient client = _fixture.Client;
         Assert.Throws<Grpc.Core.RpcException>(() => client.GetSecret(secretName));
     }
 }
