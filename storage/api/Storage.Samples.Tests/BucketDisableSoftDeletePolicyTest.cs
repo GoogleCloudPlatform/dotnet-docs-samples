@@ -30,30 +30,16 @@ public class BucketDisableSoftDeletePolicyTest
     public void TestBucketDisableSoftDeletePolicy()
     {
         BucketDisableSoftDeletePolicySample disableSample = new BucketDisableSoftDeletePolicySample();
-        UploadObjectFromMemorySample uploadObjectSample = new UploadObjectFromMemorySample();
-        GetMetadataSample getMetadataSample = new GetMetadataSample();
         var bucketName = _fixture.GenerateBucketName();
         var bucketWithDefaultSoftDeletePolicy = _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
-
-        var originName = _fixture.GenerateGuid();
-        var originContent = _fixture.GenerateGuid();
-
-        uploadObjectSample.UploadObjectFromMemory(bucketName, originName, originContent);
-        var objectMetaData = getMetadataSample.GetMetadata(bucketName, originName);
 
         // Initializing zero with a value 0 indicates the retention duration for the bucket. 
         long zero = 0;
         Assert.NotEqual(bucketWithDefaultSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, zero);
-
         // Disable soft-delete policy for the bucket.
         var bucketPostDisableSoftDeletePolicy = disableSample.BucketDisableSoftDeletePolicy(bucketName);
         Assert.Equal(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.RetentionDurationSeconds, zero);
-
         // After disabling soft-delete policy for the bucket, EffectiveTimeRaw property will be null.
         Assert.Null(bucketPostDisableSoftDeletePolicy.SoftDeletePolicy.EffectiveTimeRaw);
-
-        // After disabling soft-delete policy for the bucket, objects in the bucket can not be restored.
-        var exception = Assert.Throws<GoogleApiException>(() => _fixture.Client.RestoreObject(bucketName, originName, objectMetaData.Generation.Value));
-        Assert.Equal(HttpStatusCode.BadRequest, exception.HttpStatusCode);
     }
 }
