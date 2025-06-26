@@ -1,3 +1,3 @@
 using Xunit;
 
-[assembly: CollectionBehavior(DisableTestParallelization = false)]
+[assembly: CollectionBehavior(DisableTestParallelization = true)]

@@ -15,6 +15,7 @@
 */
 
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
@@ -94,6 +95,8 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         };
         var response = DlpClient.CreateInspectTemplate(request);
 
+        // Wait for the template to be created.
+        Thread.Sleep(20000);
         return response.Name;
     }
 
@@ -135,6 +138,10 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateDeidentifyTemplate(request);
+        
+        // Wait for the template to be created.
+        Thread.Sleep(20000);
+        
         return response.Name;
     }
 
@@ -266,6 +273,9 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
 
         string inspectTemplateName = CreateInspectTemplate();
         string deidentifyTemplateName = CreateDeidentifyTemplate();
+
+        //Wait till DLP templates gets created
+        Thread.Sleep(5000);
 
         // Add Advanced SDP configuration
         SdpAdvancedConfig advancedSdpConfig = new SdpAdvancedConfig
