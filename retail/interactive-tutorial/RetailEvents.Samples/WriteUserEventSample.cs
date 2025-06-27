@@ -14,7 +14,7 @@
 // limitations under the License.
 
 // Import user events into a catalog from inline source using Retail API
-
+// [START retail_write_user_event]
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -122,3 +122,4 @@ public static class WriteUserEventTutorial
         PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
     }
 }
+// [END retail_write_user_event]
