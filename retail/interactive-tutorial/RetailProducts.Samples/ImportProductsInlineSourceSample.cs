@@ -14,7 +14,7 @@
 // limitations under the License.
 
 // Import products into a catalog from inline source using Retail API
-
+// [START retail_import_products_from_inline_source]
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
@@ -204,3 +204,4 @@ public static class ImportProductsInlineSourceTutorial
         return result;
     }
 }
+// [END retail_import_products_from_inline_source]
