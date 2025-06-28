@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START retail_remove_fulfillment_places]
+
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -89,3 +91,5 @@ public static class RemoveFulfillmentPlacesTutorial
         DeleteProductSample.DeleteRetailProduct(createdProduct.Name);
     }
 }
+
+// [END retail_remove_fulfillment_places]
