@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
 using Google.Cloud.SecretManager.V1;
+using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
 public class UpdateSecretWithAliasTests
@@ -32,8 +32,13 @@ public class UpdateSecretWithAliasTests
     [Fact]
     public void UpdatesSecrets()
     {
-        SecretName secretName = _fixture.SecretWithVersions.SecretName;
+        // Get the SecretName.
+        SecretName secretName = _fixture.Secret.SecretName;
+
+        // Run the code sample.
         Secret result = _sample.UpdateSecret(projectId: secretName.ProjectId, secretId: secretName.SecretId);
+
+        // Assert that the expected behaviour is seen.
         Assert.Equal(1, result.VersionAliases["test"]);
     }
 }
