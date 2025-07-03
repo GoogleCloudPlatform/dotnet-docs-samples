@@ -36,7 +36,7 @@ namespace ModelArmor.Samples.Tests
             _output = output;
         }
 
-        [Fact(Skip = "Remove this once b/424365799 is resolved.")]
+        [Fact]
         public void UpdateOrganizationFloorSettingTest()
         {
             // Get organization ID from environment variable
