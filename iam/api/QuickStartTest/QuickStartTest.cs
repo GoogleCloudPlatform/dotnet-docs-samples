@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using Xunit;
 
 namespace GoogleCloudSamples
@@ -48,7 +50,7 @@ namespace GoogleCloudSamples
 
             var request = new CreateServiceAccountRequest
             {
-                AccountId = "iam-test-account" + DateTime.UtcNow.Millisecond,
+                AccountId = "t" + Guid.NewGuid().ToString("N").Substring(0, 29),
                 ServiceAccount = new ServiceAccount
                 {
                     DisplayName = "iamTestAccount"
@@ -66,17 +68,29 @@ namespace GoogleCloudSamples
 
         }
 
-        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/1163")]
+        [Fact]
         public void TestQuickStart()
         {
             var role = "roles/logging.logWriter";
             var member = "serviceAccount:" + _serviceAccount.Email;
 
+            // Reading service accounts is eventually consistent so we might need to
+            // retry the first operation that fetches the account.
+            RetryRobot saCreated = new RetryRobot
+            {
+                FirstRetryDelayMs = 10 * 1000,
+                MaxTryCount = 10,
+                ShouldRetry = ex =>
+                    ex is GoogleApiException gEx
+                    && gEx.HttpStatusCode == HttpStatusCode.BadRequest
+                    && gEx.Message.Contains("does not exist")
+            };
+
             // Initialize service
             var crmService = QuickStart.InitializeService();
 
             // Add member to role
-            QuickStart.AddBinding(crmService, _projectId, member, role);
+            saCreated.Eventually(() => QuickStart.AddBinding(crmService, _projectId, member, role));
 
             // Get the project's policy and confirm that the member is in the policy
             var policy = QuickStart.GetPolicy(crmService, _projectId);
