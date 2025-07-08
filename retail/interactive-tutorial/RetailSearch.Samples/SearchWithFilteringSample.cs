@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // Call Retail API to search for a products in a catalog, filter the results by different product fields.
+// [START retail_search_for_products_with_filtering]
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -96,6 +97,8 @@ public class SearchWithFilteringSample
         return searchResultPages;
     }
 }
+
+// [END retail_search_for_products_with_filtering]
 
 /// <summary>
 /// Search with filtering tutorial.
