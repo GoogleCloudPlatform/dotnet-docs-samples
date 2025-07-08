@@ -14,7 +14,8 @@
 
 // Calls the Retail API to search for products in a catalog and reranks the
 // results boosting or burying the products that matched a given condition.
-// [START retail_search_product_with_boost_spec]
+// [START retail_search_with_boost_spec]
+
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -109,7 +110,7 @@ public class SearchWithBoostSpecSample
         return searchResultPages;
     }
 }
-// [END retail_search_product_with_boost_spec]
+// [END retail_search_with_boost_spec]
 
 /// <summary>
 /// Search with boost spec tutorial.
