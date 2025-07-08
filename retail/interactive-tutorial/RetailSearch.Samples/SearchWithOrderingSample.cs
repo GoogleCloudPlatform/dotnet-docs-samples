@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // Call Retail API to search for a products in a catalog, order the results by different product fields.
+// [START retail_search_for_products_with_ordering]
 
 using Google.Cloud.Retail.V2;
 using System;
@@ -95,6 +96,8 @@ public class SearchWithOrderingSample
         return searchResultPages;
     }
 }
+
+// [END retail_search_for_products_with_ordering]
 
 /// <summary>
 /// Search with ordering tutorial.
