@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,42 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+using System;
 using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
-public class CreateSecretTests
+public class CreateSecretWithLabelsTests
 {
     private readonly SecretManagerFixture _fixture;
-    private readonly CreateSecretSample _sample;
+    private readonly CreateSecretWithLabelsSample _sample;
 
-    public CreateSecretTests(SecretManagerFixture fixture)
+    public CreateSecretWithLabelsTests(SecretManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateSecretSample();
+        _sample = new CreateSecretWithLabelsSample();
     }
 
     [Fact]
-    public void CreatesSecrets()
+    public void CreatesSecretsWithLabels()
     {
-        // Get the SecretName.
+        // Get the SecretName to create Secret.
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
 
-        // Run the code sample.
-        Secret result = _sample.CreateSecret(
-          projectId: secretName.ProjectId, secretId: secretName.SecretId);
+        // Get the label key & value from the fixture class.
+        string labelKey = _fixture.LabelKey;
+        string labelValue = _fixture.LabelValue;
 
-        // Assert expected result is observed.
+        // Create the secret with the specificed fields.
+        Secret result = _sample.CreateSecretWithLabels(
+          projectId: secretName.ProjectId, secretId: secretName.SecretId, labelKey: labelKey, labelValue: labelValue);
+
+        // Assert that the secretId is same as expected.
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
 
-        // Cleanup the created resource.
+        // Assert that the annotation values matches with the expected value.
+        Assert.Equal(result.Labels[labelKey], labelValue);
+
+        // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }
 }

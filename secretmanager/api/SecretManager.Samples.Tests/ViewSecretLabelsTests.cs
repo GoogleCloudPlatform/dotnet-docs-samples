@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Google LLC
+ * Copyright 2025 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,34 +15,40 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+using System;
 using Xunit;
 
+
 [Collection(nameof(SecretManagerFixture))]
-public class CreateSecretTests
+public class ViewSecretLabelsTests
 {
     private readonly SecretManagerFixture _fixture;
-    private readonly CreateSecretSample _sample;
+    private readonly ViewSecretLabelsSample _sample;
 
-    public CreateSecretTests(SecretManagerFixture fixture)
+    public ViewSecretLabelsTests(SecretManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateSecretSample();
+        _sample = new ViewSecretLabelsSample();
     }
 
     [Fact]
-    public void CreatesSecrets()
+    public void ViewSecretsLabels()
     {
-        // Get the SecretName.
-        SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
+        // Get the SecretName from the set ProjectId.
+        SecretName secretName = _fixture.Secret.SecretName;
+
+        // Label Key-Value from the fixture class.
+        string labelKey = _fixture.LabelKey;
+        string labelValue = _fixture.LabelValue;
 
         // Run the code sample.
-        Secret result = _sample.CreateSecret(
+        Secret result = _sample.ViewSecretLabels(
           projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        // Assert expected result is observed.
+        // Assert that the secretId is equal to the expected value.
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
 
-        // Cleanup the created resource.
-        _fixture.DeleteSecret(secretName);
+        // Assert that the label key's value matches with the expected value.
+        Assert.Equal(result.Labels[labelKey], labelValue);
     }
 }
