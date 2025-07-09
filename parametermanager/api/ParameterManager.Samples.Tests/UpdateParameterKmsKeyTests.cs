@@ -24,13 +24,12 @@ public class UpdateParameterKmsKeyTests
 {
     private readonly ParameterManagerFixture _fixture;
     private readonly UpdateParameterKmsKeySample _sample;
-    readonly string keyRingId = "csharp-test-key-ring";
 
     public UpdateParameterKmsKeyTests(ParameterManagerFixture fixture)
     {
         _fixture = fixture;
         _sample = new UpdateParameterKmsKeySample();
-        _fixture.GetKeyRing(_fixture.ProjectId, keyRingId);
+        _fixture.GetKeyRing(_fixture.ProjectId, ParameterManagerFixture.KeyRingId);
     }
 
     [Fact]
@@ -38,12 +37,8 @@ public class UpdateParameterKmsKeyTests
     {
         string KeyId = _fixture.RandomId();
         string KeyId1 = _fixture.RandomId();
-        CryptoKey cryptoKey = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId, keyRingId);
-        CryptoKey cryptoKey1 = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId1, keyRingId);
-        CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, keyRingId, KeyId, "1");
-        CryptoKeyVersionName cryptoKeyVersionName1 = new CryptoKeyVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, keyRingId, KeyId1, "1");
-        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
-        _fixture.CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName1);
+        CryptoKey cryptoKey = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId, ParameterManagerFixture.KeyRingId);
+        CryptoKey cryptoKey1 = _fixture.CreateHsmKey(_fixture.ProjectId, KeyId1, ParameterManagerFixture.KeyRingId);
 
         string parameterId = _fixture.RandomId();
         _fixture.CreateParameterWithKmsKey(parameterId, ParameterFormat.Unformatted, cryptoKey.Name);

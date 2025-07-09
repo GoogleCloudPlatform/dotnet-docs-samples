@@ -36,14 +36,14 @@ public class RemoveParameterKmsKeySample
         ParameterManagerClient client = ParameterManagerClient.Create();
 
         // Build the parent resource name. 
-        ParameterName name = new ParameterName(projectId, "global", parameterId);
+        string name = ParameterName.Format(projectId, "global", parameterId);
 
         // Build the parameter.
         UpdateParameterRequest request = new UpdateParameterRequest
         {
             Parameter = new Parameter
             {
-                Name = name.ToString(),
+                Name = name,
             },
             UpdateMask = new FieldMask
             {

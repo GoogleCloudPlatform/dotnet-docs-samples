@@ -25,6 +25,7 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
 {
     public string ProjectId { get; }
     public const string LocationId = "global";
+    public const string KeyRingId = "csharp-test-key-ring";
 
     public ParameterManagerClient Client { get; }
     public KeyManagementServiceClient KmsClient { get; }
@@ -171,16 +172,11 @@ public class ParameterManagerFixture : IDisposable, ICollectionFixture<Parameter
             },
         };
 
-        try
-        {
-            string name = $"projects/{projectId}/locations/global/keyRings/{keyRingId}/cryptoKeys/{keyId}";
-            CryptoKey resp = KmsClient.GetCryptoKey(name);
-            return resp;
-        }
-        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
-        {
-            return KmsClient.CreateCryptoKey(request);
-        }
+        CryptoKey cryptoKey = KmsClient.CreateCryptoKey(request);
+        CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(ProjectId, LocationId, keyRingId, keyId, "1");
+        CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
+
+        return cryptoKey;
     }
 
     public void DeleteKeyVersion(CryptoKeyVersionName name)
