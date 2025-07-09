@@ -44,14 +44,14 @@ public class RemoveRegionalParameterKmsKeySample
         }.Build();
 
         // Build the parent resource name. 
-        ParameterName name = new ParameterName(projectId, locationId, parameterId);
+        string name = ParameterName.Format(projectId, locationId, parameterId);
 
         // Build the parameter.
         UpdateParameterRequest request = new UpdateParameterRequest
         {
             Parameter = new Parameter
             {
-                Name = name.ToString(),
+                Name = name,
             },
             UpdateMask = new FieldMask
             {
