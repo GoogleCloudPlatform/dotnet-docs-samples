@@ -33,7 +33,7 @@ namespace GoogleCloudSamples
         {
             _project = Environment.GetEnvironmentVariable(
                 "GOOGLE_PROJECT_ID");
-            _name = "csharpTestCustomRole" + new Random().Next();
+            _name = "csharpTestCustomRole" + Guid.NewGuid().ToString("N");
             _title = "C# Test Custom Role";
             _description = "This is a C# test custom role.";
             _permissions = new List<string> { "iam.roles.get" };

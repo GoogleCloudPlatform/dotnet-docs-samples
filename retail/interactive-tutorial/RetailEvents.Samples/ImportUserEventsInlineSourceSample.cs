@@ -14,6 +14,7 @@
 // limitations under the License.
 
 // Import user events into a catalog from inline source using Retail API
+// [START retail_import_user_events_from_inline_source]
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
@@ -138,3 +139,5 @@ public static class ImportUserEventsInlineSourceTutorial
         return result;
     }
 }
+
+// [END retail_import_user_events_from_inline_source]

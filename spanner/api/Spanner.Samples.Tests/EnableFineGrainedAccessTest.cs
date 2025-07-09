@@ -1,4 +1,4 @@
-﻿// Copyright 2023 Google Inc.
+// Copyright 2023 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Iam.v1;
 using Google.Apis.Iam.v1.Data;
+using GoogleCloudSamples;
+using Grpc.Core;
 using System;
 using System.Threading.Tasks;
 using Xunit;
@@ -26,7 +28,19 @@ public class EnableFineGrainedAccessTest : IDisposable
     private readonly string ServiceAccountDisplayName = $"FgacTestAccount{Guid.NewGuid().ToString().Substring(0, 10)}";
     private readonly SpannerFixture _spannerFixture;
     private readonly ServiceAccount _serviceAccount;
-    private readonly IamService _service; 
+    private readonly IamService _service;
+
+    // Reading service accounts is eventually consistent so we might need to
+    // retry the first operation that fetches the account.
+    private static readonly RetryRobot SaCreated = new RetryRobot
+    {
+        FirstRetryDelayMs = 10 * 1000,
+        MaxTryCount = 10,
+        ShouldRetry = ex =>
+            ex is RpcException gEx
+            && gEx.StatusCode == StatusCode.InvalidArgument
+            && gEx.Message.Contains("does not exist")
+    };
 
     public EnableFineGrainedAccessTest(SpannerFixture spannerFixture)
     {
@@ -77,8 +91,9 @@ public class EnableFineGrainedAccessTest : IDisposable
         {
             string databaseRole = "testrole";
             var enableFineGrainedAccessSample = new EnableFineGrainedAccessSample();
-            var updatedPolicy = enableFineGrainedAccessSample.EnableFineGrainedAccess(_spannerFixture.ProjectId, _spannerFixture.InstanceId,
-                databaseId, databaseRole, $"serviceAccount:{_serviceAccount.Email}");
+            var updatedPolicy = SaCreated.Eventually(() =>
+                enableFineGrainedAccessSample.EnableFineGrainedAccess(
+                    _spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId, databaseRole, $"serviceAccount:{_serviceAccount.Email}"));
             Assert.Contains(updatedPolicy.Bindings, b => b.Role == "roles/spanner.fineGrainedAccessUser");
             return Task.CompletedTask;
         });

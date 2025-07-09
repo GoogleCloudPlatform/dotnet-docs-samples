@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,11 +20,9 @@ namespace RetailSearch.Samples.Tests
 {
     public class SearchWithQueryExpansionTest
     {
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/3151")]
         public void TestSearchWithQueryExpansion()
         {
-            const string ExpectedProductTitle = "Google Youth Hero Tee Grey";
-
             var firstPage = SearchWithQueryExpansionTutorial.Search().First();
 
             Assert.True(firstPage.QueryExpansionInfo.ExpandedQuery);
