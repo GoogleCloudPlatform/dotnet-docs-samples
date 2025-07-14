@@ -14,6 +14,7 @@
 // limitations under the License.
 
 // Import user events into a catalog from GCS using Retail API
+// [START retail_import_user_events_from_gcs]
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
@@ -104,6 +105,8 @@ public class ImportUserEventsGcsSample
         return importResult;
     }
 }
+
+// [END retail_import_user_events_from_gcs]
 
 /// <summary>
 /// The import user events GCS tutorial class.

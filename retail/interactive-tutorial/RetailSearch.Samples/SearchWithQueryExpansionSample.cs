@@ -14,7 +14,7 @@
 
 // Call Retail API to search for a products in a catalog,
 // enabling the query expansion feature to let the Google Retail Search build an automatic query expansion.
-
+// [START retail_search_for_products_with_query_expansion_specification]
 using Google.Cloud.Retail.V2;
 using System;
 using System.Collections.Generic;
@@ -110,3 +110,4 @@ public static class SearchWithQueryExpansionTutorial
         return sample.Search(projectId);
     }
 }
+// [END retail_search_for_products_with_query_expansion_specification]

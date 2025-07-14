@@ -32,8 +32,16 @@ public class UpdateSecretTests
     [Fact]
     public void UpdatesSecrets()
     {
-        SecretName secretName = _fixture.Secret.SecretName;
+        // Get the secret name.
+        SecretName secretName = _fixture.CreateSecret(_fixture.RandomId()).SecretName;
+
+        // Run the code sample.
         Secret result = _sample.UpdateSecret(projectId: secretName.ProjectId, secretId: secretName.SecretId);
+
+        // Verify the result.
         Assert.Equal("rocks", result.Labels["secretmanager"]);
+
+        // Cleanup the created resource.
+        _fixture.DeleteSecret(secretName);
     }
 }
