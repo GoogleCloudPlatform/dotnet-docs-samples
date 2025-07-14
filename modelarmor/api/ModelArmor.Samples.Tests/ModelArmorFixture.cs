@@ -33,7 +33,8 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string ProjectId { get; }
     public string LocationId { get; }
     private readonly List<TemplateName> _maTemplatesToCleanup = new List<TemplateName>();
-    private readonly List<TemplateName> _dlpTemplatesToCleanup = new List<TemplateName>();
+    private readonly List<TemplateName> _inspectTemplatesToCleanup = new List<TemplateName>();
+    private readonly List<TemplateName> _deidentifyTemplatesToCleanup = new List<TemplateName>();
 
     public ModelArmorFixture()
     {
