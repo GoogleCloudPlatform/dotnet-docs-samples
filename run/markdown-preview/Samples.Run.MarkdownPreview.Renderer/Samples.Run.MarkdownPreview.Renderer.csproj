@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Markdig" Version="0.41.2" />
+    <PackageReference Include="Markdig" Version="0.41.3" />
   </ItemGroup>
 
 </Project>
