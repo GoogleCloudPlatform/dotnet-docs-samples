@@ -14,7 +14,7 @@
 // limitations under the License.
 
 // Get product from a catalog using Retail API
-
+// [START retail_get_product]
 using Google.Cloud.Retail.V2;
 using System;
 
@@ -86,3 +86,4 @@ public static class GetProductTutorial
         DeleteProductSample.DeleteRetailProduct(retrievedProduct.Name);
     }
 }
+// [END retail_get_product]

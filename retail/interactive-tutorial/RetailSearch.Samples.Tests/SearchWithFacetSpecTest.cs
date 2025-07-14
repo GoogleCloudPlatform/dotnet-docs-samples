@@ -1,4 +1,4 @@
-﻿// Copyright 2022 Google LLC.
+// Copyright 2022 Google LLC.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@ namespace RetailSearch.Samples.Tests
 {
     public class SearchWithFacetSpecTest
     {
-        [Fact]
+        [Fact(Skip = "https://github.com/GoogleCloudPlatform/dotnet-docs-samples/issues/3151")]
         public void TestSearchWithFacetSpec()
         {
             const string ExpectedProductTitle = "Tee";
