@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-using System.Threading;
 using System.Collections.Generic;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
@@ -44,9 +43,6 @@ public class ListTemplatesTests : IClassFixture<ModelArmorFixture>
             locationId: _fixture.LocationId,
             templateId: templateName.TemplateId
         );
-
-        // Wait for the template to be created.
-        Thread.Sleep(10000);
 
         IEnumerable<Template> templates = _list_templates_sample.ListTemplates(
             projectId: _fixture.ProjectId,

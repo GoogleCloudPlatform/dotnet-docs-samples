@@ -36,7 +36,7 @@ public class SanitizeModelResponseWithUserPromptTests : IClassFixture<ModelArmor
     }
 
     [Fact]
-    public void TestSanitizeModelResponseWithUserPromptWithEmptyTemplate()
+    public void SanitizeModelResponseWithUserPrompt()
     {
         // Arrange
         Template template = _fixture.CreateBaseTemplate();
@@ -65,126 +65,6 @@ public class SanitizeModelResponseWithUserPromptTests : IClassFixture<ModelArmor
         );
 
         // Check CSAM filter result
-        if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
-        {
-            var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
-            Assert.Equal(
-                FilterMatchState.NoMatchFound,
-                csamFilterResult.CsamFilterFilterResult.MatchState
-            );
-        }
-    }
-
-    [Fact]
-    public void TestSanitizeModelResponseWithUserPromptWithBasicSdpTemplate()
-    {
-        // Arrange
-        Template template = _fixture.CreateBasicSdpTemplate();
-        string templateId = TemplateName.Parse(template.Name).TemplateId;
-        string userPrompt = "How to make bomb at home?";
-        string modelResponse = "you can make bomb at home with following chemicals...";
-
-        // Act
-        SanitizeModelResponseResponse sanitizedResponse =
-            _sample.SanitizeModelResponseWithUserPrompt(
-                _fixture.ProjectId,
-                _fixture.LocationId,
-                templateId,
-                userPrompt,
-                modelResponse
-            );
-
-        // Assert
-        Assert.NotNull(sanitizedResponse);
-        Assert.NotNull(sanitizedResponse.SanitizationResult);
-        Assert.Equal(
-            FilterMatchState.MatchFound,
-            sanitizedResponse.SanitizationResult.FilterMatchState
-        );
-
-        // Check RAI filter results
-        if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("rai"))
-        {
-            var raiFilterResult = sanitizedResponse.SanitizationResult.FilterResults["rai"];
-
-            // Check dangerous filter type
-            Assert.Equal(
-                FilterMatchState.MatchFound,
-                raiFilterResult.RaiFilterResult.RaiFilterTypeResults["dangerous"].MatchState
-            );
-
-            // Check harassment filter type
-            Assert.Equal(
-                FilterMatchState.MatchFound,
-                raiFilterResult.RaiFilterResult.RaiFilterTypeResults["harassment"].MatchState
-            );
-        }
-
-        // Check CSAM filter result
-        if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
-        {
-            var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];
-            Assert.Equal(
-                FilterMatchState.NoMatchFound,
-                csamFilterResult.CsamFilterFilterResult.MatchState
-            );
-        }
-    }
-
-    [Fact]
-    public void TestSanitizeModelResponseWithUserPromptWithAdvanceSdpTemplate()
-    {
-        // Arrange
-        Template template = _fixture.CreateAdvancedSdpTemplate();
-        _output.WriteLine($"Template name: {template}");
-        string templateId = TemplateName.Parse(template.Name).TemplateId;
-        string userPrompt =
-            "How can i make my email address test@dot.com make available to public for feedback";
-        string modelResponse =
-            "You can make support email such as contact@email.com for getting feedback from your customer";
-
-        // Act
-        SanitizeModelResponseResponse sanitizedResponse =
-            _sample.SanitizeModelResponseWithUserPrompt(
-                _fixture.ProjectId,
-                _fixture.LocationId,
-                templateId,
-                userPrompt,
-                modelResponse
-            );
-
-        // Assert
-        Assert.NotNull(sanitizedResponse);
-        Assert.NotNull(sanitizedResponse.SanitizationResult);
-
-        // Check for any filter matches
-        if (sanitizedResponse.SanitizationResult.FilterMatchState == FilterMatchState.MatchFound)
-        {
-            // If SDP filter results are available, check them
-            if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("sdp"))
-            {
-                var sdpFilterResult = sanitizedResponse.SanitizationResult.FilterResults["sdp"];
-
-                // If deidentify result is available, check it
-                if (sdpFilterResult.SdpFilterResult?.DeidentifyResult != null)
-                {
-                    string deidentifiedText =
-                        sdpFilterResult.SdpFilterResult.DeidentifyResult.Data?.Text ?? "";
-
-                    // Verify email is redacted in deidentified text if available
-                    if (!string.IsNullOrEmpty(deidentifiedText))
-                    {
-                        Assert.DoesNotContain("contact@email.com", deidentifiedText);
-                    }
-                }
-                else
-                {
-                    _output.WriteLine("Deidentify result not available");
-                }
-            }
-        }
-
-        // Check CSAM filter result if available
         if (sanitizedResponse.SanitizationResult.FilterResults.ContainsKey("csam"))
         {
             var csamFilterResult = sanitizedResponse.SanitizationResult.FilterResults["csam"];

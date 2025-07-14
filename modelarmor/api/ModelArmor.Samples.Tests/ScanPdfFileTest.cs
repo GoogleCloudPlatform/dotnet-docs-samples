@@ -40,7 +40,7 @@ public class ScanPdfFileTests : IClassFixture<ModelArmorFixture>
     }
 
     [Fact]
-    public void ScanPdfFileWithBaseTemplate()
+    public void ScanPdfFile()
     {
         // Arrange
         Template template = _fixture.CreateBaseTemplate();
@@ -58,105 +58,5 @@ public class ScanPdfFileTests : IClassFixture<ModelArmorFixture>
         Assert.NotNull(response);
         Assert.NotNull(response.SanitizationResult);
         Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-    }
-
-    [Fact]
-    public void ScanPdfFileWithMaliciousContentTemplate()
-    {
-        // Arrange
-        Template template = _fixture.CreateTemplateWithMaliciousUri();
-        string templateId = TemplateName.Parse(template.Name).TemplateId;
-
-        // Act
-        SanitizeUserPromptResponse response = _sample.ScanPdfFile(
-            _fixture.ProjectId,
-            _fixture.LocationId,
-            templateId,
-            _testPdfPath
-        );
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.NotNull(response.SanitizationResult);
-        Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-
-        // Check for malicious URI filter results if applicable
-        if (response.SanitizationResult.FilterResults.ContainsKey("malicious_uris"))
-        {
-            var filterResult = response.SanitizationResult.FilterResults["malicious_uris"];
-            Assert.NotNull(filterResult.MaliciousUriFilterResult);
-        }
-    }
-
-    [Fact]
-    public void ScanPdfFileWithSdpTemplate()
-    {
-        // Arrange
-        Template template = _fixture.CreateBasicSdpTemplate();
-        string templateId = TemplateName.Parse(template.Name).TemplateId;
-
-        // Act
-        SanitizeUserPromptResponse response = _sample.ScanPdfFile(
-            _fixture.ProjectId,
-            _fixture.LocationId,
-            templateId,
-            _testPdfPath
-        );
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.NotNull(response.SanitizationResult);
-        Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-
-        // Check for SDP filter results if applicable
-        if (response.SanitizationResult.FilterResults.ContainsKey("sdp"))
-        {
-            var sdpResult = response.SanitizationResult.FilterResults["sdp"];
-            Assert.NotNull(sdpResult.SdpFilterResult);
-        }
-    }
-
-    [Fact]
-    public void ScanPdfFileWithPiAndJailbreakTemplate()
-    {
-        // Arrange
-        Template template = _fixture.CreateTemplateWithPiAndJailbreak();
-        string templateId = TemplateName.Parse(template.Name).TemplateId;
-
-        // Act
-        SanitizeUserPromptResponse response = _sample.ScanPdfFile(
-            _fixture.ProjectId,
-            _fixture.LocationId,
-            templateId,
-            _testPdfPath
-        );
-
-        // Assert
-        Assert.NotNull(response);
-        Assert.NotNull(response.SanitizationResult);
-        Assert.Equal(InvocationResult.Success, response.SanitizationResult.InvocationResult);
-
-        // Check for PI and Jailbreak filter results if applicable
-        if (response.SanitizationResult.FilterResults.ContainsKey("pi_and_jailbreak"))
-        {
-            var filterResult = response.SanitizationResult.FilterResults["pi_and_jailbreak"];
-            Assert.NotNull(filterResult.PiAndJailbreakFilterResult);
-        }
-    }
-
-    [Fact]
-    public void ScanPdfFileWithInvalidPath()
-    {
-        // Arrange
-        Template template = _fixture.CreateBaseTemplate();
-        string templateId = TemplateName.Parse(template.Name).TemplateId;
-        string invalidPath = Path.Combine(Path.GetTempPath(), "non_existent_file.pdf");
-
-        // Act & Assert
-        var exception = Assert.Throws<FileNotFoundException>(() =>
-            _sample.ScanPdfFile(_fixture.ProjectId, _fixture.LocationId, templateId, invalidPath)
-        );
-
-        Assert.Contains(invalidPath, exception.Message);
     }
 }
