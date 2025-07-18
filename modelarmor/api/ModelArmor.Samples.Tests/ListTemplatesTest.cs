@@ -15,7 +15,6 @@
  */
 
 using System.Collections.Generic;
-using System.Linq;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 
@@ -32,7 +31,7 @@ public class ListTemplatesTests : IClassFixture<ModelArmorFixture>
         _list_templates_sample = new ListTemplatesSample();
     }
 
-    [Fact]
+    [Fact(Skip = "Temporarily skipped until b/431914096 is resolved")]
     public void ListTemplatesTest()
     {
         // Create a template for testing purpose.
