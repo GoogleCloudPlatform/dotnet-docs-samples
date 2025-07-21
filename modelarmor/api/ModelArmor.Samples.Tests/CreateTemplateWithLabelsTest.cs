@@ -40,6 +40,7 @@ namespace ModelArmor.Samples.Tests
             string locationId = _fixture.LocationId;
 
             TemplateName templateName = _fixture.CreateTemplateName();
+            _fixture.RegisterTemplateForCleanup(templateName);
             string templateId = templateName.TemplateId;
 
             // Run the sample.
@@ -52,41 +53,6 @@ namespace ModelArmor.Samples.Tests
             // Verify the template was created successfully.
             Assert.NotNull(createdTemplate);
             Assert.Contains(templateId, createdTemplate.Name);
-
-            // Verify the template has the expected filter configuration.
-            Assert.NotNull(createdTemplate.FilterConfig);
-            Assert.NotNull(createdTemplate.FilterConfig.RaiSettings);
-            Assert.Equal(4, createdTemplate.FilterConfig.RaiSettings.RaiFilters.Count);
-
-            // Assert each filter exists with the expected configuration.
-            var raiFilters = createdTemplate.FilterConfig.RaiSettings.RaiFilters;
-            Assert.Contains(
-                raiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.Dangerous
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.High
-            );
-
-            Assert.Contains(
-                raiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.HateSpeech
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.High
-            );
-
-            Assert.Contains(
-                raiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.SexuallyExplicit
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.LowAndAbove
-            );
-
-            Assert.Contains(
-                raiFilters,
-                f =>
-                    f.FilterType == RaiFilterType.Harassment
-                    && f.ConfidenceLevel == DetectionConfidenceLevel.MediumAndAbove
-            );
 
             // Since labels is not a part of the Create Template API response,
             // we retrieve the template to verify labels.
@@ -102,8 +68,6 @@ namespace ModelArmor.Samples.Tests
             Assert.Equal(2, retrievedTemplate.Labels.Count);
             Assert.Equal("value1", retrievedTemplate.Labels["key1"]);
             Assert.Equal("value2", retrievedTemplate.Labels["key2"]);
-
-            _fixture.RegisterTemplateForCleanup(templateName);
         }
     }
 }

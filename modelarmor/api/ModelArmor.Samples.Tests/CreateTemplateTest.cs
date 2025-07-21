@@ -35,6 +35,7 @@ namespace ModelArmor.Samples.Tests
         public void Runs()
         {
             TemplateName templateName = _fixture.CreateTemplateName();
+            _fixture.RegisterTemplateForCleanup(templateName);
             string templateId = templateName.TemplateId;
 
             // Run the sample.
@@ -82,8 +83,6 @@ namespace ModelArmor.Samples.Tests
                     f.FilterType == RaiFilterType.Harassment
                     && f.ConfidenceLevel == DetectionConfidenceLevel.MediumAndAbove
             );
-
-            _fixture.RegisterTemplateForCleanup(templateName);
         }
     }
 }
