@@ -62,7 +62,7 @@ namespace GoogleCloudSamples
             var request = new CreateRoleRequest
             {
                 Role = role,
-                RoleId = "csharpTestCustomRole" + new Random().Next()
+                RoleId = "csharpTestCustomRole" + Guid.NewGuid().ToString("N"),
             };
 
             try

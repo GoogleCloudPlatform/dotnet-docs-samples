@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using Xunit;
 using Google.Cloud.SecretManager.V1;
+using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
 public class CreateUserManagedReplicationSecretTests
@@ -32,13 +32,20 @@ public class CreateUserManagedReplicationSecretTests
     [Fact]
     public void CreatesUmmrSecrets()
     {
-        SecretName secretName = _fixture.UserManagedReplicationSecretName;
-        string[] locations = {"us-east1", "us-east4", "us-west1"};
+        // Get the SecretName.
+        SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
+
+        // Set the locations list for replications.
+        string[] locations = { "us-east1", "us-east4", "us-west1" };
+
+        // Run the code sample.
         Secret result = _sample.CreateUserManagedReplicationSecret(
           projectId: secretName.ProjectId, secretId: secretName.SecretId, locations: locations);
         Assert.Equal(result.SecretName.SecretId, secretName.SecretId);
         Assert.Contains(result.Replication.UserManaged.Replicas, r => r.Location == "us-east1");
         Assert.Contains(result.Replication.UserManaged.Replicas, r => r.Location == "us-east4");
         Assert.Contains(result.Replication.UserManaged.Replicas, r => r.Location == "us-west1");
+
+        _fixture.DeleteSecret(secretName);
     }
 }
