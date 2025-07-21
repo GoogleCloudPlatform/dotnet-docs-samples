@@ -14,6 +14,7 @@
 // limitations under the License.
 
 // Purge user events using Retail API
+// [START retail_purge_user_events]
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
@@ -100,3 +101,5 @@ public static class PurgeUserEventTutorial
         PurgeUserEventSample.CallPurgeUserEvents(defaultCatalog);
     }
 }
+
+// [END retail_purge_user_events]

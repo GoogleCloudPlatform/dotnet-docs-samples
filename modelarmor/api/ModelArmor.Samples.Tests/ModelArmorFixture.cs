@@ -33,7 +33,8 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string ProjectId { get; }
     public string LocationId { get; }
     private readonly List<TemplateName> _maTemplatesToCleanup = new List<TemplateName>();
-    private readonly List<string> _dlpTemplatesToCleanup = new List<string>();
+    private readonly List<TemplateName> _inspectTemplatesToCleanup = new List<TemplateName>();
+    private readonly List<TemplateName> _deidentifyTemplatesToCleanup = new List<TemplateName>();
 
     public ModelArmorFixture()
     {
@@ -41,7 +42,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         LocationId = Environment.GetEnvironmentVariable(EnvLocation) ?? "us-central1";
 
         // Create the Model Armor client.
-        ModelArmorClient Client = new ModelArmorClientBuilder
+        Client = new ModelArmorClientBuilder
         {
             Endpoint = $"modelarmor.{LocationId}.rep.googleapis.com",
         }.Build();
@@ -69,7 +70,11 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string CreateInspectTemplate(string displayName = "Test Inspect Template")
     {
         var parent = new LocationName(ProjectId, LocationId).ToString();
-        var templateId = $"inspect-{GenerateUniqueId()}";
+        TemplateName templateName = CreateTemplateName();
+        RegisterInspectTemplateForCleanup(templateName);
+
+        string templateId = templateName.TemplateId;
+
         var request = new CreateInspectTemplateRequest
         {
             Parent = parent,
@@ -89,7 +94,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateInspectTemplate(request);
-        RegisterDlpTemplateForCleanup(response.Name);
+
         return response.Name;
     }
 
@@ -97,7 +102,11 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public string CreateDeidentifyTemplate(string displayName = "Test Deidentify Template")
     {
         var parent = new LocationName(ProjectId, LocationId).ToString();
-        var templateId = $"deidentify-{GenerateUniqueId()}";
+        TemplateName templateName = CreateTemplateName();
+        RegisterDeidentifyTemplateForCleanup(templateName);
+
+        string templateId = templateName.TemplateId;
+
         var request = new CreateDeidentifyTemplateRequest
         {
             Parent = parent,
@@ -127,7 +136,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateDeidentifyTemplate(request);
-        RegisterDlpTemplateForCleanup(response.Name);
+
         return response.Name;
     }
 
@@ -146,23 +155,29 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             }
         }
 
-        // Clean up DLP templates.
-        foreach (var dlpTemplateName in _dlpTemplatesToCleanup)
+        // Clean up Inspect DLP templates.
+        foreach (var inspectTemplateName in _inspectTemplatesToCleanup)
         {
             try
             {
-                if (dlpTemplateName.Contains("inspectTemplates/"))
-                {
-                    DlpClient.DeleteInspectTemplate(
-                        new DeleteInspectTemplateRequest { Name = dlpTemplateName }
-                    );
-                }
-                else if (dlpTemplateName.Contains("deidentifyTemplates/"))
-                {
-                    DlpClient.DeleteDeidentifyTemplate(
-                        new DeleteDeidentifyTemplateRequest { Name = dlpTemplateName }
-                    );
-                }
+                DlpClient.DeleteInspectTemplate(
+                    new DeleteInspectTemplateRequest { Name = inspectTemplateName.ToString() }
+                );
+            }
+            catch (Exception)
+            {
+                // Ignore errors during cleanup.
+            }
+        }
+
+        // Clean up Deidentify DLP templates.
+        foreach (var deidentifyTemplateName in _deidentifyTemplatesToCleanup)
+        {
+            try
+            {
+                DlpClient.DeleteDeidentifyTemplate(
+                    new DeleteDeidentifyTemplateRequest { Name = deidentifyTemplateName.ToString() }
+                );
             }
             catch (Exception)
             {
@@ -179,11 +194,19 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         }
     }
 
-    public void RegisterDlpTemplateForCleanup(string templateName)
+    public void RegisterDeidentifyTemplateForCleanup(TemplateName templateName)
     {
-        if (!string.IsNullOrEmpty(templateName))
+        if (templateName != null && !string.IsNullOrEmpty(templateName.ToString()))
         {
-            _dlpTemplatesToCleanup.Add(templateName);
+            _deidentifyTemplatesToCleanup.Add(templateName);
+        }
+    }
+
+    public void RegisterInspectTemplateForCleanup(TemplateName templateName)
+    {
+        if (templateName != null && !string.IsNullOrEmpty(templateName.ToString()))
+        {
+            _inspectTemplatesToCleanup.Add(templateName);
         }
     }
 
@@ -191,5 +214,78 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     {
         string templateId = $"{prefix}-{GenerateUniqueId()}";
         return new TemplateName(ProjectId, LocationId, templateId);
+    }
+
+    // Base method to create a template with basic RAI settings
+    public Template ConfigureBaseTemplate()
+    {
+        RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.Dangerous,
+                ConfidenceLevel = DetectionConfidenceLevel.High,
+            }
+        );
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.HateSpeech,
+                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+            }
+        );
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.SexuallyExplicit,
+                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+            }
+        );
+        raiFilterSettings.RaiFilters.Add(
+            new RaiFilterSettings.Types.RaiFilter
+            {
+                FilterType = RaiFilterType.Harassment,
+                ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+            }
+        );
+
+        // Create the filter config with RAI settings
+        FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
+
+        // Create the template
+        Template template = new Template { FilterConfig = modelArmorFilter };
+        return template;
+    }
+
+    // Create a template on GCP and register it for cleanup
+    public Template CreateTemplate(Template templateConfig, string templateId = null)
+    {
+        // Generate a unique template ID if none provided
+        templateId ??= $"test-{GenerateUniqueId()}";
+
+        // Create the parent resource name
+        LocationName parent = LocationName.FromProjectLocation(ProjectId, LocationId);
+
+        // Create the template
+        Template createdTemplate = Client.CreateTemplate(
+            new CreateTemplateRequest
+            {
+                ParentAsLocationName = parent,
+                Template = templateConfig,
+                TemplateId = templateId,
+            }
+        );
+
+        // Register the template for cleanup
+        RegisterTemplateForCleanup(TemplateName.Parse(createdTemplate.Name));
+
+        return createdTemplate;
+    }
+
+    // Create a base template on GCP
+    public Template CreateBaseTemplate(string templateId = null)
+    {
+        Template templateConfig = ConfigureBaseTemplate();
+        return CreateTemplate(templateConfig, templateId);
     }
 }

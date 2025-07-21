@@ -28,12 +28,12 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
     public string ProjectId { get; }
     public ProjectName ProjectName { get; }
     public Secret Secret { get; }
-    public Secret SecretToDelete { get; }
-    public Secret SecretWithVersions { get; }
-    public SecretName SecretForQuickstartName { get; }
-    public SecretName SecretToCreateName { get; }
-    public SecretName UserManagedReplicationSecretName { get; }
     public SecretVersion SecretVersion { get; }
+
+    public string AnnotationKey { get; }
+    public string AnnotationValue { get; }
+    public string LabelKey { get; }
+    public string LabelValue { get; }
 
     public SecretManagerFixture()
     {
@@ -50,24 +50,21 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
         // Create the Regional Secret Manager Client
         Client = SecretManagerServiceClient.Create();
 
-        Secret = CreateSecret(RandomId());
-        SecretToDelete = CreateSecret(RandomId());
-        SecretWithVersions = CreateSecret(RandomId());
-        SecretForQuickstartName = new SecretName(ProjectId, RandomId());
-        SecretToCreateName = new SecretName(ProjectId, RandomId());
-        UserManagedReplicationSecretName = new SecretName(ProjectId, RandomId());
+        // Setting the AnnotationKey and AnnotationValue
+        AnnotationKey = "my-annotation-key";
+        AnnotationValue = "my-annotation-value";
 
-        SecretVersion = AddSecretVersion(SecretWithVersions);
+        // Setting the LabelKey and LabelValue
+        LabelKey = "my-label-key";
+        LabelValue = "my-label-value";
+
+        Secret = CreateSecret(RandomId());
+        SecretVersion = AddSecretVersion(Secret);
     }
 
     public void Dispose()
     {
         DeleteSecret(Secret.SecretName);
-        DeleteSecret(SecretForQuickstartName);
-        DeleteSecret(SecretToCreateName);
-        DeleteSecret(UserManagedReplicationSecretName);
-        DeleteSecret(SecretToDelete.SecretName);
-        DeleteSecret(SecretWithVersions.SecretName);
     }
 
     public String RandomId()
@@ -83,6 +80,14 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
             {
                 Automatic = new Replication.Types.Automatic(),
             },
+            Labels =
+            {
+                { LabelKey, LabelValue }
+            },
+            Annotations =
+            {
+              { AnnotationKey, AnnotationValue }
+            }
         };
 
         return Client.CreateSecret(ProjectName, secretId, secret);
