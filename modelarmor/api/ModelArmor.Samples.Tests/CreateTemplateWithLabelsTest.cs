@@ -34,7 +34,7 @@ namespace ModelArmor.Samples.Tests
         }
 
         [Fact]
-        public void CreateTemplateWithLabelsTest()
+        public void CreateTemplateWithLabels()
         {
             string projectId = _fixture.ProjectId;
             string locationId = _fixture.LocationId;

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-//[START modelarmor_create_template_with_metadata]
+// [START modelarmor_create_template_with_metadata]
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 

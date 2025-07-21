@@ -34,7 +34,7 @@ namespace ModelArmor.Samples.Tests
         }
 
         [Fact]
-        public void CreateTemplateWithMetadataTest()
+        public void CreateTemplateWithMetadata()
         {
             string projectId = _fixture.ProjectId;
             string locationId = _fixture.LocationId;
