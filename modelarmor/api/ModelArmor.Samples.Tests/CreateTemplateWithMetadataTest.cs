@@ -92,7 +92,6 @@ namespace ModelArmor.Samples.Tests
 
             // Verify the expected template metadata.
             Assert.NotNull(createdTemplate.TemplateMetadata);
-            Assert.NotNull(createdTemplate.TemplateMetadata);
             Assert.True(createdTemplate.TemplateMetadata.LogTemplateOperations);
             Assert.True(createdTemplate.TemplateMetadata.LogSanitizeOperations);
 
