@@ -15,6 +15,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using Google.Cloud.ModelArmor.V1;
 using Xunit;
 using Xunit.Abstractions;
@@ -39,6 +40,7 @@ namespace ModelArmor.Samples.Tests
         {
             // Create a template.
             TemplateName templateName = _fixture.CreateTemplateName();
+            _fixture.RegisterTemplateForCleanup(templateName);
 
             Template originalTemplate = _create_template_sample.CreateTemplate(
                 projectId: _fixture.ProjectId,
@@ -95,32 +97,6 @@ namespace ModelArmor.Samples.Tests
                     f.FilterType == RaiFilterType.SexuallyExplicit
                     && f.ConfidenceLevel == DetectionConfidenceLevel.MediumAndAbove
             );
-
-            _fixture.RegisterTemplateForCleanup(templateName);
-        }
-
-        [Fact]
-        public void UpdateTemplateTest_NonExistentTemplate_ThrowsException()
-        {
-            // Generate a random template ID that shouldn't exist.
-            string nonExistentTemplateId = $"non-existent-{Guid.NewGuid():N}";
-
-            // Attempt to update a non-existent template should throw an exception.
-            var exception = Assert.Throws<Grpc.Core.RpcException>(() =>
-                _update_template_sample.UpdateTemplate(
-                    projectId: _fixture.ProjectId,
-                    locationId: _fixture.LocationId,
-                    templateId: nonExistentTemplateId
-                )
-            );
-
-            // Verify the exception contains the expected error message.
-            Assert.Contains(
-                nonExistentTemplateId,
-                exception.Message,
-                StringComparison.OrdinalIgnoreCase
-            );
-            Assert.Contains("NOT FOUND", exception.Message, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

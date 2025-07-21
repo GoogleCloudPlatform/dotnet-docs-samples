@@ -16,6 +16,7 @@
 
 // [START modelarmor_update_template]
 using System;
+using System.Collections.Generic;
 using Google.Cloud.ModelArmor.V1;
 using Google.Protobuf.WellKnownTypes;
 
@@ -49,41 +50,37 @@ namespace ModelArmor.Samples
             // For more details on filters, please refer to the following doc:
             // https://cloud.google.com/security-command-center/docs/key-concepts-model-armor#ma-filters
             RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
-            raiFilterSettings.RaiFilters.Add(
-                new RaiFilterSettings.Types.RaiFilter
+            List<RaiFilterSettings.Types.RaiFilter> filters =
+                new List<RaiFilterSettings.Types.RaiFilter>
                 {
-                    FilterType = RaiFilterType.Dangerous,
-                    ConfidenceLevel = DetectionConfidenceLevel.High,
-                }
-            );
-            raiFilterSettings.RaiFilters.Add(
-                new RaiFilterSettings.Types.RaiFilter
-                {
-                    FilterType = RaiFilterType.HateSpeech,
-                    ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-                }
-            );
-            raiFilterSettings.RaiFilters.Add(
-                new RaiFilterSettings.Types.RaiFilter
-                {
-                    FilterType = RaiFilterType.Harassment,
-                    ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-                }
-            );
-            raiFilterSettings.RaiFilters.Add(
-                new RaiFilterSettings.Types.RaiFilter
-                {
-                    FilterType = RaiFilterType.SexuallyExplicit,
-                    ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-                }
-            );
+                    new RaiFilterSettings.Types.RaiFilter
+                    {
+                        FilterType = RaiFilterType.Dangerous,
+                        ConfidenceLevel = DetectionConfidenceLevel.High,
+                    },
+                    new RaiFilterSettings.Types.RaiFilter
+                    {
+                        FilterType = RaiFilterType.HateSpeech,
+                        ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                    },
+                    new RaiFilterSettings.Types.RaiFilter
+                    {
+                        FilterType = RaiFilterType.SexuallyExplicit,
+                        ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                    },
+                    new RaiFilterSettings.Types.RaiFilter
+                    {
+                        FilterType = RaiFilterType.Harassment,
+                        ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
+                    },
+                };
 
-            FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
+            raiFilterSettings.RaiFilters.Add(filters);
 
             Template template = new Template
             {
                 TemplateName = name,
-                FilterConfig = modelArmorFilter,
+                FilterConfig = new FilterConfig { RaiSettings = raiFilterSettings },
             };
 
             // Create a field mask to specify which fields to update.

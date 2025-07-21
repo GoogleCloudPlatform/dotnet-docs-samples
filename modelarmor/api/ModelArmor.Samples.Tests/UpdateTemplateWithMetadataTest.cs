@@ -38,6 +38,7 @@ namespace ModelArmor.Samples.Tests
         {
             // Create a template.
             TemplateName templateName = _fixture.CreateTemplateName();
+            _fixture.RegisterTemplateForCleanup(templateName);
 
             Template originalTemplate = _create_template_sample.CreateTemplate(
                 projectId: _fixture.ProjectId,
@@ -58,8 +59,6 @@ namespace ModelArmor.Samples.Tests
             Assert.NotNull(updatedTemplate.TemplateMetadata);
             Assert.True(updatedTemplate.TemplateMetadata.LogTemplateOperations);
             Assert.True(updatedTemplate.TemplateMetadata.LogSanitizeOperations);
-
-            _fixture.RegisterTemplateForCleanup(templateName);
         }
     }
 }

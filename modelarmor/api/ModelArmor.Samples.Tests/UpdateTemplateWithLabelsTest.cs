@@ -40,6 +40,7 @@ namespace ModelArmor.Samples.Tests
         {
             // Create a template.
             TemplateName templateName = _fixture.CreateTemplateName();
+            _fixture.RegisterTemplateForCleanup(templateName);
 
             Template originalTemplate = _create_template_sample.CreateTemplate(
                 projectId: _fixture.ProjectId,
@@ -74,8 +75,6 @@ namespace ModelArmor.Samples.Tests
                 getUpdatedTemplate.Labels,
                 l => l.Key == "updated_key2" && l.Value == "updated_value2"
             );
-
-            _fixture.RegisterTemplateForCleanup(templateName);
         }
     }
 }

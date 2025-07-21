@@ -45,34 +45,6 @@ namespace ModelArmor.Samples
                 templateId
             );
 
-            // Build the updated Model Armor template with modified filters.
-            // For more details on filters, please refer to the following doc:
-            // https://cloud.google.com/security-command-center/docs/key-concepts-model-armor#ma-filters
-            RaiFilterSettings raiFilterSettings = new RaiFilterSettings();
-            raiFilterSettings.RaiFilters.Add(
-                new RaiFilterSettings.Types.RaiFilter
-                {
-                    FilterType = RaiFilterType.Dangerous,
-                    ConfidenceLevel = DetectionConfidenceLevel.LowAndAbove,
-                }
-            );
-            raiFilterSettings.RaiFilters.Add(
-                new RaiFilterSettings.Types.RaiFilter
-                {
-                    FilterType = RaiFilterType.Harassment,
-                    ConfidenceLevel = DetectionConfidenceLevel.High,
-                }
-            );
-            raiFilterSettings.RaiFilters.Add(
-                new RaiFilterSettings.Types.RaiFilter
-                {
-                    FilterType = RaiFilterType.SexuallyExplicit,
-                    ConfidenceLevel = DetectionConfidenceLevel.MediumAndAbove,
-                }
-            );
-
-            FilterConfig modelArmorFilter = new FilterConfig { RaiSettings = raiFilterSettings };
-
             // For more details about metadata, refer to the following documentation:
             // https://cloud.google.com/security-command-center/docs/reference/model-armor/rest/v1/projects.locations.templates#templatemetadata
             Template.Types.TemplateMetadata templateMetadata =
@@ -84,7 +56,6 @@ namespace ModelArmor.Samples
             Template template = new Template
             {
                 TemplateName = name,
-                FilterConfig = modelArmorFilter,
                 TemplateMetadata = templateMetadata,
             };
 
