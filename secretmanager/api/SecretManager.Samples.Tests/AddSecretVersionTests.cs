@@ -32,14 +32,26 @@ public class AddSecretVersionTests
     [Fact]
     public void AddsSecretVersions()
     {
+        // Get the payload data.
         string data = "my secret data";
-        SecretName secretName = _fixture.Secret.SecretName;
+
+        // Create the secret resource.
+        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
+
+        // Get the SecretName.
+        SecretName secretName = secret.SecretName;
+
+        // Run the code sample.
         SecretVersion secretVersion = _sample.AddSecretVersion(
           projectId: secretName.ProjectId, secretId: secretName.SecretId,
           data: data);
 
-        SecretManagerServiceClient client = SecretManagerServiceClient.Create();
+        // Assert expected result is observed.
+        SecretManagerServiceClient client = _fixture.Client;
         AccessSecretVersionResponse result = client.AccessSecretVersion(secretVersion.SecretVersionName);
         Assert.Equal(data, result.Payload.Data.ToStringUtf8());
+
+        // Cleanup the created resource.
+        _fixture.DeleteSecret(secretName);
     }
 }

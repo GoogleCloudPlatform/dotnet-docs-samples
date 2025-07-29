@@ -14,6 +14,7 @@
 // limitations under the License.
 
 // Rejoin user events using Retail API
+// [START retail_rejoin_user_events]
 
 using Google.Cloud.Retail.V2;
 using Google.LongRunning;
@@ -113,6 +114,8 @@ public class RejoinUserEventSample
         return rejoinResponse;
     }
 }
+
+// [END retail_rejoin_user_events]
 
 /// <summary>
 /// The rejoin user event tutorial class.

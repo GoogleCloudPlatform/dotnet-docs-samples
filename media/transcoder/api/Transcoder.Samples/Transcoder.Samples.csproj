@@ -3,6 +3,6 @@
     <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Video.Transcoder.V1" Version="2.9.0"/>
+    <PackageReference Include="Google.Cloud.Video.Transcoder.V1" Version="2.10.0"/>
   </ItemGroup>
 </Project>

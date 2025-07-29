@@ -15,6 +15,8 @@
 
 // Update product from a catalog using Retail API
 
+// [START retail_update_product]
+
 using Google.Cloud.Retail.V2;
 using Google.Protobuf.WellKnownTypes;
 using System;
@@ -116,3 +118,4 @@ public static class UpdateProductTutorial
         DeleteProductSample.DeleteRetailProduct(updatedProduct.Name);
     }
 }
+// [END retail_update_product]
