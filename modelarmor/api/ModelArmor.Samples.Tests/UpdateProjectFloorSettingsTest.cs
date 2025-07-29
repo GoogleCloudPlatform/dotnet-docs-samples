@@ -52,7 +52,7 @@ namespace ModelArmor.Samples.Tests
                 response.FilterConfig.RaiSettings.RaiFilters,
                 filter =>
                     filter.FilterType == RaiFilterType.HateSpeech
-                    && filter.ConfidenceLevel == DetectionConfidenceLevel.High
+                    && filter.ConfidenceLevel == DetectionConfidenceLevel.LowAndAbove
             );
         }
     }

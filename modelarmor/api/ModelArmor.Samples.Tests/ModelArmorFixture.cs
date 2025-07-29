@@ -140,6 +140,8 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             TemplateId = templateId,
         };
         var response = DlpClient.CreateDeidentifyTemplate(request);
+
+        return response.Name;
     }
 
     public void Dispose()
