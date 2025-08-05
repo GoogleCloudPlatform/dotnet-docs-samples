@@ -15,8 +15,8 @@
  */
 
 // [START modelarmor_get_template]
-using System;
 using Google.Cloud.ModelArmor.V1;
+using System;
 
 public class GetTemplateSample
 {
@@ -33,11 +33,7 @@ public class GetTemplateSample
 
         GetTemplateRequest request = new GetTemplateRequest
         {
-            TemplateName = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            ),
+            TemplateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId),
         };
 
         Template template = client.GetTemplate(request);

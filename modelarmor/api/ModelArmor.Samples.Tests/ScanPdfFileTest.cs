@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-using System.IO;
 using Google.Cloud.ModelArmor.V1;
 using ModelArmor.Samples;
+using System.IO;
 using Xunit;
 using Xunit.Abstractions;
 

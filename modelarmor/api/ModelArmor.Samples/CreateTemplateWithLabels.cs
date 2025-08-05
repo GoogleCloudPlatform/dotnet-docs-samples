@@ -15,11 +15,11 @@
  */
 
 // [START modelarmor_create_template_with_labels]
-using System;
-using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 using Google.Protobuf.Collections;
+using System;
+using System.Collections.Generic;
 
 namespace ModelArmor.Samples
 {
