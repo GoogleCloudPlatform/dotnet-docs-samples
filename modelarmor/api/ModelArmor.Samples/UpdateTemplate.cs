@@ -15,10 +15,10 @@
  */
 
 // [START modelarmor_update_template]
-using System;
-using System.Collections.Generic;
 using Google.Cloud.ModelArmor.V1;
 using Google.Protobuf.WellKnownTypes;
+using System;
+using System.Collections.Generic;
 
 namespace ModelArmor.Samples
 {
@@ -40,11 +40,7 @@ namespace ModelArmor.Samples
             ModelArmorClient client = clientBuilder.Build();
 
             // Get the template name.
-            TemplateName name = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            );
+            TemplateName name = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId);
 
             // Build the updated Model Armor template with modified filters.
             // For more details on filters, please refer to the following doc:

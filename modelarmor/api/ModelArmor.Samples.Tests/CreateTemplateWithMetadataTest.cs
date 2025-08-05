@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+using Google.Cloud.ModelArmor.V1;
 using System;
 using System.Linq;
-using Google.Cloud.ModelArmor.V1;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -43,14 +43,8 @@ namespace ModelArmor.Samples.Tests
             _fixture.RegisterTemplateForCleanup(templateName);
             string templateId = templateName.TemplateId;
 
-            // Run the sample.
-            Template createdTemplate = _sample.CreateTemplateWithMetadata(
-                projectId: projectId,
-                locationId: locationId,
-                templateId: templateId
-            );
+            Template createdTemplate = _sample.CreateTemplateWithMetadata(projectId, locationId, templateId);
 
-            // Verify the expected template metadata.
             Assert.NotNull(createdTemplate.TemplateMetadata);
             Assert.True(createdTemplate.TemplateMetadata.LogTemplateOperations);
             Assert.True(createdTemplate.TemplateMetadata.LogSanitizeOperations);

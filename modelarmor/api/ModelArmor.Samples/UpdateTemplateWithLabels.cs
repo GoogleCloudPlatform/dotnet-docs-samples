@@ -15,9 +15,9 @@
  */
 
 // [START modelarmor_update_template_with_labels]
-using System;
 using Google.Cloud.ModelArmor.V1;
 using Google.Protobuf.WellKnownTypes;
+using System;
 
 namespace ModelArmor.Samples
 {
@@ -38,11 +38,7 @@ namespace ModelArmor.Samples
             // Create the client.
             ModelArmorClient client = clientBuilder.Build();
 
-            TemplateName name = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            );
+            TemplateName name = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId);
 
             Template template = new Template { TemplateName = name };
 

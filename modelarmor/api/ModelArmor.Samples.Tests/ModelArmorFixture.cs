@@ -14,11 +14,11 @@
  * limitations under the License.
 */
 
-using System;
-using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Dlp.V2;
 using Google.Cloud.ModelArmor.V1;
+using System;
+using System.Collections.Generic;
 using Xunit;
 
 [CollectionDefinition(nameof(ModelArmorFixture))]

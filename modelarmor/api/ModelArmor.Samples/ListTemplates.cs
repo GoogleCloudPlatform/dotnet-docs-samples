@@ -15,11 +15,11 @@
  */
 
 // [START modelarmor_list_templates]
-using System;
-using System.Collections.Generic;
 using Google.Api.Gax;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
+using System;
+using System.Collections.Generic;
 
 public class ListTemplatesSample
 {

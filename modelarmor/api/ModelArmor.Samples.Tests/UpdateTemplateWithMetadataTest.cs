@@ -43,16 +43,14 @@ namespace ModelArmor.Samples.Tests
             Template originalTemplate = _create_template_sample.CreateTemplate(
                 projectId: _fixture.ProjectId,
                 locationId: _fixture.LocationId,
-                templateId: templateName.TemplateId
-            );
+                templateId: templateName.TemplateId);
 
-            string templateId = TemplateName.Parse(originalTemplate.Name).TemplateId;
+            string templateId = templateName.TemplateId;
 
             Template updatedTemplate = _update_template_sample.UpdateTemplateWithMetadata(
                 projectId: _fixture.ProjectId,
                 locationId: _fixture.LocationId,
-                templateId: templateId
-            );
+                templateId: templateId);
 
             Assert.NotNull(updatedTemplate);
             Assert.Equal(originalTemplate.Name, updatedTemplate.Name);

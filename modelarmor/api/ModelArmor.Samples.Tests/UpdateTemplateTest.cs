@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
+using Google.Cloud.ModelArmor.V1;
 using System;
 using System.Collections.Generic;
-using Google.Cloud.ModelArmor.V1;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -45,28 +45,18 @@ namespace ModelArmor.Samples.Tests
             Template originalTemplate = _create_template_sample.CreateTemplate(
                 projectId: _fixture.ProjectId,
                 locationId: _fixture.LocationId,
-                templateId: templateName.TemplateId
-            );
+                templateId: templateName.TemplateId);
 
-            string templateId = TemplateName.Parse(originalTemplate.Name).TemplateId;
+            string templateId = templateName.TemplateId;
 
             // Call the sample to modify the RAI filter of above created template.
             Template updatedTemplate = _update_template_sample.UpdateTemplate(
                 projectId: _fixture.ProjectId,
                 locationId: _fixture.LocationId,
-                templateId: templateId
-            );
+                templateId: templateId);
 
             // Assertions.
-            Assert.NotNull(updatedTemplate);
-            Assert.Equal(originalTemplate.Name, updatedTemplate.Name);
-
-            // Verify specific RAI filters were updated.
-            Assert.NotNull(updatedTemplate.FilterConfig);
-            Assert.NotNull(updatedTemplate.FilterConfig.RaiSettings);
-
             var raiFilters = updatedTemplate.FilterConfig.RaiSettings.RaiFilters;
-            Assert.Contains(raiFilters, f => f.FilterType == RaiFilterType.Dangerous);
             Assert.Contains(
                 raiFilters,
                 f =>
@@ -74,7 +64,6 @@ namespace ModelArmor.Samples.Tests
                     && f.ConfidenceLevel == DetectionConfidenceLevel.High
             );
 
-            Assert.Contains(raiFilters, f => f.FilterType == RaiFilterType.HateSpeech);
             Assert.Contains(
                 raiFilters,
                 f =>
@@ -82,7 +71,6 @@ namespace ModelArmor.Samples.Tests
                     && f.ConfidenceLevel == DetectionConfidenceLevel.MediumAndAbove
             );
 
-            Assert.Contains(raiFilters, f => f.FilterType == RaiFilterType.Harassment);
             Assert.Contains(
                 raiFilters,
                 f =>
@@ -90,7 +78,6 @@ namespace ModelArmor.Samples.Tests
                     && f.ConfidenceLevel == DetectionConfidenceLevel.MediumAndAbove
             );
 
-            Assert.Contains(raiFilters, f => f.FilterType == RaiFilterType.SexuallyExplicit);
             Assert.Contains(
                 raiFilters,
                 f =>

@@ -15,9 +15,9 @@
 */
 
 // [START modelarmor_create_template_with_advanced_sdp]
-using System;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
+using System;
 
 public class CreateTemplateWithAdvancedSdpSample
 {

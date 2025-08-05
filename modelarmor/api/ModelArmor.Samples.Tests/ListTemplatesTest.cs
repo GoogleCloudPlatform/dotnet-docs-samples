@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
 using Google.Cloud.ModelArmor.V1;
+using System.Collections.Generic;
 using Xunit;
 
 public class ListTemplatesTests : IClassFixture<ModelArmorFixture>

@@ -15,9 +15,9 @@
  */
 
 // [START modelarmor_update_template_metadata]
-using System;
 using Google.Cloud.ModelArmor.V1;
 using Google.Protobuf.WellKnownTypes;
+using System;
 
 namespace ModelArmor.Samples
 {
@@ -39,19 +39,15 @@ namespace ModelArmor.Samples
             ModelArmorClient client = clientBuilder.Build();
 
             // Get the template name.
-            TemplateName name = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            );
+            TemplateName name = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId);
 
             // For more details about metadata, refer to the following documentation:
             // https://cloud.google.com/security-command-center/docs/reference/model-armor/rest/v1/projects.locations.templates#templatemetadata
-            Template.Types.TemplateMetadata templateMetadata =
-                new Template.Types.TemplateMetadata();
-
-            templateMetadata.LogTemplateOperations = true;
-            templateMetadata.LogSanitizeOperations = true;
+            Template.Types.TemplateMetadata templateMetadata = new Template.Types.TemplateMetadata
+            {
+                LogTemplateOperations = true,
+                LogSanitizeOperations = true,
+            };
 
             Template template = new Template
             {
