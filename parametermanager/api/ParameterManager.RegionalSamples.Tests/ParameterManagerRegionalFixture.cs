@@ -14,6 +14,7 @@
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Iam.V1;
+using Google.Cloud.Kms.V1;
 using Google.Cloud.ParameterManager.V1;
 using Google.Cloud.SecretManager.V1;
 using Google.Protobuf;
@@ -24,8 +25,11 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 {
     public string ProjectId { get; }
     public const string LocationId = "us-central1";
+    public const string KeyRingId = "csharp-test-key-ring";
 
     public ParameterManagerClient Client { get; }
+    public KeyManagementServiceClient KmsClient { get; }
+    internal List<CryptoKeyVersionName> CryptoKeyVersionsToDelete = new List<CryptoKeyVersionName>();
     public SecretManagerServiceClient SecretClient { get; }
     internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
     internal List<SecretName> SecretsToDelete { get; } = new List<SecretName>();
@@ -39,15 +43,13 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
             throw new Exception("missing GOOGLE_PROJECT_ID");
         }
 
-        // Define the regional endpoint
         string regionalEndpoint = $"parametermanager.{LocationId}.rep.googleapis.com";
-
-        // Create the client with the regional endpoint
         Client = new ParameterManagerClientBuilder
         {
             Endpoint = regionalEndpoint
         }.Build();
 
+        KmsClient = KeyManagementServiceClient.Create();
         string regionalSecretEndpoint = $"secretmanager.{LocationId}.rep.googleapis.com";
         SecretClient = new SecretManagerServiceClientBuilder
         {
@@ -57,6 +59,10 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
 
     public void Dispose()
     {
+        foreach (var cryptoKeyVersion in CryptoKeyVersionsToDelete)
+        {
+            DeleteKeyVersion(cryptoKeyVersion);
+        }
         foreach (var parameterVersion in ParameterVersionsToDelete)
         {
             DeleteParameterVersion(parameterVersion);
@@ -74,6 +80,20 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     public string RandomId()
     {
         return $"csharp-{System.Guid.NewGuid()}";
+    }
+
+    public Parameter CreateParameterWithKmsKey(string parameterId, ParameterFormat format, string kmsKey)
+    {
+        LocationName projectName = new LocationName(ProjectId, LocationId);
+
+        Parameter parameter = new Parameter
+        {
+            Format = format,
+            KmsKey = kmsKey
+        };
+
+        Parameter Parameter = Client.CreateParameter(projectName, parameter, parameterId);
+        return Parameter;
     }
 
     public (string parameterId, string versionId, Parameter parameter, string payload) CreateParameterWithVersion()
@@ -127,6 +147,58 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         }
     }
 
+    public KeyRing GetKeyRing(string projectId, string keyRingId)
+    {
+        string name = $"projects/{projectId}/locations/{LocationId}/keyRings/{keyRingId}";
+        try
+        {
+            KeyRing resp = KmsClient.GetKeyRing(name);
+            return resp;
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            throw new Exception($"KeyRing with ID '{keyRingId}' in project '{projectId}' and location '{LocationId}' does not exist.");
+        }
+    }
+
+    public CryptoKey CreateHsmKey(string projectId, string keyId, string keyRingId)
+    {
+        KeyRingName parent = new KeyRingName(projectId, LocationId, keyRingId);
+
+        CreateCryptoKeyRequest request = new CreateCryptoKeyRequest
+        {
+            ParentAsKeyRingName = parent,
+            CryptoKeyId = keyId,
+            CryptoKey = new CryptoKey
+            {
+                Purpose = CryptoKey.Types.CryptoKeyPurpose.EncryptDecrypt,
+                VersionTemplate = new CryptoKeyVersionTemplate
+                {
+                    Algorithm = CryptoKeyVersion.Types.CryptoKeyVersionAlgorithm.GoogleSymmetricEncryption,
+                    ProtectionLevel = ProtectionLevel.Hsm,
+                },
+            },
+        };
+
+
+        CryptoKey cryptoKey = KmsClient.CreateCryptoKey(request);
+        CryptoKeyVersionName cryptoKeyVersionName = new CryptoKeyVersionName(ProjectId, LocationId, keyRingId, keyId, "1");
+        CryptoKeyVersionsToDelete.Add(cryptoKeyVersionName);
+
+        return cryptoKey;
+    }
+
+    public void DeleteKeyVersion(CryptoKeyVersionName name)
+    {
+        try
+        {
+            KmsClient.DestroyCryptoKeyVersion(name);
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            // Ignore error - Parameter was already deleted
+        }
+    }
     private void DeleteParameterVersion(ParameterVersionName name)
     {
         try
