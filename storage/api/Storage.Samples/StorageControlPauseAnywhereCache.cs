@@ -22,7 +22,7 @@ public class StorageControlPauseAnywhereCacheSample
     /// <summary>Pauses an anywhere cache instance in the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the anywhere cache instance.</param>
     /// <param name="anywhereCacheId">The name of the zone in which the anywhere cache is located.</param>
-    public AnywhereCache StorageControlPauseAnywhereCache(string bucketName = "your-bucket-name",
+    public AnywhereCache StorageControlPauseAnywhereCache(string bucketName = "your-unique-bucket-name",
         string anywhereCacheId = "us-east1-a")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();

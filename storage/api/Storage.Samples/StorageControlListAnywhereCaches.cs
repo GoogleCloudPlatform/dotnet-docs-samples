@@ -23,7 +23,7 @@ public class StorageControlListAnywhereCachesSample
 {
     /// <summary>Lists all anywhere cache instances for the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the anywhere cache instance.</param>
-    public IEnumerable<AnywhereCache> StorageControlListAnywhereCaches(string bucketName = "your-bucket-name")
+    public IEnumerable<AnywhereCache> StorageControlListAnywhereCaches(string bucketName = "your-unique-bucket-name")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
