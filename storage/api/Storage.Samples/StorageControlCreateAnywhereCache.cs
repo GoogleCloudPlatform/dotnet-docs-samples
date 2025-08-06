@@ -17,14 +17,13 @@
 using Google.Cloud.Storage.Control.V2;
 using Google.LongRunning;
 using System;
-using System.Threading.Tasks;
 
 public class StorageControlCreateAnywhereCacheSample
 {
     /// <summary>Creates an anywhere cache instance in the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="zone">The zone in which the cache instance will run.</param>
-    public async Task<AnywhereCache> StorageControlCreateAnywhereCacheAsync(string bucketName = "your-bucket-name",
+    public Operation<AnywhereCache, CreateAnywhereCacheMetadata> StorageControlCreateAnywhereCache(string bucketName = "your-bucket-name",
         string zone = "us-east-a")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
@@ -44,14 +43,14 @@ public class StorageControlCreateAnywhereCacheSample
         };
 
         // Start a long-running operation (LRO).
-        Task<Operation<AnywhereCache, CreateAnywhereCacheMetadata>> createdCacheOperation = storageControlClient.CreateAnywhereCacheAsync(request);
+        Operation<AnywhereCache, CreateAnywhereCacheMetadata> createdCacheOperation = storageControlClient.CreateAnywhereCache(request);
 
         // Await the LROs completion.
-        var createdCache = await createdCacheOperation.Result.PollUntilCompletedAsync();
+        var createdCache = createdCacheOperation.PollUntilCompleted();
 
         Console.WriteLine($"Created Anywhere Cache Instance: {createdCache.Result.AnywhereCacheName}");
 
-        return createdCache.Result;
+        return createdCache;
     }
 }
 // [END storage_control_create_anywhere_cache]
