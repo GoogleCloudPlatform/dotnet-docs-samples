@@ -15,12 +15,12 @@
  */
 
 // [START modelarmor_scan_pdf_file]
-using System;
-using System.IO;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 using Google.Protobuf;
 using Newtonsoft.Json;
+using System;
+using System.IO;
 
 namespace ModelArmor.Samples
 {
@@ -43,11 +43,7 @@ namespace ModelArmor.Samples
             ModelArmorClient client = clientBuilder.Build();
 
             // Build the resource name of the template.
-            TemplateName templateName = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            );
+            TemplateName templateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId);
 
             // Read the PDF file content
             byte[] fileContent = File.ReadAllBytes(pdfFilePath);

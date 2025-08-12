@@ -1,0 +1,62 @@
+/*
+ * Copyright 2025 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+using Google.Cloud.ModelArmor.V1;
+using Xunit;
+using Xunit.Abstractions;
+
+namespace ModelArmor.Samples.Tests
+{
+    public class UpdateTemplateWithMetadataTests : IClassFixture<ModelArmorFixture>
+    {
+        private readonly ModelArmorFixture _fixture;
+        private readonly CreateTemplateSample _create_template_sample;
+        private readonly UpdateTemplateWithMetadataSample _update_template_sample;
+
+        public UpdateTemplateWithMetadataTests(ModelArmorFixture fixture, ITestOutputHelper output)
+        {
+            _fixture = fixture;
+            _create_template_sample = new CreateTemplateSample();
+            _update_template_sample = new UpdateTemplateWithMetadataSample();
+        }
+
+        [Fact]
+        public void UpdateTemplateWithMetadataTest()
+        {
+            // Create a template.
+            TemplateName templateName = _fixture.CreateTemplateName();
+            _fixture.RegisterTemplateForCleanup(templateName);
+
+            Template originalTemplate = _create_template_sample.CreateTemplate(
+                projectId: _fixture.ProjectId,
+                locationId: _fixture.LocationId,
+                templateId: templateName.TemplateId);
+
+            string templateId = templateName.TemplateId;
+
+            Template updatedTemplate = _update_template_sample.UpdateTemplateWithMetadata(
+                projectId: _fixture.ProjectId,
+                locationId: _fixture.LocationId,
+                templateId: templateId);
+
+            Assert.NotNull(updatedTemplate);
+            Assert.Equal(originalTemplate.Name, updatedTemplate.Name);
+            Assert.NotNull(updatedTemplate.TemplateMetadata);
+            Assert.True(updatedTemplate.TemplateMetadata.LogTemplateOperations);
+            Assert.True(updatedTemplate.TemplateMetadata.LogSanitizeOperations);
+        }
+    }
+}

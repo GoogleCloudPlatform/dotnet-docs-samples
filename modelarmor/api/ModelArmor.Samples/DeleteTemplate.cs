@@ -15,8 +15,8 @@
  */
 
 // [START modelarmor_delete_template]
-using System;
 using Google.Cloud.ModelArmor.V1;
+using System;
 
 public class DeleteTemplateSample
 {
@@ -33,11 +33,7 @@ public class DeleteTemplateSample
 
         DeleteTemplateRequest request = new DeleteTemplateRequest
         {
-            TemplateName = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            ),
+            TemplateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId),
         };
 
         client.DeleteTemplate(request);

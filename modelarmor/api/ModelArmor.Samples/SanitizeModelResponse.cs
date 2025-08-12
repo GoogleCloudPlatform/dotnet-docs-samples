@@ -15,8 +15,8 @@
  */
 
 // [START modelarmor_sanitize_model_response]
-using System;
 using Google.Cloud.ModelArmor.V1;
+using System;
 
 namespace ModelArmor.Samples
 {

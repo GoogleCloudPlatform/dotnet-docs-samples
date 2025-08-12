@@ -15,9 +15,9 @@
  */
 
 // [START modelarmor_create_template]
-using System.Collections.Generic;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
+using System.Collections.Generic;
 
 public class CreateTemplateSample
 {

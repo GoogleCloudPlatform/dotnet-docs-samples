@@ -15,10 +15,10 @@
  */
 
 // [START modelarmor_sanitize_user_prompt]
-using System;
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.ModelArmor.V1;
 using Newtonsoft.Json;
+using System;
 
 namespace ModelArmor.Samples
 {
@@ -41,11 +41,7 @@ namespace ModelArmor.Samples
             ModelArmorClient client = clientBuilder.Build();
 
             // Build the resource name of the template.
-            TemplateName templateName = TemplateName.FromProjectLocationTemplate(
-                projectId,
-                locationId,
-                templateId
-            );
+            TemplateName templateName = TemplateName.FromProjectLocationTemplate(projectId, locationId, templateId);
 
             // Prepare the request.
             SanitizeUserPromptRequest request = new SanitizeUserPromptRequest
