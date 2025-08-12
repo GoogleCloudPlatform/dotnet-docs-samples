@@ -32,8 +32,6 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public DlpServiceClient DlpClient { get; }
     public string ProjectId { get; }
     public string LocationId { get; }
-    public string FolderId { get; }
-    public string OrganizationId { get; }
     private readonly List<TemplateName> _maTemplatesToCleanup = new List<TemplateName>();
     private readonly List<TemplateName> _inspectTemplatesToCleanup = new List<TemplateName>();
     private readonly List<TemplateName> _deidentifyTemplatesToCleanup = new List<TemplateName>();
@@ -41,8 +39,6 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
     public ModelArmorFixture()
     {
         ProjectId = GetRequiredEnvVar(EnvProjectId);
-        FolderId = GetRequiredEnvVar("MA_FOLDER_ID");
-        OrganizationId = GetRequiredEnvVar("MA_ORG_ID");
         LocationId = Environment.GetEnvironmentVariable(EnvLocation) ?? "us-central1";
 
         // Create the Model Armor client.
@@ -159,8 +155,6 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             }
         }
 
-        ResetFloorSettings();
-
         // Clean up Inspect DLP templates.
         foreach (var inspectTemplateName in _inspectTemplatesToCleanup)
         {
@@ -189,123 +183,6 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
             {
                 // Ignore errors during cleanup.
             }
-        }
-    }
-
-    // Reset floor settings to default values for project, folder, and organization
-    private void ResetFloorSettings()
-    {
-        // Reset project floor settings if project ID is available
-        if (!string.IsNullOrEmpty(ProjectId))
-        {
-            ResetProjectFloorSettings(ProjectId);
-        }
-
-        // Reset folder floor settings if folder ID is available
-        string folderId = FolderId;
-        if (!string.IsNullOrEmpty(folderId))
-        {
-            ResetFolderFloorSettings(folderId);
-        }
-
-        // Reset organization floor settings if organization ID is available
-        string organizationId = OrganizationId;
-        if (!string.IsNullOrEmpty(organizationId))
-        {
-            ResetOrganizationFloorSettings(organizationId);
-        }
-    }
-
-    // Reset project floor settings to default
-    public void ResetProjectFloorSettings(string projectId)
-    {
-        try
-        {
-            // Add a small delay to avoid rate limiting
-            System.Threading.Thread.Sleep(2000);
-
-            // Create default floor setting with empty RAI filters and enforcement disabled
-            FloorSetting defaultFloorSetting = new FloorSetting
-            {
-                Name = $"projects/{projectId}/locations/global/floorSetting",
-                FilterConfig = new FilterConfig
-                {
-                    RaiSettings = new RaiFilterSettings { RaiFilters = { } },
-                },
-                EnableFloorSettingEnforcement = false,
-            };
-
-            // Update the floor setting to reset it
-            Client.UpdateFloorSetting(
-                new UpdateFloorSettingRequest { FloorSetting = defaultFloorSetting }
-            );
-        }
-        catch (Exception ex)
-        {
-            // Log but don't throw to avoid breaking test cleanup
-            Console.WriteLine($"Error resetting project floor settings: {ex.Message}");
-        }
-    }
-
-    // Reset folder floor settings to default
-    public void ResetFolderFloorSettings(string folderId)
-    {
-        try
-        {
-            // Add a small delay to avoid rate limiting
-            System.Threading.Thread.Sleep(2000);
-
-            // Create default floor setting with empty RAI filters and enforcement disabled
-            FloorSetting defaultFloorSetting = new FloorSetting
-            {
-                Name = $"folders/{folderId}/locations/global/floorSetting",
-                FilterConfig = new FilterConfig
-                {
-                    RaiSettings = new RaiFilterSettings { RaiFilters = { } },
-                },
-                EnableFloorSettingEnforcement = false,
-            };
-
-            // Update the floor setting to reset it
-            Client.UpdateFloorSetting(
-                new UpdateFloorSettingRequest { FloorSetting = defaultFloorSetting }
-            );
-        }
-        catch (Exception ex)
-        {
-            // Log but don't throw to avoid breaking test cleanup
-            Console.WriteLine($"Error resetting folder floor settings: {ex.Message}");
-        }
-    }
-
-    // Reset organization floor settings to default
-    public void ResetOrganizationFloorSettings(string organizationId)
-    {
-        try
-        {
-            // Add a small delay to avoid rate limiting
-            System.Threading.Thread.Sleep(2000);
-
-            // Create default floor setting with empty RAI filters and enforcement disabled
-            FloorSetting defaultFloorSetting = new FloorSetting
-            {
-                Name = $"organizations/{organizationId}/locations/global/floorSetting",
-                FilterConfig = new FilterConfig
-                {
-                    RaiSettings = new RaiFilterSettings { RaiFilters = { } },
-                },
-                EnableFloorSettingEnforcement = false,
-            };
-
-            // Update the floor setting to reset it
-            Client.UpdateFloorSetting(
-                new UpdateFloorSettingRequest { FloorSetting = defaultFloorSetting }
-            );
-        }
-        catch (Exception ex)
-        {
-            // Log but don't throw to avoid breaking test cleanup
-            Console.WriteLine($"Error resetting organization floor settings: {ex.Message}");
         }
     }
 

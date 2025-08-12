@@ -20,13 +20,14 @@ using Xunit.Abstractions;
 
 namespace ModelArmor.Samples.Tests
 {
-    public class UpdateFolderFloorSettingsTests : IClassFixture<ModelArmorFixture>
+    [Collection("FloorSettingCollection")]
+    public class UpdateFolderFloorSettingsTests : IClassFixture<FloorSettingFixture>
     {
-        private readonly ModelArmorFixture _fixture;
+        private readonly FloorSettingFixture _fixture;
         private readonly UpdateFolderFloorSettings _sample;
         private readonly ITestOutputHelper _output;
 
-        public UpdateFolderFloorSettingsTests(ModelArmorFixture fixture, ITestOutputHelper output)
+        public UpdateFolderFloorSettingsTests(FloorSettingFixture fixture, ITestOutputHelper output)
         {
             _fixture = fixture;
             _sample = new UpdateFolderFloorSettings();
@@ -46,8 +47,6 @@ namespace ModelArmor.Samples.Tests
             Assert.NotNull(response);
             Assert.Equal($"folders/{folderId}/locations/global/floorSetting", response.Name);
             Assert.True(response.EnableFloorSettingEnforcement);
-            Assert.NotNull(response.FilterConfig);
-            Assert.NotNull(response.FilterConfig.RaiSettings);
             Assert.Contains(
                 response.FilterConfig.RaiSettings.RaiFilters,
                 filter =>

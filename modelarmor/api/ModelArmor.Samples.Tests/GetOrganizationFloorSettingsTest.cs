@@ -20,14 +20,15 @@ using Xunit.Abstractions;
 
 namespace ModelArmor.Samples.Tests
 {
-    public class GetOrganizationFloorSettingsTests : IClassFixture<ModelArmorFixture>
+    [Collection("FloorSettingCollection")]
+    public class GetOrganizationFloorSettingsTests : IClassFixture<FloorSettingFixture>
     {
-        private readonly ModelArmorFixture _fixture;
+        private readonly FloorSettingFixture _fixture;
         private readonly GetOrganizationFloorSettings _sample;
         private readonly ITestOutputHelper _output;
 
         public GetOrganizationFloorSettingsTests(
-            ModelArmorFixture fixture,
+            FloorSettingFixture fixture,
             ITestOutputHelper output
         )
         {
