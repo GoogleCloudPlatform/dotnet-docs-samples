@@ -18,7 +18,6 @@ using Google.Cloud.Storage.Control.V2;
 using Google.LongRunning;
 using Google.Protobuf.WellKnownTypes;
 using System;
-using System.Threading.Tasks;
 
 public class StorageControlUpdateAnywhereCacheSample
 {
