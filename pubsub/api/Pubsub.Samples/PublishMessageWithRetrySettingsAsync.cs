@@ -48,6 +48,9 @@ public class PublishMessageWithRetrySettingsAsyncSample
         }.BuildAsync();
         string message = await publisher.PublishAsync(messageText);
         Console.WriteLine($"Published message {message}");
+        // PublisherClient instance should be shutdown after use.
+        // The TimeSpan specifies for how long to attempt to publish locally queued messages.
+        await publisher.ShutdownAsync(TimeSpan.FromSeconds(15));
     }
 }
 // [END pubsub_publisher_retry_settings]

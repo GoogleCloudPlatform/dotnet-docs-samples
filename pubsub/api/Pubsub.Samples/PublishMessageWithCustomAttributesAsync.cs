@@ -39,6 +39,9 @@ public class PublishMessageWithCustomAttributesAsyncSample
         };
         string message = await publisher.PublishAsync(pubsubMessage);
         Console.WriteLine($"Published message {message}");
+        // PublisherClient instance should be shutdown after use.
+        // The TimeSpan specifies for how long to attempt to publish locally queued messages.
+        await publisher.ShutdownAsync(TimeSpan.FromSeconds(15));
     }
 }
 // [END pubsub_publish_custom_attributes]
