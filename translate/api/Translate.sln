@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translate.Samples", "Translate.Samples\Translate.Samples.csproj", "{6C7D7BC5-7EB4-4AD1-BFEA-9E4E38747D80}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Translate.Samples.Test", "Translate.Samples.Test\Translate.Samples.Test.csproj", "{E84081F0-8372-444A-89AA-D6373DDA4B81}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6C7D7BC5-7EB4-4AD1-BFEA-9E4E38747D80}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C7D7BC5-7EB4-4AD1-BFEA-9E4E38747D80}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C7D7BC5-7EB4-4AD1-BFEA-9E4E38747D80}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C7D7BC5-7EB4-4AD1-BFEA-9E4E38747D80}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E84081F0-8372-444A-89AA-D6373DDA4B81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E84081F0-8372-444A-89AA-D6373DDA4B81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E84081F0-8372-444A-89AA-D6373DDA4B81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E84081F0-8372-444A-89AA-D6373DDA4B81}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
