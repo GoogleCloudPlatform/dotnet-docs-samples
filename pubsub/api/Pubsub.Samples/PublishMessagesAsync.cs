@@ -44,6 +44,7 @@ public class PublishMessagesAsyncSample
             }
         });
         await Task.WhenAll(publishTasks);
+        await publisher.ShutdownAsync(TimeSpan.FromSeconds(15));
         return publishedMessageCount;
     }
 }
