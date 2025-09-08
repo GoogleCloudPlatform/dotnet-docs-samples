@@ -15,6 +15,7 @@
 // [START pubsub_publisher_with_compression]
 
 using Google.Cloud.PubSub.V1;
+using System;
 using System.Threading.Tasks;
 
 public class PublishCompressedMessagesAsyncSample
@@ -38,6 +39,9 @@ public class PublishCompressedMessagesAsyncSample
         }.BuildAsync();
 
         await publisher.PublishAsync(messageText);
+        // PublisherClient instance should be shutdown after use.
+        // The TimeSpan specifies for how long to attempt to publish locally queued messages.
+        await publisher.ShutdownAsync(TimeSpan.FromSeconds(15));
     }
 }
 // [END pubsub_publisher_with_compression]
