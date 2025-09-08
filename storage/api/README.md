@@ -31,4 +31,4 @@ The samples requires [.NET Core 3.1][net-core] or later.  That means using
 [net-core]: https://www.microsoft.com/net/core
 
 ## Note
-Tests for Anywhere cache Sample are not included due to the long operation times typical for cache operations.
+Tests for the Anywhere Cache samples are not included due to the long operation times typical for cache operations.
