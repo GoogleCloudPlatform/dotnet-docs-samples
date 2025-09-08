@@ -5,6 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Cloud.AIPlatform.V1" Version="3.45.0" />
-    <PackageReference Include="Google.Cloud.AIPlatform.V1Beta1" Version="1.0.0-beta49" />
+    <PackageReference Include="Google.Cloud.AIPlatform.V1Beta1" Version="1.0.0-beta50" />
   </ItemGroup>
 </Project>
