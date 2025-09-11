@@ -24,7 +24,7 @@ public class StorageControlCreateAnywhereCacheSample
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="zoneName">The name of the zone in which the cache instance will run.</param>
     public Operation<AnywhereCache, CreateAnywhereCacheMetadata> StorageControlCreateAnywhereCache(string bucketName = "your-unique-bucket-name",
-        string zoneName = "us-east-a")
+        string zoneName = "us-east1-a")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
