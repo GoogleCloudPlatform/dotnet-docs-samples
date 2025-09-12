@@ -21,14 +21,14 @@ public class StorageControlDisableAnywhereCacheSample
 {
     /// <summary>Disables the anywhere cache instance in the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the anywhere cache instance.</param>
-    /// <param name="zoneName">The name of the zone in which the anywhere cache is located.</param>
+    /// <param name="anywhereCacheId">The name of the zone in which the anywhere cache is located.</param>
     public AnywhereCache StorageControlDisableAnywhereCache(string bucketName = "your-unique-bucket-name",
-        string zoneName = "us-east1-a")
+        string anywhereCacheId = "us-east1-a")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
         // Set project to "_" to signify globally scoped bucket.
-        string anywhereCacheName = $"projects/_/buckets/{bucketName}/anywhereCaches/{zoneName}";
+        string anywhereCacheName = $"projects/_/buckets/{bucketName}/anywhereCaches/{anywhereCacheId}";
 
         var request = new DisableAnywhereCacheRequest
         {

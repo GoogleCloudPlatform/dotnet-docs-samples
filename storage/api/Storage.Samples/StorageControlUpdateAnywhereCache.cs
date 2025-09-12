@@ -23,16 +23,16 @@ public class StorageControlUpdateAnywhereCacheSample
 {
     /// <summary>Updates the running anywhere cache instance for the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the anywhere cache instance.</param>
-    /// <param name="zoneName">The name of the zone in which the anywhere cache is located.</param>
+    /// <param name="anywhereCacheId">The name of the zone in which the anywhere cache is located.</param>
     /// <param name="admissionPolicy"> The cache's admission policy. Values can be admit-on-first-miss or admit-on-second-miss. If not specified, it defaults to admit-on-first-miss.</param>
     public Operation<AnywhereCache, UpdateAnywhereCacheMetadata> StorageControlUpdateAnywhereCache(string bucketName = "your-bucket-name",
-        string zoneName = "us-east1-a",
+        string anywhereCacheId = "us-east1-a",
         string admissionPolicy = "admit-on-first-miss")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
         // Set project to "_" to signify globally scoped bucket.
-        string anywhereCacheName = $"projects/_/buckets/{bucketName}/anywhereCaches/{zoneName}";
+        string anywhereCacheName = $"projects/_/buckets/{bucketName}/anywhereCaches/{anywhereCacheId}";
 
         var anywhereCache = new AnywhereCache
         {
