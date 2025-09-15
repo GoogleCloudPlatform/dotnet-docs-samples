@@ -42,5 +42,7 @@ public class QuickstartTests
             locationId: templateName.LocationId,
             templateId: templateName.TemplateId
         );
+
+        _fixture.RegisterTemplateForCleanup(templateName);
     }
 }
