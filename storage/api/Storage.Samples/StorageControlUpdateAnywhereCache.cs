@@ -23,7 +23,7 @@ public class StorageControlUpdateAnywhereCacheSample
 {
     /// <summary>Updates the running anywhere cache instance for the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the anywhere cache instance.</param>
-    /// <param name="anywhereCacheId">The name of the zone in which the anywhere cache is located.</param>
+    /// <param name="anywhereCacheId">The unique identifier of the cache instance to update.</param>
     /// <param name="admissionPolicy"> The cache's admission policy. Values can be admit-on-first-miss or admit-on-second-miss. If not specified, it defaults to admit-on-first-miss.</param>
     public Operation<AnywhereCache, UpdateAnywhereCacheMetadata> StorageControlUpdateAnywhereCache(string bucketName = "your-bucket-name",
         string anywhereCacheId = "us-east1-a",
