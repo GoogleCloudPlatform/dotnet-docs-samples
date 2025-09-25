@@ -58,6 +58,9 @@ public class PublishProtoMessagesAsyncSample
             }
         });
         await Task.WhenAll(publishTasks);
+        // PublisherClient instance should be shutdown after use.
+        // The TimeSpan specifies for how long to attempt to publish locally queued messages.
+        await publisher.ShutdownAsync(TimeSpan.FromSeconds(15));
         return publishedMessageCount;
     }
 }
