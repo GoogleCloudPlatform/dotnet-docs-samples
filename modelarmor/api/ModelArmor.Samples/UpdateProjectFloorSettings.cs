@@ -34,7 +34,7 @@ public class UpdateProjectFloorSettings
         var raiFilter = new RaiFilterSettings.Types.RaiFilter
         {
             FilterType = RaiFilterType.HateSpeech,
-            ConfidenceLevel = DetectionConfidenceLevel.LowAndAbove,
+            ConfidenceLevel = DetectionConfidenceLevel.High,
         };
 
         var raiFilterSettings = new RaiFilterSettings();

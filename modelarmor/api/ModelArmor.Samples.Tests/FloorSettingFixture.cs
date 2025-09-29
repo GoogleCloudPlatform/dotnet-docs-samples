@@ -36,6 +36,8 @@ public class FloorSettingFixture : IDisposable, ICollectionFixture<FloorSettingF
 
         // Create the Model Armor client.
         Client = ModelArmorClient.Create();
+
+        ResetFloorSettings();
     }
 
     public string GetRequiredEnvVar(string name)
