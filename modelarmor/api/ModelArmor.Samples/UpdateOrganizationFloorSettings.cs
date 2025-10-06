@@ -15,8 +15,8 @@
  */
 
 // [START modelarmor_update_organization_floor_settings]
-using System;
 using Google.Cloud.ModelArmor.V1;
+using System;
 
 public class UpdateOrganizationFloorSettings
 {
