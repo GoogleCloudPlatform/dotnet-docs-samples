@@ -256,7 +256,7 @@ public class ModelArmorFixture : IDisposable, ICollectionFixture<ModelArmorFixtu
         Template template = new Template { FilterConfig = modelArmorFilter };
         return template;
     }
-    
+
     // Create a template on GCP and register it for cleanup
     public Template CreateTemplate(Template templateConfig, string templateId = null)
     {
