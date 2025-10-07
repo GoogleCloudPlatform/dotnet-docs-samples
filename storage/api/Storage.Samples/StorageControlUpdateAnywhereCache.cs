@@ -26,7 +26,7 @@ public class StorageControlUpdateAnywhereCacheSample
     /// <param name="anywhereCacheId">The unique identifier of the cache instance to update.</param>
     /// <param name="admissionPolicy"> The cache's admission policy. Values can be admit-on-first-miss or admit-on-second-miss. If not specified, it defaults to admit-on-first-miss.</param>
     public Operation<AnywhereCache, UpdateAnywhereCacheMetadata> StorageControlUpdateAnywhereCache(string bucketName = "your-bucket-name",
-        string anywhereCacheId = "us-east1-a",
+        string anywhereCacheId = "us-east1-b",
         string admissionPolicy = "admit-on-first-miss")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();

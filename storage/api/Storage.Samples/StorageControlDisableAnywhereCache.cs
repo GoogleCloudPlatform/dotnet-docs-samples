@@ -23,7 +23,7 @@ public class StorageControlDisableAnywhereCacheSample
     /// <param name="bucketName">The name of the bucket that owns the anywhere cache instance.</param>
     /// <param name="anywhereCacheId">The unique identifier of the cache instance to disable.</param>
     public AnywhereCache StorageControlDisableAnywhereCache(string bucketName = "your-unique-bucket-name",
-        string anywhereCacheId = "us-east1-a")
+        string anywhereCacheId = "us-east1-b")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
