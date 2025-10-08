@@ -23,7 +23,8 @@ public class StorageControlListAnywhereCachesSample
 {
     /// <summary>Lists all anywhere cache instances for the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the anywhere cache instance.</param>
-    public IEnumerable<AnywhereCache> StorageControlListAnywhereCaches(string bucketName = "your-unique-bucket-name")
+    /// <param name="pageSize">The maximum number of anywhere cache instances to return in a single response.</param>
+    public IEnumerable<AnywhereCache> StorageControlListAnywhereCaches(string bucketName = "your-unique-bucket-name", int pageSize = 10)
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
@@ -32,7 +33,8 @@ public class StorageControlListAnywhereCachesSample
 
         var request = new ListAnywhereCachesRequest
         {
-            Parent = parent
+            Parent = parent,
+            PageSize = pageSize
         };
 
         PagedEnumerable<ListAnywhereCachesResponse, AnywhereCache> anywhereCaches = storageControlClient.ListAnywhereCaches(request);
@@ -40,6 +42,16 @@ public class StorageControlListAnywhereCachesSample
         Console.WriteLine($"The Names of Anywhere Cache Instances are as follows:");
 
         foreach (AnywhereCache cache in anywhereCaches)
+        {
+            Console.WriteLine($"Anywhere Cache Instance: {cache.Name}");
+        }
+
+        // Retrieve a single page of page size (unless it's the final page).
+        Page<AnywhereCache> singlePage = anywhereCaches.ReadPage(pageSize);
+
+        Console.WriteLine($"The Names of Anywhere Cache Instances in the Page of Page Size {pageSize} are as follows:");
+
+        foreach (AnywhereCache cache in singlePage)
         {
             Console.WriteLine($"Anywhere Cache Instance: {cache.Name}");
         }
