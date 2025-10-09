@@ -46,10 +46,21 @@ public class StorageControlListAnywhereCachesSample
             Console.WriteLine($"Anywhere Cache Instance: {cache.Name}");
         }
 
-        // Retrieve a single page of page size (unless it's the final page).
+        Console.WriteLine($"The Names of Anywhere Cache Instances Over All Pages are as follows:");
+
+        // Iterate over all pages
+        foreach (ListAnywhereCachesResponse page in anywhereCaches.AsRawResponses())
+        {
+            foreach (AnywhereCache cache in page)
+            {
+                Console.WriteLine($"Anywhere Cache Instance: {cache.Name}");
+            }
+        }
+
+        // Retrieve a single page of page size (unless it's the final page)
         Page<AnywhereCache> singlePage = anywhereCaches.ReadPage(pageSize);
 
-        Console.WriteLine($"The Names of Anywhere Cache Instances in the Page of Page Size {pageSize} are as follows:");
+        Console.WriteLine($"The Names of Anywhere Cache Instances in the First Page of Page Size {pageSize} are as follows:");
 
         foreach (AnywhereCache cache in singlePage)
         {
