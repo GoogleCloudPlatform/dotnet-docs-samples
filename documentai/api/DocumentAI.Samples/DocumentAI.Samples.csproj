@@ -4,6 +4,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.DocumentAI.V1" Version="3.21.0" />
+    <PackageReference Include="Google.Cloud.DocumentAI.V1" Version="3.22.0" />
   </ItemGroup>
 </Project>
