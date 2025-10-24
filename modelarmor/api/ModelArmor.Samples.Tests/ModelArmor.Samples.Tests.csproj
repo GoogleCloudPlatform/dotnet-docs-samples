@@ -4,7 +4,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Dlp.V2" Version="4.20.0" />
+    <PackageReference Include="Google.Cloud.Dlp.V2" Version="4.21.0" />
     <PackageReference Include="Google.Cloud.ModelArmor.V1" Version="1.0.0-beta04" />
     <PackageReference Include="JunitXml.TestLogger" Version="1.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
