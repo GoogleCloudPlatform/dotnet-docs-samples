@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Diagnostics.AspNetCore3" Version="5.3.0" />
-    <PackageReference Include="MySql.Data" Version="9.4.0" />
+    <PackageReference Include="MySql.Data" Version="9.5.0" />
     <PackageReference Include="Polly" Version="8.6.4" />
   </ItemGroup>
 
