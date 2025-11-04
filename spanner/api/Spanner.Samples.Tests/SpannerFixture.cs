@@ -45,6 +45,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         AlbumTitle STRING(MAX)
         ) PRIMARY KEY (SingerId, AlbumId)";
 
+    public const string BackupInstancePrefix = "default-schedule-test-";
+    public const string InstanceWithProcessingUnitsPrefix = "my-ins-pu-";
+    public const string InstanceWithMultiRegionPrefix = "my-ins-mr-";
+    public const string InstanceWithInstancePartitionPrefix = "my-ins-prt-";
+
     public string ProjectId { get; } = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
     // Allow environment variables to override the default instance and database names.
     public string InstanceId { get; } = Environment.GetEnvironmentVariable("TEST_SPANNER_INSTANCE") ?? "my-instance";
@@ -86,12 +91,14 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         Environment.GetEnvironmentVariable("spanner.test.key.name") ?? "spanner-test-key");
     public CryptoKeyName[] KmsKeyNames { get; private set; }
 
-    public string InstanceIdWithProcessingUnits { get; } = GenerateId("my-ins-pu-");
-    public string InstanceIdWithMultiRegion { get; } = GenerateId("my-ins-mr-");
-    public string InstanceIdWithInstancePartition { get; } = GenerateId("my-ins-prt-");
+    public string InstanceIdWithProcessingUnits { get; } = GenerateId(InstanceWithProcessingUnitsPrefix);
+    public string InstanceIdWithMultiRegion { get; } = GenerateId(InstanceWithMultiRegionPrefix);
+    public string InstanceIdWithInstancePartition { get; } = GenerateId(InstanceWithInstancePartitionPrefix);
     public string InstanceConfigId { get; } = "nam6";
 
     private IList<string> TempDbIds { get; } = new List<string>();
+
+    private IList<string> TempInstanceIds { get; } = new List<string>();
 
     public DatabaseAdminClient DatabaseAdminClient { get; private set; }
     public InstanceAdminClient InstanceAdminClient { get; private set; }
@@ -151,7 +158,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 DeleteInstanceAsync(InstanceIdWithInstancePartition),
                 DeleteBackupAsync(ToBeCancelledBackupId),
                 DeleteBackupAsync(EncryptedBackupId),
-                DeleteBackupAsync(MultiRegionEncryptedRestoreDatabaseId)
+                DeleteBackupAsync(MultiRegionEncryptedRestoreDatabaseId),
+                DeleteStaleInstancesAsync(),
+                DeleteStaleDatabaseAsync(),
             };
             DeleteInstanceConfig(CreateCustomInstanceConfigId);
             DeleteInstanceConfig(UpdateCustomInstanceConfigId);
@@ -160,6 +169,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             foreach (string id in TempDbIds)
             {
                 cleanupTasks.Add(DeleteDatabaseAsync(id));
+            }
+
+            foreach (string id in TempInstanceIds)
+            {
+                cleanupTasks.Add(DeleteInstanceAsync(id));
             }
 
             await Task.WhenAll(cleanupTasks);
@@ -419,6 +433,49 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
             // the likelihood of test timeouts when creating a backup so
             // it's ok to get an AlreadyExists error.
             Console.WriteLine($"Backup {FixedMultiRegionEncryptedBackupId} already exists.");
+        }
+    }
+
+    /// <summary>
+    /// Not all tests delete resources appropiately.
+    /// We should fix that, but in the meantime, we can at least clean some stale resources.
+    /// </summary>
+    private async Task DeleteStaleInstancesAsync()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var oneDay = TimeSpan.FromDays(1);
+        await foreach(var instance in InstanceAdminClient.ListInstancesAsync(ProjectName.FromProject(ProjectId)))
+        {
+            if ((instance.InstanceName.InstanceId.StartsWith(BackupInstancePrefix) ||
+                instance.InstanceName.InstanceId.StartsWith(InstanceWithInstancePartitionPrefix) ||
+                instance.InstanceName.InstanceId.StartsWith(InstanceWithMultiRegionPrefix) ||
+                instance.InstanceName.InstanceId.StartsWith(InstanceWithProcessingUnitsPrefix)) &&
+                now - instance.CreateTime.ToDateTimeOffset() > oneDay)
+            {
+                await DeleteInstanceAsync(instance.InstanceName.InstanceId);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Not all tests delete resources appropiately.
+    /// We should fix that, but in the meantime, we can at least clean some stale resources.
+    /// </summary>
+    private async Task DeleteStaleDatabaseAsync()
+    {
+        var now = DateTimeOffset.UtcNow;
+        var oneDay = TimeSpan.FromDays(1);
+        await foreach (var database in DatabaseAdminClient.ListDatabasesAsync(InstanceName.FromProjectInstance(ProjectId, InstanceId)))
+        {
+            if ((database.DatabaseName.DatabaseId.StartsWith("my-db-") ||
+                database.DatabaseName.DatabaseId.StartsWith("my-enc-db-") ||
+                database.DatabaseName.DatabaseId.StartsWith("my-mr-db-") ||
+                database.DatabaseName.DatabaseId.StartsWith("my-restore-db-") ||
+                database.DatabaseName.DatabaseId.StartsWith("temp-db-")) &&
+                now - database.CreateTime.ToDateTimeOffset() > oneDay)
+            {
+                await DeleteDatabaseAsync(database.DatabaseName.DatabaseId);
+            }
         }
     }
 
@@ -698,4 +755,6 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         using var cmd = PgSpannerConnection.CreateDdlCommand(createTableStatement);
         await cmd.ExecuteNonQueryAsync();
     }
+
+    internal void MarkInstanceForDeletion(string instanceId) => TempInstanceIds.Add(instanceId);
 }

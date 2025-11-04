@@ -33,13 +33,11 @@ public class CreateInstanceWithoutDefaultBackupSchedulesTest
         CreateInstanceWithoutDefaultBackupSchedulesAsyncSample createInstanceSample =
             new CreateInstanceWithoutDefaultBackupSchedulesAsyncSample();
         
-        var instanceId = SpannerFixture.GenerateId("default-schedule-test-");
+        var instanceId = SpannerFixture.GenerateId(SpannerFixture.BackupInstancePrefix);
+        _spannerFixture.MarkInstanceForDeletion(instanceId);
         Instance instance = await createInstanceSample.CreateInstanceWithoutDefaultBackupSchedulesAsync(
             _spannerFixture.ProjectId, instanceId);
        
         Assert.Equal(Instance.Types.DefaultBackupScheduleType.None, instance.DefaultBackupScheduleType);
-
-        await _spannerFixture.InstanceAdminClient.DeleteInstanceAsync(
-            InstanceName.FromProjectInstance(_spannerFixture.ProjectId, instanceId));
     }
 }
