@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="3.29.0" />
+    <PackageReference Include="Google.Cloud.Bigtable.Admin.V2" Version="3.30.0" />
     <PackageReference Include="JUnitTestLogger" Version="1.1.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.0" />
     <PackageReference Include="Snapshooter.Xunit" Version="1.0.1" />
