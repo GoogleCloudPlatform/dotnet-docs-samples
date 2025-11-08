@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Cloud.Common" Version="2.2.0" />
+    <PackageReference Include="Google.Cloud.Common" Version="2.3.0" />
     <PackageReference Include="Google.Cloud.ParameterManager.V1" Version="1.0.0-beta03" />
   </ItemGroup>
 
