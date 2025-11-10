@@ -28,7 +28,11 @@ public class TextGenWithTxt
         string location = "global",
         string model = "gemini-2.5-flash")
     {
-        var client = new Client(project: projectId, location: location, vertexAI: true);
+        await using var client = new Client(
+            project: projectId,
+            location: location,
+            vertexAI: true,
+            httpOptions: new HttpOptions { ApiVersion = "v1" });
 
         GenerateContentResponse response = await client.Models.GenerateContentAsync(model: model, contents: "How does AI work?");
 
