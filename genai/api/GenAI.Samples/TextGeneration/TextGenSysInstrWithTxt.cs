@@ -39,8 +39,10 @@ public class TextGenSysInstrWithTxt
         {
             Parts = new List<Part>
             {
-                new Part { Text = "You're a language translator." },
-                new Part { Text = "Your mission is to translate text in English to French." }
+                new Part
+                {
+                    Text = "You're a language translator. Your mission is to translate text in English to French."
+                }
             }
         };
 
