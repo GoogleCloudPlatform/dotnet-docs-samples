@@ -52,10 +52,6 @@ public class ThinkingBudgetWithTxt
         Console.WriteLine($"Token count for thinking: {response.UsageMetadata.ThoughtsTokenCount}");
         // Example response:
         // Token count for thinking: 804
-
-        Console.WriteLine($"Total token count: {response.UsageMetadata.TotalTokenCount}");
-        // Example response:
-        // Total token count: 1450
         return responseText;
     }
 }
