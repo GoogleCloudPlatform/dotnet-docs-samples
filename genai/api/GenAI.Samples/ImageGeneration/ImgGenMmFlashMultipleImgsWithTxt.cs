@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START googlegenaisdk_imggen_mmflash_multiple_imgs_with_txt]]
+// [START googlegenaisdk_imggen_mmflash_multiple_imgs_with_txt]
 
 using Google.GenAI;
 using Google.GenAI.Types;
@@ -61,4 +61,4 @@ public class ImgGenMmFlashMultipleImgsWithTxt
         return generatedFiles;
     }
 }
-// [END googlegenaisdk_imggen_mmflash_multiple_imgs_with_txt]]
+// [END googlegenaisdk_imggen_mmflash_multiple_imgs_with_txt]

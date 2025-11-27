@@ -31,7 +31,7 @@ public class ImgGenMmFlashMultipleImgsWithTxtTest
     }
 
     [Fact]
-    public async Task TestImgGenMmFlashMultipleImgsWith()
+    public async Task TestImgGenMmFlashMultipleImgsWithTxt()
     {
         List<string> response = await _sample.GenerateContent(_fixture.ProjectId);
         Assert.NotEmpty(response);
