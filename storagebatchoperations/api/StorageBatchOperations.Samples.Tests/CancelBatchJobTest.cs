@@ -63,9 +63,10 @@ public class CancelBatchJobTest
         ListBatchJobsSample listBatchJobs = new ListBatchJobsSample();
         GetBatchJobSample getBatchJob = new GetBatchJobSample();
 
-        RetryRobot retryHandler = new RetryRobot
+        RetryRobot robot = new RetryRobot()
         {
-            ShouldRetry = ex => ex is Xunit.Sdk.ContainsException
+            MaxTryCount = 20,
+            ShouldRetry = (e) => true,
         };
 
         string filter = "state:canceled";
@@ -74,23 +75,14 @@ public class CancelBatchJobTest
 
         var jobId = _fixture.GenerateGuid();
 
-        try
-        {
-            var createdJob = CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
-            var cancelJobResponse = cancelBatchJob.CancelBatchJob(createdJob);
-            var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
-            retryHandler.Eventually(() => Assert.Contains(batchJobs, job => job.Name == createdJob && job.State == Job.Types.State.Canceled));
-            Job cancelledJob = getBatchJob.GetBatchJob(createdJob);
-            Assert.Equal(createdJob, cancelledJob.Name.ToString());
-            Assert.Equal("Canceled", cancelledJob.State.ToString());
-            _fixture.DeleteBatchJob(createdJob);
-        }
-        catch (Exception ex)
-        {
-            // This might be expected if the job name is null in result metadata after polling once.
-            Assert.Equal("Job Name is Null", ex.Message);
-
-        }
+        var createdJob = CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
+        var cancelJobResponse = cancelBatchJob.CancelBatchJob(createdJob);
+        var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
+        robot.Eventually(() => Assert.Contains(batchJobs, job => job.Name == createdJob && job.State == Job.Types.State.Canceled));
+        Job cancelledJob = getBatchJob.GetBatchJob(createdJob);
+        Assert.Equal(createdJob, cancelledJob.Name.ToString());
+        Assert.Equal("Canceled", cancelledJob.State.ToString());
+        _fixture.DeleteBatchJob(createdJob);
     }
 
     /// <summary>
