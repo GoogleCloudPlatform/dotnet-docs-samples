@@ -14,8 +14,4 @@
   <ItemGroup>
     <ProjectReference Include="..\GenAI.Samples\GenAI.Samples.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="ControlledGeneration\" />
-  </ItemGroup>
 </Project>
