@@ -38,7 +38,7 @@ public class TextGenWithTxt
 
         string responseText = response.Candidates[0].Content.Parts[0].Text;
         Console.WriteLine(responseText);
-        // Example reponse:
+        // Example response:
         // AI, or Artificial Intelligence, at its core, is about creating machines that can perform...
         // Here's a breakdown of how it generally works...
         return responseText;
