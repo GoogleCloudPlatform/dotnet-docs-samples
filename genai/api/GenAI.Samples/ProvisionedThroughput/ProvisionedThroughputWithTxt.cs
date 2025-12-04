@@ -45,13 +45,13 @@ public class ProvisionedThroughputWithTxt
 
         GenerateContentResponse response = await client.Models.GenerateContentAsync(model: model, contents: "How does AI work?");
 
-        string resposeText = response.Candidates[0].Content.Parts[0].Text;
-        Console.WriteLine(resposeText);
+        string responseText = response.Candidates[0].Content.Parts[0].Text;
+        Console.WriteLine(responseText);
         // Example response:
         // At its core, **Artificial Intelligence (AI)** works by enabling machines to learn from data,
         // identify patterns, and make decisions or predictions without being explicitly programmed for
         // every possible scenario...
-        return resposeText;
+        return responseText;
     }
 }
 // [END googlegenaisdk_provisionedthroughput_with_txt]
