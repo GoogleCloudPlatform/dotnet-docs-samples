@@ -6,4 +6,7 @@
   <ItemGroup>
     <PackageReference Include="Google.GenAI" Version="0.3.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ControlledGeneration\" />
+  </ItemGroup>
 </Project>
