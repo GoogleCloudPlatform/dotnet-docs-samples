@@ -217,10 +217,10 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         } while (true);
     }
 
-    public void CreateBucket(string bucketName, string location = null, AutoclassData autoclassData = null)
+    public void CreateBucket(string bucketName, string location = null, AutoclassData autoclassData = null, string storageClass = null)
     {
         StorageClient storageClient = StorageClient.Create();
-        storageClient.CreateBucket(ProjectId, new Bucket { Name = bucketName, Location = location, Autoclass = autoclassData });
+        storageClient.CreateBucket(ProjectId, new Bucket { Name = bucketName, Location = location, Autoclass = autoclassData, StorageClass = storageClass });
         SleepAfterBucketCreateUpdateDelete();
         TempBucketNames.Add(bucketName);
     }
