@@ -35,45 +35,37 @@ public class ToolsFuncDescWithTxt
             vertexAI: true,
             httpOptions: new HttpOptions { ApiVersion = "v1" });
 
-        List<FunctionDeclaration> getAlbumSales = new List<FunctionDeclaration>
+        var parametersJsonSchema = new Dictionary<string, object>
         {
-            new FunctionDeclaration
+            { "type", "object" },
             {
-                Name = "get_album_sales",
-                Description = "Gets the number of albums sold",
-                ParametersJsonSchema = new Dictionary<string, object>
+                "properties", new Dictionary<string, object>
                 {
-                    { "type", "object" },
                     {
-                        "properties", new Dictionary<string, object>
+                        "albums", new Dictionary<string, object>
                         {
+                            { "type", "array" },
+                            { "description", "List of albums" },
                             {
-                                "albums", new Dictionary<string, object>
+                                "items", new Dictionary<string, object>
                                 {
-                                    { "type", "array" },
-                                    { "description", "List of albums" },
+                                    { "type", "object" },
+                                    { "description", "Album and its sales" },
                                     {
-                                        "items", new Dictionary<string, object>
+                                        "properties", new Dictionary<string, object>
                                         {
-                                            { "type", "object" },
-                                            { "description", "Album and its sales" },
                                             {
-                                                "properties", new Dictionary<string, object>
+                                                "album_name", new Dictionary<string, object>
                                                 {
-                                                    {
-                                                        "album_name", new Dictionary<string, object>
-                                                        {
-                                                            { "type", "string" },
-                                                            { "description", "Name of the music album" }
-                                                        }
-                                                    },
-                                                    {
-                                                        "copies_sold", new Dictionary<string, object>
-                                                        {
-                                                            { "type", "integer" },
-                                                            { "description", "Number of copies sold" }
-                                                        }
-                                                    }
+                                                    { "type", "string" },
+                                                    { "description", "Name of the music album" }
+                                                }
+                                            },
+                                            {
+                                                "copies_sold", new Dictionary<string, object>
+                                                {
+                                                    { "type", "integer" },
+                                                    { "description", "Number of copies sold" }
                                                 }
                                             }
                                         }
@@ -83,6 +75,45 @@ public class ToolsFuncDescWithTxt
                         }
                     }
                 }
+            }
+        };
+
+        var responseJsonSchema = new Dictionary<string, object>
+        {
+            { "type", "array" },
+            {
+                "items", new Dictionary<string, object>
+                {
+                    { "type", "object" },
+                    {
+                         "properties", new Dictionary<string, object>
+                         {
+                             {
+                                 "album_name", new Dictionary<string, object>
+                                 {
+                                     { "type", "string" }
+                                 }
+                             },
+                             {
+                                 "copies_sold", new Dictionary<string, object>
+                                 {
+                                     { "type", "integer" }
+                                 }
+                             }
+                         }
+                    }
+                }
+            }
+        };
+
+        List<FunctionDeclaration> getAlbumSales = new List<FunctionDeclaration>
+        {
+            new FunctionDeclaration
+            {
+                Name = "get_album_sales",
+                Description = "Gets the number of albums sold",
+                ParametersJsonSchema = parametersJsonSchema,
+                ResponseJsonSchema = responseJsonSchema
             }
         };
 
