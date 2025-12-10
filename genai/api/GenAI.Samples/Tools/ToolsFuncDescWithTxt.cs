@@ -41,37 +41,40 @@ public class ToolsFuncDescWithTxt
             {
                 Name = "get_album_sales",
                 Description = "Gets the number of albums sold",
-                Parameters = new Schema
+                ParametersJsonSchema = new Dictionary<string, object>
                 {
-                    Type = Google.GenAI.Types.Type.OBJECT,
-                    Properties = new Dictionary<string, Schema>
+                    { "type", "object" },
                     {
+                        "properties", new Dictionary<string, object>
                         {
-                            "albums",
-                            new Schema
                             {
-                                Type = Google.GenAI.Types.Type.ARRAY,
-                                Description = "List of albums",
-                                Items = new Schema
+                                "albums", new Dictionary<string, object>
                                 {
-                                    Type = Google.GenAI.Types.Type.OBJECT,
-                                    Description = "Album and its sales",
-                                    Properties = new Dictionary<string, Schema>
+                                    { "type", "array" },
+                                    { "description", "List of albums" },
                                     {
+                                        "items", new Dictionary<string, object>
                                         {
-                                            "album_name",
-                                            new Schema
+                                            { "type", "object" },
+                                            { "description", "Album and its sales" },
                                             {
-                                                Type = Google.GenAI.Types.Type.STRING,
-                                                Description = "Name of the music album"
-                                            }
-                                        },
-                                        {
-                                            "copies_sold",
-                                            new Schema
-                                            {
-                                                Type = Google.GenAI.Types.Type.INTEGER,
-                                                Description = "Number of copies sold"
+                                                "properties", new Dictionary<string, object>
+                                                {
+                                                    {
+                                                        "album_name", new Dictionary<string, object>
+                                                        {
+                                                            { "type", "string" },
+                                                            { "description", "Name of the music album" }
+                                                        }
+                                                    },
+                                                    {
+                                                        "copies_sold", new Dictionary<string, object>
+                                                        {
+                                                            { "type", "integer" },
+                                                            { "description", "Number of copies sold" }
+                                                        }
+                                                    }
+                                                }
                                             }
                                         }
                                     }
@@ -115,7 +118,7 @@ public class ToolsFuncDescWithTxt
         //
         // [albums, [{"album_name": "Echoes of the Night", "copies_sold": 350000},
         // {"album_name": "Reckless Hearts", "copies_sold": 120000},
-        // {"copies_sold": 75000, "album_name": "Whispers of Dawn"},
+        // {"album_name": "Whispers of Dawn", "copies_sold": 75000},
         // {"album_name": "Street Symphony","copies_sold": 100000}]]
         return functionCall;
     }

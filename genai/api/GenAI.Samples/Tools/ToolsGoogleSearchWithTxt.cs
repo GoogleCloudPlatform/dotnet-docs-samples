@@ -42,7 +42,6 @@ public class ToolsGoogleSearchWithTxt
             {
                 Tools = new List<Tool>
                 {
-                    // Use Google Search Tool
                     new Tool { GoogleSearch = new GoogleSearch() }
                 }
             });

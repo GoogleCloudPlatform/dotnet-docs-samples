@@ -45,7 +45,6 @@ public class ToolsUrlContextWithTxt
             {
                 Tools = new List<Tool>
                 {
-                    // Use Url Context Tool
                     new Tool { UrlContext = new UrlContext() }
                 },
                 ResponseModalities = new List<string> { "TEXT" }

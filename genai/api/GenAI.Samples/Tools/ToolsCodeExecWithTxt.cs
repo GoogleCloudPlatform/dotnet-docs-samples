@@ -42,6 +42,9 @@ public class ToolsCodeExecWithTxt
             config: new GenerateContentConfig
             {
                 Tools = new List<Tool> { new Tool { CodeExecution = new ToolCodeExecution() } },
+                // The temperature controls the randomness of the output, ranging from 0.0 to 2.0.
+                // A temperature of 0 is more deterministic, meaning that the model can generate more focused and predictable responses.
+                // Higher temperatures can lead to less predictable and more creative responses.
                 Temperature = 0
             });
 
