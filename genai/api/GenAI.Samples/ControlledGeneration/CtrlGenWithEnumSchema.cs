@@ -39,11 +39,11 @@ public class CtrlGenWithEnumSchema
             contents: "What type of instrument is an oboe?",
             config: new GenerateContentConfig
             {
-                ResponseMimeType = "text/x.enum",
-                ResponseSchema = new Schema
+                ResponseMimeType = "application/json",
+                ResponseJsonSchema = new Dictionary<string, object>
                 {
-                    Type = Type.STRING,
-                    Enum = new List<string> { "Percussion", "String", "Woodwind", "Brass", "Keyboard" }
+                    { "type", "string" },
+                    { "enum", new List<string> { "Percussion", "String", "Woodwind", "Brass", "Keyboard" } }
                 }
             });
 
@@ -55,4 +55,3 @@ public class CtrlGenWithEnumSchema
     }
 }
 // [END googlegenaisdk_ctrlgen_with_enum_schema]
-
