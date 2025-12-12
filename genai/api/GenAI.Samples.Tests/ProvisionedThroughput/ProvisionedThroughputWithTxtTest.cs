@@ -32,7 +32,7 @@ public class ProvisionedThroughputWithTxtTest
     [Fact]
     public async Task TestProvisionedThroughputWithTxt()
     {
-        var response = await _sample.GenerateContent(_fixture.ProjectId);
+        var response = await _sample.GenerateContent(projectId: _fixture.ProjectId, throughputMode: "shared");
         Assert.NotEmpty(response);
     }
 }

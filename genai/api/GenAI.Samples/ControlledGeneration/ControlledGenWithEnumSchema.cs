@@ -21,7 +21,7 @@ using Google.GenAI.Types;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class CtrlGenWithEnumSchema
+public class ControlledGenWithEnumSchema
 {
     public async Task<string> GenerateContent(
         string projectId = "your-project-id",

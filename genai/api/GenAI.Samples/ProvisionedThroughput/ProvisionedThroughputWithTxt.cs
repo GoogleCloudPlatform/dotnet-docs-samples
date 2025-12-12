@@ -27,7 +27,8 @@ public class ProvisionedThroughputWithTxt
     public async Task<string> GenerateContent(
         string projectId = "your-project-id",
         string location = "us-central1",
-        string model = "gemini-2.5-flash")
+        string model = "gemini-2.5-flash",
+        string throughputMode = "dedicated")
     {
         await using var client = new Client(
             project: projectId,
@@ -36,11 +37,14 @@ public class ProvisionedThroughputWithTxt
             httpOptions: new HttpOptions
             {
                 ApiVersion = "v1",
-                // Options:
-                // - "dedicated": Use Provisioned Throughput
-                // - "shared": Use pay-as-you-go
-                // https://cloud.google.com/vertex-ai/generative-ai/docs/use-provisioned-throughput
-                Headers = new Dictionary<string, string> { { "X-Vertex-AI-LLM-Request-Type", "shared" } }
+                Headers = new Dictionary<string, string>
+                {
+                    // Options:
+                    // - "dedicated": Use Provisioned Throughput
+                    // - "shared": Use pay-as-you-go
+                    // https://cloud.google.com/vertex-ai/generative-ai/docs/use-provisioned-throughput
+                    { "X-Vertex-AI-LLM-Request-Type", throughputMode }
+                }
             });
 
         GenerateContentResponse response = await client.Models.GenerateContentAsync(model: model, contents: "How does AI work?");

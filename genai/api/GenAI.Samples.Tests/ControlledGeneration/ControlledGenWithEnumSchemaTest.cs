@@ -18,19 +18,19 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(GenAIFixture))]
-public class CtrlGenWithEnumSchemaTest
+public class ControlledGenWithEnumSchemaTest
 {
     private readonly GenAIFixture _fixture;
-    private readonly CtrlGenWithEnumSchema _sample;
+    private readonly ControlledGenWithEnumSchema _sample;
 
-    public CtrlGenWithEnumSchemaTest(GenAIFixture fixture)
+    public ControlledGenWithEnumSchemaTest(GenAIFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CtrlGenWithEnumSchema();
+        _sample = new ControlledGenWithEnumSchema();
     }
 
     [Fact]
-    public async Task TestCtrlGenWithEnumSchema()
+    public async Task TestControlledGenWithEnumSchema()
     {
         var response = await _sample.GenerateContent(_fixture.ProjectId);
         Assert.NotEmpty(response);
