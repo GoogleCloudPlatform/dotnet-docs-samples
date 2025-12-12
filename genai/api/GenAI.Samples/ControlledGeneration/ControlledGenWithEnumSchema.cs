@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-// [START googlegenaisdk_textgen_with_txt]
+// [START googlegenaisdk_ctrlgen_with_enum_schema]
 
 using Google.GenAI;
 using Google.GenAI.Types;
-using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class TextGenWithTxt
+public class ControlledGenWithEnumSchema
 {
     public async Task<string> GenerateContent(
         string projectId = "your-project-id",
@@ -34,14 +34,24 @@ public class TextGenWithTxt
             vertexAI: true,
             httpOptions: new HttpOptions { ApiVersion = "v1" });
 
-        GenerateContentResponse response = await client.Models.GenerateContentAsync(model: model, contents: "How does AI work?");
+        GenerateContentResponse response = await client.Models.GenerateContentAsync(
+            model: model,
+            contents: "What type of instrument is an oboe?",
+            config: new GenerateContentConfig
+            {
+                ResponseMimeType = "application/json",
+                ResponseJsonSchema = new Dictionary<string, object>
+                {
+                    { "type", "string" },
+                    { "enum", new List<string> { "Percussion", "String", "Woodwind", "Brass", "Keyboard" } }
+                }
+            });
 
         string responseText = response.Candidates[0].Content.Parts[0].Text;
-        Console.WriteLine(responseText);
+        System.Console.WriteLine(responseText);
         // Example response:
-        // AI, or Artificial Intelligence, at its core, is about creating machines that can perform...
-        // Here's a breakdown of how it generally works...
+        // Woodwind
         return responseText;
     }
 }
-// [END googlegenaisdk_textgen_with_txt]
+// [END googlegenaisdk_ctrlgen_with_enum_schema]

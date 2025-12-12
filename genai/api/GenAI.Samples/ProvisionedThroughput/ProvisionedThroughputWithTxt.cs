@@ -14,34 +14,49 @@
  * limitations under the License.
  */
 
-// [START googlegenaisdk_textgen_with_txt]
+// [START googlegenaisdk_provisionedthroughput_with_txt]
 
 using Google.GenAI;
 using Google.GenAI.Types;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-public class TextGenWithTxt
+public class ProvisionedThroughputWithTxt
 {
     public async Task<string> GenerateContent(
         string projectId = "your-project-id",
-        string location = "global",
-        string model = "gemini-2.5-flash")
+        string location = "us-central1",
+        string model = "gemini-2.5-flash",
+        string throughputMode = "dedicated")
     {
         await using var client = new Client(
             project: projectId,
             location: location,
             vertexAI: true,
-            httpOptions: new HttpOptions { ApiVersion = "v1" });
+            httpOptions: new HttpOptions
+            {
+                ApiVersion = "v1",
+                Headers = new Dictionary<string, string>
+                {
+                    // Options:
+                    // - "dedicated": Use Provisioned Throughput
+                    // - "shared": Use pay-as-you-go
+                    // https://cloud.google.com/vertex-ai/generative-ai/docs/use-provisioned-throughput
+                    { "X-Vertex-AI-LLM-Request-Type", throughputMode }
+                }
+            });
 
         GenerateContentResponse response = await client.Models.GenerateContentAsync(model: model, contents: "How does AI work?");
 
         string responseText = response.Candidates[0].Content.Parts[0].Text;
         Console.WriteLine(responseText);
         // Example response:
-        // AI, or Artificial Intelligence, at its core, is about creating machines that can perform...
-        // Here's a breakdown of how it generally works...
+        // At its core, **Artificial Intelligence (AI)** works by enabling machines to learn from data,
+        // identify patterns, and make decisions or predictions without being explicitly programmed for
+        // every possible scenario...
         return responseText;
     }
 }
-// [END googlegenaisdk_textgen_with_txt]
+// [END googlegenaisdk_provisionedthroughput_with_txt]
+
