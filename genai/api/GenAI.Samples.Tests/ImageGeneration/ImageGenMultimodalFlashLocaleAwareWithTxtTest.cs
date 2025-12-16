@@ -14,26 +14,27 @@
  * limitations under the License.
  */
 
-using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(GenAIFixture))]
-public class ImgGenMmFlashMultipleImgsWithTxtTest
+public class ImageGenMultimodalFlashLocaleAwareWithTxtTest
 {
     private readonly GenAIFixture _fixture;
-    private readonly ImgGenMmFlashMultipleImgsWithTxt _sample;
+    private readonly ImageGenMultimodalFlashLocaleAwareWithTxt _sample;
 
-    public ImgGenMmFlashMultipleImgsWithTxtTest(GenAIFixture fixture)
+    public ImageGenMultimodalFlashLocaleAwareWithTxtTest(GenAIFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ImgGenMmFlashMultipleImgsWithTxt();
+        _sample = new ImageGenMultimodalFlashLocaleAwareWithTxt();
     }
 
     [Fact]
-    public async Task TestImgGenMmFlashMultipleImgsWithTxt()
+    public async Task TestImgGenMmFlashLocaleAwareWithTxt()
     {
-        List<string> response = await _sample.GenerateContent(_fixture.ProjectId);
-        Assert.NotEmpty(response);
+        FileInfo response = await _sample.GenerateContent(_fixture.ProjectId);
+        Assert.NotNull(response);
+        Assert.True(response.Length > 0);
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START googlegenaisdk_imggen_mmflash_locale_aware_with_txt]
+// [START googlegenaisdk_imggen_mmflash_with_txt]
 
 using Google.GenAI;
 using Google.GenAI.Types;
@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-public class ImgGenMmFlashLocaleAwareWithTxt
+public class ImageGenMultimodalFlashWithTxt
 {
     public async Task<FileInfo> GenerateContent(
         string projectId = "your-project-id",
@@ -32,12 +32,27 @@ public class ImgGenMmFlashLocaleAwareWithTxt
     {
         await using var client = new Client(project: projectId, location: location, vertexAI: true);
 
+        var contentConfig = new GenerateContentConfig
+        {
+            ResponseModalities = new List<string> { "TEXT", "IMAGE" },
+            CandidateCount = 1,
+            SafetySettings = new List<SafetySetting>
+            {
+                new SafetySetting
+                {
+                    Method = HarmBlockMethod.PROBABILITY,
+                    Category = HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+                    Threshold = HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE
+                }
+            }
+        };
+
         GenerateContentResponse response = await client.Models.GenerateContentAsync(
             model: model,
-            contents: "Generate a photo of a breakfast meal.",
-            config: new GenerateContentConfig { ResponseModalities = new List<string> { "TEXT", "IMAGE" } });
+            contents: "Generate an image of the Eiffel tower with fireworks in the background.",
+            config: contentConfig);
 
-        var outputFilename = "example-breakfast-meal.png";
+        var outputFile = "example-image-eiffel-tower.png";
         FileInfo fileInfo = null;
 
         List<Part> parts = response.Candidates?[0]?.Content?.Parts ?? new List<Part>();
@@ -50,16 +65,16 @@ public class ImgGenMmFlashLocaleAwareWithTxt
             }
             else if (part.InlineData?.Data != null)
             {
-                File.WriteAllBytes(outputFilename, part.InlineData.Data);
-                fileInfo = new FileInfo(Path.GetFullPath(outputFilename));
+                File.WriteAllBytes(outputFile, part.InlineData.Data);
+                fileInfo = new FileInfo(Path.GetFullPath(outputFile));
                 Console.WriteLine($"Created output image using {fileInfo.Length} bytes");
             }
         }
         // Example response:
-        // Here's a photo of a breakfast meal:
-        //
-        // Created output image using 1369476 bytes
+        // Absolutely! Here's the Eiffel Tower with fireworks:
+        // 
+        // Created output image using 1897804 bytes
         return fileInfo;
     }
 }
-// [END googlegenaisdk_imggen_mmflash_locale_aware_with_txt]
+// [END googlegenaisdk_imggen_mmflash_with_txt]

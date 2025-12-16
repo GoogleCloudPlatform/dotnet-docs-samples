@@ -23,7 +23,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-public class ImgGenMmFlashMultipleImgsWithTxt
+public class ImageGenMultimodalFlashMultipleImgsWithTxt
 {
     public async Task<List<string>> GenerateContent(
         string projectId = "your-project-id",

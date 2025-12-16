@@ -19,19 +19,19 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(GenAIFixture))]
-public class ImgGenMmFlashLocaleAwareWithTxtTest
+public class ImageGenMultimodalFlashWithTxtTest
 {
     private readonly GenAIFixture _fixture;
-    private readonly ImgGenMmFlashLocaleAwareWithTxt _sample;
+    private readonly ImageGenMultimodalFlashWithTxt _sample;
 
-    public ImgGenMmFlashLocaleAwareWithTxtTest(GenAIFixture fixture)
+    public ImageGenMultimodalFlashWithTxtTest(GenAIFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ImgGenMmFlashLocaleAwareWithTxt();
+        _sample = new ImageGenMultimodalFlashWithTxt();
     }
 
     [Fact]
-    public async Task TestImgGenMmFlashLocaleAwareWithTxt()
+    public async Task TestImgGenMmFlashWithTxt()
     {
         FileInfo response = await _sample.GenerateContent(_fixture.ProjectId);
         Assert.NotNull(response);
