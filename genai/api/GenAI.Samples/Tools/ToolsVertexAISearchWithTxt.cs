@@ -35,7 +35,7 @@ public class ToolsVaisWithTxt
             vertexAI: true,
             httpOptions: new HttpOptions { ApiVersion = "v1" });
 
-        string datastore = "projects/{project-id}/locations/{location}/collections/default_collection/dataStores/{data-store-id}";
+        string datastore = "projects/{projectId}/locations/{location}/collections/default_collection/dataStores/{data-store-id}";
 
         List<Tool> tools = new List<Tool>
         {
