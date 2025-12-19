@@ -85,7 +85,7 @@ public class ToolsCodeExecWithTxtLocalImg
         {
             if (part.ExecutableCode != null)
             {
-                Console.WriteLine($"Code: \n{part.ExecutableCode}");
+                Console.WriteLine($"Executable code: \n{part.ExecutableCode}");
                 executableCode.Append(part.ExecutableCode);
             }
 
@@ -95,7 +95,7 @@ public class ToolsCodeExecWithTxtLocalImg
             }
         }
         // Example response:
-        // Code: 
+        // Executable code: 
         // ExecutableCode {
         //    Code = import random
         //    def run_monty_hall_trial(switch_doors):
