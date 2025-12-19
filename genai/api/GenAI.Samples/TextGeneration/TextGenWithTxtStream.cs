@@ -45,7 +45,7 @@ public class TextGenWithTxtStream
             Console.WriteLine(text);
             fullResponse.Append(text);
         }
-        // Example reponse:
+        // Example response:
         // The sky is blue primarily due to a phenomenon called **Rayleigh Scattering**.
         // Here's a breakdown:
         // ...
