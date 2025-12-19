@@ -48,7 +48,6 @@ public class ImageGenMultimodalFlashTxtAndImgWithTxt
             },
             config: new GenerateContentConfig { ResponseModalities = new List<string> { "TEXT", "IMAGE" } });
 
-        // Get parts of the response.
         List<Part> parts = response.Candidates?[0]?.Content?.Parts ?? new List<Part>();
 
         using (StreamWriter writer = new StreamWriter("paella-recipe.md"))

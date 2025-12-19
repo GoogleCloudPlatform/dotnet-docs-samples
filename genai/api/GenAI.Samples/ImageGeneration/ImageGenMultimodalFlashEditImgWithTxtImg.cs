@@ -33,7 +33,6 @@ public class ImageGenMultimodalFlashEditImgWithTxtImg
     {
         await using var client = new Client(project: projectId, location: location, vertexAI: true);
 
-        // Read local image content.
         byte[] imageBytes = File.ReadAllBytes(localImageFilePath);
 
         GenerateContentResponse response = await client.Models.GenerateContentAsync(
@@ -52,7 +51,6 @@ public class ImageGenMultimodalFlashEditImgWithTxtImg
             },
             config: new GenerateContentConfig { ResponseModalities = new List<string> { "TEXT", "IMAGE" } });
 
-        // Get parts of the response.
         List<Part> parts = response.Candidates?[0]?.Content?.Parts ?? new List<Part>();
 
         var outputFilename = "bw-example-image.png";
