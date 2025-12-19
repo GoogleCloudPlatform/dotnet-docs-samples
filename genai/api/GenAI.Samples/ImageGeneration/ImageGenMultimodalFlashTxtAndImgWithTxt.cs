@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-// [START googlegenaisdk_imggen_mmflash_edit_img_with_txt_img]
+// [START googlegenaisdk_imggen_mmflash_txt_and_img_with_txt]
 
 using Google.GenAI;
 using Google.GenAI.Types;
@@ -23,18 +23,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-public class ImgGenMmFlashEditImgWithTxtImg
+public class ImageGenMultimodalFlashTxtAndImgWithTxt
 {
     public async Task<FileInfo> GenerateContent(
         string projectId = "your-project-id",
         string location = "global",
-        string model = "gemini-2.5-flash-image",
-        string localImageFilePath = "path/to/local_image.png")
+        string model = "gemini-2.5-flash-image")
     {
         await using var client = new Client(project: projectId, location: location, vertexAI: true);
-
-        // Read local image content.
-        byte[] imageBytes = File.ReadAllBytes(localImageFilePath);
 
         GenerateContentResponse response = await client.Models.GenerateContentAsync(
             model: model,
@@ -45,8 +41,8 @@ public class ImgGenMmFlashEditImgWithTxtImg
                     Role= "user",
                     Parts = new List<Part>
                     {
-                        new Part { InlineData = new Blob { Data = imageBytes, MimeType = "image/png" } },
-                        new Part { Text = "Edit this image to make it look like a cartoon."}
+                        new Part { Text = "Generate an illustrated recipe for a paella." },
+                        new Part { Text = "Create images to go alongside the text as you generate the recipe."}
                     }
                 }
             },
@@ -55,26 +51,30 @@ public class ImgGenMmFlashEditImgWithTxtImg
         // Get parts of the response.
         List<Part> parts = response.Candidates?[0]?.Content?.Parts ?? new List<Part>();
 
-        var outputFilename = "bw-example-image.png";
-
-        foreach (Part part in parts)
+        using (StreamWriter writer = new StreamWriter("paella-recipe.md"))
         {
-            if (!string.IsNullOrEmpty(part.Text))
+            int imageCounter = 1;
+            foreach (Part part in parts)
             {
-                Console.WriteLine(part.Text);
-            }
-            else if (part.InlineData?.Data != null)
-            {
-                File.WriteAllBytes(outputFilename, part.InlineData.Data);
+                if (!string.IsNullOrEmpty(part.Text))
+                {
+                    writer.WriteLine(part.Text);
+                }
+                else if (part.InlineData?.Data != null)
+                {
+                    string filename = $"example-image-{imageCounter}.png";
+                    File.WriteAllBytes(filename, part.InlineData.Data);
+                    writer.WriteLine($"\n![image]({filename})\n");
+                    imageCounter++;
+                }
             }
         }
 
-        FileInfo fileInfo = new FileInfo(Path.GetFullPath(outputFilename));
+        FileInfo fileInfo = new FileInfo(Path.GetFullPath("paella-recipe.md"));
         Console.WriteLine($"Created output image using {fileInfo.Length} bytes");
         // Example response:
-        // Here's the image cartoonized for you! 
-        // Created output image using 1628165 bytes
+        // Created output image using 2329 bytes
         return fileInfo;
     }
 }
-// [END googlegenaisdk_imggen_mmflash_edit_img_with_txt_img]
+// [END googlegenaisdk_imggen_mmflash_txt_and_img_with_txt]

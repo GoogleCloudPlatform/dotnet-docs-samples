@@ -19,19 +19,19 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(GenAIFixture))]
-public class ImgGenMmFlashTxtAndImgWithTxtTest
+public class ImageGenMultimodalMmFlashTxtAndImgWithTxtTest
 {
     private readonly GenAIFixture _fixture;
-    private readonly ImgGenMmFlashTxtAndImgWithTxt _sample;
+    private readonly ImageGenMultimodalFlashTxtAndImgWithTxt _sample;
 
-    public ImgGenMmFlashTxtAndImgWithTxtTest(GenAIFixture fixture)
+    public ImageGenMultimodalMmFlashTxtAndImgWithTxtTest(GenAIFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ImgGenMmFlashTxtAndImgWithTxt();
+        _sample = new ImageGenMultimodalFlashTxtAndImgWithTxt();
     }
 
     [Fact]
-    public async Task TestImgGenMmFlashTxtAndImgWithTxt()
+    public async Task TestImageGenMultimodalFlashTxtAndImgWithTxt()
     {
         FileInfo response = await _sample.GenerateContent(_fixture.ProjectId);
         Assert.NotNull(response);

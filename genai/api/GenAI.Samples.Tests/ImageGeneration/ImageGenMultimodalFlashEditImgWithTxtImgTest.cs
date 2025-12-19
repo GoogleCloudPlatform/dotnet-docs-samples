@@ -19,19 +19,19 @@ using System.Threading.Tasks;
 using Xunit;
 
 [Collection(nameof(GenAIFixture))]
-public class ImgGenMmFlashEditImgWithTxtImgTest
+public class ImageGenMultimodalFlashEditImgWithTxtImgTest
 {
     private readonly GenAIFixture _fixture;
-    private readonly ImgGenMmFlashEditImgWithTxtImg _sample;
+    private readonly ImageGenMultimodalFlashEditImgWithTxtImg _sample;
 
-    public ImgGenMmFlashEditImgWithTxtImgTest(GenAIFixture fixture)
+    public ImageGenMultimodalFlashEditImgWithTxtImgTest(GenAIFixture fixture)
     {
         _fixture = fixture;
-        _sample = new ImgGenMmFlashEditImgWithTxtImg();
+        _sample = new ImageGenMultimodalFlashEditImgWithTxtImg();
     }
 
     [Fact]
-    public async Task TestImgGenMmFlashEditImgWithTxtImg()
+    public async Task TestImageGenMultimodalFlashEditImgWithTxtImg()
     {
         string imageFilePath = Path.GetFullPath("../../../Resources/example-image-eiffel-tower.png");
         FileInfo response = await _sample.GenerateContent(projectId: _fixture.ProjectId, localImageFilePath: imageFilePath);
