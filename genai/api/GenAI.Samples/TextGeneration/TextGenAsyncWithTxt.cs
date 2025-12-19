@@ -42,7 +42,7 @@ public class TextGenAsyncWithTxt
 
         string responseText = response.Candidates[0].Content.Parts[0].Text;
         Console.WriteLine(responseText);
-        // Example reponse:
+        // Example response:
         // (Verse 1)
         // In an old oak tree, lived a squirrel named Scurry,
         // His life was quite normal, no reason to hurry.
