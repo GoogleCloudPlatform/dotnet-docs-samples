@@ -39,8 +39,8 @@ public class ToolsGoogleSearchAndUrlContextWithTxt
 
         GenerateContentResponse response = await client.Models.GenerateContentAsync(
             model: model,
-            contents: $"Give me three day events schedule based on {url}. Also let me know" +
-            $" what needs to be taken care of considering weather and commute",
+            contents: $"Give me three day events schedule based on {url}." +
+            " Also let me know what needs to be taken care of considering weather and commute",
             config: new GenerateContentConfig
             {
                 Tools = new List<Tool>
