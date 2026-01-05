@@ -32,7 +32,7 @@ public class MoveObjectSample
     {
         var storage = StorageClient.Create();
         storage.MoveObject(sourceBucketName, sourceObjectName, destinationObjectName);
-        Console.WriteLine($"Moved {sourceBucketName}/{sourceObjectName} to " + $"{sourceBucketName}/{destinationObjectName} within a bucket.");
+        Console.WriteLine($"Moved {sourceBucketName}/{sourceObjectName} to {sourceBucketName}/{destinationObjectName} within a bucket.");
     }
 }
 // [END storage_move_object]
