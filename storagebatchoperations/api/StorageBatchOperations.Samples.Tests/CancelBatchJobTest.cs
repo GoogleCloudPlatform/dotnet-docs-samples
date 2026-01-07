@@ -65,7 +65,7 @@ public class CancelBatchJobTest
 
         RetryRobot robot = new RetryRobot()
         {
-            MaxTryCount = 20,
+            MaxTryCount = 5,
             ShouldRetry = (e) => true,
         };
 
@@ -96,7 +96,7 @@ public class CancelBatchJobTest
 
         RetryRobot robot = new RetryRobot()
         {
-            MaxTryCount = 20,
+            MaxTryCount = 5,
             ShouldRetry = (e) => true,
         };
 
@@ -118,7 +118,7 @@ public class CancelBatchJobTest
         Operation<Job, OperationMetadata> retrievedResponse = storageBatchClient.PollOnceCreateJob(operationName);
         // Poll once asynchronously.
         Task<Operation<Job, OperationMetadata>> retrievedAsyncResponse = retrievedResponse.PollOnceAsync();
-        string jobName = robot.Eventually(() => retrievedAsyncResponse.Result.Metadata.Job.Name);
+        string jobName = robot.Eventually(() => retrievedAsyncResponse?.Result?.Metadata?.Job?.Name ?? throw new InvalidOperationException("Job Name is Null"));
         return jobName;
     }
 }
