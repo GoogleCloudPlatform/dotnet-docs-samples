@@ -31,8 +31,8 @@ can use [this older sample](
     At a Powershell  prompt, type:
 
     ```ps1
-    PS > gsutil mb gs://<your-project-id>
-    PS > gsutil defacl set public-read gs://<your-project-id>
+    PS > gcloud storage buckets create gs://<your-project-id>
+    PS > gcloud storage buckets update --predefined-default-object-acl=public-read gs://<your-project-id>
     ```
 
 6.  ```ps1
