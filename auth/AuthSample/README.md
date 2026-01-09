@@ -32,7 +32,7 @@ can use [this older sample](
 
     ```ps1
     PS > gcloud storage buckets create gs://<your-project-id>
-    PS > gcloud storage buckets update --predefined-default-object-acl=public-read gs://<your-project-id>
+    PS > gcloud storage buckets update --predefined-default-object-acl=publicRead gs://<your-project-id>
     ```
 
 6.  ```ps1
