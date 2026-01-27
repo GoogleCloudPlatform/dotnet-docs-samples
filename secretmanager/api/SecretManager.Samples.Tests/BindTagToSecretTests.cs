@@ -144,27 +144,12 @@ public class BindTagsToSecretTests
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
         // string secretId = _fixture.RandomId();
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
-        await _sample.BindTagsToSecretAsync(
+        TagBinding tagBinding = await _sample.BindTagsToSecretAsync(
             projectId: secretName.ProjectId,
             secretId: secretName.SecretId,
             tagValue: _tagValueName);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Verify the result
-
-        Assert.Contains($"Created secret: ", consoleOutput);
-        Assert.Contains($"Created Tag Binding", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        Assert.Equal(_tagValueName, tagBinding.TagValue);
 
         _fixture.DeleteSecret(secretName);
         CleanupResources();

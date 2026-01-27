@@ -17,6 +17,7 @@
 using Google.Cloud.ResourceManager.V3;
 using Google.Cloud.SecretManager.V1;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Xunit;
@@ -165,26 +166,15 @@ public class ListTagBindingsTests
             secretId: secretName.SecretId,
             tagValue: _tagValueName);
 
-        // Capture console output for the list operation
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
+        IList<TagBinding> tagBindings = new List<TagBinding>();
 
         // Call the method being tested
-        _listSample.ListTagBindings(
+        tagBindings = _listSample.ListTagBindings(
             projectId: secretName.ProjectId,
             secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Verify the output contains expected information
-        Assert.Contains(secretName.SecretId, consoleOutput);
-        Assert.Contains($"- Tag Value: {_tagValueName}", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        Assert.Single(tagBindings);
+        Assert.Equal(_tagValueName, tagBindings[0].TagValue);
 
         // Clean up all resources
         CleanupResources();

@@ -23,7 +23,7 @@ using System.Threading.Tasks;
 
 public class DetachTagSample
 {
-    public async Task DetachTagAsync(
+    public async Task<string> DetachTagAsync(
         string projectId = "my-project",
         string secretId = "my-secret",
         string tagValue = "tagValues/123456789012")
@@ -61,7 +61,7 @@ public class DetachTagSample
         if (bindingName == null)
         {
             Console.WriteLine($"Tag binding for value {tagValue} not found on {secretName}.");
-            return;
+            return "";
         }
 
         // Delete the tag binding
@@ -75,6 +75,7 @@ public class DetachTagSample
         await operation.PollUntilCompletedAsync();
 
         Console.WriteLine($"Detached tag value {tagValue} from {secretName}");
+        return bindingName;
     }
 }
 // [END secretmanager_detach_tag]

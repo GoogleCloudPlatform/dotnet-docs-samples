@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 public class BindTagsToSecretSample
 {
-    public async Task BindTagsToSecretAsync(
+    public async Task<TagBinding> BindTagsToSecretAsync(
         string projectId = "my-project",
         string secretId = "my-secret",
         string tagValue = "tagValues/123456789012")
@@ -66,9 +66,10 @@ public class BindTagsToSecretSample
         // Create the tag binding and wait for the operation to complete.
         var operation = await resourceManagerClient.CreateTagBindingAsync(tagBinding);
         await operation.PollUntilCompletedAsync();
+        TagBinding tagBindingResult = operation.Result;
 
         Console.WriteLine($"Created Tag Binding: {secret.Name}");
-
+        return tagBindingResult;
     }
 }
 // [END secretmanager_bind_tags_to_secret]

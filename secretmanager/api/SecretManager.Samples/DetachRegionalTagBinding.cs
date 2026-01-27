@@ -24,7 +24,7 @@ using System.Threading.Tasks;
 
 public class DetachTagFromRegionalSecretSample
 {
-    public async Task DetachTagFromRegionalSecretAsync(
+    public async Task<string> DetachTagFromRegionalSecretAsync(
         string projectId = "my-project",
         string locationId = "us-central1",
         string secretId = "my-secret",
@@ -65,7 +65,7 @@ public class DetachTagFromRegionalSecretSample
         if (bindingToDelete == null)
         {
             Console.WriteLine($"No tag binding found for tag value {tagValue} on {name}");
-            return;
+            return "";
         }
 
         // Create the delete request
@@ -79,7 +79,7 @@ public class DetachTagFromRegionalSecretSample
         await operation.PollUntilCompletedAsync();
 
         Console.WriteLine($"Detached tag value {tagValue} from {name}");
-
+        return bindingToDelete.Name;
     }
 }
 // [END secretmanager_detach_tag_from_regional_secret]

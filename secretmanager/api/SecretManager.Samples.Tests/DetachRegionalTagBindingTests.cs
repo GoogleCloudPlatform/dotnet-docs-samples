@@ -131,11 +131,6 @@ public class DetachTagFromRegionalSecretTests
 
         SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
-
         // Create a regional secret and bind the tag to it
         await _bindSample.BindTagsToRegionalSecretAsync(
             projectId: secretName.ProjectId,
@@ -143,26 +138,23 @@ public class DetachTagFromRegionalSecretTests
             secretId: secretName.SecretId,
             tagValue: _tagValueName);
 
-        // Clear the console output from binding
-        sw.GetStringBuilder().Clear();
 
         // Detach the tag
-        await _detachSample.DetachTagFromRegionalSecretAsync(
+        string bindingName = await _detachSample.DetachTagFromRegionalSecretAsync(
             projectId: secretName.ProjectId,
             locationId: secretName.LocationId,
             secretId: secretName.SecretId,
             tagValue: _tagValueName);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
+        Assert.NotEmpty(bindingName);
 
-        // Verify the result
-        Assert.Contains($"Detached tag value {_tagValueName}", consoleOutput);
+        bindingName = await _detachSample.DetachTagFromRegionalSecretAsync(
+            projectId: secretName.ProjectId,
+            locationId: secretName.LocationId,
+            secretId: secretName.SecretId,
+            tagValue: _tagValueName);
 
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        Assert.Empty(bindingName);
 
         // Clean up all resources
         _fixture.DeleteSecret(secretName);

@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 public class BindTagsToRegionalSecretSample
 {
 
-    public async Task BindTagsToRegionalSecretAsync(
+    public async Task<TagBinding> BindTagsToRegionalSecretAsync(
         string projectId = "my-project",
         string locationId = "us-central1",
         string secretId = "my-secret",
@@ -73,10 +73,11 @@ public class BindTagsToRegionalSecretSample
 
         // Wait for the operation to complete
         await operation.PollUntilCompletedAsync();
+        TagBinding tagBinding = operation.Result;
 
         // Print the tag binding.
         Console.WriteLine($"Created tag binding: {createdSecret.Name}");
-
+        return tagBinding;
     }
 }
 // [END secretmanager_bind_tags_to_regional_secret]

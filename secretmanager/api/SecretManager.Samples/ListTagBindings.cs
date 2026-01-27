@@ -19,10 +19,11 @@
 using Google.Cloud.ResourceManager.V3;
 using Google.Cloud.SecretManager.V1;
 using System;
+using System.Collections.Generic;
 
 public class ListTagBindingsSample
 {
-    public void ListTagBindings(
+    public IList<TagBinding> ListTagBindings(
         string projectId = "my-project",
         string secretId = "my-secret")
     {
@@ -46,16 +47,19 @@ public class ListTagBindingsSample
         bool foundBindings = false;
 
         Console.WriteLine($"Tag bindings for {secretName}:");
+        List<TagBinding> tagBindings = new List<TagBinding>();
         foreach (var binding in bindings)
         {
             Console.WriteLine($"- Tag Value: {binding.TagValue}");
             foundBindings = true;
+            tagBindings.Add(binding);
         }
 
         if (!foundBindings)
         {
             Console.WriteLine($"No tag bindings found for {secretName}.");
         }
+        return tagBindings;
     }
 }
 // [END secretmanager_list_tag_bindings]

@@ -25,7 +25,7 @@ using System.Threading.Tasks;
 
 public class ListRegionalSecretTagBindingsSample
 {
-    public void ListRegionalSecretTagBindings(
+    public List<TagBinding> ListRegionalSecretTagBindings(
         string projectId = "my-project",
         string locationId = "us-central1",
         string secretId = "my-regional-secret")
@@ -54,18 +54,20 @@ public class ListRegionalSecretTagBindingsSample
             Parent = parent
         };
 
+        List<TagBinding> tagBindings = new List<TagBinding>();
         // Iterate through the results
         foreach (var binding in tagBindingsClient.ListTagBindings(request))
         {
             Console.WriteLine($"- Tag Value: {binding.TagValue}");
             foundBindings = true;
+            tagBindings.Add(binding);
         }
 
         if (!foundBindings)
         {
             Console.WriteLine($"No tag bindings found for {name}.");
         }
-
+        return tagBindings;
     }
 }
 // [END secretmanager_list_regional_secret_tag_bindings]

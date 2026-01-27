@@ -133,10 +133,6 @@ public class ListRegionalTagBindingsTests
 
         SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
 
-        // Capture console output for the list operation
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Create a regional secret and bind the first tag to it
         await _bindSample.BindTagsToRegionalSecretAsync(
             projectId: secretName.ProjectId,
@@ -145,22 +141,13 @@ public class ListRegionalTagBindingsTests
             tagValue: _tagValueName);
 
         // Call the method being tested
-        _listSample.ListRegionalSecretTagBindings(
+        List<TagBinding> tagBindings = _listSample.ListRegionalSecretTagBindings(
             projectId: secretName.ProjectId,
             locationId: secretName.LocationId,
             secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Verify the output contains expected information
-        Assert.Contains(secretName.SecretId, consoleOutput);
-        Assert.Contains($"- Tag Value: {_tagValueName}", consoleOutput);
-
-        //// Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        Assert.Single(tagBindings);
+        Assert.Equal(_tagValueName, tagBindings[0].TagValue);
 
         // Clean up all resources
         _fixture.DeleteSecret(secretName);

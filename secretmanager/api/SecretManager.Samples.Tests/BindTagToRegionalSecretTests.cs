@@ -144,29 +144,14 @@ public class BindTagsToRegionalSecretTests
 
         SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Call the method being tested
-        await _sample.BindTagsToRegionalSecretAsync(
+        TagBinding tagBinding = await _sample.BindTagsToRegionalSecretAsync(
             projectId: secretName.ProjectId,
             locationId: secretName.LocationId,
             secretId: secretName.SecretId,
             tagValue: _tagValueName);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Check console output
-        Assert.Contains($"Created regional secret:", consoleOutput);
-        Assert.Contains($"Created tag binding:", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.Equal(_tagValueName, tagBinding.TagValue);
         // Clean up all resources
         _fixture.DeleteSecret(secretName);
         CleanupResources();

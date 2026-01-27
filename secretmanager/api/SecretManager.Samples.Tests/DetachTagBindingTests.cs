@@ -17,6 +17,7 @@
 using Google.Cloud.ResourceManager.V3;
 using Google.Cloud.SecretManager.V1;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,6 +32,7 @@ public class DetachTagTests
     private readonly TagKeysClient _tagKeysClient;
     private readonly TagValuesClient _tagValuesClient;
     private readonly TagBindingsClient _tagBindingsClient;
+    private readonly ListTagBindingsSample _listSample;
     private string _tagKeyName;
     private string _tagValueName;
     private string _tagBindingName;
@@ -162,22 +164,19 @@ public class DetachTagTests
         Console.SetOut(sw);
 
         // Call the method being tested
-        await _detachSample.DetachTagAsync(
+        string bindingName = await _detachSample.DetachTagAsync(
             projectId: secretName.ProjectId,
             secretId: secretName.SecretId,
             tagValue: _tagValueName);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
+        Assert.NotEmpty(bindingName);
 
-        // Verify the output contains expected message
-        Assert.Contains($"Detached tag value {_tagValueName} from {secretName}", consoleOutput);
+        bindingName = await _detachSample.DetachTagAsync(
+            projectId: secretName.ProjectId,
+            secretId: secretName.SecretId,
+            tagValue: _tagValueName);
 
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.Empty(bindingName);
         // Clean up all resources
         CleanupResources();
 
