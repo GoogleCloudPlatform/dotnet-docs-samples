@@ -45,25 +45,20 @@ public class ListSecretVersionsWithFilterTests
         SecretVersion secretVersion = _fixture.AddSecretVersion(secret);
         _fixture.DisableSecretVersion(secretVersion);
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Run the sample code
-        _sample.ListSecretVersionsWithFilter(
-            projectId: secretName.ProjectId,
-            secretId: secretName.SecretId);
+        IList<SecretVersion> versions = _sample.ListSecretVersionsWithFilter(
+             projectId: secretName.ProjectId,
+             secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
+        // Verify we got results
+        Assert.NotNull(versions);
+        Assert.NotEmpty(versions);
 
-        // Assert that the output contains the expected message
-        Assert.Contains($"Found secret version", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        // Verify only disabled versions are returned
+        foreach (var version in versions)
+        {
+            Assert.Equal(SecretVersion.Types.State.Disabled, version.State);
+        }
 
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);

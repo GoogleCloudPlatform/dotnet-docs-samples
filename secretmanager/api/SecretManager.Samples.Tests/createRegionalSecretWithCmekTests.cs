@@ -43,27 +43,14 @@ public class CreateRegionalSecretWithCmekTests
         // Get the SecretName from the set ProjectId & LocationId.
         SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Create the regional secret with CMEK.
-        _sample.CreateRegionalSecretWithCmek(
+        Secret result = _sample.CreateRegionalSecretWithCmek(
             projectId: secretName.ProjectId,
             locationId: secretName.LocationId,
             secretId: secretName.SecretId,
             kmsKeyName: _fixture.KmsKeyName);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected message
-        Assert.Contains($"Created secret ", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        Assert.Equal(result.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
 
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);

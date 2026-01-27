@@ -18,10 +18,11 @@
 
 using Google.Cloud.SecretManager.V1;
 using System;
+using System.Collections.Generic;
 
 public class ListSecretVersionsWithFilterSample
 {
-    public void ListSecretVersionsWithFilter(
+    public IList<SecretVersion> ListSecretVersionsWithFilter(
         string projectId = "my-project",
         string secretId = "my-secret"
         )
@@ -40,11 +41,14 @@ public class ListSecretVersionsWithFilterSample
             Filter = filterStr
         };
 
+        List<SecretVersion> secretVersions = new List<SecretVersion>();
         // List all secret versions with the provided filter.
         foreach (SecretVersion version in client.ListSecretVersions(request))
         {
             Console.WriteLine($"Found secret version: {version.Name}");
+            secretVersions.Add(version);
         }
+        return secretVersions;
     }
 }
 // [END secretmanager_list_secret_versions_with_filter]

@@ -22,7 +22,7 @@ using System;
 
 public class CreateSecretWithCmekSample
 {
-    public void CreateSecretWithCmek(
+    public Secret CreateSecretWithCmek(
         string projectId = "my-project",
         string secretId = "my-secret",
         string kmsKeyName = "projects/my-project/locations/global/keyRings/my-keyring/cryptoKeys/my-key")
@@ -53,6 +53,7 @@ public class CreateSecretWithCmekSample
 
         // Print information about the created secret.
         Console.WriteLine($"Created secret {createdSecret.Name} with CMEK key {kmsKeyName}");
+        return createdSecret;
     }
 }
 // [END secretmanager_create_secret_with_cmek]

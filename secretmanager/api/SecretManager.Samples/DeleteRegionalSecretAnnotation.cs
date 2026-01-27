@@ -22,7 +22,7 @@ using System;
 
 public class DeleteRegionalSecretAnnotationSample
 {
-    public void DeleteRegionalSecretAnnotation(
+    public Secret DeleteRegionalSecretAnnotation(
         string projectId = "my-project",
         string locationId = "my-location",
         string secretId = "my-secret")
@@ -50,6 +50,7 @@ public class DeleteRegionalSecretAnnotationSample
 
         // Print the new secret name.
         Console.WriteLine($"Updated secret: {updatedSecret.Name}");
+        return updatedSecret;
     }
 }
 // [END secretmanager_delete_regional_secret_annotation]

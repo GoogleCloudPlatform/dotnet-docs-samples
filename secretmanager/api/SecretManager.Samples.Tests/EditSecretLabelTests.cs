@@ -37,23 +37,10 @@ public class EditSecretLabelTests
         // Get the SecretName to create Secret.
         SecretName secretName = _fixture.Secret.SecretName;
 
-
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Call the code sample function.
-        _sample.EditSecretLabel(
+        Secret result = _sample.EditSecretLabel(
           projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        Assert.Contains($"Updated secret: ", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        Assert.Equal("my-label-value", result.Labels["my-label-key"]);
     }
 }

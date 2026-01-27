@@ -22,7 +22,7 @@ using System;
 
 public class CreateRegionalSecretWithCmekSample
 {
-    public void CreateRegionalSecretWithCmek(
+    public Secret CreateRegionalSecretWithCmek(
         string projectId = "my-project",
         string locationId = "us-central1",
         string secretId = "my-secret",
@@ -51,6 +51,7 @@ public class CreateRegionalSecretWithCmekSample
 
         // Print information about the created secret.
         Console.WriteLine($"Created secret {createdSecret.Name} with CMEK key {kmsKeyName}");
+        return createdSecret;
     }
 }
 // [END secretmanager_create_regional_secret_with_cmek]
