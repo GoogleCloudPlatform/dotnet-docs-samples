@@ -40,23 +40,11 @@ public class DeleteSecretAnnotationTests
         // Get the secretName from the created secret.
         SecretName secretName = secret.SecretName;
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Call the code sample function to delete the label
-        _sample.DeleteSecretAnnotation(
+        Secret result = _sample.DeleteSecretAnnotation(
           projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected message
-        Assert.Contains("Updated secret:", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        // Assert that the label is deleted.
+        Assert.Empty(result.Annotations);
     }
 }
