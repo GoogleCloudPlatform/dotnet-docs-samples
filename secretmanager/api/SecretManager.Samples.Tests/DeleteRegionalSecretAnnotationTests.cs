@@ -45,26 +45,13 @@ public class DeleteRegionalSecretAnnotationTests
         Assert.NotEmpty(secret.Annotations);
         Assert.True(secret.Annotations.ContainsKey(annotationKey));
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Run the sample code to delete the annotation
-        _sample.DeleteRegionalSecretAnnotation(
+        Secret result = _sample.DeleteRegionalSecretAnnotation(
             projectId: secretName.ProjectId,
             locationId: secretName.LocationId,
             secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected messages
-        Assert.Contains($"Updated secret:", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        Assert.Empty(result.Annotations);
 
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);

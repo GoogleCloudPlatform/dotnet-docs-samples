@@ -40,28 +40,14 @@ public class DeleteRegionalSecretLabelTests
         // Verify the secret has labels
         Assert.NotEmpty(secret.Labels);
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Run the sample code to delete all labels
-        _sample.DeleteRegionalSecretLabel(
+        Secret result = _sample.DeleteRegionalSecretLabel(
 
             projectId: secretName.ProjectId,
             locationId: secretName.LocationId,
             secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected messages
-        Assert.Contains($"Updated secret:", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.Empty(result.Labels);
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }
