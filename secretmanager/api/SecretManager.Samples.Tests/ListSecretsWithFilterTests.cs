@@ -19,6 +19,7 @@ using System.IO;
 using System.Collections.Generic;
 using Xunit;
 using Google.Cloud.SecretManager.V1;
+using System.Linq;
 
 [Collection(nameof(SecretManagerFixture))]
 public class ListSecretsWithFilterTests
@@ -37,24 +38,19 @@ public class ListSecretsWithFilterTests
     {
         Secret secret = _fixture.CreateSecret(_fixture.RandomId());
         SecretName secretName = secret.SecretName;
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
 
-        // Run the sample code
-        _sample.ListSecretsWithFilter(
-            projectId: _fixture.ProjectId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
+        IList<Secret> secrets = _sample.ListSecretsWithFilter(
+                    projectId: _fixture.ProjectId);
 
-        // Assert that the output contains the created secret
-        Assert.Contains(secretName.ToString(), consoleOutput);
+        // Verify we got results
+        Assert.NotNull(secrets);
+        Assert.NotEmpty(secrets);
 
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        // Verify our specific secret is in the results
+        bool foundSecret = secrets.Any(s => s.SecretName.SecretId == secretName.SecretId);
+        Assert.True(foundSecret, $"The secret {secretName.SecretId} with label my-label-key=my-label-value should be in the results");
+
         _fixture.DeleteSecret(secretName);
     }
 }

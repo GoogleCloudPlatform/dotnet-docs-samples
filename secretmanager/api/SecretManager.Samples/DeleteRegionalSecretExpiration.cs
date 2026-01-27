@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-// [START secretmanager_create_regional_secret_with_cmek]
+// [START secretmanager_delete_regional_secret_expiration]
 
-using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
-public class CreateRegionalSecretWithCmekSample
+public class DeleteRegionalSecretExpirationSample
 {
-    public Secret CreateRegionalSecretWithCmek(
+    public Secret DeleteRegionalSecretExpiration(
         string projectId = "my-project",
-        string locationId = "us-central1",
         string secretId = "my-secret",
-        string kmsKeyName = "projects/my-project/locations/us-central1/keyRings/my-keyring/cryptoKeys/my-key")
+        string locationId = "us-central1")
     {
         // Create the Regional Secret Manager Client.
         SecretManagerServiceClient client = new SecretManagerServiceClientBuilder
@@ -34,24 +33,23 @@ public class CreateRegionalSecretWithCmekSample
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
         }.Build();
 
-        // Build the parent resource name.
-        LocationName location = new LocationName(projectId, locationId);
+        // Build the secret name
+        SecretName secretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId);
 
-        // Build the secret with CMEK.
+        // Build the secret with no ExpireTime set (which will clear it)
         Secret secret = new Secret
         {
-            CustomerManagedEncryption = new CustomerManagedEncryption
-            {
-                KmsKeyName = kmsKeyName
-            }
+            SecretName = secretName,
         };
 
-        // Call the API.
-        Secret createdSecret = client.CreateSecret(location, secretId, secret);
+        // Build the field mask for the fields to update
+        FieldMask updateMask = new FieldMask { Paths = { "expire_time" } };
 
-        // Print information about the created secret.
-        Console.WriteLine($"Created secret {createdSecret.Name} with CMEK key {kmsKeyName}");
-        return createdSecret;
+        // Update the secret to remove the expiration time
+        Secret updatedSecret = client.UpdateSecret(secret, updateMask);
+
+        Console.WriteLine($"Removed expiration from secret {updatedSecret.SecretName}");
+        return updatedSecret;
     }
 }
-// [END secretmanager_create_regional_secret_with_cmek]
+// [END secretmanager_delete_regional_secret_expiration]

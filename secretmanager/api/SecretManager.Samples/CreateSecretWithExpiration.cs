@@ -14,46 +14,44 @@
  * limitations under the License.
  */
 
-// [START secretmanager_create_secret_with_cmek]
+// [START secretmanager_create_secret_with_expiration]
 
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
-public class CreateSecretWithCmekSample
+public class CreateSecretWithExpirationSample
 {
-    public Secret CreateSecretWithCmek(
-        string projectId = "my-project",
-        string secretId = "my-secret",
-        string kmsKeyName = "projects/my-project/locations/global/keyRings/my-keyring/cryptoKeys/my-key")
+    public Secret CreateSecretWithExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiry")
     {
+        // Calculate expiration time (1 hour from now)
+        DateTime expireTime = DateTime.UtcNow.AddHours(1);
+
         // Create the client.
         SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
         // Build the parent resource name.
         ProjectName projectName = new ProjectName(projectId);
 
-        // Build the secret with automatic replication and CMEK.
+        // Convert DateTime to Timestamp
+        Timestamp timestamp = Timestamp.FromDateTime(expireTime.ToUniversalTime());
+
+        // Build the secret with automatic replication and expiration time.
         Secret secret = new Secret
         {
             Replication = new Replication
             {
-                Automatic = new Replication.Types.Automatic
-                {
-                    CustomerManagedEncryption = new CustomerManagedEncryption
-                    {
-                        KmsKeyName = kmsKeyName
-                    }
-                }
-            }
+                Automatic = new Replication.Types.Automatic(),
+            },
+            ExpireTime = timestamp
         };
 
         // Call the API.
         Secret createdSecret = client.CreateSecret(projectName, secretId, secret);
 
-        // Print information about the created secret.
-        Console.WriteLine($"Created secret {createdSecret.Name} with CMEK key {kmsKeyName}");
+        Console.WriteLine($"Created secret {createdSecret.SecretName} with expiration time {expireTime}");
         return createdSecret;
     }
 }
-// [END secretmanager_create_secret_with_cmek]
+// [END secretmanager_create_secret_with_expiration]

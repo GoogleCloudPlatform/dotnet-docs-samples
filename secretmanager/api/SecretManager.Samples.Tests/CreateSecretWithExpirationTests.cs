@@ -15,43 +15,35 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.IO;
 using Xunit;
 
 [Collection(nameof(SecretManagerFixture))]
-public class CreateSecretWithCmekTests
+public class CreateSecretWithExpirationTests
 {
     private readonly SecretManagerFixture _fixture;
-    private readonly CreateSecretWithCmekSample _sample;
+    private readonly CreateSecretWithExpirationSample _sample;
 
-    public CreateSecretWithCmekTests(SecretManagerFixture fixture)
+    public CreateSecretWithExpirationTests(SecretManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateSecretWithCmekSample();
+        _sample = new CreateSecretWithExpirationSample();
     }
 
     [Fact]
-    public void CreatesSecretWithCmek()
+    public void CreatesSecretsWithExpiration()
     {
-        // Skip the test if no KMS key is available
-        if (string.IsNullOrEmpty(_fixture.KmsKeyName))
-        {
-            return;
-        }
-
         // Get the SecretName to create Secret.
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
 
-        // Create the secret with CMEK.
-        Secret result = _sample.CreateSecretWithCmek(
-            projectId: secretName.ProjectId,
-            secretId: secretName.SecretId,
-            kmsKeyName: _fixture.KmsKeyName);
+        // Create the secret with expiration.
+        Secret result = _sample.CreateSecretWithExpiration(
+          projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        Assert.Equal(result.Replication.Automatic.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
+        Assert.NotEmpty(result.ExpireTime.ToString());
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
-
     }
 }

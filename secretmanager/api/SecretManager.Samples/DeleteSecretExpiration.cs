@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-// [START secretmanager_delete_secret_label]
+// [START secretmanager_delete_secret_expiration]
 
 using Google.Cloud.SecretManager.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-public class DeleteSecretLabelSample
+public class DeleteSecretExpirationSample
 {
-    public Secret DeleteSecretLabel(
-      string projectId = "my-project", string secretId = "my-secret")
+    public Secret DeleteSecretExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiration")
     {
         // Create the client.
         SecretManagerServiceClient client = SecretManagerServiceClient.Create();
@@ -31,21 +30,21 @@ public class DeleteSecretLabelSample
         // Build the resource name of the secret.
         SecretName secretName = new SecretName(projectId, secretId);
 
-        // Get the secret.
-        Secret secret = client.GetSecret(secretName);
+        // Create the secret with the expire_time field explicitly set to null
+        Secret secret = new Secret
+        {
+            SecretName = secretName,
+            // ExpireTime is not set, which will clear it
+        };
 
-        // Clear all labels
-        secret.Labels.Clear();
+        // Create the update mask for the fields to update
+        FieldMask updateMask = new FieldMask { Paths = { "expire_time" } };
 
-        // Build the field mask.
-        FieldMask updateMask = FieldMask.FromString("labels");
-
-        // Update the secret.
+        // Update the secret
         Secret updatedSecret = client.UpdateSecret(secret, updateMask);
 
-        // Print the new secret name.
-        Console.WriteLine($"Updated secret: {updatedSecret.Name}");
+        Console.WriteLine($"Removed expiration from secret {updatedSecret.SecretName}");
         return updatedSecret;
     }
 }
-// [END secretmanager_delete_secret_label]
+// [END secretmanager_delete_secret_expiration]

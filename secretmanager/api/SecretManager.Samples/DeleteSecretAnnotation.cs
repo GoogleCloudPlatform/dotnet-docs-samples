@@ -22,7 +22,7 @@ using System;
 
 public class DeleteSecretAnnotationSample
 {
-    public void DeleteSecretAnnotation(
+    public Secret DeleteSecretAnnotation(
       string projectId = "my-project", string secretId = "my-secret")
     {
         // Create the client.
@@ -45,6 +45,7 @@ public class DeleteSecretAnnotationSample
 
         // Print the new secret name.
         Console.WriteLine($"Updated secret: {updatedSecret.Name}");
+        return updatedSecret;
     }
 }
 // [END secretmanager_delete_secret_annotation]

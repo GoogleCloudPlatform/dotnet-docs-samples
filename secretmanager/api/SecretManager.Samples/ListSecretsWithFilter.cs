@@ -19,10 +19,11 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.SecretManager.V1;
 using System;
+using System.Collections.Generic;
 
 public class ListSecretsWithFilterSample
 {
-    public void ListSecretsWithFilter(string projectId = "my-project")
+    public IList<Secret> ListSecretsWithFilter(string projectId = "my-project")
     {
         string filterStr = "labels.my-label-key=my-label-value";
         // Create the Secret Manager client.
@@ -36,12 +37,17 @@ public class ListSecretsWithFilterSample
             Filter = filterStr
         };
 
+        // Create a list to hold the secrets
+        List<Secret> secrets = new List<Secret>();
 
         // List all secrets with the provided filter.
         foreach (Secret secret in client.ListSecrets(request))
         {
             Console.WriteLine($"Found secret: {secret.Name}");
+            secrets.Add(secret);
         }
+
+        return secrets;
     }
 }
 // [END secretmanager_list_secrets_with_filter]

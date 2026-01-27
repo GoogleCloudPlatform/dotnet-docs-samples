@@ -15,40 +15,36 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+using Google.Protobuf.WellKnownTypes;
 using System;
 using System.IO;
 using Xunit;
 
 [Collection(nameof(RegionalSecretManagerFixture))]
-public class DeleteRegionalSecretLabelTests
+public class DeleteRegionalSecretExpirationTests
 {
     private readonly RegionalSecretManagerFixture _fixture;
-    private readonly DeleteRegionalSecretLabelSample _sample;
+    private readonly DeleteRegionalSecretExpirationSample _deleteSample;
 
-    public DeleteRegionalSecretLabelTests(RegionalSecretManagerFixture fixture)
+    public DeleteRegionalSecretExpirationTests(RegionalSecretManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new DeleteRegionalSecretLabelSample();
+        _deleteSample = new DeleteRegionalSecretExpirationSample();
     }
 
     [Fact]
-    public void DeleteRegionalSecretLabel()
+    public void DeletesRegionalSecretExpiration()
     {
-        Secret secret = _fixture.CreateSecret(_fixture.RandomId());
-        SecretName secretName = secret.SecretName;
+        Secret initialSecret = _fixture.CreateSecretWithExpireTime();
 
-        // Verify the secret has labels
-        Assert.NotEmpty(secret.Labels);
+        // Delete the expiration time
+        Secret result = _deleteSample.DeleteRegionalSecretExpiration(
+            projectId: initialSecret.SecretName.ProjectId,
+            secretId: initialSecret.SecretName.SecretId,
+            locationId: initialSecret.SecretName.LocationId);
 
-        // Run the sample code to delete all labels
-        Secret result = _sample.DeleteRegionalSecretLabel(
-
-            projectId: secretName.ProjectId,
-            locationId: secretName.LocationId,
-            secretId: secretName.SecretId);
-
-        Assert.Empty(result.Labels);
-        // Clean the created secret.
-        _fixture.DeleteSecret(secretName);
+        Assert.Null(result.ExpireTime);
+        // Clean the created secret
+        _fixture.DeleteSecret(initialSecret.SecretName);
     }
 }

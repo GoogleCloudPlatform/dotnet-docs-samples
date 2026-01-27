@@ -19,39 +19,33 @@ using System;
 using System.IO;
 using Xunit;
 
-[Collection(nameof(SecretManagerFixture))]
-public class CreateSecretWithCmekTests
+[Collection(nameof(RegionalSecretManagerFixture))]
+public class CreateRegionalSecretWithExpireTimeTests
 {
-    private readonly SecretManagerFixture _fixture;
-    private readonly CreateSecretWithCmekSample _sample;
+    private readonly RegionalSecretManagerFixture _fixture;
+    private readonly CreateRegionalSecretWithExpireTimeSample _sample;
 
-    public CreateSecretWithCmekTests(SecretManagerFixture fixture)
+    public CreateRegionalSecretWithExpireTimeTests(RegionalSecretManagerFixture fixture)
     {
         _fixture = fixture;
-        _sample = new CreateSecretWithCmekSample();
+        _sample = new CreateRegionalSecretWithExpireTimeSample();
     }
 
     [Fact]
-    public void CreatesSecretWithCmek()
+    public void CreatesRegionalSecretWithExpireTime()
     {
-        // Skip the test if no KMS key is available
-        if (string.IsNullOrEmpty(_fixture.KmsKeyName))
-        {
-            return;
-        }
+        // Get the SecretName from the set ProjectId & LocationId.
+        SecretName secretName = SecretName.FromProjectLocationSecret(
+            _fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
 
-        // Get the SecretName to create Secret.
-        SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
-
-        // Create the secret with CMEK.
-        Secret result = _sample.CreateSecretWithCmek(
+        // Run the code sample.
+        Secret result = _sample.CreateRegionalSecretWithExpireTime(
             projectId: secretName.ProjectId,
             secretId: secretName.SecretId,
-            kmsKeyName: _fixture.KmsKeyName);
+            locationId: secretName.LocationId);
 
-        Assert.Equal(result.Replication.Automatic.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
+        Assert.NotEmpty(result.ExpireTime.ToString());
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
-
     }
 }

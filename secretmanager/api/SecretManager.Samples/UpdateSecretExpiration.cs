@@ -14,38 +14,43 @@
  * limitations under the License.
  */
 
-// [START secretmanager_delete_secret_label]
+// [START secretmanager_update_secret_expiration]
 
 using Google.Cloud.SecretManager.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-public class DeleteSecretLabelSample
+public class UpdateSecretExpirationSample
 {
-    public Secret DeleteSecretLabel(
-      string projectId = "my-project", string secretId = "my-secret")
+    public Secret UpdateSecretExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiration")
     {
+        // Calculate new expiration time (2 hours from now)
+        DateTime newExpireTime = DateTime.UtcNow.AddHours(2);
+
         // Create the client.
         SecretManagerServiceClient client = SecretManagerServiceClient.Create();
 
         // Build the resource name of the secret.
         SecretName secretName = new SecretName(projectId, secretId);
 
-        // Get the secret.
-        Secret secret = client.GetSecret(secretName);
+        // Convert DateTime to Timestamp
+        Timestamp timestamp = Timestamp.FromDateTime(newExpireTime);
 
-        // Clear all labels
-        secret.Labels.Clear();
+        // Create the secret to update with the new expiration time
+        Secret secret = new Secret
+        {
+            SecretName = secretName,
+            ExpireTime = timestamp
+        };
 
-        // Build the field mask.
-        FieldMask updateMask = FieldMask.FromString("labels");
+        // Create the update mask for the fields to update
+        FieldMask updateMask = new FieldMask { Paths = { "expire_time" } };
 
-        // Update the secret.
+        // Update the secret
         Secret updatedSecret = client.UpdateSecret(secret, updateMask);
 
-        // Print the new secret name.
-        Console.WriteLine($"Updated secret: {updatedSecret.Name}");
+        Console.WriteLine($"Updated secret {updatedSecret.SecretName} expiration time to {newExpireTime}");
         return updatedSecret;
     }
 }
-// [END secretmanager_delete_secret_label]
+// [END secretmanager_update_secret_expiration]
