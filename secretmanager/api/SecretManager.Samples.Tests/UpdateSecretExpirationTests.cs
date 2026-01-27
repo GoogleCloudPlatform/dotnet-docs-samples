@@ -35,28 +35,24 @@ public class UpdateSecretExpirationTests
     [Fact]
     public void UpdatesSecretExpiration()
     {
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
 
         // Create a new secret with no expiration time
         Secret secret = _fixture.CreateSecretWithExpiration();
 
         // Update the secret with an expiration time
-        _sample.UpdateSecretExpiration(
+        Secret result = _sample.UpdateSecretExpiration(
             projectId: secret.SecretName.ProjectId,
             secretId: secret.SecretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
+        int expectedTime = DateTime.UtcNow.AddHours(2).Second;
+        int actualTime = result.ExpireTime.ToDateTime().Second;
 
-        // Assert that the output contains the expected message
-        Assert.Contains($"Updated secret", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
+        // Allow for a small time difference (e.g., 30 seconds) due to test execution
+        int timeDifference = actualTime - expectedTime;
+        Assert.True(
+            Math.Abs(timeDifference) < 30,
+            $"Expected expiration time around {expectedTime}, but got {actualTime}"
+        );
 
         // Clean up the created secret
         _fixture.DeleteSecret(secret.SecretName);

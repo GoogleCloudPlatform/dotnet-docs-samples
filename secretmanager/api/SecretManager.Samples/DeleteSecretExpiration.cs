@@ -22,7 +22,7 @@ using System;
 
 public class DeleteSecretExpirationSample
 {
-    public void DeleteSecretExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiration")
+    public Secret DeleteSecretExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiration")
     {
         // Create the client.
         SecretManagerServiceClient client = SecretManagerServiceClient.Create();
@@ -44,6 +44,7 @@ public class DeleteSecretExpirationSample
         Secret updatedSecret = client.UpdateSecret(secret, updateMask);
 
         Console.WriteLine($"Removed expiration from secret {updatedSecret.SecretName}");
+        return updatedSecret;
     }
 }
 // [END secretmanager_delete_secret_expiration]

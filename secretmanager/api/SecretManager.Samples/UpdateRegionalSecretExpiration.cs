@@ -22,7 +22,7 @@ using System;
 
 public class UpdateRegionalSecretExpirationSample
 {
-    public void UpdateRegionalSecretExpiration(
+    public Secret UpdateRegionalSecretExpiration(
         string projectId = "my-project",
         string secretId = "my-secret",
         string locationId = "us-central1")
@@ -56,6 +56,7 @@ public class UpdateRegionalSecretExpirationSample
         Secret updatedSecret = client.UpdateSecret(secret, updateMask);
 
         Console.WriteLine($"Updated secret {updatedSecret.SecretName} expiration time to {newExpireTime}");
+        return updatedSecret;
     }
 }
 // [END secretmanager_update_regional_secret_expiration]

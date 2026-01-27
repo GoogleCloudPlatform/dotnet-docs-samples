@@ -35,28 +35,14 @@ public class CreateSecretWithExpirationTests
     [Fact]
     public void CreatesSecretsWithExpiration()
     {
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Get the SecretName to create Secret.
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
 
         // Create the secret with expiration.
-        _sample.CreateSecretWithExpiration(
+        Secret result = _sample.CreateSecretWithExpiration(
           projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected message
-        Assert.Contains($"Created secret", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.NotEmpty(result.ExpireTime.ToString());
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }

@@ -23,7 +23,7 @@ using System;
 
 public class CreateRegionalSecretWithExpireTimeSample
 {
-    public void CreateRegionalSecretWithExpireTime(
+    public Secret CreateRegionalSecretWithExpireTime(
         string projectId = "my-project",
         string secretId = "my-secret-with-expiry",
         string locationId = "us-central1")
@@ -53,7 +53,7 @@ public class CreateRegionalSecretWithExpireTimeSample
         Secret createdSecret = client.CreateSecret(location, secretId, secret);
 
         Console.WriteLine($"Created secret {createdSecret.SecretName} with expiration time {expireTime}");
-
+        return createdSecret;
     }
 }
 // [END secretmanager_create_regional_secret_with_expire_time]

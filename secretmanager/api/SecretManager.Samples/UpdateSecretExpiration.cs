@@ -22,7 +22,7 @@ using System;
 
 public class UpdateSecretExpirationSample
 {
-    public void UpdateSecretExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiration")
+    public Secret UpdateSecretExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiration")
     {
         // Calculate new expiration time (2 hours from now)
         DateTime newExpireTime = DateTime.UtcNow.AddHours(2);
@@ -50,6 +50,7 @@ public class UpdateSecretExpirationSample
         Secret updatedSecret = client.UpdateSecret(secret, updateMask);
 
         Console.WriteLine($"Updated secret {updatedSecret.SecretName} expiration time to {newExpireTime}");
+        return updatedSecret;
     }
 }
 // [END secretmanager_update_secret_expiration]

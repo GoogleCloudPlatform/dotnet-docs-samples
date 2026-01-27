@@ -34,32 +34,17 @@ public class CreateRegionalSecretWithExpireTimeTests
     [Fact]
     public void CreatesRegionalSecretWithExpireTime()
     {
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Get the SecretName from the set ProjectId & LocationId.
         SecretName secretName = SecretName.FromProjectLocationSecret(
             _fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
 
         // Run the code sample.
-        _sample.CreateRegionalSecretWithExpireTime(
+        Secret result = _sample.CreateRegionalSecretWithExpireTime(
             projectId: secretName.ProjectId,
             secretId: secretName.SecretId,
             locationId: secretName.LocationId);
 
-
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected message
-        Assert.Contains($"Created secret", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.NotEmpty(result.ExpireTime.ToString());
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }

@@ -37,27 +37,13 @@ public class DeleteRegionalSecretExpirationTests
     {
         Secret initialSecret = _fixture.CreateSecretWithExpireTime();
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Delete the expiration time
-        _deleteSample.DeleteRegionalSecretExpiration(
+        Secret result = _deleteSample.DeleteRegionalSecretExpiration(
             projectId: initialSecret.SecretName.ProjectId,
             secretId: initialSecret.SecretName.SecretId,
             locationId: initialSecret.SecretName.LocationId);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected message
-        Assert.Contains($"Removed expiration from secret", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.Null(result.ExpireTime);
         // Clean the created secret
         _fixture.DeleteSecret(initialSecret.SecretName);
     }

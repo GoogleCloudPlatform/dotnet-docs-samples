@@ -35,9 +35,6 @@ public class DeleteSecretExpirationTests
     [Fact]
     public void DeletesSecretExpiration()
     {
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
 
         // Get the SecretName to create Secret.
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
@@ -46,19 +43,10 @@ public class DeleteSecretExpirationTests
         Secret secret = _fixture.CreateSecretWithExpiration();
 
         // Delete the expiration time
-        _deleteSample.DeleteSecretExpiration(
+        Secret result = _deleteSample.DeleteSecretExpiration(
             projectId: secret.SecretName.ProjectId, secretId: secret.SecretName.SecretId);
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
 
-        // Assert that the output contains the expected message
-        Assert.Contains($"Removed expiration from secret", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.Null(result.ExpireTime);
         // Clean up the created secret
         _fixture.DeleteSecret(secretName);
     }

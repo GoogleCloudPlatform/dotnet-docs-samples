@@ -23,7 +23,7 @@ using System;
 
 public class CreateSecretWithExpirationSample
 {
-    public void CreateSecretWithExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiry")
+    public Secret CreateSecretWithExpiration(string projectId = "my-project", string secretId = "my-secret-with-expiry")
     {
         // Calculate expiration time (1 hour from now)
         DateTime expireTime = DateTime.UtcNow.AddHours(1);
@@ -51,6 +51,7 @@ public class CreateSecretWithExpirationSample
         Secret createdSecret = client.CreateSecret(projectName, secretId, secret);
 
         Console.WriteLine($"Created secret {createdSecret.SecretName} with expiration time {expireTime}");
+        return createdSecret;
     }
 }
 // [END secretmanager_create_secret_with_expiration]

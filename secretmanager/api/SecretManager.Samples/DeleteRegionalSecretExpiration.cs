@@ -22,8 +22,7 @@ using System;
 
 public class DeleteRegionalSecretExpirationSample
 {
-
-    public void DeleteRegionalSecretExpiration(
+    public Secret DeleteRegionalSecretExpiration(
         string projectId = "my-project",
         string secretId = "my-secret",
         string locationId = "us-central1")
@@ -50,7 +49,7 @@ public class DeleteRegionalSecretExpirationSample
         Secret updatedSecret = client.UpdateSecret(secret, updateMask);
 
         Console.WriteLine($"Removed expiration from secret {updatedSecret.SecretName}");
-
+        return updatedSecret;
     }
 }
 // [END secretmanager_delete_regional_secret_expiration]
