@@ -43,27 +43,13 @@ public class CreateSecretWithCmekTests
         // Get the SecretName to create Secret.
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
 
-        // Capture console output
-        StringWriter sw = new StringWriter();
-        Console.SetOut(sw);
-
         // Create the secret with CMEK.
-        _sample.CreateSecretWithCmek(
+        Secret result = _sample.CreateSecretWithCmek(
             projectId: secretName.ProjectId,
             secretId: secretName.SecretId,
             kmsKeyName: _fixture.KmsKeyName);
 
-        // Get the console output
-        string consoleOutput = sw.ToString().Trim();
-
-        // Assert that the output contains the expected message
-        Assert.Contains($"Created secret", consoleOutput);
-
-        // Reset console
-        var standardOutput = new StreamWriter(Console.OpenStandardOutput());
-        standardOutput.AutoFlush = true;
-        Console.SetOut(standardOutput);
-
+        Assert.Equal(result.Replication.Automatic.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
 
