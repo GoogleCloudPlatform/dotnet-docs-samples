@@ -113,6 +113,21 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         return Client.CreateSecret(locationName, RandomId(), secret);
     }
 
+    public Secret CreateSecretWithExpireTime()
+    {
+        LocationName locationName = new LocationName(ProjectId, LocationId);
+
+        DateTime expireTime = DateTime.UtcNow.AddHours(1);
+        Timestamp timestamp = Timestamp.FromDateTime(expireTime);
+
+        Secret secret = new Secret
+        {
+            ExpireTime = timestamp
+        };
+
+        return Client.CreateSecret(locationName, RandomId(), secret);
+    }
+
     public SecretVersion AddSecretVersion(Secret secret)
     {
         SecretPayload payload = new SecretPayload

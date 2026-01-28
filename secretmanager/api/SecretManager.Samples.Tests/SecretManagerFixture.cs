@@ -117,6 +117,24 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
         return Client.CreateSecret(ProjectName, RandomId(), secret);
     }
 
+    public Secret CreateSecretWithExpiration()
+    {
+        DateTime expireTime = DateTime.UtcNow.AddHours(1);
+        Timestamp timestamp = Timestamp.FromDateTime(expireTime.ToUniversalTime());
+
+        // Build the secret with automatic replication and expiration time.
+        Secret secret = new Secret
+        {
+            Replication = new Replication
+            {
+                Automatic = new Replication.Types.Automatic(),
+            },
+            ExpireTime = timestamp
+        };
+
+        return Client.CreateSecret(ProjectName, RandomId(), secret);
+    }
+
     public SecretVersion AddSecretVersion(Secret secret)
     {
         SecretPayload payload = new SecretPayload
