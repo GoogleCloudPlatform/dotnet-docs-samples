@@ -34,7 +34,7 @@ public class DeleteRegionalSecretAnnotationSample
         }.Build();
 
         // Build the resource name of the secret.
-        string secretName = $"projects/{projectId}/locations/{locationId}/secrets/{secretId}";
+        SecretName secretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId);
 
         // Get the secret.
         Secret secret = client.GetSecret(secretName);

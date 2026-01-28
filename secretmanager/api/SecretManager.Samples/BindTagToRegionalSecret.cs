@@ -76,7 +76,7 @@ public class BindTagsToRegionalSecretSample
         TagBinding tagBinding = operation.Result;
 
         // Print the tag binding.
-        Console.WriteLine($"Created tag binding: {createdSecret.Name}");
+        Console.WriteLine($"Created tag binding: {tagBinding.Name}");
         return tagBinding;
     }
 }

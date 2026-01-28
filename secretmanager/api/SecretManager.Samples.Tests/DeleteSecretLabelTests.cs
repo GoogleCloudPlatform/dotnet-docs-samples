@@ -39,12 +39,20 @@ public class DeleteSecretLabelTests
 
         // Get the secretName from the created secret.
         SecretName secretName = secret.SecretName;
+        try
+        {
+            Assert.NotEmpty(secret.Labels);
+            // Call the code sample function to delete the label
+            Secret result = _sample.DeleteSecretLabel(
+              projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        // Call the code sample function to delete the label
-        Secret result = _sample.DeleteSecretLabel(
-          projectId: secretName.ProjectId, secretId: secretName.SecretId);
-
-        // Assert that the label is deleted.
-        Assert.Empty(result.Labels);
+            // Assert that the label is deleted.
+            Assert.Empty(result.Labels);
+        }
+        finally
+        {
+            // Clean the created secret.
+            _fixture.DeleteSecret(secretName);
+        }
     }
 }

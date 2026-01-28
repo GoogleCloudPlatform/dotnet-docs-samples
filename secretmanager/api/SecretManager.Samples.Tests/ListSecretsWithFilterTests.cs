@@ -38,19 +38,22 @@ public class ListSecretsWithFilterTests
     {
         Secret secret = _fixture.CreateSecret(_fixture.RandomId());
         SecretName secretName = secret.SecretName;
+        try
+        {
+            IList<Secret> secrets = _sample.ListSecretsWithFilter(
+                        projectId: _fixture.ProjectId);
 
+            // Verify we got results
+            Assert.NotNull(secrets);
+            Assert.NotEmpty(secrets);
 
-        IList<Secret> secrets = _sample.ListSecretsWithFilter(
-                    projectId: _fixture.ProjectId);
-
-        // Verify we got results
-        Assert.NotNull(secrets);
-        Assert.NotEmpty(secrets);
-
-        // Verify our specific secret is in the results
-        bool foundSecret = secrets.Any(s => s.SecretName.SecretId == secretName.SecretId);
-        Assert.True(foundSecret, $"The secret {secretName.SecretId} with label my-label-key=my-label-value should be in the results");
-
-        _fixture.DeleteSecret(secretName);
+            // Verify our specific secret is in the results
+            bool foundSecret = secrets.Any(s => s.SecretName.SecretId == secretName.SecretId);
+            Assert.True(foundSecret, $"The secret {secretName.SecretId} with label my-label-key=my-label-value should be in the results");
+        }
+        finally
+        {
+            _fixture.DeleteSecret(secretName);
+        }
     }
 }
