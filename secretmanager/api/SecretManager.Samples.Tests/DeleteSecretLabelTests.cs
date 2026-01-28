@@ -41,6 +41,7 @@ public class DeleteSecretLabelTests
         SecretName secretName = secret.SecretName;
         try
         {
+            Assert.NotEmpty(secret.Labels);
             // Call the code sample function to delete the label
             Secret result = _sample.DeleteSecretLabel(
               projectId: secretName.ProjectId, secretId: secretName.SecretId);
