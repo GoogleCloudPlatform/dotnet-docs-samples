@@ -15,6 +15,7 @@
  */
 
 using Google.Cloud.SecretManager.V1;
+using Microsoft.VisualBasic;
 using System;
 using System.IO;
 using Xunit;
@@ -42,16 +43,21 @@ public class CreateSecretWithCmekTests
 
         // Get the SecretName to create Secret.
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
+        try
+        {
+            // Create the secret with CMEK.
+            Secret result = _sample.CreateSecretWithCmek(
+                projectId: secretName.ProjectId,
+                secretId: secretName.SecretId,
+                kmsKeyName: _fixture.KmsKeyName);
 
-        // Create the secret with CMEK.
-        Secret result = _sample.CreateSecretWithCmek(
-            projectId: secretName.ProjectId,
-            secretId: secretName.SecretId,
-            kmsKeyName: _fixture.KmsKeyName);
-
-        Assert.Equal(result.Replication.Automatic.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
-        // Clean the created secret.
-        _fixture.DeleteSecret(secretName);
+            Assert.Equal(result.Replication.Automatic.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
+        }
+        finally
+        {
+            // Clean the created secret.
+            _fixture.DeleteSecret(secretName);
+        }
 
     }
 }

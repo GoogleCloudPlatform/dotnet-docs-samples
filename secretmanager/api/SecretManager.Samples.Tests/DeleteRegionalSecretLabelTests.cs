@@ -36,19 +36,24 @@ public class DeleteRegionalSecretLabelTests
     {
         Secret secret = _fixture.CreateSecret(_fixture.RandomId());
         SecretName secretName = secret.SecretName;
+        try
+        {
+            // Verify the secret has labels
+            Assert.NotEmpty(secret.Labels);
 
-        // Verify the secret has labels
-        Assert.NotEmpty(secret.Labels);
+            // Run the sample code to delete all labels
+            Secret result = _sample.DeleteRegionalSecretLabel(
 
-        // Run the sample code to delete all labels
-        Secret result = _sample.DeleteRegionalSecretLabel(
+                projectId: secretName.ProjectId,
+                locationId: secretName.LocationId,
+                secretId: secretName.SecretId);
 
-            projectId: secretName.ProjectId,
-            locationId: secretName.LocationId,
-            secretId: secretName.SecretId);
-
-        Assert.Empty(result.Labels);
-        // Clean the created secret.
-        _fixture.DeleteSecret(secretName);
+            Assert.Empty(result.Labels);
+        }
+        finally
+        {
+            // Clean the created secret.
+            _fixture.DeleteSecret(secretName);
+        }
     }
 }
