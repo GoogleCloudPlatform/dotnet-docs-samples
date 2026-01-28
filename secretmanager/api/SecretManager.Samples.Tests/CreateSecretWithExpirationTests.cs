@@ -33,7 +33,7 @@ public class CreateSecretWithExpirationTests
     }
 
     [Fact]
-    public void CreatesSecretsWithExpiration()
+    public void CreatesSecretWithExpiration()
     {
         // Get the SecretName to create Secret.
         SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
@@ -42,7 +42,7 @@ public class CreateSecretWithExpirationTests
         Secret result = _sample.CreateSecretWithExpiration(
           projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        Assert.NotEmpty(result.ExpireTime.ToString());
+        Assert.NotNull(result.ExpireTime);
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }

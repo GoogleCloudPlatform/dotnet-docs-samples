@@ -44,7 +44,7 @@ public class CreateRegionalSecretWithExpireTimeTests
             secretId: secretName.SecretId,
             locationId: secretName.LocationId);
 
-        Assert.NotEmpty(result.ExpireTime.ToString());
+        Assert.NotNull(result.ExpireTime);
         // Clean the created secret.
         _fixture.DeleteSecret(secretName);
     }
