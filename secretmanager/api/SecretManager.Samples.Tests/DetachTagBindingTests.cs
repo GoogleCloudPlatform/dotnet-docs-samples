@@ -35,8 +35,6 @@ public class DetachTagTests
     private readonly ListTagBindingsSample _listSample;
     private string _tagKeyName;
     private string _tagValueName;
-    private string _tagBindingName;
-    private string _secretId;
 
     public DetachTagTests(SecretManagerFixture fixture)
     {
@@ -71,7 +69,7 @@ public class DetachTagTests
         }
         catch (Exception e)
         {
-            throw new Exception($"Error creating tag key: {e.Message}");
+            throw new Exception("Error creating tag key: " + e.Message, e);
         }
 
         var createValueRequest = new CreateTagValueRequest
@@ -91,26 +89,12 @@ public class DetachTagTests
         }
         catch (Exception e)
         {
-            throw new Exception($"Error creating tag value: {e.Message}");
+            throw new Exception("Error creating tag value: " + e.Message, e);
         }
     }
 
     private void CleanupResources()
     {
-        // Delete the secret that was created
-        if (!string.IsNullOrEmpty(_secretId))
-        {
-            try
-            {
-                SecretManagerServiceClient secretClient = SecretManagerServiceClient.Create();
-                secretClient.DeleteSecret(new SecretName(_fixture.ProjectId, _secretId));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error deleting secret: {e.Message}");
-            }
-        }
-
         // Delete the tag value if it exists
         if (!string.IsNullOrEmpty(_tagValueName))
         {
@@ -121,7 +105,7 @@ public class DetachTagTests
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error deleting tag value: {e.Message}");
+                Console.WriteLine($"Error deleting tag value: {e.GetType().Name}: {e.Message}");
             }
         }
 
@@ -135,7 +119,7 @@ public class DetachTagTests
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error deleting tag key: {e.Message}");
+                Console.WriteLine($"Error deleting tag key: {e.GetType().Name}: {e.Message}");
             }
         }
     }
@@ -178,6 +162,7 @@ public class DetachTagTests
 
         Assert.Empty(bindingName);
         // Clean up all resources
+        _fixture.DeleteSecret(secretName);
         CleanupResources();
 
     }
