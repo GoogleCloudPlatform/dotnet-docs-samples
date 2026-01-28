@@ -38,23 +38,26 @@ public class UpdateSecretExpirationTests
 
         // Create a new secret with no expiration time
         Secret secret = _fixture.CreateSecretWithExpiration();
+        try
+        {
+            // Update the secret with an expiration time
+            Secret result = _sample.UpdateSecretExpiration(
+                projectId: secret.SecretName.ProjectId,
+                secretId: secret.SecretName.SecretId);
 
-        // Update the secret with an expiration time
-        Secret result = _sample.UpdateSecretExpiration(
-            projectId: secret.SecretName.ProjectId,
-            secretId: secret.SecretName.SecretId);
+            DateTime expectedTime = DateTime.UtcNow.AddHours(2);
+            DateTime actualTime = result.ExpireTime.ToDateTime();
 
-        int expectedTime = DateTime.UtcNow.AddHours(2).Second;
-        int actualTime = result.ExpireTime.ToDateTime().Second;
-
-        // Allow for a small time difference (e.g., 30 seconds) due to test execution
-        int timeDifference = actualTime - expectedTime;
-        Assert.True(
-            Math.Abs(timeDifference) < 30,
-            $"Expected expiration time around {expectedTime}, but got {actualTime}"
-        );
-
-        // Clean up the created secret
-        _fixture.DeleteSecret(secret.SecretName);
+            // Allow for a small time difference (e.g., 30 seconds) due to test execution
+            Assert.True(
+                (actualTime - expectedTime).Duration() < TimeSpan.FromSeconds(60),
+                $"Expected expiration time around {expectedTime}, but got {actualTime}"
+            );
+        }
+        finally
+        {
+            // Clean up the created secret
+            _fixture.DeleteSecret(secret.SecretName);
+        }
     }
 }

@@ -37,23 +37,27 @@ public class UpdateRegionalSecretExpirationTests
 
         // First, create a secret with initial expiration time (1 hour)
         Secret initialSecret = _fixture.CreateSecretWithExpireTime();
+        try
+        {
+            // Update the secret to have a 2-hour expiration
+            Secret result = _updateSample.UpdateRegionalSecretExpiration(
+                projectId: initialSecret.SecretName.ProjectId,
+                secretId: initialSecret.SecretName.SecretId,
+                locationId: initialSecret.SecretName.LocationId);
 
-        // Update the secret to have a 2-hour expiration
-        Secret result = _updateSample.UpdateRegionalSecretExpiration(
-            projectId: initialSecret.SecretName.ProjectId,
-            secretId: initialSecret.SecretName.SecretId,
-            locationId: initialSecret.SecretName.LocationId);
+            DateTime expectedTime = DateTime.UtcNow.AddHours(2);
+            DateTime actualTime = result.ExpireTime.ToDateTime();
 
-        int expectedTime = DateTime.UtcNow.AddHours(2).Second;
-        int actualTime = result.ExpireTime.ToDateTime().Second;
-
-        // Allow for a small time difference (e.g., 30 seconds) due to test execution
-        int timeDifference = actualTime - expectedTime;
-        Assert.True(
-            Math.Abs(timeDifference) < 30,
-            $"Expected expiration time around {expectedTime}, but got {actualTime}"
-        );
-        // Clean the created secret
-        _fixture.DeleteSecret(initialSecret.SecretName);
+            // Allow for a small time difference (e.g., 30 seconds) due to test execution
+            Assert.True(
+                (actualTime - expectedTime).Duration() < TimeSpan.FromSeconds(60),
+                $"Expected expiration time around {expectedTime}, but got {actualTime}"
+            );
+        }
+        finally
+        {
+            // Clean the created secret
+            _fixture.DeleteSecret(initialSecret.SecretName);
+        }
     }
 }

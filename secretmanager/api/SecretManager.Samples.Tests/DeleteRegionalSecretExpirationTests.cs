@@ -36,15 +36,20 @@ public class DeleteRegionalSecretExpirationTests
     public void DeletesRegionalSecretExpiration()
     {
         Secret initialSecret = _fixture.CreateSecretWithExpireTime();
+        try
+        {
+            // Delete the expiration time
+            Secret result = _deleteSample.DeleteRegionalSecretExpiration(
+                projectId: initialSecret.SecretName.ProjectId,
+                secretId: initialSecret.SecretName.SecretId,
+                locationId: initialSecret.SecretName.LocationId);
 
-        // Delete the expiration time
-        Secret result = _deleteSample.DeleteRegionalSecretExpiration(
-            projectId: initialSecret.SecretName.ProjectId,
-            secretId: initialSecret.SecretName.SecretId,
-            locationId: initialSecret.SecretName.LocationId);
-
-        Assert.Null(result.ExpireTime);
-        // Clean the created secret
-        _fixture.DeleteSecret(initialSecret.SecretName);
+            Assert.Null(result.ExpireTime);
+        }
+        finally
+        {
+            // Clean the created secret
+            _fixture.DeleteSecret(initialSecret.SecretName);
+        }
     }
 }

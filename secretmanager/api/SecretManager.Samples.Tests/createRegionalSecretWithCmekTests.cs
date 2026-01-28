@@ -42,18 +42,21 @@ public class CreateRegionalSecretWithCmekTests
 
         // Get the SecretName from the set ProjectId & LocationId.
         SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
+        try
+        {
+            // Create the regional secret with CMEK.
+            Secret result = _sample.CreateRegionalSecretWithCmek(
+                projectId: secretName.ProjectId,
+                locationId: secretName.LocationId,
+                secretId: secretName.SecretId,
+                kmsKeyName: _fixture.KmsKeyName);
 
-        // Create the regional secret with CMEK.
-        Secret result = _sample.CreateRegionalSecretWithCmek(
-            projectId: secretName.ProjectId,
-            locationId: secretName.LocationId,
-            secretId: secretName.SecretId,
-            kmsKeyName: _fixture.KmsKeyName);
-
-        Assert.Equal(result.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
-
-        // Clean the created secret.
-        _fixture.DeleteSecret(secretName);
-
+            Assert.Equal(result.CustomerManagedEncryption.KmsKeyName, _fixture.KmsKeyName);
+        }
+        finally
+        {
+            // Clean the created secret.
+            _fixture.DeleteSecret(secretName);
+        }
     }
 }

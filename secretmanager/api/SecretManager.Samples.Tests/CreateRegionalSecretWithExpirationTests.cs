@@ -37,15 +37,20 @@ public class CreateRegionalSecretWithExpireTimeTests
         // Get the SecretName from the set ProjectId & LocationId.
         SecretName secretName = SecretName.FromProjectLocationSecret(
             _fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
+        try
+        {
+            // Run the code sample.
+            Secret result = _sample.CreateRegionalSecretWithExpireTime(
+                projectId: secretName.ProjectId,
+                secretId: secretName.SecretId,
+                locationId: secretName.LocationId);
 
-        // Run the code sample.
-        Secret result = _sample.CreateRegionalSecretWithExpireTime(
-            projectId: secretName.ProjectId,
-            secretId: secretName.SecretId,
-            locationId: secretName.LocationId);
-
-        Assert.NotEmpty(result.ExpireTime.ToString());
-        // Clean the created secret.
-        _fixture.DeleteSecret(secretName);
+            Assert.NotNull(result.ExpireTime);
+        }
+        finally
+        {
+            // Clean the created secret.
+            _fixture.DeleteSecret(secretName);
+        }
     }
 }
