@@ -37,23 +37,27 @@ public class DeleteRegionalSecretAnnotationTests
         // Create a secret with annotations
         Secret secret = _fixture.CreateSecret(_fixture.RandomId());
         SecretName secretName = secret.SecretName;
+        try
+        {
+            // Get a key from the existing annotations
+            string annotationKey = _fixture.AnnotationKey;
 
-        // Get a key from the existing annotations
-        string annotationKey = _fixture.AnnotationKey;
+            // Verify the secret has annotations
+            Assert.NotEmpty(secret.Annotations);
+            Assert.True(secret.Annotations.ContainsKey(annotationKey));
 
-        // Verify the secret has annotations
-        Assert.NotEmpty(secret.Annotations);
-        Assert.True(secret.Annotations.ContainsKey(annotationKey));
+            // Run the sample code to delete the annotation
+            Secret result = _sample.DeleteRegionalSecretAnnotation(
+                projectId: secretName.ProjectId,
+                locationId: secretName.LocationId,
+                secretId: secretName.SecretId);
 
-        // Run the sample code to delete the annotation
-        Secret result = _sample.DeleteRegionalSecretAnnotation(
-            projectId: secretName.ProjectId,
-            locationId: secretName.LocationId,
-            secretId: secretName.SecretId);
-
-        Assert.Empty(result.Annotations);
-
-        // Clean the created secret.
-        _fixture.DeleteSecret(secretName);
+            Assert.Empty(result.Annotations);
+        }
+        finally
+        {
+            // Clean the created secret.
+            _fixture.DeleteSecret(secretName);
+        }
     }
 }
