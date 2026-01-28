@@ -40,7 +40,8 @@ public class DeleteSecretAnnotationTests
         SecretName secretName = secret.SecretName;
         try
         {
-            // Call the code sample function to delete the label
+            Assert.NotEmpty(secret.Annotations);
+            // Call the code sample function to delete the annotations
             Secret result = _sample.DeleteSecretAnnotation(
               projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
