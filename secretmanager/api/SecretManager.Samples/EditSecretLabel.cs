@@ -37,8 +37,6 @@ public class EditSecretLabelSample
         // Get the secret.
         Secret secret = client.GetSecret(name);
 
-        Console.WriteLine($"Updated secret: {secret.Name}");
-
         // Update the labels
         secret.Labels[labelKey] = labelValue;
 
