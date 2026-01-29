@@ -44,7 +44,7 @@ public class DeleteSecretWithEtagSample
         };
 
         // Delete the secret with ETag
-        client.DeleteSecret(secretName);
+        client.DeleteSecret(request);
 
         Console.WriteLine($"Deleted secret: {secretName}");
     }
