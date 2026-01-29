@@ -35,7 +35,7 @@ public class CreateSecretWithExpirationSample
         ProjectName projectName = new ProjectName(projectId);
 
         // Convert DateTime to Timestamp
-        Timestamp timestamp = Timestamp.FromDateTime(expireTime.ToUniversalTime());
+        Timestamp timestamp = Timestamp.FromDateTime(expireTime);
 
         // Build the secret with automatic replication and expiration time.
         Secret secret = new Secret

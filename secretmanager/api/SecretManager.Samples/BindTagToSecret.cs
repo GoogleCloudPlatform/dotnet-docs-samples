@@ -68,7 +68,7 @@ public class BindTagsToSecretSample
         await operation.PollUntilCompletedAsync();
         TagBinding tagBindingResult = operation.Result;
 
-        Console.WriteLine($"Created Tag Binding: {secret.Name}");
+        Console.WriteLine($"Created Tag Binding: {tagBindingResult.Name}");
         return tagBindingResult;
     }
 }

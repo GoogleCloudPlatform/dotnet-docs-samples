@@ -36,15 +36,22 @@ public class DeleteSecretAnnotationTests
     {
         // Create the secret.
         Secret secret = _fixture.CreateSecret(_fixture.RandomId());
-
         // Get the secretName from the created secret.
         SecretName secretName = secret.SecretName;
+        try
+        {
+            Assert.NotEmpty(secret.Annotations);
+            // Call the code sample function to delete the annotations
+            Secret result = _sample.DeleteSecretAnnotation(
+              projectId: secretName.ProjectId, secretId: secretName.SecretId);
 
-        // Call the code sample function to delete the label
-        Secret result = _sample.DeleteSecretAnnotation(
-          projectId: secretName.ProjectId, secretId: secretName.SecretId);
-
-        // Assert that the label is deleted.
-        Assert.Empty(result.Annotations);
+            // Assert that the label is deleted.
+            Assert.Empty(result.Annotations);
+        }
+        finally
+        {
+            // Clean the created secret.
+            _fixture.DeleteSecret(secretName);
+        }
     }
 }

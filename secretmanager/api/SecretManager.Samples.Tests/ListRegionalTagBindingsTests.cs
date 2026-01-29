@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *     [https://www.apache.org/licenses/LICENSE-2.0](https://www.apache.org/licenses/LICENSE-2.0)
+ *     https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,6 @@ public class ListRegionalTagBindingsTests
     private readonly TagBindingsClient _tagBindingsClient;
     private string _tagKeyName;
     private string _tagValueName;
-    private string _secretId;
 
     public ListRegionalTagBindingsTests(RegionalSecretManagerFixture fixture)
     {
@@ -69,7 +68,7 @@ public class ListRegionalTagBindingsTests
         }
         catch (Exception e)
         {
-            throw new Exception($"Error creating tag key: {e.Message}");
+            throw new Exception("Error creating tag key: " + e.Message, e);
         }
 
         var createValueRequest = new CreateTagValueRequest
@@ -89,7 +88,7 @@ public class ListRegionalTagBindingsTests
         }
         catch (Exception e)
         {
-            throw new Exception($"Error creating tag value: {e.Message}");
+            throw new Exception("Error creating tag value: " + e.Message, e);
         }
     }
 
@@ -106,7 +105,7 @@ public class ListRegionalTagBindingsTests
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error deleting tag value: {e.Message}");
+                Console.WriteLine($"Error deleting tag value: {e.GetType().Name}: {e.Message}");
             }
         }
 
@@ -120,7 +119,7 @@ public class ListRegionalTagBindingsTests
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error deleting tag key: {e.Message}");
+                Console.WriteLine($"Error deleting tag key: {e.GetType().Name}: {e.Message}");
             }
         }
     }

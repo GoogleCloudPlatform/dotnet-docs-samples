@@ -23,12 +23,12 @@ using Xunit;
 public class UpdateRegionalSecretRotationPeriodTests
 {
     private readonly RegionalSecretManagerFixture _fixture;
-    private readonly UpdateRegionalSecretRotationPeriodSample _updateSample;
+    private readonly UpdateRegionalSecretRotationSample _updateSample;
 
     public UpdateRegionalSecretRotationPeriodTests(RegionalSecretManagerFixture fixture)
     {
         _fixture = fixture;
-        _updateSample = new UpdateRegionalSecretRotationPeriodSample();
+        _updateSample = new UpdateRegionalSecretRotationSample();
     }
 
     [Fact]

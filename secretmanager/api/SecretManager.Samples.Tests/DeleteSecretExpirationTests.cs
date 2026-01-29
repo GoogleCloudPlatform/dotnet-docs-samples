@@ -35,19 +35,20 @@ public class DeleteSecretExpirationTests
     [Fact]
     public void DeletesSecretExpiration()
     {
-
-        // Get the SecretName to create Secret.
-        SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
-
         // First, create a secret with an expiration time
         Secret secret = _fixture.CreateSecretWithExpiration();
+        try
+        {
+            // Delete the expiration time
+            Secret result = _deleteSample.DeleteSecretExpiration(
+                projectId: secret.SecretName.ProjectId, secretId: secret.SecretName.SecretId);
 
-        // Delete the expiration time
-        Secret result = _deleteSample.DeleteSecretExpiration(
-            projectId: secret.SecretName.ProjectId, secretId: secret.SecretName.SecretId);
-
-        Assert.Null(result.ExpireTime);
-        // Clean up the created secret
-        _fixture.DeleteSecret(secretName);
+            Assert.Null(result.ExpireTime);
+        }
+        finally
+        {
+            // Clean up the created secret
+            _fixture.DeleteSecret(secret.SecretName);
+        }
     }
 }

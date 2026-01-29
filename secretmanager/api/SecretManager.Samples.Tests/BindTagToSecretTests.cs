@@ -65,7 +65,7 @@ public class BindTagsToSecretTests
         }
         catch (Exception e)
         {
-            throw new Exception($"Error creating tag key: {e.Message}");
+            throw new Exception("Error creating tag key: " + e.Message, e);
         }
 
         var createValueRequest = new CreateTagValueRequest
@@ -85,7 +85,7 @@ public class BindTagsToSecretTests
         }
         catch (Exception e)
         {
-            throw new Exception($"Error creating tag value: {e.Message}");
+            throw new Exception("Error creating tag value: " + e.Message, e);
         }
     }
 
@@ -101,7 +101,7 @@ public class BindTagsToSecretTests
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error deleting tag binding: {e.Message}");
+                Console.WriteLine($"Error deleting tag binding: {e.GetType().Name}: {e.Message}");
             }
         }
 
@@ -115,7 +115,7 @@ public class BindTagsToSecretTests
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error deleting tag value: {e.Message}");
+                Console.WriteLine($"Error deleting tag value: {e.GetType().Name}: {e.Message}");
             }
         }
 
@@ -129,7 +129,7 @@ public class BindTagsToSecretTests
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Error deleting tag key: {e.Message}");
+                Console.WriteLine($"Error deleting tag key: {e.GetType().Name}: {e.Message}");
             }
         }
     }
