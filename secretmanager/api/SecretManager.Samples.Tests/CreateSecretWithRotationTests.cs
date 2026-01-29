@@ -67,4 +67,4 @@ public class CreateSecretWithRotationTests
         _fixture.DeleteSecret(secretName);
 
     }
-};
+}
