@@ -34,7 +34,7 @@ public class ReadLockModeAsyncSample
         var transactionOptions = SpannerTransactionCreationOptions.ReadWrite
             .WithReadLockMode(ReadLockMode.Pessimistic);
 
-        using var transaction = await connection.BeginTransactionAsync(transactionOptions, transactionOptions: null, CancellationToken.None);
+        using var transaction = await connection.BeginTransactionAsync(transactionOptions);
         // Read data. The transaction now holds locks on the read rows.
         var cmd = connection.CreateSelectCommand("SELECT * FROM Albums");
         cmd.Transaction = transaction;
