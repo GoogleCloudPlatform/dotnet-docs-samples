@@ -20,7 +20,7 @@ using Google.Cloud.SecretManager.V1;
 using Google.Protobuf.WellKnownTypes;
 using System;
 
-public class UpdateRegionalSecretRotationPeriodSample
+public class UpdateRegionalSecretRotationSample
 {
     public Secret UpdateRegionalSecretRotationPeriod(
         string projectId = "my-project",
