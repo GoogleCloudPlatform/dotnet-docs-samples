@@ -28,19 +28,31 @@ public class ReadLockModeAsyncTest
     [Fact]
     public async Task TestReadLockModeAsync()
     {
+        const string createSingersTable =
+            @"CREATE TABLE Singers (
+                SingerId INT64 NOT NULL,
+                FirstName STRING(1024),
+                LastName STRING(1024),
+                ComposerInfo BYTES(MAX),
+                FullName STRING(2048) AS (ARRAY_TO_STRING([FirstName, LastName], "" "")) STORED
+            ) PRIMARY KEY (SingerId)";
+        const string createAlbumsTable =
+            @"CREATE TABLE Albums (
+                SingerId INT64 NOT NULL,
+                AlbumId INT64 NOT NULL,
+                AlbumTitle STRING(MAX)
+            ) PRIMARY KEY (SingerId, AlbumId),
+            INTERLEAVE IN PARENT Singers ON DELETE CASCADE";
+
         await _spannerFixture.RunWithTemporaryDatabaseAsync(async databaseId =>
         {
-            // 1. Create database and tables
-            CreateDatabaseAsyncSample createDatabaseAsyncSample = new CreateDatabaseAsyncSample();
-            await createDatabaseAsyncSample.CreateDatabaseAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-
-            // 2. Insert some data
+            // 1. Insert some data
             InsertDataAsyncSample insertDataAsyncSample = new InsertDataAsyncSample();
             await insertDataAsyncSample.InsertDataAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
 
-            // 3. Run the ReadLockMode sample
+            // 2. Run the ReadLockMode sample
             ReadLockModeAsyncSample sample = new ReadLockModeAsyncSample();
             await sample.ReadLockModeAsync(_spannerFixture.ProjectId, _spannerFixture.InstanceId, databaseId);
-        });
+        }, createSingersTable, createAlbumsTable);
     }
 }
