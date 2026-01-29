@@ -481,9 +481,41 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task DeleteInstanceAsync(string instanceId)
     {
+        var instanceName = InstanceName.FromProjectInstance(ProjectId, instanceId);
         try
         {
-            await InstanceAdminClient.DeleteInstanceAsync(InstanceName.FromProjectInstance(ProjectId, instanceId));
+            await InstanceAdminClient.DeleteInstanceAsync(instanceName);
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition && ex.Status.Detail.Contains("contains backups"))
+        {
+            Console.WriteLine($"Instance {instanceId} contains backups. Deleting them...");
+            try
+            {
+                var backups = DatabaseAdminClient.ListBackupsAsync(new ListBackupsRequest
+                {
+                    ParentAsInstanceName = instanceName
+                });
+                await foreach (var backup in backups)
+                {
+                    try
+                    {
+                        Console.WriteLine($"Deleting backup {backup.Name}");
+                        await DatabaseAdminClient.DeleteBackupAsync(backup.BackupName);
+                    }
+                    catch (Exception bEx)
+                    {
+                        Console.WriteLine($"Failed to delete backup {backup.Name}: {bEx.Message}");
+                    }
+                }
+                // Retry instance deletion
+                Console.WriteLine($"Retrying deletion of instance {instanceId}...");
+                await InstanceAdminClient.DeleteInstanceAsync(instanceName);
+            }
+            catch (Exception retryEx)
+            {
+                Console.WriteLine($"Failed to clean up backups and delete instance {instanceId}");
+                Console.WriteLine(retryEx);
+            }
         }
         catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
