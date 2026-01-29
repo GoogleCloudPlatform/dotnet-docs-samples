@@ -31,7 +31,6 @@ public class BindTagsToRegionalSecretTests
     private readonly TagBindingsClient _tagBindingsClient;
     private string _tagKeyName;
     private string _tagValueName;
-    private string _tagBindingName;
 
     public BindTagsToRegionalSecretTests(RegionalSecretManagerFixture fixture)
     {
@@ -91,21 +90,6 @@ public class BindTagsToRegionalSecretTests
 
     private void CleanupResources()
     {
-
-        // Delete the tag binding if it exists
-        if (!string.IsNullOrEmpty(_tagBindingName))
-        {
-            try
-            {
-                var deleteBindingRequest = new DeleteTagBindingRequest { Name = _tagBindingName };
-                _tagBindingsClient.DeleteTagBinding(deleteBindingRequest).PollUntilCompleted();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Error deleting tag binding: {e.GetType().Name}: {e.Message}");
-            }
-        }
-
         // Delete the tag value if it exists
         if (!string.IsNullOrEmpty(_tagValueName))
         {
