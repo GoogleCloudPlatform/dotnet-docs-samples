@@ -23,19 +23,17 @@ public class ReadLockModeAsyncSample
 {
     public async Task ReadLockModeAsync(string projectId, string instanceId, string databaseId)
     {
-        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId}";
+        string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId};ReadLockMode=Optimistic";
 
         using var connection = new SpannerConnection(connectionString);
         await connection.OpenAsync();
 
         // Create transaction options with ReadLockMode.Pessimistic.
-        // This ensures that valid locks are acquired for read operations,
-        // avoiding the need for a separate "dummy" update to lock the rows.
         var transactionOptions = SpannerTransactionCreationOptions.ReadWrite
             .WithReadLockMode(ReadLockMode.Pessimistic);
 
         using var transaction = await connection.BeginTransactionAsync(transactionOptions, null, CancellationToken.None);
-        // Read data. The transaction now holds locks on the read rows.
+
         var cmd = connection.CreateSelectCommand("SELECT * FROM Albums");
         cmd.Transaction = transaction;
         using (var reader = await cmd.ExecuteReaderAsync())
@@ -46,9 +44,7 @@ public class ReadLockModeAsyncSample
             }
         }
 
-        // If we wanted to update the rows we just read, we could do so here
-        // without worrying about race conditions because we have a lock.
-        
+
         await transaction.CommitAsync();
     }
 }
