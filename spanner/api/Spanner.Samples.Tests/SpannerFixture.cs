@@ -495,18 +495,29 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 {
                     ParentAsInstanceName = instanceName
                 });
+                var backupNames = new List<BackupName>();
                 await foreach (var backup in backups)
+                {
+                    backupNames.Add(backup.BackupName);
+                }
+                
+                Console.WriteLine($"Found {backupNames.Count} backups in {instanceId} to delete.");
+                
+                // Delete backups in parallel to speed up cleanup
+                var deleteTasks = backupNames.Select(async backupName => 
                 {
                     try
                     {
-                        Console.WriteLine($"Deleting backup {backup.Name}");
-                        await DatabaseAdminClient.DeleteBackupAsync(backup.BackupName);
+                        Console.WriteLine($"Deleting backup {backupName}");
+                        await DatabaseAdminClient.DeleteBackupAsync(backupName);
                     }
                     catch (Exception bEx)
                     {
-                        Console.WriteLine($"Failed to delete backup {backup.Name}: {bEx.Message}");
+                        Console.WriteLine($"Failed to delete backup {backupName}: {bEx.Message}");
                     }
-                }
+                });
+                await Task.WhenAll(deleteTasks);
+
                 // Retry instance deletion
                 Console.WriteLine($"Retrying deletion of instance {instanceId}...");
                 await InstanceAdminClient.DeleteInstanceAsync(instanceName);
