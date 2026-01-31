@@ -34,16 +34,20 @@ public class ReadLockModeAsyncSample
 
         using var transaction = await connection.BeginTransactionAsync(transactionOptions, null, CancellationToken.None);
 
-        var cmd = connection.CreateSelectCommand("SELECT * FROM Albums");
+        var cmd = connection.CreateSelectCommand("SELECT AlbumTitle FROM Albums WHERE SingerId = 2 AND AlbumId = 1");
         cmd.Transaction = transaction;
         using (var reader = await cmd.ExecuteReaderAsync())
         {
             while (await reader.ReadAsync())
             {
-                Console.WriteLine($"SingerId: {reader.GetFieldValue<long>("SingerId")}, AlbumId: {reader.GetFieldValue<long>("AlbumId")}");
+                Console.WriteLine($"AlbumTitle: {reader.GetFieldValue<string>("AlbumTitle")}");
             }
         }
 
+        var updateCmd = connection.CreateDmlCommand("UPDATE Albums SET AlbumTitle = 'A New Title' WHERE SingerId = 2 AND AlbumId = 1");
+        updateCmd.Transaction = transaction;
+        var rowCount = await updateCmd.ExecuteNonQueryAsync();
+        Console.WriteLine($"{rowCount} records updated.");
 
         await transaction.CommitAsync();
     }
