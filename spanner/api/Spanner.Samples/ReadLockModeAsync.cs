@@ -23,6 +23,7 @@ public class ReadLockModeAsyncSample
 {
     public async Task ReadLockModeAsync(string projectId, string instanceId, string databaseId)
     {
+        // Create client with ReadLockMode.Optimistic.
         string connectionString = $"Data Source=projects/{projectId}/instances/{instanceId}/databases/{databaseId};ReadLockMode=Optimistic";
 
         using var connection = new SpannerConnection(connectionString);
