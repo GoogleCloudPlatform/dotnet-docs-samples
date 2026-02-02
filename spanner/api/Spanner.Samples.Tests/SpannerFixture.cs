@@ -481,9 +481,52 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task DeleteInstanceAsync(string instanceId)
     {
+        var instanceName = InstanceName.FromProjectInstance(ProjectId, instanceId);
         try
         {
-            await InstanceAdminClient.DeleteInstanceAsync(InstanceName.FromProjectInstance(ProjectId, instanceId));
+            await InstanceAdminClient.DeleteInstanceAsync(instanceName);
+        }
+        catch (RpcException ex) when (ex.StatusCode == StatusCode.FailedPrecondition && ex.Status.Detail.Contains("contains backups"))
+        {
+            Console.WriteLine($"Instance {instanceId} contains backups. Deleting them...");
+            try
+            {
+                var backups = DatabaseAdminClient.ListBackupsAsync(new ListBackupsRequest
+                {
+                    ParentAsInstanceName = instanceName
+                });
+                var backupNames = new List<BackupName>();
+                await foreach (var backup in backups)
+                {
+                    backupNames.Add(backup.BackupName);
+                }
+                
+                Console.WriteLine($"Found {backupNames.Count} backups in {instanceId} to delete.");
+                
+                // Delete backups in parallel to speed up cleanup
+                var deleteTasks = backupNames.Select(async backupName => 
+                {
+                    try
+                    {
+                        Console.WriteLine($"Deleting backup {backupName}");
+                        await DatabaseAdminClient.DeleteBackupAsync(backupName);
+                    }
+                    catch (Exception bEx)
+                    {
+                        Console.WriteLine($"Failed to delete backup {backupName}: {bEx.Message}");
+                    }
+                });
+                await Task.WhenAll(deleteTasks);
+
+                // Retry instance deletion
+                Console.WriteLine($"Retrying deletion of instance {instanceId}...");
+                await InstanceAdminClient.DeleteInstanceAsync(instanceName);
+            }
+            catch (Exception retryEx)
+            {
+                Console.WriteLine($"Failed to clean up backups and delete instance {instanceId}");
+                Console.WriteLine(retryEx);
+            }
         }
         catch (RpcException ex) when (ex.Status.StatusCode == StatusCode.NotFound)
         {
