@@ -64,7 +64,7 @@ public class TextGenWithPdf
 
         string responseText = response.Candidates[0].Content.Parts[0].Text;
         Console.WriteLine(responseText);
-        // Example reponse:
+        // Example response:
         // This paper introduces the Transformer, a novel neural network architecture designed
         // for processing sequences, such as those found in language translation. Traditionally,
         // such tasks have relied on complex recurrent or convolutional neural networks...
