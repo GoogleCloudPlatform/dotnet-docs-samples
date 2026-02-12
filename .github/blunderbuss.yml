@@ -1,58 +1,74 @@
 assign_issues_by:
 - labels:
+  - 'aiplatform'
+  - 'api: aiplatform'
+  - 'api: run'
+  - 'api: vertex-ai'
+  to:
+  - meteatamel
+- labels:
+  - 'product: appengine flex'
+  to:
+  - GoogleCloudPlatform/serverless-runtimes
+- labels:
+  - 'api: bigquery'
+  - 'api: bigquerydatatransfer'
+  - 'api: bigquerystorage'
   - 'api: bigtable'
   - 'api: datastore'
   - 'api: firestore'
   to:
   - GoogleCloudPlatform/cloud-native-db-dpes
 - labels:
-  - 'api: storage'
-  - 'api: storagetransfer'
-  - 'api: storageinsights'
-  to:
-  - GoogleCloudPlatform/gcs-sdk-team
-- labels:
   - 'api: cloudsql'
   to:
   - GoogleCloudPlatform/cloud-sql-connectors
+- labels:
+  - 'api: compute'
+  to:
+  - GoogleCloudPlatform/cloud-libraries-dotnet
 - labels:
   - 'api: dlp'
   to:
   - GoogleCloudPlatform/googleapis-dlp
 - labels:
-  - 'api: retail'
-  to:
-  - chenlei1216
-- labels:
+  - 'api: clouderrorreporting'
   - 'api: cloudtrace'
   - 'api: container'
   - 'api: logging'
   - 'api: monitoring'
-  - 'api: clouderrorreporting'
   to:
   - GoogleCloudPlatform/dee-platform-ops
 - labels:
-  - 'product: appengine flex'
+  - "api: modelarmor"
   to:
-  - GoogleCloudPlatform/serverless-runtimes
-- labels:
-  - 'aiplatform'
-  - 'api: aiplatform'
-  - 'api: vertex-ai'
-  to:
-  - meteatamel
-- labels:
-  - 'api: secretmanager'
-  to:
-  - GoogleCloudPlatform/cloud-secrets-team
+  - GoogleCloudPlatform/cloud-modelarmor-team
 - labels:
   - 'api: parametermanager'
   to:
   - GoogleCloudPlatform/cloud-parameters-team
 - labels:
-  - "api: modelarmor"
+  - 'api: pubsub'
   to:
-  - GoogleCloudPlatform/cloud-modelarmor-team
+  - GoogleCloudPlatform/cloud-libraries-dotnet
+- labels:
+  - 'api: retail'
+  to:
+  - chenlei1216
+- labels:
+  - 'api: secretmanager'
+  to:
+  - GoogleCloudPlatform/cloud-secrets-team
+- labels:
+  - 'api: spanner'
+  to:
+  - GoogleCloudPlatform/api-spanner-dotnet
+- labels:
+  - 'api: storage'
+  - 'api: storageinsights'
+  - 'api: storagetransfer'
+  to:
+  - GoogleCloudPlatform/gcs-sdk-team
 
 assign_issues:
   - GoogleCloudPlatform/dotnet-samples-reviewers
@@ -62,60 +78,72 @@ assign_prs_always:
 
 assign_prs_by:
 - labels:
-  - 'api: bigtable'
-  - 'api: datastore'
-  - 'api: firestore'
+  - 'aiplatform'
+  - 'api: aiplatform'
+  - 'api: run'
+  - 'api: vertex-ai'
   to:
-  - GoogleCloudPlatform/cloud-native-db-dpes
-- labels:
-  - 'api: cloudsql'
-  to:
-  - GoogleCloudPlatform/cloud-sql-connectors
-- labels:
-  - 'api: storage'
-  - 'api: storagetransfer'
-  - 'api: storageinsights'
-  to:
-  - GoogleCloudPlatform/gcs-sdk-team
-- labels:
-  - 'api: spanner'
-  to:
-  - GoogleCloudPlatform/api-spanner-dotnet
-- labels:
-  - 'api: dlp'
-  to:
-  - GoogleCloudPlatform/googleapis-dlp
-- labels:
-  - 'api: retail'
-  to:
-  - chenlei1216
-- labels:
-  - 'api: cloudtrace'
-  - 'api: container'
-  - 'api: logging'
-  - 'api: monitoring'
-  - 'api: clouderrorreporting'
-  to:
-  - GoogleCloudPlatform/dee-platform-ops
+  - meteatamel
 - labels:
   - 'product: appengine flex'
   to:
   - GoogleCloudPlatform/serverless-runtimes
 - labels:
-  - 'aiplatform'
-  - 'api: aiplatform'
-  - 'api: vertex-ai'
+  - 'api: bigquery'
+  - 'api: bigquerydatatransfer'
+  - 'api: bigquerystorage'
+  - 'api: bigtable'
+  - 'api: datastore'
+  - 'api: firestore'
   to:
-  - meteatamel
+  - GoogleCloudPlatform/cloud-libraries-dotnet
 - labels:
-  - 'api: secretmanager'
+  - 'api: cloudsql'
   to:
-  - GoogleCloudPlatform/cloud-secrets-team
+  - GoogleCloudPlatform/cloud-sql-connectors
+- labels:
+  - 'api: compute'
+  to:
+  - GoogleCloudPlatform/cloud-libraries-dotnet
+- labels:
+  - 'api: dlp'
+  to:
+  - GoogleCloudPlatform/googleapis-dlp
+- labels:
+  - 'api: clouderrorreporting'
+  - 'api: cloudtrace'
+  - 'api: container'
+  - 'api: logging'
+  - 'api: monitoring'
+  to:
+  - GoogleCloudPlatform/dee-platform-ops
+- labels:
+  - "api: modelarmor"
+  to:
+  - GoogleCloudPlatform/cloud-modelarmor-team
 - labels:
   - 'api: parametermanager'
   to:
   - GoogleCloudPlatform/cloud-parameters-team
 - labels:
-  - "api: modelarmor"
+  - 'api: pubsub'
   to:
-  - GoogleCloudPlatform/cloud-modelarmor-team
+  - GoogleCloudPlatform/cloud-libraries-dotnet
+- labels:
+  - 'api: retail'
+  to:
+  - chenlei1216
+- labels:
+  - 'api: secretmanager'
+  to:
+  - GoogleCloudPlatform/cloud-secrets-team
+- labels:
+  - 'api: spanner'
+  to:
+  - GoogleCloudPlatform/cloud-libraries-dotnet
+- labels:
+  - 'api: storage'
+  - 'api: storageinsights'
+  - 'api: storagetransfer'
+  to:
+  - GoogleCloudPlatform/gcs-sdk-team
