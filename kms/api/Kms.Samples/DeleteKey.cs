@@ -27,7 +27,7 @@ public class DeleteKeySample
         CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
         // Call the API.
-        Operation result = client.DeleteCryptoKey(keyName);
+        Operation result = client.DeleteCryptoKey(keyName).ToProto();
 
         // Return the result.
         return result;

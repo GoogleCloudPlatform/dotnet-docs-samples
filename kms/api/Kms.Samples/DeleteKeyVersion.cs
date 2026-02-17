@@ -27,7 +27,7 @@ public class DeleteKeyVersionSample
         CryptoKeyVersionName versionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, versionId);
 
         // Call the API.
-        Operation result = client.DeleteCryptoKeyVersion(versionName);
+        Operation result = client.DeleteCryptoKeyVersion(versionName).ToProto();
 
         // Return the result.
         return result;
