@@ -15,10 +15,11 @@
 // [START kms_delete_key_version]
 using Google.Cloud.Kms.V1;
 using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
 
 public class DeleteKeyVersionSample
 {
-    public Operation DeleteKeyVersion(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string versionId = "123")
+    public Operation<Empty, DeleteCryptoKeyVersionMetadata> DeleteKeyVersion(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key", string versionId = "123")
     {
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
@@ -27,7 +28,7 @@ public class DeleteKeyVersionSample
         CryptoKeyVersionName versionName = new CryptoKeyVersionName(projectId, locationId, keyRingId, keyId, versionId);
 
         // Call the API.
-        Operation result = client.DeleteCryptoKeyVersion(versionName).ToProto();
+        Operation<Empty, DeleteCryptoKeyVersionMetadata> result = client.DeleteCryptoKeyVersion(versionName);
 
         // Return the result.
         return result;
