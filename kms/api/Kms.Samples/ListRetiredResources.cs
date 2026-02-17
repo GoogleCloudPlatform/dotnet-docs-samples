@@ -14,6 +14,7 @@
 
 // [START kms_list_retired_resources]
 using Google.Api.Gax;
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
 using System.Collections.Generic;
 

@@ -14,10 +14,11 @@
 
 // [START kms_delete_key]
 using Google.Cloud.Kms.V1;
+using Google.LongRunning;
 
 public class DeleteKeySample
 {
-    public CryptoKey DeleteKey(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
+    public Operation DeleteKey(string projectId = "my-project", string locationId = "us-east1", string keyRingId = "my-key-ring", string keyId = "my-key")
     {
         // Create the client.
         KeyManagementServiceClient client = KeyManagementServiceClient.Create();
@@ -26,7 +27,7 @@ public class DeleteKeySample
         CryptoKeyName keyName = new CryptoKeyName(projectId, locationId, keyRingId, keyId);
 
         // Call the API.
-        CryptoKey result = client.DeleteCryptoKey(keyName);
+        Operation result = client.DeleteCryptoKey(keyName);
 
         // Return the result.
         return result;

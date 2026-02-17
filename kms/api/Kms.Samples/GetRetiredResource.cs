@@ -13,6 +13,7 @@
 // limitations under the License.
 
 // [START kms_get_retired_resource]
+using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Kms.V1;
 
 public class GetRetiredResourceSample
