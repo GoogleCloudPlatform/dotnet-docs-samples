@@ -39,6 +39,8 @@ trace/              @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/d
 
 functions/  @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
+genai/  @GoogleCloudPlatform/generative-ai-devrel @GoogleCloudPlatform/dotnet-samples-reviewers
+
 identity-aware-proxy/   @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
 modelarmor/ @GoogleCloudPlatform/cloud-modelarmor-team @GoogleCloudPlatform/dotnet-samples-reviewers
