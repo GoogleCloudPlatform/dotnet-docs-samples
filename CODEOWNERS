@@ -18,17 +18,17 @@ run/                                            @meteatamel @GoogleCloudPlatform
 
 appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @GoogleCloudPlatform/dotnet-samples-reviewers
 
-auth/   @GoogleCloudPlatform/cloud-libraries-dotnet
+auth/   @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
-bigquery/           @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-libraries-dotnet
-bigquery-storage/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-libraries-dotnet
-bigtable/           @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-libraries-dotnet
-datastore/          @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-libraries-dotnet
-firestore/          @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-libraries-dotnet
+bigquery/           @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
+bigquery-storage/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
+bigtable/           @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
+datastore/          @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
+firestore/          @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
 cloud-sql/  @GoogleCloudPlatform/cloud-sql-connectors @GoogleCloudPlatform/dotnet-samples-reviewers
 
-compute/    @GoogleCloudPlatform/cloud-libraries-dotnet
+compute/    @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
 dlp/    @GoogleCloudPlatform/googleapis-dlp @GoogleCloudPlatform/dotnet-samples-reviewers
 
@@ -37,20 +37,20 @@ logging/            @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/d
 monitoring/         @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
 trace/              @GoogleCloudPlatform/dee-platform-ops @GoogleCloudPlatform/dotnet-samples-reviewers
 
-functions/  @GoogleCloudPlatform/cloud-libraries-dotnet
+functions/  @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
-identity-aware-proxy/   @GoogleCloudPlatform/cloud-libraries-dotnet
+identity-aware-proxy/   @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
 modelarmor/ @GoogleCloudPlatform/cloud-modelarmor-team @GoogleCloudPlatform/dotnet-samples-reviewers
 
 parametermanager/   @GoogleCloudPlatform/cloud-secrets-team @GoogleCloudPlatform/cloud-parameters-team @GoogleCloudPlatform/dotnet-samples-reviewers
 secretmanager/      @GoogleCloudPlatform/cloud-secrets-team @GoogleCloudPlatform/dotnet-samples-reviewers
 
-pubsub/ @GoogleCloudPlatform/cloud-libraries-dotnet
+pubsub/ @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
 retail/ @chenlei1216 @GoogleCloudPlatform/dotnet-samples-reviewers
 
-spanner/    @GoogleCloudPlatform/api-spanner-dotnet @GoogleCloudPlatform/cloud-libraries-dotnet
+spanner/    @GoogleCloudPlatform/api-spanner-dotnet @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
 storage/            @GoogleCloudPlatform/gcs-sdk-team @GoogleCloudPlatform/dotnet-samples-reviewers
 storageinsights/    @GoogleCloudPlatform/gcs-sdk-team @GoogleCloudPlatform/dotnet-samples-reviewers
