@@ -4,6 +4,6 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Google.GenAI" Version="0.3.0" />
+    <PackageReference Include="Google.GenAI" Version="0.9.0" />
   </ItemGroup>
 </Project>
