@@ -32,6 +32,8 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
     public string LabelValue { get; }
     public Secret Secret { get; }
     public SecretVersion SecretVersion { get; }
+    public string KmsKeyName { get; }
+
     public RegionalSecretManagerFixture()
     {
         // Get the Google Cloud ProjectId
@@ -39,6 +41,12 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         if (String.IsNullOrEmpty(ProjectId))
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
+        }
+
+        KmsKeyName = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_REGIONAL_KMS_KEY_NAME");
+        if (String.IsNullOrEmpty(KmsKeyName))
+        {
+            throw new Exception("missing GOOGLE_CLOUD_REGIONAL_KMS_KEY_NAME");
         }
 
         // Get LocationId (e.g., "us-west1")
