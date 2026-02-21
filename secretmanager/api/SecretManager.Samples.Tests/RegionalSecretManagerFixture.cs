@@ -32,6 +32,9 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
     public string LabelValue { get; }
     public Secret Secret { get; }
     public SecretVersion SecretVersion { get; }
+    public string KmsKeyName { get; }
+    public string TopicName { get; }
+
     public RegionalSecretManagerFixture()
     {
         // Get the Google Cloud ProjectId
@@ -39,6 +42,18 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
         if (String.IsNullOrEmpty(ProjectId))
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
+        }
+
+        KmsKeyName = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_REGIONAL_KMS_KEY_NAME");
+        if (String.IsNullOrEmpty(KmsKeyName))
+        {
+            throw new Exception("missing GOOGLE_CLOUD_REGIONAL_KMS_KEY_NAME");
+        }
+
+        TopicName = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_TOPIC_NAME");
+        if (String.IsNullOrEmpty(TopicName))
+        {
+            throw new Exception("missing GOOGLE_CLOUD_TOPIC_NAME");
         }
 
         // Get LocationId (e.g., "us-west1")
@@ -100,6 +115,50 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
             VersionDestroyTtl = new Duration
             {
                 Seconds = 24 * 60 * 60,
+            }
+        };
+        return Client.CreateSecret(locationName, RandomId(), secret);
+    }
+
+    public Secret CreateSecretWithExpireTime()
+    {
+        LocationName locationName = new LocationName(ProjectId, LocationId);
+
+        DateTime expireTime = DateTime.UtcNow.AddHours(1);
+        Timestamp timestamp = Timestamp.FromDateTime(expireTime);
+
+        Secret secret = new Secret
+        {
+            ExpireTime = timestamp
+        };
+
+        return Client.CreateSecret(locationName, RandomId(), secret);
+    }
+
+    public Secret CreateSecretWithRotation()
+    {
+        LocationName locationName = new LocationName(ProjectId, LocationId);
+        // Set rotation period to 24 hours
+        int rotationPeriodHours = 24;
+        // Set next rotation time to 24 hours from now
+        DateTime nextRotationTime = DateTime.UtcNow.AddHours(24);
+        // Convert DateTime to Timestamp for next rotation time
+        Timestamp nextRotationTimestamp = Timestamp.FromDateTime(nextRotationTime.ToUniversalTime());
+
+        // Convert rotation period to protobuf Duration
+        Duration rotationPeriod = new Duration
+        {
+            Seconds = rotationPeriodHours * 3600 // Convert hours to seconds
+        };
+
+        // Build the secret with rotation configuration and topic
+        Secret secret = new Secret
+        {
+            Topics = { new Topic { Name = TopicName } },
+            Rotation = new Rotation
+            {
+                NextRotationTime = nextRotationTimestamp,
+                RotationPeriod = rotationPeriod
             }
         };
         return Client.CreateSecret(locationName, RandomId(), secret);
