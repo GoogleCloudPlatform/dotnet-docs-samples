@@ -20,7 +20,7 @@ using System;
 public class MoveObjectSample
 {
     /// <summary>
-    /// Moves an object within a bucket with hierarchical namespace enabled.
+    /// Moves an object within a bucket.
     /// </summary>
     /// <param name="sourceBucketName">Name of the source bucket containing the object to move.</param>
     /// <param name="sourceObjectName">The name of the source object to move within the bucket.</param>
@@ -32,7 +32,7 @@ public class MoveObjectSample
     {
         var storage = StorageClient.Create();
         storage.MoveObject(sourceBucketName, sourceObjectName, destinationObjectName);
-        Console.WriteLine($"Moved {sourceBucketName}/{sourceObjectName} to " + $"{sourceBucketName}/{destinationObjectName} within a hierarchical namespace enabled bucket.");
+        Console.WriteLine($"Moved {sourceBucketName}/{sourceObjectName} to {sourceBucketName}/{destinationObjectName} within a bucket.");
     }
 }
 // [END storage_move_object]
