@@ -41,3 +41,7 @@ But no sample will work until you
 ## Testing
 
 * See [TESTING.md](TESTING.md)
+
+## Note
+
+Tests for the Anywhere Cache samples are not included because creating an AnywhereCache can take an extremely long time, sometimes up to 48 hours.
