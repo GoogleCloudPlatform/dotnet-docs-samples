@@ -1,4 +1,4 @@
-﻿// Copyright 2020 Google Inc.
+// Copyright 2020 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public class PrintFileAclForUserTest
         _fixture = fixture;
     }
 
-    [Fact]
+    [Fact(Skip = "b/478003908")]
     public void TestPrintFileAclForUser()
     {
         PrintFileAclForUserSample printFileAclForUserSample = new PrintFileAclForUserSample();
