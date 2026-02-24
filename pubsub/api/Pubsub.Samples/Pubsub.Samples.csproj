@@ -6,7 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="Apache.Avro" Version="1.12.1" />
-    <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.29.0" />
+    <PackageReference Include="Google.Cloud.PubSub.V1" Version="3.32.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
