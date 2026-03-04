@@ -39,20 +39,17 @@ public class BucketGetEncryptionEnforcementConfigSample
         var gmConfig = bucket.Encryption.GoogleManagedEncryptionEnforcementConfig;
         if (gmConfig != null)
         {
-            Console.WriteLine($"Google Managed (GMEK) Enforcement Restriction Mode: {gmConfig.RestrictionMode}");
-            Console.WriteLine($"Google Managed (GMEK) Enforcement Effective Time: {gmConfig.EffectiveTimeRaw}");
+            Console.WriteLine($"Google Managed (GMEK) Enforcement Restriction Mode: {gmConfig.RestrictionMode}, Effective Time: {gmConfig.EffectiveTimeRaw}");
         }
         var cmConfig = bucket.Encryption.CustomerManagedEncryptionEnforcementConfig;
         if (cmConfig != null)
         {
-            Console.WriteLine($"Customer Managed (CMEK) Enforcement Restriction Mode: {cmConfig.RestrictionMode}");
-            Console.WriteLine($"Customer Managed (CMEK) Enforcement Effective Time: {cmConfig.EffectiveTimeRaw}");
+            Console.WriteLine($"Customer Managed (CMEK) Enforcement Restriction Mode: {cmConfig.RestrictionMode}, Effective Time: {cmConfig.EffectiveTimeRaw}");
         }
         var csConfig = bucket.Encryption.CustomerSuppliedEncryptionEnforcementConfig;
         if (csConfig != null)
         {
-            Console.WriteLine($"Customer Supplied (CSEK) Enforcement Restriction Mode: {csConfig.RestrictionMode}");
-            Console.WriteLine($"Customer Supplied (CSEK) Enforcement Effective Time: {csConfig.EffectiveTimeRaw}");
+            Console.WriteLine($"Customer Supplied (CSEK) Enforcement Restriction Mode: {csConfig.RestrictionMode}, Effective Time: {csConfig.EffectiveTimeRaw}");
         }
         return bucket.Encryption;
     }
