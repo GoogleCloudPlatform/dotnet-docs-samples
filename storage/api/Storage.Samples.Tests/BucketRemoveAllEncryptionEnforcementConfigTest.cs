@@ -32,17 +32,18 @@ public class BucketRemoveAllEncryptionEnforcementConfigTest
         var bucketName = _fixture.GenerateBucketName();
         _fixture.CreateBucket(bucketName: bucketName, location: _fixture.KmsKeyLocation);
         string keyName = $"projects/{_fixture.ProjectId}/locations/{_fixture.KmsKeyLocation}/keyRings/{_fixture.KmsKeyRing}/cryptoKeys/{_fixture.KmsKeyName}";
-        var bucket = bucketSetEncConfigSample.SetBucketEncryptionEnforcementConfig(
+
+        bucketSetEncConfigSample.SetBucketEncryptionEnforcementConfig(
             bucketName: bucketName,
             kmsKeyName: keyName,
             enforceCmek: true);
-        var updatedBucket = bucketRemoveEncConfigSample.BucketRemoveAllEncryptionEnforcementConfig(bucket.Name);
-        Assert.Equal(updatedBucket.Encryption.DefaultKmsKeyName, bucket.Encryption.DefaultKmsKeyName);
+        var bucketEncryptionData = bucketRemoveEncConfigSample.BucketRemoveAllEncryptionEnforcementConfig(bucketName);
+        Assert.Equal(keyName, bucketEncryptionData.DefaultKmsKeyName);
         Assert.Multiple(() =>
         {
-            Assert.Null(updatedBucket.Encryption.CustomerSuppliedEncryptionEnforcementConfig);
-            Assert.Null(updatedBucket.Encryption.CustomerManagedEncryptionEnforcementConfig);
-            Assert.Null(updatedBucket.Encryption.GoogleManagedEncryptionEnforcementConfig);
+            Assert.Null(bucketEncryptionData.CustomerSuppliedEncryptionEnforcementConfig);
+            Assert.Null(bucketEncryptionData.CustomerManagedEncryptionEnforcementConfig);
+            Assert.Null(bucketEncryptionData.GoogleManagedEncryptionEnforcementConfig);
         });
     }
 }

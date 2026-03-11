@@ -31,7 +31,7 @@ public class BucketSetEncryptionEnforcementConfigSample
     /// <param name="enforceCmek">If true, enforces Customer-Managed Encryption Key.</param>
     /// <param name="enforceGmek">If true, enforces Google-Managed Encryption Key.</param>
     /// <param name="restrictCsek">If true, restricts Customer-Supplied Encryption Key.</param>
-    public Bucket SetBucketEncryptionEnforcementConfig(
+    public Bucket.EncryptionData SetBucketEncryptionEnforcementConfig(
         string bucketName = "your-unique-bucket-name",
         string kmsKeyName = null,
         bool enforceCmek = false,
@@ -76,7 +76,7 @@ public class BucketSetEncryptionEnforcementConfigSample
         }
 
         var updatedBucket = storage.UpdateBucket(bucket);
-        return updatedBucket;
+        return updatedBucket.Encryption;
     }
 }
 // [END storage_set_encryption_enforcement_config]

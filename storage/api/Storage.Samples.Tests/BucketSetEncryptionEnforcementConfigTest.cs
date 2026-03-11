@@ -39,7 +39,7 @@ public class BucketSetEncryptionEnforcementConfigTest
             ? $"projects/{_fixture.ProjectId}/locations/{_fixture.KmsKeyLocation}/keyRings/{_fixture.KmsKeyRing}/cryptoKeys/{_fixture.KmsKeyName}"
             : null;
         _fixture.CreateBucket(bucketName: bucketName, location: _fixture.KmsKeyLocation);
-        var bucket = bucketSetEncConfigSample.SetBucketEncryptionEnforcementConfig(
+        var bucketEncryptionData = bucketSetEncConfigSample.SetBucketEncryptionEnforcementConfig(
             bucketName: bucketName,
             kmsKeyName: keyName,
             enforceCmek: enforceCmek,
@@ -52,11 +52,11 @@ public class BucketSetEncryptionEnforcementConfigTest
 
         Assert.Multiple(() =>
         {
-            Assert.Equal(expectedCmek, bucket.Encryption.CustomerManagedEncryptionEnforcementConfig?.RestrictionMode);
-            Assert.Equal(expectedCsek, bucket.Encryption.CustomerSuppliedEncryptionEnforcementConfig?.RestrictionMode);
-            Assert.Equal(expectedGmek, bucket.Encryption.GoogleManagedEncryptionEnforcementConfig?.RestrictionMode);
+            Assert.Equal(expectedCmek, bucketEncryptionData.CustomerManagedEncryptionEnforcementConfig?.RestrictionMode);
+            Assert.Equal(expectedCsek, bucketEncryptionData.CustomerSuppliedEncryptionEnforcementConfig?.RestrictionMode);
+            Assert.Equal(expectedGmek, bucketEncryptionData.GoogleManagedEncryptionEnforcementConfig?.RestrictionMode);
 
-            if (enforceCmek) Assert.Equal(keyName, bucket.Encryption.DefaultKmsKeyName);
+            if (enforceCmek) Assert.Equal(keyName, bucketEncryptionData.DefaultKmsKeyName);
         });
     }
 }

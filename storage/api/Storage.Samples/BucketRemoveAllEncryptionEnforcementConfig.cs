@@ -24,7 +24,7 @@ public class BucketRemoveAllEncryptionEnforcementConfigSample
     /// Remove all encryption enforcement configurations from the bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    public Bucket BucketRemoveAllEncryptionEnforcementConfig(string bucketName = "your-unique-bucket-name")
+    public Bucket.EncryptionData BucketRemoveAllEncryptionEnforcementConfig(string bucketName = "your-unique-bucket-name")
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
@@ -35,7 +35,7 @@ public class BucketRemoveAllEncryptionEnforcementConfigSample
                 && bucket.Encryption.GoogleManagedEncryptionEnforcementConfig is null))
         {
             Console.WriteLine($"No Encryption Enforcement Configuration found for bucket {bucketName}");
-            return bucket;
+            return bucket.Encryption;
         }
 
         bucket.Encryption = new Bucket.EncryptionData
@@ -45,7 +45,7 @@ public class BucketRemoveAllEncryptionEnforcementConfigSample
 
         bucket = storage.UpdateBucket(bucket);
         Console.WriteLine($"The Encryption Enforcement Configuration has been removed from the bucket {bucketName}");
-        return bucket;
+        return bucket.Encryption;
     }
 }
 // [END storage_remove_all_encryption_enforcement_config]

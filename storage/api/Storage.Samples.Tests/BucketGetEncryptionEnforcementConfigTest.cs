@@ -33,11 +33,11 @@ public class BucketGetEncryptionEnforcementConfigTest
         _fixture.CreateBucket(bucketName: bucketName, location: _fixture.KmsKeyLocation);
 
         string keyName = $"projects/{_fixture.ProjectId}/locations/{_fixture.KmsKeyLocation}/keyRings/{_fixture.KmsKeyRing}/cryptoKeys/{_fixture.KmsKeyName}";
-        var bucket = bucketSetEncConfigSample.SetBucketEncryptionEnforcementConfig(
+        bucketSetEncConfigSample.SetBucketEncryptionEnforcementConfig(
             bucketName: bucketName,
             kmsKeyName: keyName,
             enforceCmek: true);
-        var bucketEncryptionData = bucketGetEncConfigSample.BucketGetEncryptionEnforcementConfig(bucket.Name);
+        var bucketEncryptionData = bucketGetEncConfigSample.BucketGetEncryptionEnforcementConfig(bucketName);
         Assert.NotNull(bucketEncryptionData);
         Assert.Equal(keyName, bucketEncryptionData.DefaultKmsKeyName);
         Assert.Multiple(() =>
