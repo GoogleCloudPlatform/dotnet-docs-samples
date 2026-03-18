@@ -36,7 +36,7 @@ public class BatchWriteAtLeastOnceAsyncSample
 
         // 2. Create and add mutation groups.
         // Mutation group 1: Insert or update a singer (16).
-        var cmdSinger1 = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+        var cmdSinger1 = connection.CreateInsertOrUpdateCommand("Singers", new SpannerParameterCollection
         {
             { "SingerId", SpannerDbType.Int64, 16 },
             { "FirstName", SpannerDbType.String, "Scarlet" },
@@ -45,28 +45,28 @@ public class BatchWriteAtLeastOnceAsyncSample
         cmd.Add(cmdSinger1);
 
         // Mutation group 2: Insert or update multiple singers and albums together.
-        var cmdSinger2 = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+        var cmdSinger2 = connection.CreateInsertOrUpdateCommand("Singers", new SpannerParameterCollection
         {
             { "SingerId", SpannerDbType.Int64, 17 },
             { "FirstName", SpannerDbType.String, "Marc" },
             { "LastName", SpannerDbType.String, "Smith" }
         });
 
-        var cmdSinger3 = connection.CreateInsertCommand("Singers", new SpannerParameterCollection
+        var cmdSinger3 = connection.CreateInsertOrUpdateCommand("Singers", new SpannerParameterCollection
         {
             { "SingerId", SpannerDbType.Int64, 18 },
             { "FirstName", SpannerDbType.String, "Catalina" },
             { "LastName", SpannerDbType.String, "Smith" }
         });
 
-        var cmdAlbum1 = connection.CreateInsertCommand("Albums", new SpannerParameterCollection
+        var cmdAlbum1 = connection.CreateInsertOrUpdateCommand("Albums", new SpannerParameterCollection
         {
             { "SingerId", SpannerDbType.Int64, 17 },
             { "AlbumId", SpannerDbType.Int64, 1 },
             { "AlbumTitle", SpannerDbType.String, "Total Junk" }
         });
 
-        var cmdAlbum2 = connection.CreateInsertCommand("Albums", new SpannerParameterCollection
+        var cmdAlbum2 = connection.CreateInsertOrUpdateCommand("Albums", new SpannerParameterCollection
         {
             { "SingerId", SpannerDbType.Int64, 18 },
             { "AlbumId", SpannerDbType.Int64, 2 },
@@ -91,11 +91,6 @@ public class BatchWriteAtLeastOnceAsyncSample
                     Console.WriteLine($"Mutation group indexes {string.Join(", ", response.Indexes)} could not be applied with error code {response.Status?.Code}");
                 }
             }
-        }
-        catch (SpannerBatchNonQueryException ex)
-        {
-            Console.WriteLine($"Error during batch write execution: {ex.Message}");
-            throw;
         }
         catch (Exception ex)
         {
