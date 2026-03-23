@@ -12,19 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_remove_all_encryption_enforcement_config]
+// [START storage_update_bucket_encryption_enforcement_config]
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
 
-public class BucketRemoveAllEncryptionEnforcementConfigSample
+public class BucketUpdateEncryptionEnforcementConfigSample
 {
     /// <summary>
-    /// Remove all encryption enforcement configurations from the bucket.
+    /// Updates the encryption enforcement configurations of the bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
-    public Bucket.EncryptionData BucketRemoveAllEncryptionEnforcementConfig(string bucketName = "your-unique-bucket-name")
+    /// <param name="encryptionData">The encryption configuration for the bucket.</param>
+    public Bucket.EncryptionData BucketUpdateEncryptionEnforcementConfig(string bucketName = "your-unique-bucket-name", Bucket.EncryptionData encryptionData = null)
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
@@ -38,14 +39,10 @@ public class BucketRemoveAllEncryptionEnforcementConfigSample
             return bucket.Encryption;
         }
 
-        bucket.Encryption = new Bucket.EncryptionData
-        {
-            DefaultKmsKeyName = bucket.Encryption.DefaultKmsKeyName
-        };
-
+        bucket.Encryption = encryptionData;
         bucket = storage.UpdateBucket(bucket);
-        Console.WriteLine($"The Encryption Enforcement Configuration has been removed from the bucket {bucketName}");
+        Console.WriteLine($"The Encryption Enforcement Configuration has been updated for the bucket {bucketName}");
         return bucket.Encryption;
     }
 }
-// [END storage_remove_all_encryption_enforcement_config]
+// [END storage_update_bucket_encryption_enforcement_config]
