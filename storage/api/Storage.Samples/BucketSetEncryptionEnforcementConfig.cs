@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_set_encryption_enforcement_config]
+// [START storage_set_bucket_encryption_enforcement_config]
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
@@ -79,4 +79,4 @@ public class BucketSetEncryptionEnforcementConfigSample
         return updatedBucket.Encryption;
     }
 }
-// [END storage_set_encryption_enforcement_config]
+// [END storage_set_bucket_encryption_enforcement_config]

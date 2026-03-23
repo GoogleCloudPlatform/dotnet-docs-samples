@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START storage_get_encryption_enforcement_config]
+// [START storage_get_bucket_encryption_enforcement_config]
 
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
@@ -32,7 +32,7 @@ public class BucketGetEncryptionEnforcementConfigSample
 
         if (bucket.Encryption == null)
         {
-            Console.WriteLine("No Encryption Configuration is found (Default GMEK is active)");
+            Console.WriteLine("No Encryption Enforcement Configuration is found");
             return bucket.Encryption;
         }
 
@@ -54,4 +54,4 @@ public class BucketGetEncryptionEnforcementConfigSample
         return bucket.Encryption;
     }
 }
-// [END storage_get_encryption_enforcement_config]
+// [END storage_get_bucket_encryption_enforcement_config]
