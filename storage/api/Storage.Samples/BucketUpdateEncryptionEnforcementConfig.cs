@@ -21,7 +21,7 @@ using System;
 public class BucketUpdateEncryptionEnforcementConfigSample
 {
     /// <summary>
-    /// Updates the encryption enforcement configurations of the bucket.
+    /// Updates the encryption enforcement configuration of the bucket.
     /// </summary>
     /// <param name="bucketName">The name of the bucket.</param>
     /// <param name="encryptionData">The encryption configuration for the bucket.</param>

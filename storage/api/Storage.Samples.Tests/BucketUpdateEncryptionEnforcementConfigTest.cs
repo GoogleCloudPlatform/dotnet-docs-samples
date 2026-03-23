@@ -12,23 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Google.Apis.Storage.v1.Data;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class BucketRemoveAllEncryptionEnforcementConfigTest
+public class BucketUpdateEncryptionEnforcementConfigTest
 {
     private readonly StorageFixture _fixture;
 
-    public BucketRemoveAllEncryptionEnforcementConfigTest(StorageFixture fixture)
+    public BucketUpdateEncryptionEnforcementConfigTest(StorageFixture fixture)
     {
         _fixture = fixture;
     }
 
-    [Fact]
-    public void BucketRemoveAllEncryptionEnforcementConfig()
+    [Theory]
+    [InlineData("FullyRestricted")]
+    [InlineData(null)]
+    public void BucketUpdateEncryptionEnforcementConfig(string restrictionMode)
     {
         var bucketSetEncConfigSample = new BucketSetEncryptionEnforcementConfigSample();
-        var bucketRemoveEncConfigSample = new BucketRemoveAllEncryptionEnforcementConfigSample();
+        var bucketUpdateEncConfigSample = new BucketUpdateEncryptionEnforcementConfigSample();
         var bucketName = _fixture.GenerateBucketName();
         _fixture.CreateBucket(bucketName: bucketName, location: _fixture.KmsKeyLocation);
         string keyName = $"projects/{_fixture.ProjectId}/locations/{_fixture.KmsKeyLocation}/keyRings/{_fixture.KmsKeyRing}/cryptoKeys/{_fixture.KmsKeyName}";
@@ -37,13 +40,27 @@ public class BucketRemoveAllEncryptionEnforcementConfigTest
             bucketName: bucketName,
             kmsKeyName: keyName,
             enforceCmek: true);
-        var bucketEncryptionData = bucketRemoveEncConfigSample.BucketRemoveAllEncryptionEnforcementConfig(bucketName);
-        Assert.Equal(keyName, bucketEncryptionData.DefaultKmsKeyName);
-        Assert.Multiple(() =>
+
+        var encryptionData = new Bucket.EncryptionData
         {
-            Assert.Null(bucketEncryptionData.CustomerSuppliedEncryptionEnforcementConfig);
-            Assert.Null(bucketEncryptionData.CustomerManagedEncryptionEnforcementConfig);
-            Assert.Null(bucketEncryptionData.GoogleManagedEncryptionEnforcementConfig);
-        });
+            DefaultKmsKeyName = keyName,
+            GoogleManagedEncryptionEnforcementConfig = restrictionMode != null
+             ? new Bucket.EncryptionData.GoogleManagedEncryptionEnforcementConfigData
+             { RestrictionMode = restrictionMode }
+             : null
+        };
+
+        var bucketEncryptionData = bucketUpdateEncConfigSample.BucketUpdateEncryptionEnforcementConfig(bucketName, encryptionData);
+        Assert.Equal(keyName, bucketEncryptionData.DefaultKmsKeyName);
+
+        if (restrictionMode != null)
+        {
+            Assert.NotNull(encryptionData.GoogleManagedEncryptionEnforcementConfig);
+            Assert.Equal(restrictionMode, encryptionData.GoogleManagedEncryptionEnforcementConfig.RestrictionMode);
+        }
+        else
+        {
+            Assert.Null(encryptionData.GoogleManagedEncryptionEnforcementConfig);
+        }
     }
 }
