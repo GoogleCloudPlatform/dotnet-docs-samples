@@ -30,13 +30,13 @@ public class BucketSetEncryptionEnforcementConfigSample
     /// </param>
     /// <param name="enforceCmek">If true, enforces Customer-Managed Encryption Key.</param>
     /// <param name="enforceGmek">If true, enforces Google-Managed Encryption Key.</param>
-    /// <param name="restrictCsek">If true, restricts Customer-Supplied Encryption Key.</param>
+    /// <param name="enforceCsek">If true, enforces Customer-Supplied Encryption Key.</param>
     public Bucket.EncryptionData SetBucketEncryptionEnforcementConfig(
         string bucketName = "your-unique-bucket-name",
         string kmsKeyName = null,
         bool enforceCmek = false,
         bool enforceGmek = false,
-        bool restrictCsek = false)
+        bool enforceCsek = false)
     {
         var storage = StorageClient.Create();
         var bucket = storage.GetBucket(bucketName);
@@ -57,14 +57,14 @@ public class BucketSetEncryptionEnforcementConfigSample
             Console.WriteLine("Default Key Set: None");
         }
 
-        string cmek = enforceGmek ? "FullyRestricted" : "NotRestricted";
-        string gmek = enforceCmek ? "FullyRestricted" : "NotRestricted";
-        string csek = (enforceCmek || enforceGmek || restrictCsek) ? "FullyRestricted" : "NotRestricted";
+        string cmek = (enforceGmek || enforceCsek) ? "FullyRestricted" : "NotRestricted";
+        string gmek = (enforceCmek || enforceCsek) ? "FullyRestricted" : "NotRestricted";
+        string csek = (enforceCmek || enforceGmek) ? "FullyRestricted" : "NotRestricted";
 
         string message = enforceCmek ? "CMEK-only enforcement policy"
             : enforceGmek ? "GMEK-only enforcement policy"
-            : restrictCsek ? "policy to restrict CSEK"
-            : null;
+            : enforceCsek ? "CSEK-only enforcement policy"
+            : "no encryption enforcement policy";
 
         bucket.Encryption.CustomerManagedEncryptionEnforcementConfig = new Bucket.EncryptionData.CustomerManagedEncryptionEnforcementConfigData { RestrictionMode = cmek };
         bucket.Encryption.CustomerSuppliedEncryptionEnforcementConfig = new Bucket.EncryptionData.CustomerSuppliedEncryptionEnforcementConfigData { RestrictionMode = csek };

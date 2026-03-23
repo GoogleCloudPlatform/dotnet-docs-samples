@@ -31,7 +31,7 @@ public class BucketSetEncryptionEnforcementConfigTest
     public void BucketSetEncryptionEnforcementConfig(
         bool enforceCmek,
         bool enforceGmek,
-        bool restrictCsek)
+        bool enforceCsek)
     {
         var bucketSetEncConfigSample = new BucketSetEncryptionEnforcementConfigSample();
         var bucketName = _fixture.GenerateBucketName();
@@ -44,11 +44,12 @@ public class BucketSetEncryptionEnforcementConfigTest
             kmsKeyName: keyName,
             enforceCmek: enforceCmek,
             enforceGmek: enforceGmek,
-            restrictCsek: restrictCsek);
+            enforceCsek: enforceCsek);
 
-        string expectedCmek = enforceGmek ? "FullyRestricted" : "NotRestricted";
-        string expectedGmek = enforceCmek ? "FullyRestricted" : "NotRestricted";
-        string expectedCsek = (enforceCmek || enforceGmek || restrictCsek) ? "FullyRestricted" : "NotRestricted";
+        string expectedCmek = (enforceGmek || enforceCsek) ? "FullyRestricted" : "NotRestricted";
+        string expectedGmek = (enforceCmek || enforceCsek) ? "FullyRestricted" : "NotRestricted";
+        string expectedCsek = (enforceCmek || enforceGmek) ? "FullyRestricted" : "NotRestricted";
+
 
         Assert.Multiple(() =>
         {
