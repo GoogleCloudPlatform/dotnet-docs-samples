@@ -50,7 +50,6 @@ public class BucketSetEncryptionEnforcementConfigTest
         string expectedGmek = (enforceCmek || enforceCsek) ? "FullyRestricted" : "NotRestricted";
         string expectedCsek = (enforceCmek || enforceGmek) ? "FullyRestricted" : "NotRestricted";
 
-
         Assert.Multiple(() =>
         {
             Assert.Equal(expectedCmek, bucketEncryptionData.CustomerManagedEncryptionEnforcementConfig?.RestrictionMode);
