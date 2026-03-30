@@ -31,7 +31,7 @@ if (-not $kokorodir) {
     new-item -type directory -path $tempfile
     $kokorodir = $tempfile
     @($secrets, $credentials, $privatekeyfile, $certfile) | ForEach-Object { 
-        gsutil cp gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/$_  (Join-Path $kokorodir $_)
+        gcloud storage cp gs://cloud-devrel-kokoro-resources/dotnet-docs-samples/$_  (Join-Path $kokorodir $_)
     }
 }
 & (Join-Path $kokorodir $secrets)
