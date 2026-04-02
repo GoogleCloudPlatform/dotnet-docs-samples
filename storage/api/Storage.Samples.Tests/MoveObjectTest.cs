@@ -29,15 +29,15 @@ public class MoveObjectTest
     public void MoveObject()
     {
         MoveObjectSample moveObjectSample = new MoveObjectSample();
-        UploadObjectFromMemorySample uploadObjectFromMemory = new UploadObjectFromMemorySample();
+        UploadObjectFromMemorySample uploadObjectSample = new UploadObjectFromMemorySample();
         ListFilesSample listFilesSample = new ListFilesSample();
         var originName = Guid.NewGuid().ToString();
         var originContent = Guid.NewGuid().ToString();
         var destinationName = Guid.NewGuid().ToString();
-        uploadObjectFromMemory.UploadObjectFromMemory(_fixture.BucketNameHns, originName, originContent);
-        moveObjectSample.MoveObject(_fixture.BucketNameHns, originName, destinationName);
-        _fixture.CollectHnsObject(destinationName);
-        var objects = listFilesSample.ListFiles(_fixture.BucketNameHns);
+        uploadObjectSample.UploadObjectFromMemory(_fixture.BucketNameGeneric, originName, originContent);
+        moveObjectSample.MoveObject(_fixture.BucketNameGeneric, originName, destinationName);
+        _fixture.Collect(destinationName);
+        var objects = listFilesSample.ListFiles(_fixture.BucketNameGeneric);
         Assert.DoesNotContain(objects, obj => obj.Name == originName);
         Assert.Contains(objects, obj => obj.Name == destinationName);
     }
