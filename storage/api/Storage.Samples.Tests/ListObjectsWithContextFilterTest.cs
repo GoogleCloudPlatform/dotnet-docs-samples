@@ -36,18 +36,17 @@ public class ListObjectsWithContextFilterTest
         string contextKey = "A\u00F1\u03A9\U0001F680";
         string contextValue = "Ab\u00F1\u03A9\U0001F680";
 
-        var custom = new Dictionary<string, ObjectCustomContextPayload>
+        var customContexts = new Dictionary<string, ObjectCustomContextPayload>
         {
             { contextKey, new ObjectCustomContextPayload { Value = contextValue } }
         };
 
         var bucketName = _fixture.GenerateBucketName();
         var objectName = _fixture.GenerateName();
-        var contextsData = new Object.ContextsData { Custom = custom };
         _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
         var content = _fixture.GenerateContent();
         uploadObjectSample.UploadObjectFromMemory(bucketName, objectName, content);
-        setContextsSample.SetObjectContexts(bucketName, objectName, contextsData);
+        setContextsSample.SetObjectContexts(bucketName, objectName, customContexts);
 
         string filter = $@"contexts.""{contextKey}""=""{contextValue}""";
         var filteredObjects = listContextsSample.ListObjectsWithContextFilter(bucketName, filter);

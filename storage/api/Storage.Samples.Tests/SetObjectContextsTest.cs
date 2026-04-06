@@ -35,7 +35,7 @@ public class SetObjectContextsTest
         string contextKey = "A\u00F1\u03A9\U0001F680";
         string contextValue = "Ab\u00F1\u03A9\U0001F680";
 
-        var custom = new Dictionary<string, ObjectCustomContextPayload>
+        var customContexts = new Dictionary<string, ObjectCustomContextPayload>
         {
             { contextKey, new ObjectCustomContextPayload { Value = contextValue } }
         };
@@ -44,12 +44,11 @@ public class SetObjectContextsTest
         var objectName = _fixture.GenerateName();
         _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: true, registerForDeletion: true);
 
-        var contextsData = new Object.ContextsData { Custom = custom };
         var content = _fixture.GenerateContent();
         uploadObjectSample.UploadObjectFromMemory(bucketName, objectName, content);
-        contextsSample.SetObjectContexts(bucketName, objectName, contextsData);
+        var appliedContexts = contextsSample.SetObjectContexts(bucketName, objectName, customContexts);
         var retrievedObject = _fixture.Client.GetObject(bucketName, objectName);
-        Assert.Equal(contextsData.Custom.Count, retrievedObject.Contexts.Custom.Count);
+        Assert.Equal(appliedContexts.Custom.Count, retrievedObject.Contexts.Custom.Count);
         var singleContext = Assert.Single(retrievedObject.Contexts.Custom);
         Assert.Equal(contextKey, singleContext.Key);
         Assert.Equal(contextValue, singleContext.Value.Value);

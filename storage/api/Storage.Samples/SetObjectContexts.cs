@@ -14,8 +14,10 @@
 
 // [START storage_set_object_contexts]
 
+using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using System;
+using System.Collections.Generic;
 
 public class SetObjectContextsSample
 {
@@ -24,14 +26,15 @@ public class SetObjectContextsSample
     /// </summary>
     /// <param name="bucketName">The name of the bucket containing the object.</param>
     /// <param name="objectName">The name of the object.</param>
-    /// <param name="contextsData">User-defined or system-defined object contexts. Each object context is a key-payload pair, where the key
-    /// provides the identification and the payload holds the associated value and additional metadata.</param>
+    /// <param name="customContexts">The new user-defined contexts to set context data associated with the object.</param>
     public Google.Apis.Storage.v1.Data.Object.ContextsData SetObjectContexts(
         string bucketName = "your-unique-bucket-name",
         string objectName = "your-object-name",
-        Google.Apis.Storage.v1.Data.Object.ContextsData contextsData = null)
+        IDictionary<string, ObjectCustomContextPayload> customContexts = null)
     {
         var storage = StorageClient.Create();
+        customContexts ??= new Dictionary<string, ObjectCustomContextPayload>();
+        var contextsData = new Google.Apis.Storage.v1.Data.Object.ContextsData { Custom = customContexts };
         var obj = new Google.Apis.Storage.v1.Data.Object
         {
             Bucket = bucketName,
