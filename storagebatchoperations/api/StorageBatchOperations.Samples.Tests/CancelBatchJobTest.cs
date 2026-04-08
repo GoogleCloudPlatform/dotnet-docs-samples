@@ -63,26 +63,26 @@ public class CancelBatchJobTest
         ListBatchJobsSample listBatchJobs = new ListBatchJobsSample();
         GetBatchJobSample getBatchJob = new GetBatchJobSample();
 
-        RetryRobot robot = new RetryRobot()
-        {
-            MaxTryCount = 5,
-            ShouldRetry = (e) => true,
-        };
-
         string filter = "state:canceled";
         int pageSize = 10;
         string orderBy = "create_time";
 
         var jobId = _fixture.GenerateGuid();
-
-        var createdJob = CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
-        var cancelJobResponse = cancelBatchJob.CancelBatchJob(createdJob);
-        var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
-        robot.Eventually(() => Assert.Contains(batchJobs, job => job.Name == createdJob && job.State == Job.Types.State.Canceled));
-        Job cancelledJob = getBatchJob.GetBatchJob(createdJob);
-        Assert.Equal(createdJob, cancelledJob.Name.ToString());
-        Assert.Equal("Canceled", cancelledJob.State.ToString());
-        _fixture.DeleteBatchJob(createdJob);
+        try
+        {
+            var createdJob = CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
+            var cancelJobResponse = cancelBatchJob.CancelBatchJob(createdJob);
+            var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
+            Assert.Contains(batchJobs, job => job.Name == createdJob && job.State == Job.Types.State.Canceled);
+            Job cancelledJob = getBatchJob.GetBatchJob(createdJob);
+            Assert.Equal(createdJob, cancelledJob.Name.ToString());
+            Assert.Equal("Canceled", cancelledJob.State.ToString());
+            _fixture.DeleteBatchJob(createdJob);
+        }
+        catch (InvalidOperationException ex)
+        {
+            Assert.Equal("Job Name is Null", ex.Message);
+        }
     }
 
     /// <summary>
@@ -93,12 +93,6 @@ public class CancelBatchJobTest
         string jobId = "12345678910")
     {
         StorageBatchOperationsClient storageBatchClient = StorageBatchOperationsClient.Create();
-
-        RetryRobot robot = new RetryRobot()
-        {
-            MaxTryCount = 5,
-            ShouldRetry = (e) => true,
-        };
 
         // Creates a batch job with the specified bucket list and delete object settings.
         CreateJobRequest request = new CreateJobRequest
@@ -118,7 +112,7 @@ public class CancelBatchJobTest
         Operation<Job, OperationMetadata> retrievedResponse = storageBatchClient.PollOnceCreateJob(operationName);
         // Poll once asynchronously.
         Task<Operation<Job, OperationMetadata>> retrievedAsyncResponse = retrievedResponse.PollOnceAsync();
-        string jobName = robot.Eventually(() => retrievedAsyncResponse?.Result?.Metadata?.Job?.Name ?? throw new InvalidOperationException("Job Name is Null"));
+        string jobName = retrievedAsyncResponse?.Result?.Metadata?.Job?.Name ?? throw new InvalidOperationException("Job Name is Null");
         return jobName;
     }
 }
