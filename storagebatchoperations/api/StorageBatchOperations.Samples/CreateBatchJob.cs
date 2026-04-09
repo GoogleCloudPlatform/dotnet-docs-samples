@@ -112,7 +112,7 @@ public class CreateBatchJobSample
         };
 
         Operation<Job, OperationMetadata> response = operationsClient.CreateJob(request);
-        Operation<Job, OperationMetadata> completedResponse = response.PollOnce();
+        Operation<Job, OperationMetadata> completedResponse = response.PollUntilCompleted();
         Job result = completedResponse.Result;
         Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created");
         return result;
