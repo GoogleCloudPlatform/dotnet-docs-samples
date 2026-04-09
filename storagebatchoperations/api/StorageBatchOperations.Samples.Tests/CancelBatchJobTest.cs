@@ -25,7 +25,7 @@ using Xunit;
 public class CancelBatchJobTest
 {
     private readonly StorageFixture _fixture;
-    private readonly BucketList.Types.Bucket _bucket = new();
+    private readonly BucketList.Types.Bucket _bucket;
     private readonly BucketList _bucketList = new();
     private readonly PrefixList _prefixListObject = new();
 
@@ -71,7 +71,7 @@ public class CancelBatchJobTest
         try
         {
             var createdJob = CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
-            var cancelJobResponse = cancelBatchJob.CancelBatchJob(createdJob);
+            cancelBatchJob.CancelBatchJob(createdJob);
             var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
             Assert.Contains(batchJobs, job => job.Name == createdJob);
             Job cancelledJob = getBatchJob.GetBatchJob(createdJob);

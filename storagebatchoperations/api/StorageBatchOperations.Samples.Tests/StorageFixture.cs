@@ -28,7 +28,6 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     public string ProjectId { get; }
     public string LocationId { get; } = "global";
     public IList<string> TempBucketNames { get; } = [];
-    public string ServiceAccountEmail { get; } = "gcs-iam-acl-test@dotnet-docs-samples-tests.iam.gserviceaccount.com";
     public StorageClient Client { get; }
     public StorageBatchOperationsClient OperationsClient { get; }
     public LocationName LocationName { get; }
@@ -83,19 +82,6 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     /// Bucket creation/update/deletion is rate-limited. To avoid making the tests flaky, we sleep after each operation.
     /// </summary>
     internal void SleepAfterBucketCreateUpdateDelete() => Thread.Sleep(2000);
-
-    internal string GetServiceAccountEmail()
-    {
-        var cred = GoogleCredential.GetApplicationDefault().UnderlyingCredential;
-        switch (cred)
-        {
-            case ServiceAccountCredential sac:
-                return sac.Id;
-            // TODO: We may well need to handle ComputeCredential for Kokoro.
-            default:
-                throw new InvalidOperationException($"Unable to retrieve service account email address for credential type {cred.GetType()}");
-        }
-    }
 
     /// <summary>
     /// Deletes the batch job at the end of the test.

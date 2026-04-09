@@ -21,10 +21,6 @@ using System;
 
 public class CreateBatchJobSample
 {
-    private DeleteObject _deleteObject;
-    private PutObjectHold _putObjectHold;
-    private Job _job;
-
     /// <summary>
     /// Creates a storage batch operation job.
     /// </summary>
@@ -41,65 +37,66 @@ public class CreateBatchJobSample
         object jobTransformationObject = null)
     {
         StorageBatchOperationsClient operationsClient = StorageBatchOperationsClient.Create();
-
+        Job job = null;
+        PutObjectHold putObjectHold;
         switch (jobType)
         {
             case "RewriteObject":
-                _job = new Job
+                job = new Job
                 {
                     RewriteObject = (RewriteObject) jobTransformationObject,
                     BucketList = bucketList
                 };
                 break;
             case "PutMetadata":
-                _job = new Job
+                job = new Job
                 {
                     PutMetadata = (PutMetadata) jobTransformationObject,
                     BucketList = bucketList
                 };
                 break;
             case "DeleteObject":
-                _deleteObject = new DeleteObject { PermanentObjectDeletionEnabled = true };
+                var deleteObject = new DeleteObject { PermanentObjectDeletionEnabled = true };
 
-                _job = new Job
+                job = new Job
                 {
-                    DeleteObject = _deleteObject,
+                    DeleteObject = deleteObject,
                     BucketList = bucketList
                 };
                 break;
             case "PutObjectHoldEventBasedHoldSet":
-                _putObjectHold = new PutObjectHold { EventBasedHold = PutObjectHold.Types.HoldStatus.Set };
+                putObjectHold = new PutObjectHold { EventBasedHold = PutObjectHold.Types.HoldStatus.Set };
 
-                _job = new Job
+                job = new Job
                 {
-                    PutObjectHold = _putObjectHold,
+                    PutObjectHold = putObjectHold,
                     BucketList = bucketList
                 };
                 break;
             case "PutObjectHoldEventBasedHoldUnSet":
-                _putObjectHold = new PutObjectHold { EventBasedHold = PutObjectHold.Types.HoldStatus.Unset };
+                putObjectHold = new PutObjectHold { EventBasedHold = PutObjectHold.Types.HoldStatus.Unset };
 
-                _job = new Job
+                job = new Job
                 {
-                    PutObjectHold = _putObjectHold,
+                    PutObjectHold = putObjectHold,
                     BucketList = bucketList
                 };
                 break;
             case "PutObjectHoldTemporaryHoldSet":
-                _putObjectHold = new PutObjectHold { TemporaryHold = PutObjectHold.Types.HoldStatus.Set };
+                putObjectHold = new PutObjectHold { TemporaryHold = PutObjectHold.Types.HoldStatus.Set };
 
-                _job = new Job
+                job = new Job
                 {
-                    PutObjectHold = _putObjectHold,
+                    PutObjectHold = putObjectHold,
                     BucketList = bucketList
                 };
                 break;
             case "PutObjectHoldTemporaryHoldUnSet":
-                _putObjectHold = new PutObjectHold { TemporaryHold = PutObjectHold.Types.HoldStatus.Unset };
+                putObjectHold = new PutObjectHold { TemporaryHold = PutObjectHold.Types.HoldStatus.Unset };
 
-                _job = new Job
+                job = new Job
                 {
-                    PutObjectHold = _putObjectHold,
+                    PutObjectHold = putObjectHold,
                     BucketList = bucketList
                 };
                 break;
@@ -110,12 +107,12 @@ public class CreateBatchJobSample
         {
             ParentAsLocationName = locationName,
             JobId = jobId,
-            Job = _job,
+            Job = job,
             RequestId = jobId,
         };
 
         Operation<Job, OperationMetadata> response = operationsClient.CreateJob(request);
-        Operation<Job, OperationMetadata> completedResponse = response.PollUntilCompleted();
+        Operation<Job, OperationMetadata> completedResponse = response.PollOnce();
         Job result = completedResponse.Result;
         Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created");
         return result;

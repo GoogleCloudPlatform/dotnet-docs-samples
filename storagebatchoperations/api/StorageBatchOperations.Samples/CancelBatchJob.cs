@@ -30,7 +30,7 @@ public class CancelBatchJobSample
         CancelJobRequest request = new CancelJobRequest
         {
             Name = jobName,
-            RequestId = jobName
+            RequestId = Guid.NewGuid().ToString()
         };
         // Cancel the job.
         var response = operationsClient.CancelJob(request);

@@ -19,7 +19,7 @@ using Xunit;
 public class DeleteBatchJobTest
 {
     private readonly StorageFixture _fixture;
-    private readonly BucketList.Types.Bucket _bucket = new();
+    private readonly BucketList.Types.Bucket _bucket;
     private readonly BucketList _bucketList = new();
     private readonly PrefixList _prefixListObject = new();
 
