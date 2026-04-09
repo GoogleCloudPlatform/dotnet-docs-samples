@@ -45,13 +45,13 @@ public class CreateBatchJobTest
         var manifestObjectContent = $"bucket,name,generation{Environment.NewLine}{bucketName},{objectName}";
 
         byte[] byteObjectContent = Encoding.UTF8.GetBytes(objectContent);
-        MemoryStream streamObjectContent = new MemoryStream(byteObjectContent);
+        using MemoryStream streamObjectContent = new MemoryStream(byteObjectContent);
         // Uploading an object to the bucket
         _fixture.Client.UploadObject(bucketName, objectName, "application/text", streamObjectContent);
 
         byte[] byteManifestObjectContent = Encoding.UTF8.GetBytes(manifestObjectContent);
         // Uploading a manifest object to the manifest bucket
-        MemoryStream streamManifestObjectContent = new MemoryStream(byteManifestObjectContent);
+        using MemoryStream streamManifestObjectContent = new MemoryStream(byteManifestObjectContent);
         _fixture.Client.UploadObject(manifestBucketName, $"{manifestObjectName}.csv", "text/csv", streamManifestObjectContent);
         _bucket = new BucketList.Types.Bucket
         {

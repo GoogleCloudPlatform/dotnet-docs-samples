@@ -37,7 +37,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         ProjectId = Environment.GetEnvironmentVariable("GOOGLE_PROJECT_ID");
         if (string.IsNullOrWhiteSpace(ProjectId))
         {
-            throw new Exception("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
+            throw new InvalidOperationException("You need to set the Environment variable 'GOOGLE_PROJECT_ID' with your Google Cloud Project's project id.");
         }
         LocationName = LocationName.FromProjectLocation(ProjectId, LocationId);
         Client = StorageClient.Create();
