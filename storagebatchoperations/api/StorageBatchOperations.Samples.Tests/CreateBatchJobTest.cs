@@ -65,12 +65,15 @@ public class CreateBatchJobTest
         _bucketList.Buckets.Insert(0, _bucket);
     }
 
-    [Fact]
-    public void TestCreateBatchJob()
+    [Theory]
+    [InlineData("DeleteObject")]
+    [InlineData("PutObjectHold")]
+    [InlineData("RewriteObject")]
+    [InlineData("PutMetadata")]
+    public void TestCreateBatchJob(string jobTransformationCase)
     {
         CreateBatchJobSample createJob = new CreateBatchJobSample();
         var jobId = _fixture.GenerateGuid();
-        var jobTransformationCase = "DeleteObject";
         var holdState = "EventBasedHoldSet";
         var jobTransformationObject = new object();
         string jobType;
