@@ -6,8 +6,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageBatchOperations.Samp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StorageBatchOperations.Samples.Tests", "StorageBatchOperations.Samples.Tests\StorageBatchOperations.Samples.Tests.csproj", "{2BB74746-319D-465B-AAD5-C4430322501E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "testutil", "..\..\testutil\testutil.csproj", "{5F74B143-822C-4514-B5B9-796EF116E44B}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
