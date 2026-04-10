@@ -18,7 +18,7 @@ using Google.LongRunning;
 using System;
 using System.IO;
 using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -31,7 +31,7 @@ public class CancelBatchJobTest
 
     public CancelBatchJobTest(StorageFixture fixture)
     {
-        int i = 10;
+        int i = 20;
         _fixture = fixture;
         var bucketName = _fixture.GenerateBucketName();
         _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: false, registerForDeletion: true);
@@ -45,6 +45,7 @@ public class CancelBatchJobTest
             _fixture.Client.UploadObject(bucketName, objectName, "application/text", streamObjectContent);
             i--;
         }
+
         _bucket = new BucketList.Types.Bucket
         {
             Bucket_ = bucketName,
@@ -67,22 +68,38 @@ public class CancelBatchJobTest
         string orderBy = "create_time";
 
         var jobId = _fixture.GenerateGuid();
+        var createdJobName = CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
+        Assert.NotNull(createdJobName);
 
-        try
+        // Poll until the job is in a state that can be cancelled (Running)
+        // This prevents attempting to cancel a job that hasn't started or has already finished.
+        bool isCancellable = false;
+        for (int attempt = 0; attempt < 10; attempt++)
         {
-            var createdJob = CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
-            cancelBatchJob.CancelBatchJob(createdJob);
-            var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
-            Assert.Contains(batchJobs, job => job.Name == createdJob);
-            Job cancelledJob = getBatchJob.GetBatchJob(createdJob);
-            Assert.Equal(createdJob, cancelledJob.Name.ToString());
-            Assert.Equal("Canceled", cancelledJob.State.ToString());
-            _fixture.DeleteBatchJob(createdJob);
+            Job currentJob = getBatchJob.GetBatchJob(createdJobName);
+            if (currentJob.State == Job.Types.State.Running)
+            {
+                isCancellable = true;
+                break;
+            }
+            if (currentJob.State == Job.Types.State.Succeeded) break;
         }
-        catch (InvalidOperationException ex)
+
+        Assert.True(isCancellable, "Job did not reach a Running state in time to be cancelled.");
+        cancelBatchJob.CancelBatchJob(createdJobName);
+
+        Job finalJob = null;
+        for (int attempt = 0; attempt < 100; attempt++)
         {
-            Assert.Equal("Job Name is Null", ex.Message);
+            finalJob = getBatchJob.GetBatchJob(createdJobName);
+            if (finalJob.State == Job.Types.State.Canceled) break;
         }
+        Assert.Equal(createdJobName, finalJob.Name.ToString());
+        Assert.Equal(Job.Types.State.Canceled, finalJob.State);
+
+        var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
+        Assert.Contains(batchJobs, j => j.Name == createdJobName);
+        _fixture.DeleteBatchJob(createdJobName);
     }
 
     /// <summary>
@@ -108,11 +125,15 @@ public class CancelBatchJobTest
         };
 
         Operation<Job, OperationMetadata> response = storageBatchClient.CreateJob(request);
-        string operationName = response.Name;
-        Operation<Job, OperationMetadata> retrievedResponse = storageBatchClient.PollOnceCreateJob(operationName);
-        // Poll once asynchronously.
-        Task<Operation<Job, OperationMetadata>> retrievedAsyncResponse = retrievedResponse.PollOnceAsync();
-        string jobName = retrievedAsyncResponse?.Result?.Metadata?.Job?.Name ?? throw new InvalidOperationException("Job Name is Null");
-        return jobName;
+
+        // We poll once to ensure the LRO has initialized the Job resource
+        Operation<Job, OperationMetadata> retrievedResponse = storageBatchClient.PollOnceCreateJob(response.Name);
+
+        // Use Result to block until the initial metadata is available
+        var resultJob = retrievedResponse.Metadata?.Job;
+
+        if (resultJob == null || string.IsNullOrEmpty(resultJob.Name))
+        Thread.Sleep(4000);
+        return resultJob.Name;
     }
 }
