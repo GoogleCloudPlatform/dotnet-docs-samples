@@ -25,10 +25,6 @@ public class CreateBatchJobTest
     private readonly BucketList.Types.Bucket _bucket = new();
     private readonly BucketList _bucketList = new();
     private readonly PrefixList _prefixListObject = new();
-    private string _kmsKey;
-    private string _keyRingId;
-    private string _cryptoKeyId;
-    private CryptoKeyName _cryptoKeyName;
 
     public CreateBatchJobTest(StorageFixture fixture)
     {
