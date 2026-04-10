@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using Google.Api.Gax.ResourceNames;
-using Google.Apis.Auth.OAuth2;
 using Google.Apis.Storage.v1.Data;
 using Google.Cloud.Storage.V1;
 using Google.Cloud.StorageBatchOperations.V1;
@@ -31,6 +30,8 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     public StorageClient Client { get; }
     public StorageBatchOperationsClient OperationsClient { get; }
     public LocationName LocationName { get; }
+    public string KmsKeyRing { get; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYRING");
+    public string KmsKeyName { get; } = Environment.GetEnvironmentVariable("STORAGE_KMS_KEYNAME");
 
     public StorageFixture()
     {

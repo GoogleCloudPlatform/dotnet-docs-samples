@@ -91,11 +91,9 @@ public class CreateBatchJobTest
         // If the job transformation case is RewriteObject, we can set the KmsKey and KmsKeyAsCryptoKeyName.
         if (jobTransformationCase == "RewriteObject")
         {
-            _keyRingId = GetEnvironmentVariable("STORAGE_KMS_KEYRING_ID", "This is the Key Ring ID");
-            _cryptoKeyId = GetEnvironmentVariable("STORAGE_KMS_CRYPTOKEY_ID", "This is the Crypto Key ID.");
-            _kmsKey = $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/keyRings/{_keyRingId}/cryptoKeys/{_cryptoKeyId}";
-            _cryptoKeyName = CryptoKeyName.FromProjectLocationKeyRingCryptoKey(_fixture.ProjectId, _fixture.LocationId, _keyRingId, _cryptoKeyId);
-            RewriteObject rewriteObject = new RewriteObject { KmsKey = _kmsKey, KmsKeyAsCryptoKeyName = _cryptoKeyName };
+            string kmsKeyName = $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/keyRings/{_fixture.KmsKeyRing}/cryptoKeys/{_fixture.KmsKeyName}";
+            var cryptoKeyName = CryptoKeyName.FromProjectLocationKeyRingCryptoKey(_fixture.ProjectId, _fixture.LocationId, _fixture.KmsKeyRing, _fixture.KmsKeyName);
+            RewriteObject rewriteObject = new RewriteObject { KmsKey = kmsKeyName, KmsKeyAsCryptoKeyName = cryptoKeyName };
             jobTransformationObject = rewriteObject;
 
         }
@@ -123,16 +121,5 @@ public class CreateBatchJobTest
         Assert.NotNull(createdBatchJob.CreateTime);
         Assert.NotNull(createdBatchJob.CompleteTime);
         _fixture.DeleteBatchJob(createdBatchJob.Name);
-    }
-
-    private static string GetEnvironmentVariable(string envVarName, string message = "")
-    {
-        string varValue = Environment.GetEnvironmentVariable(envVarName);
-        if (string.IsNullOrEmpty(varValue))
-        {
-            throw new InvalidOperationException(
-                $"Please set the {envVarName} environment variable. {message}");
-        }
-        return varValue;
     }
 }
