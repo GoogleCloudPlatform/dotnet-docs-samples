@@ -123,17 +123,19 @@ public class CancelBatchJobTest
             },
             RequestId = jobId,
         };
-
+     
         Operation<Job, OperationMetadata> response = storageBatchClient.CreateJob(request);
+        string jobName = String.Empty;
+        for (int attempt = 0; attempt < 10; attempt++)
+        {
+            Operation<Job, OperationMetadata> retrievedResponse = storageBatchClient.PollOnceCreateJob(response.Name);
+            jobName = retrievedResponse.Metadata?.Job?.Name;
 
-        // We poll once to ensure the LRO has initialized the Job resource
-        Operation<Job, OperationMetadata> retrievedResponse = storageBatchClient.PollOnceCreateJob(response.Name);
-
-        // Use Result to block until the initial metadata is available
-        var resultJob = retrievedResponse.Metadata?.Job;
-
-        if (resultJob == null || string.IsNullOrEmpty(resultJob.Name))
-        Thread.Sleep(4000);
-        return resultJob.Name;
+            if (!string.IsNullOrEmpty(jobName))
+            {
+                break;
+            }
+        }
+        return jobName;
     }
 }
