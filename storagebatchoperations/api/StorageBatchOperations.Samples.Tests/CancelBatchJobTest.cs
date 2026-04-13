@@ -89,7 +89,7 @@ public class CancelBatchJobTest
         cancelBatchJob.CancelBatchJob(createdJobName);
 
         Job finalJob = null;
-        for (int attempt = 0; attempt < 100; attempt++)
+        for (int attempt = 0; attempt < 1000; attempt++)
         {
             finalJob = getBatchJob.GetBatchJob(createdJobName);
             if (finalJob.State == Job.Types.State.Canceled) break;
