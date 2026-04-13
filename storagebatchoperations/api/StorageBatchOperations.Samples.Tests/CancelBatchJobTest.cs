@@ -123,7 +123,7 @@ public class CancelBatchJobTest
             },
             RequestId = jobId,
         };
-     
+
         Operation<Job, OperationMetadata> response = storageBatchClient.CreateJob(request);
         string jobName = String.Empty;
         for (int attempt = 0; attempt < 10; attempt++)
