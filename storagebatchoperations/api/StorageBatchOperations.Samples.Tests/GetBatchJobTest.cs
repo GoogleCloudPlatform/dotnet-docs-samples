@@ -42,11 +42,11 @@ public class GetBatchJobTest
     public void TestGetBatchJob()
     {
         GetBatchJobSample getJob = new GetBatchJobSample();
-        CreateBatchJobSample createJob = new CreateBatchJobSample();
+        CreateBatchJobWithDeleteObjectSample createJob = new CreateBatchJobWithDeleteObjectSample();
 
         var jobId = _fixture.GenerateGuid();
         // Create a batch job with the specified bucket list and job ID.
-        var createdJob = createJob.CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
+        var createdJob = createJob.CreateBatchJobWithDeleteObject(_fixture.LocationName, _bucketList, jobId);
         // Get the created job using its name.
         var retrievedJob = getJob.GetBatchJob(createdJob.Name);
         // Assert that the retrieved job is not null.

@@ -44,14 +44,14 @@ public class DeleteBatchJobTest
         DeleteBatchJobSample deleteBatchJob = new DeleteBatchJobSample();
         ListBatchJobsSample listBatchJobs = new ListBatchJobsSample();
         GetBatchJobSample getBatchJob = new GetBatchJobSample();
-        CreateBatchJobSample createBatchJob = new CreateBatchJobSample();
+        CreateBatchJobWithDeleteObjectSample createBatchJob = new CreateBatchJobWithDeleteObjectSample();
 
         string filter = "";
         int pageSize = 10;
         string orderBy = "create_time";
 
         var jobId = _fixture.GenerateGuid();
-        var createdJob = createBatchJob.CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
+        var createdJob = createBatchJob.CreateBatchJobWithDeleteObject(_fixture.LocationName, _bucketList, jobId);
         // Delete the created job.
         deleteBatchJob.DeleteBatchJob(createdJob.Name);
         var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);

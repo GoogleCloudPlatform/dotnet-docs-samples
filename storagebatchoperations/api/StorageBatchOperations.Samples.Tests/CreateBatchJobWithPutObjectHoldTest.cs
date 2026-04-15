@@ -19,14 +19,14 @@ using System.Text;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
-public class CreateBatchJobTest
+public class CreateBatchJobWithPutObjectHoldTest
 {
     private readonly StorageFixture _fixture;
     private readonly BucketList.Types.Bucket _bucket = new();
     private readonly BucketList _bucketList = new();
     private readonly PrefixList _prefixListObject = new();
 
-    public CreateBatchJobTest(StorageFixture fixture)
+    public CreateBatchJobWithPutObjectHoldTest(StorageFixture fixture)
     {
         _fixture = fixture;
         var bucketName = _fixture.GenerateBucketName();
@@ -61,56 +61,16 @@ public class CreateBatchJobTest
         _bucketList.Buckets.Insert(0, _bucket);
     }
 
-    [Theory]
-    [InlineData("DeleteObject")]
-    [InlineData("PutObjectHold")]
-    [InlineData("RewriteObject")]
-    [InlineData("PutMetadata")]
-    public void TestCreateBatchJob(string jobTransformationCase)
+    [Fact]
+    public void TestCreateBatchJobWithPutObjectHold()
     {
-        CreateBatchJobSample createJob = new CreateBatchJobSample();
+        CreateBatchJobWithPutObjectHoldSample createJob = new CreateBatchJobWithPutObjectHoldSample();
         var jobId = _fixture.GenerateGuid();
-        var holdState = "EventBasedHoldSet";
-        var jobTransformationObject = new object();
-        string jobType;
 
-        // If the job transformation case is PutObjectHold, we can set the hold state to EventBasedHoldSet or EventBasedHoldUnSet or TemporaryHoldSet or TemporaryHoldUnSet.
-        if (jobTransformationCase == "PutObjectHold")
-        {
-            jobType = $"{jobTransformationCase}{holdState}";
-        }
-        // If the job transformation case is other than PutObjectHold, we dont set the hold state.
-        else
-        {
-            jobType = jobTransformationCase;
-        }
-        // If the job transformation case is RewriteObject, we can set the KmsKey and KmsKeyAsCryptoKeyName.
-        if (jobTransformationCase == "RewriteObject")
-        {
-            string kmsKeyName = $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/keyRings/{_fixture.KmsKeyRing}/cryptoKeys/{_fixture.KmsKeyName}";
-            var cryptoKeyName = CryptoKeyName.FromProjectLocationKeyRingCryptoKey(_fixture.ProjectId, _fixture.LocationId, _fixture.KmsKeyRing, _fixture.KmsKeyName);
-            RewriteObject rewriteObject = new RewriteObject { KmsKey = kmsKeyName, KmsKeyAsCryptoKeyName = cryptoKeyName };
-            jobTransformationObject = rewriteObject;
-
-        }
-        // If the job transformation case is PutMetadata, we can set the CacheControl, ContentDisposition, ContentEncoding, ContentLanguage, ContentType and CustomTime.
-        else if (jobTransformationCase == "PutMetadata")
-        {
-            PutMetadata putMetadata = new PutMetadata
-            {
-                CacheControl = "no-cache",
-                ContentDisposition = "inline",
-                ContentEncoding = "gzip",
-                ContentLanguage = "en-US",
-                ContentType = "text/plain",
-                CustomTime = DateTime.UtcNow.ToString("o")
-            };
-            jobTransformationObject = putMetadata;
-        }
         // Create a batch job with the specified transformation case and bucket list
-        var createdBatchJob = createJob.CreateBatchJob(_fixture.LocationName, _bucketList, jobId, jobType, jobTransformationObject);
+        var createdBatchJob = createJob.CreateBatchJobWithPutObjectHold(_fixture.LocationName, _bucketList, jobId);
         Assert.Equal(createdBatchJob.BucketList, _bucketList);
-        Assert.Equal(createdBatchJob.TransformationCase.ToString(), jobTransformationCase);
+        Assert.Equal("PutObjectHold", createdBatchJob.TransformationCase.ToString());
         Assert.Equal(createdBatchJob.SourceCase.ToString(), _bucketList.GetType().Name);
         Assert.NotNull(createdBatchJob.Name);
         Assert.NotNull(createdBatchJob.JobName);

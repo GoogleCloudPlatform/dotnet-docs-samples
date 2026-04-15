@@ -42,7 +42,7 @@ public class ListBatchJobsTest
     public void TestListBatchJobs()
     {
         ListBatchJobsSample listBatchJobs = new ListBatchJobsSample();
-        CreateBatchJobSample createBatchJob = new CreateBatchJobSample();
+        CreateBatchJobWithDeleteObjectSample createBatchJob = new CreateBatchJobWithDeleteObjectSample();
 
         // Filter to list only succeeded jobs
         string filter = "state:succeeded";
@@ -50,7 +50,7 @@ public class ListBatchJobsTest
         string orderBy = "create_time";
 
         var jobId = _fixture.GenerateGuid();
-        var createdJob = createBatchJob.CreateBatchJob(_fixture.LocationName, _bucketList, jobId);
+        var createdJob = createBatchJob.CreateBatchJobWithDeleteObject(_fixture.LocationName, _bucketList, jobId);
         // List batch jobs with the specified filter, page size, and order by criteria
         var batchJobs = listBatchJobs.ListBatchJobs(_fixture.LocationName, filter, pageSize, orderBy);
         // Assert that the created job is in the list of batch jobs.
