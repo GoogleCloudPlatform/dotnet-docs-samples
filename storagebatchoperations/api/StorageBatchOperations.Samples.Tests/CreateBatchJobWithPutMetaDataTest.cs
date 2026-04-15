@@ -66,8 +66,7 @@ public class CreateBatchJobWithPutMetaDataTest
     {
         CreateBatchJobWithPutMetadataSample createJob = new CreateBatchJobWithPutMetadataSample();
         var jobId = _fixture.GenerateGuid();
-               
-        // Create a batch job with the specified transformation case and bucket list
+
         var createdBatchJob = createJob.CreateBatchJobWithPutMetadata(_fixture.LocationName, _bucketList, jobId);
         Assert.Equal(createdBatchJob.BucketList, _bucketList);
         Assert.Equal("PutMetadata", createdBatchJob.TransformationCase.ToString());

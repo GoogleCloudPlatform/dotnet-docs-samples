@@ -17,23 +17,20 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.StorageBatchOperations.V1;
 using Google.LongRunning;
-using Grpc.Core;
 using System;
 
 public class CreateBatchJobWithRewriteObjectSample
 {
     /// <summary>
-    /// Creates a storage batch operation job.
+    /// Creates a storage batch operation job with the options for object rewrite.
     /// </summary>
     /// <param name="locationName">A resource name with pattern <c>projects/{project}/locations/{location}</c>.</param>
     /// <param name="bucketList">A bucket list contains list of buckets and their objects to be transformed.</param>
     /// <param name="jobId">It is id for the job and it should not be more than 128 characters and must include only
     /// characters available in DNS names, as defined by RFC-1123.</param>
     /// <param name="kmsKeyName"> Resource name of the Cloud KMS key that will be used to encrypt the object.The Cloud
-    ///  KMS key must be located in same location as the object.
-    /// </param>
+    ///  KMS key must be located in same location as the object.</param>
     /// <param name="cryptoKeyName"><see cref="CryptoKeyName"/>-typed view over the <see cref="KmsKey"/> resource name property./param>
-
     public Job CreateBatchJobWithRewriteObject(LocationName locationName,
         BucketList bucketList,
         string jobId = "your-job-id",
@@ -62,7 +59,7 @@ public class CreateBatchJobWithRewriteObjectSample
         Operation<Job, OperationMetadata> response = operationsClient.CreateJob(request);
         Operation<Job, OperationMetadata> completedResponse = response.PollUntilCompleted();
         Job result = completedResponse.Result;
-        Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created");
+        Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created with the Rewrite Object");
         return result;
     }
 }

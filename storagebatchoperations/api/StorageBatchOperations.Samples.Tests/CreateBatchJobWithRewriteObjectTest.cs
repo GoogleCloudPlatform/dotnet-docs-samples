@@ -66,11 +66,10 @@ public class CreateBatchJobWithRewriteObjectTest
     {
         CreateBatchJobWithRewriteObjectSample createJob = new CreateBatchJobWithRewriteObjectSample();
         var jobId = _fixture.GenerateGuid();
- 
+
         string kmsKeyName = $"projects/{_fixture.ProjectId}/locations/{_fixture.LocationId}/keyRings/{_fixture.KmsKeyRing}/cryptoKeys/{_fixture.KmsKeyName}";
         var cryptoKeyName = CryptoKeyName.FromProjectLocationKeyRingCryptoKey(_fixture.ProjectId, _fixture.LocationId, _fixture.KmsKeyRing, _fixture.KmsKeyName);
 
-        // Create a batch job with the specified transformation case and bucket list
         var createdBatchJob = createJob.CreateBatchJobWithRewriteObject(_fixture.LocationName, _bucketList, jobId, kmsKeyName, cryptoKeyName);
         Assert.Equal(createdBatchJob.BucketList, _bucketList);
         Assert.Equal("RewriteObject", createdBatchJob.TransformationCase.ToString());

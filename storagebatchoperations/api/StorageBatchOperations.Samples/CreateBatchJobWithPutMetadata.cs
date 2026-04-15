@@ -17,13 +17,12 @@
 using Google.Api.Gax.ResourceNames;
 using Google.Cloud.StorageBatchOperations.V1;
 using Google.LongRunning;
-using Grpc.Core;
 using System;
 
 public class CreateBatchJobWithPutMetadataSample
 {
     /// <summary>
-    /// Creates a storage batch operation job.
+    /// Creates a storage batch operation job with the options of object metadata update.
     /// </summary>
     /// <param name="locationName">A resource name with pattern <c>projects/{project}/locations/{location}</c>.</param>
     /// <param name="bucketList">A bucket list contains list of buckets and their objects to be transformed.</param>
@@ -63,7 +62,7 @@ public class CreateBatchJobWithPutMetadataSample
         Operation<Job, OperationMetadata> response = operationsClient.CreateJob(request);
         Operation<Job, OperationMetadata> completedResponse = response.PollUntilCompleted();
         Job result = completedResponse.Result;
-        Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created");
+        Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created with the Object Metadata Update");
         return result;
     }
 }

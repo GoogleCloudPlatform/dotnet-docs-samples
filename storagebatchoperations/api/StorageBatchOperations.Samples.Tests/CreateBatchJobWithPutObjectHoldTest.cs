@@ -67,7 +67,6 @@ public class CreateBatchJobWithPutObjectHoldTest
         CreateBatchJobWithPutObjectHoldSample createJob = new CreateBatchJobWithPutObjectHoldSample();
         var jobId = _fixture.GenerateGuid();
 
-        // Create a batch job with the specified transformation case and bucket list
         var createdBatchJob = createJob.CreateBatchJobWithPutObjectHold(_fixture.LocationName, _bucketList, jobId);
         Assert.Equal(createdBatchJob.BucketList, _bucketList);
         Assert.Equal("PutObjectHold", createdBatchJob.TransformationCase.ToString());

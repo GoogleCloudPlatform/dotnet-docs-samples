@@ -66,8 +66,7 @@ public class CreateBatchJobWithDeleteObjectTest
     {
         CreateBatchJobWithDeleteObjectSample createJob = new CreateBatchJobWithDeleteObjectSample();
         var jobId = _fixture.GenerateGuid();
-        
-        // Create a batch job with the specified transformation case and bucket list
+
         var createdBatchJob = createJob.CreateBatchJobWithDeleteObject(_fixture.LocationName, _bucketList, jobId);
         Assert.Equal(createdBatchJob.BucketList, _bucketList);
         Assert.Equal("DeleteObject", createdBatchJob.TransformationCase.ToString());

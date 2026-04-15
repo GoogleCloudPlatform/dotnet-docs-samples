@@ -22,19 +22,17 @@ using System;
 public class CreateBatchJobWithPutObjectHoldSample
 {
     /// <summary>
-    /// Creates a storage batch operation job.
+    /// Creates a storage batch operation job with the options to update object hold.
     /// </summary>
     /// <param name="locationName">A resource name with pattern <c>projects/{project}/locations/{location}</c>.</param>
     /// <param name="bucketList">A bucket list contains list of buckets and their objects to be transformed.</param>
     /// <param name="jobId">It is id for the job and it should not be more than 128 characters and must include only
     /// characters available in DNS names, as defined by RFC-1123.</param>
-
     public Job CreateBatchJobWithPutObjectHold(LocationName locationName,
         BucketList bucketList,
         string jobId = "your-job-id")
     {
         StorageBatchOperationsClient operationsClient = StorageBatchOperationsClient.Create();
-
 
         PutObjectHold putObjectHold = new PutObjectHold
         {
@@ -59,7 +57,7 @@ public class CreateBatchJobWithPutObjectHoldSample
         Operation<Job, OperationMetadata> response = operationsClient.CreateJob(request);
         Operation<Job, OperationMetadata> completedResponse = response.PollUntilCompleted();
         Job result = completedResponse.Result;
-        Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created");
+        Console.WriteLine($"The Storage Batch Operation Job (Name: {result.Name}) is created with the Object Hold Update");
         return result;
     }
 }
