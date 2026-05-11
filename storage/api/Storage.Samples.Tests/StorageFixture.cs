@@ -218,7 +218,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         TempBucketNames.Add(bucketName);
     }
 
-    internal Bucket CreateBucket(string name, bool multiVersion, bool softDelete = false, bool registerForDeletion = true)
+    internal Bucket CreateBucket(string name, bool multiVersion, bool softDelete = false, bool ipFilter = false, bool registerForDeletion = true)
     {
         var bucket = Client.CreateBucket(ProjectId,
             new Bucket
@@ -227,6 +227,32 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
                 Versioning = new Bucket.VersioningData { Enabled = multiVersion },
                 // The minimum allowed for soft delete is 7 days.
                 SoftDeletePolicy = softDelete ? new Bucket.SoftDeletePolicyData { RetentionDurationSeconds = (int) TimeSpan.FromDays(7).TotalSeconds } : null,
+                IpFilter = ipFilter ? new Bucket.IpFilterData
+                {
+                    Mode = "Disabled",
+                    PublicNetworkSource = new Bucket.IpFilterData.PublicNetworkSourceData
+                    {
+                        AllowedIpCidrRanges = new List<string>
+                        {
+                            "203.0.113.0/24",
+                            "198.51.100.10/32",
+                            "0.0.0.0/0"
+                        }
+                    },
+                    VpcNetworkSources = new List<Bucket.IpFilterData.VpcNetworkSourcesData>
+                    {
+                         new Bucket.IpFilterData.VpcNetworkSourcesData
+                         {
+                             Network = $"projects/{ProjectId}/global/networks/default",
+                              AllowedIpCidrRanges = new List<string>
+                              {
+                                   "0.0.0.0/0"
+                              }
+                         }
+                     },
+                    AllowAllServiceAgentAccess = false,
+                    AllowCrossOrgVpcs = false
+                } : null
             });
         SleepAfterBucketCreateUpdateDelete();
         if (registerForDeletion)
