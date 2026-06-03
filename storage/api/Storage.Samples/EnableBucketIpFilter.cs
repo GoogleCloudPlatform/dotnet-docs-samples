@@ -30,7 +30,6 @@ public class EnableBucketIpFilterSample
     /// <param name="publicRange">The new CIDR range to add (e.g., "1.2.3.4/32") in the public network.</param>
     /// <param name="vpcRange">The new CIDR range to add (e.g., "10.0.0.0/24") in the VPC network.</param>
     /// <param name="vpcNetwork">The name of the vpc network. (e.g., "NETWORK_NAME" from the network resource name : projects/{PROJECT_ID}/global/networks/{NETWORK_NAME})</param>
-
     public Bucket EnableBucketIpFilter(string projectId = "your-project-id", string bucketName = "your-unique-bucket-name", string publicRange = "192.0.2.0/24",
         string vpcRange = "10.0.0.0/24", string vpcNetwork = "default")
     {
