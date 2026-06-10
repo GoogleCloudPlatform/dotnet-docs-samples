@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.IO;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -45,7 +46,7 @@ public class ComposeObjectTest
 
         composeObjectSample.ComposeObject(_fixture.BucketNameGeneric, firstObject, secondObject, _fixture.Collect(targetObject), shouldDeleteSources);
 
-        var files = listFilesSample.ListFiles(_fixture.BucketNameGeneric);
+        var files = listFilesSample.ListFiles(_fixture.BucketNameGeneric).ToList();
 
         if (shouldDeleteSources)
         {
