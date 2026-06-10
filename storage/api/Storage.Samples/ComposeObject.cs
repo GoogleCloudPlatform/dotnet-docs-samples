@@ -22,8 +22,8 @@ using System.Collections.Generic;
 public class ComposeObjectSample
 {
     /// <summary>
-    /// Combines multiple source objects into a single target object within a specified bucket
-    /// and deletes the original source objects upon successful composition.
+    /// Combines multiple source objects into a single target object within a specified bucket,
+    /// with the option to delete the original source objects upon successful composition.
     /// </summary>
     /// <param name="bucketName">The name of the bucket containing the source objects.</param>
     /// <param name="firstObjectName">The name of the first source object to be composed.</param>
@@ -54,9 +54,9 @@ public class ComposeObjectSample
             Destination = new Google.Apis.Storage.v1.Data.Object { ContentType = "text/plain" }
         }, bucketName, targetObjectName).Execute();
 
-        string deletionMessage = deleteSourceObjects ? "and the source objects were deleted." : "";
+        string deletionMessage = deleteSourceObjects ? " and the source objects were deleted." : ".";
         Console.WriteLine($"New composite file {targetObjectName} was created in bucket {bucketName}" +
-            $" by combining {firstObjectName} and {secondObjectName} {deletionMessage}");
+            $" by combining {firstObjectName} and {secondObjectName}{deletionMessage}");
     }
 }
 // [END storage_compose_file]
