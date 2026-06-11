@@ -29,15 +29,16 @@ public class StorageControlDeleteFolderRecursiveTest
     [Fact]
     public void TestStorageControlDeleteFolderRecursive()
     {
+        string folderName = _fixture.GenerateName();
         StorageControlCreateFolderSample createSample = new StorageControlCreateFolderSample();
-        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, "deleteRecursiveTestFolder");
+        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, folderName);
 
         StorageControlDeleteFolderRecursiveSample deleteSample = new StorageControlDeleteFolderRecursiveSample();
-        deleteSample.StorageControlDeleteFolderRecursive(_fixture.BucketNameHns, "deleteRecursiveTestFolder");
+        deleteSample.StorageControlDeleteFolderRecursive(_fixture.BucketNameHns, folderName);
 
         StorageControlListFoldersSample listFoldersSample = new StorageControlListFoldersSample();
         var folders = listFoldersSample.StorageControlListFolders(_fixture.BucketNameHns);
 
-        Assert.DoesNotContain(folder, folders);
+        Assert.DoesNotContain(folders, f => f.Name == folder.Name);
     }
 }
