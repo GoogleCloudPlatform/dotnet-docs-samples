@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.IO;
+using System.Linq;
 using Xunit;
 
 [Collection(nameof(StorageFixture))]
@@ -25,12 +26,15 @@ public class ComposeObjectTest
         _fixture = fixture;
     }
 
-    [Fact]
-    public void ComposeObject()
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void ComposeObject(bool shouldDeleteSources)
     {
         UploadFileSample uploadFileSample = new UploadFileSample();
         ComposeObjectSample composeObjectSample = new ComposeObjectSample();
         DownloadFileSample downloadFileSample = new DownloadFileSample();
+        ListFilesSample listFilesSample = new ListFilesSample();
 
         var firstObject = "HelloComposeObject.txt";
         var secondObject = "HelloComposeObjectAdditional.txt";
@@ -40,7 +44,20 @@ public class ComposeObjectTest
 
         uploadFileSample.UploadFile(_fixture.BucketNameGeneric, "Resources/HelloDownloadCompleteByteRange.txt", _fixture.Collect(secondObject));
 
-        composeObjectSample.ComposeObject(_fixture.BucketNameGeneric, firstObject, secondObject, _fixture.Collect(targetObject));
+        composeObjectSample.ComposeObject(_fixture.BucketNameGeneric, firstObject, secondObject, _fixture.Collect(targetObject), shouldDeleteSources);
+
+        var files = listFilesSample.ListFiles(_fixture.BucketNameGeneric).ToList();
+
+        if (shouldDeleteSources)
+        {
+            Assert.DoesNotContain(files, c => c.Name == firstObject);
+            Assert.DoesNotContain(files, c => c.Name == secondObject);
+        }
+        else
+        {
+            Assert.Contains(files, c => c.Name == firstObject);
+            Assert.Contains(files, c => c.Name == secondObject);
+        }
 
         // Download the composed file
         downloadFileSample.DownloadFile(_fixture.BucketNameGeneric, targetObject, targetObject);

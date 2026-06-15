@@ -27,9 +27,9 @@ gcloud run deploy ${MY_RUN_SERVICE} \
 Create a single region Cloud Storage bucket:
 
 ```sh
-gsutil mb -p $(gcloud config get-value project) \
-    -l us-central1 \
-    gs://${MY_GCS_BUCKET}
+gcloud storage buckets create gs://${MY_GCS_BUCKET} \
+    --project=$(gcloud config get-value project) \
+    --location=us-central1
 ```
 
 Grant the `eventarc.eventReceiver` role to the Compute Engine service account:
@@ -59,7 +59,7 @@ gcloud eventarc triggers create my-gcs-trigger \
 Test your Cloud Run service by publishing a message to the topic:
 
 ```sh
-gsutil defstorageclass set NEARLINE gs://${MY_GCS_BUCKET}
+gcloud storage buckets update gs://${MY_GCS_BUCKET} --default-storage-class=NEARLINE
 ```
 
 Observe the Cloud Run service printing upon receiving an event in
