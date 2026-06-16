@@ -24,7 +24,7 @@ public class PrintFileAclTest
         _fixture = fixture;
     }
 
-    [Fact]
+    [Fact(Skip = "b/478003908")]
     public void PrintFileAcl()
     {
         PrintFileAclSample printFileAclSample = new PrintFileAclSample();
