@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Linq;
 using Xunit;
 
 namespace Storage.Samples.Tests;
@@ -39,6 +40,6 @@ public class StorageControlDeleteFolderRecursiveTest
         StorageControlListFoldersSample listFoldersSample = new StorageControlListFoldersSample();
         var folders = listFoldersSample.StorageControlListFolders(_fixture.BucketNameHns);
 
-        Assert.DoesNotContain(folders, f => f.Name == folder.Name);
+        Assert.False(folders.Any(f => f.Name == folder.Name));
     }
 }
