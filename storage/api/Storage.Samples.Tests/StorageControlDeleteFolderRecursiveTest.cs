@@ -30,16 +30,19 @@ public class StorageControlDeleteFolderRecursiveTest
     [Fact]
     public void TestStorageControlDeleteFolderRecursive()
     {
-        string folderName = _fixture.GenerateName();
+        string parentFolderName = _fixture.GenerateName();
+        string subfolderName = $"{parentFolderName}/{_fixture.GenerateName()}";
         StorageControlCreateFolderSample createSample = new StorageControlCreateFolderSample();
-        var folder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, folderName);
+        var parentFolder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, parentFolderName);
+        var subfolder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, subfolderName);
 
         StorageControlDeleteFolderRecursiveSample deleteSample = new StorageControlDeleteFolderRecursiveSample();
-        deleteSample.StorageControlDeleteFolderRecursive(_fixture.BucketNameHns, folderName);
+        deleteSample.StorageControlDeleteFolderRecursive(_fixture.BucketNameHns, parentFolderName);
 
         StorageControlListFoldersSample listFoldersSample = new StorageControlListFoldersSample();
         var folders = listFoldersSample.StorageControlListFolders(_fixture.BucketNameHns);
 
-        Assert.False(folders.Any(f => f.Name == folder.Name));
+        Assert.False(folders.Any(f => f.Name == parentFolder.Name));
+        Assert.False(folders.Any(f => f.Name == subfolder.Name));
     }
 }
