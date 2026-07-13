@@ -34,7 +34,7 @@ public class EnableBucketIpFilterTest
         string newPublicRange = "192.0.2.0/24";
         string newVpcRange = "10.0.0.0/24";
         _fixture.CreateBucket(bucketName, multiVersion: false, ipFilter: false, registerForDeletion: true);
-        var updatedBucket = updateSample.EnableBucketIpFilter(projectId, bucketName);
+        var updatedBucket = updateSample.EnableBucketIpFilter(projectId, bucketName, newPublicRange, newVpcRange);
         Assert.NotNull(updatedBucket.IpFilter);
         Assert.Equal("Enabled", updatedBucket.IpFilter.Mode);
         var publicRanges = updatedBucket.IpFilter.PublicNetworkSource?.AllowedIpCidrRanges;
