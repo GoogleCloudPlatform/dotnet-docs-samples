@@ -21,7 +21,7 @@ appengine/flexible/ @GoogleCloudPlatform/serverless-runtimes @GoogleCloudPlatfor
 auth/   @GoogleCloudPlatform/cloud-sdk-dotnet-team
 
 bigquery/           @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
-bigquery-storage/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
+bigquery-storage/   @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team @GoogleCloudPlatform/bigquery-readapi-team
 bigtable/           @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
 datastore/          @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
 firestore/          @GoogleCloudPlatform/cloud-native-db-dpes @GoogleCloudPlatform/cloud-sdk-dotnet-team
