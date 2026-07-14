@@ -42,27 +42,18 @@ public class DisableBucketIpFilterTest
         var newPublicRange = $"{dynamicIp}/32";
         var ipFilterEnabledBucket = enableSample.EnableBucketIpFilter(projectId, bucketName, publicRange: newPublicRange);
         Bucket unfilteredBucket = null;
-        int maxRetries = 6;
-        int delayMilliseconds = 5000;
-        bool isPropagationBlocked = false;
+        bool isPropagationBlocked;
 
-        for (int i = 0; i < maxRetries; i++)
+        try
         {
-            try
-            {
-                unfilteredBucket = disableSample.DisableBucketIpFilter(ipFilterEnabledBucket.Name);
-                isPropagationBlocked = false;
-                break;
-            }
-            catch (GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.Forbidden)
-            {
-                isPropagationBlocked = true;
-                if (i < maxRetries - 1)
-                {
-                    await Task.Delay(delayMilliseconds);
-                }
-            }
+            unfilteredBucket = disableSample.DisableBucketIpFilter(ipFilterEnabledBucket.Name);
+            isPropagationBlocked = false;
         }
+        catch (GoogleApiException ex) when (ex.HttpStatusCode == HttpStatusCode.Forbidden)
+        {
+            isPropagationBlocked = true;
+        }
+
         if (isPropagationBlocked)
         {
             Assert.True(isPropagationBlocked, "Firewall propagation timeout encountered.");

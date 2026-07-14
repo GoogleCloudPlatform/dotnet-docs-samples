@@ -31,8 +31,8 @@ public class EnableBucketIpFilterTest
         var updateSample = new EnableBucketIpFilterSample();
         var bucketName = _fixture.GenerateBucketName();
         var projectId = _fixture.ProjectId;
-        string newPublicRange = "192.0.2.0/24";
-        string newVpcRange = "10.0.0.0/24";
+        string newPublicRange = "0.0.0.0/0";
+        string newVpcRange = "0.0.0.0/0";
         _fixture.CreateBucket(bucketName, multiVersion: false, ipFilter: false, registerForDeletion: true);
         var updatedBucket = updateSample.EnableBucketIpFilter(projectId, bucketName, newPublicRange, newVpcRange);
         Assert.NotNull(updatedBucket.IpFilter);

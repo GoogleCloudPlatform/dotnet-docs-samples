@@ -60,7 +60,7 @@ public class EnableBucketIpFilterSample
         bucket.IpFilter.PublicNetworkSource ??= new Bucket.IpFilterData.PublicNetworkSourceData();
         bucket.IpFilter.PublicNetworkSource.AllowedIpCidrRanges ??= new List<string>();
 
-        if (!bucket.IpFilter.PublicNetworkSource.AllowedIpCidrRanges.Contains(publicRange))
+        if (!string.IsNullOrEmpty(publicRange) && !bucket.IpFilter.PublicNetworkSource.AllowedIpCidrRanges.Contains(publicRange))
         {
             bucket.IpFilter.PublicNetworkSource.AllowedIpCidrRanges.Add(publicRange);
         }
