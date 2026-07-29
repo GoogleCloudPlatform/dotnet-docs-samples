@@ -39,6 +39,7 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
     public string BucketNameRegional { get; } = Guid.NewGuid().ToString();
 
     public string BucketNameHns { get; } = Guid.NewGuid().ToString();
+    public string BucketNameVersioned { get; } = Guid.NewGuid().ToString();
     public string TestLocation { get; } = "us-west1";
     public string FileName { get; } = "Hello.txt";
     public string FilePath { get; } = "Resources/Hello.txt";
@@ -68,7 +69,8 @@ public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
         Client = StorageClient.Create();
         // create simple bucket
         CreateBucket(BucketNameGeneric);
-
+        // Create versioned bucket
+        CreateBucket(BucketNameVersioned, multiVersion: true, softDelete: false, registerForDeletion: true);
         // create regional bucket
         CreateRegionalBucketSample createRegionalBucketSample = new CreateRegionalBucketSample();
         createRegionalBucketSample.CreateRegionalBucket(ProjectId, BucketNameRegional, TestLocation, StorageClasses.Regional);
