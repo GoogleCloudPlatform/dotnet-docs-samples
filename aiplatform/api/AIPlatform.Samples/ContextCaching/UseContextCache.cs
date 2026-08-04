@@ -32,7 +32,7 @@ public class UseContextCache
         var generateContentRequest = new GenerateContentRequest
         {
             CachedContentAsCachedContentName = name,
-            Model = $"projects/{projectId}/locations/us-central1/publishers/google/models/gemini-2.0-flash-001",
+            Model = $"projects/{projectId}/locations/us-central1/publishers/google/models/gemini-2.5-flash",
             Contents =
             {
                 new Content
