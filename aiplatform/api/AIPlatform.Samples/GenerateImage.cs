@@ -36,7 +36,7 @@ public class GenerateImage
 
         string prompt = "a dog reading a newspaper";
         string outputFileName = "dog_newspaper.png";
-        string model = "gemini-2.5-flash-image";
+        string model = "imagen-3.0-generate-001";
 
         var predictRequest = new PredictRequest
         {
