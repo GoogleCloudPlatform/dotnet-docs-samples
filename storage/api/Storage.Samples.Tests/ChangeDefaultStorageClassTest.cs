@@ -1,4 +1,4 @@
-﻿// Copyright 2021 Google Inc.
+// Copyright 2021 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,11 +30,14 @@ public class ChangeDefaultStorageClassTest
     {
         ChangeDefaultStorageClassSample changeDefaultStorageClassSample = new ChangeDefaultStorageClassSample();
 
+        var bucketName = _fixture.GenerateBucketName();
+        _fixture.CreateBucket(bucketName, multiVersion: false, softDelete: false, registerForDeletion: true);
+
         // Change storage class to Coldline
-        var bucket = changeDefaultStorageClassSample.ChangeDefaultStorageClass(_fixture.BucketNameGeneric, StorageClasses.Coldline);
+        var bucket = changeDefaultStorageClassSample.ChangeDefaultStorageClass(bucketName, StorageClasses.Coldline);
         Assert.Equal(StorageClasses.Coldline, bucket.StorageClass);
 
         // Change it back to standard
-        changeDefaultStorageClassSample.ChangeDefaultStorageClass(_fixture.BucketNameGeneric, StorageClasses.Standard);
+        changeDefaultStorageClassSample.ChangeDefaultStorageClass(bucketName, StorageClasses.Standard);
     }
 }
