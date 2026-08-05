@@ -21,7 +21,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Value = Google.Protobuf.WellKnownTypes.Value;
 
 public class GenerateImage
 {
@@ -33,35 +32,37 @@ public class GenerateImage
             Endpoint = "us-central1-aiplatform.googleapis.com"
         }.Build();
 
-
         string prompt = "a dog reading a newspaper";
         string outputFileName = "dog_newspaper.png";
-        string model = "imagen-3.0-generate-001";
+        string location = "us-central1";
+        string model = "gemini-2.5-flash-image";
 
-        var predictRequest = new PredictRequest
+        var generateContentRequest = new GenerateContentRequest
         {
-            EndpointAsEndpointName = EndpointName.FromProjectLocationPublisherModel(projectId, "us-central1", "google", model),
-            Instances =
+            Model = $"projects/{projectId}/locations/{location}/publishers/google/models/{model}",
+            Contents =
             {
-                Value.ForStruct(new()
+                new Content
                 {
-                    Fields =
-                    {
-                        ["prompt"] = Value.ForString(prompt)
+                    Role = "USER",
+                    Parts = 
+                    { 
+                        new Part { Text = prompt } 
                     }
-                })
-            },
-            Parameters = Value.ForStruct(new()
-            {
-                Fields =
-                {
-                    ["sampleCount"] = Value.ForNumber(1)
                 }
-            })
+            }
         };
 
-        PredictResponse response = await predictionServiceClient.PredictAsync(predictRequest);
-        byte[] imageBytes = Convert.FromBase64String(response.Predictions.First().StructValue.Fields["bytesBase64Encoded"].StringValue);
+        GenerateContentResponse response = await predictionServiceClient.GenerateContentAsync(generateContentRequest);
+
+        var imagePart = response.Candidates.FirstOrDefault()?.Content?.Parts?.FirstOrDefault(p => p.InlineData != null);
+        
+        if (imagePart == null)
+        {
+            throw new Exception("No image data was returned by the model.");
+        }
+
+        byte[] imageBytes = imagePart.InlineData.Data.ToByteArray();
 
         File.WriteAllBytes(outputFileName, imageBytes);
         FileInfo fileInfo = new FileInfo(Path.GetFullPath(outputFileName));
