@@ -1,0 +1,43 @@
+name: Build and Test App Engine HelloWorld
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.sln') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
+      - name: Restore solution
+        run: dotnet restore appengine/flexible/HelloWorld/HelloWorld.sln
+
+      - name: Build solution
+        run: dotnet build appengine/flexible/HelloWorld/HelloWorld.sln --configuration Release --no-restore
+
+      - name: Run HelloWorld tests
+        run: pwsh -NoLogo -NonInteractive ./appengine/flexible/HelloWorld/runTests.ps1

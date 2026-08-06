@@ -1,0 +1,50 @@
+name: Deploy App Engine HelloWorld
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate with Workload Identity Federation
+        uses: google-github-actions/auth@v1
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account_email: ${{ secrets.SERVICE_ACCOUNT }}
+          token_format: 'access_token'
+
+      - name: Setup Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: Set gcloud project
+        run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Install .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore project dependencies
+        run: dotnet restore appengine/flexible/HelloWorld/HelloWorld.sln
+
+      - name: Publish App Engine app
+        run: |
+          dotnet publish appengine/flexible/HelloWorld/HelloWorld.Sample/HelloWorld.Sample.csproj -c Release -o ./publish
+          gcloud app deploy appengine/flexible/HelloWorld/HelloWorld.Sample/app.yaml --quiet
