@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - master
+      - add-appengine-workflows
   pull_request:
     branches:
       - main
-      - master
+      - add-appengine-workflows
   workflow_dispatch:
 
 jobs:
