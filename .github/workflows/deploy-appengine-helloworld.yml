@@ -10,10 +10,8 @@ on:
 jobs:
   deploy:
     name: Deploy
-    runs-on:
-      - self-hosted
-      - Windows
-      - X64
+    runs-on: self-hosted
+
 
     permissions:
       id-token: write
