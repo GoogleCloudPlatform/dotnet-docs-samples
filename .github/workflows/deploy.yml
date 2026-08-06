@@ -1,4 +1,4 @@
-name: Deploy App Engine newwaste
+name: lavda-3
 
 on:
   push:
