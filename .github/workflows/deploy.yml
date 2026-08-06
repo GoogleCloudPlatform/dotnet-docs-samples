@@ -1,4 +1,4 @@
-name: Deploy App Engine HelloWorld
+name: Deploy App Engine newwaste
 
 on:
   push:
