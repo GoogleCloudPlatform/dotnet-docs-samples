@@ -29,6 +29,7 @@ public class ListFileArchivedGenerationTest
     public void ListFileArchivedGeneration()
     {
         UploadFileSample uploadFileSample = new UploadFileSample();
+        GetMetadataSample getMetadataSample = new GetMetadataSample();
         ListFileArchivedGenerationSample listFileArchivedGenerationSample = new ListFileArchivedGenerationSample();
 
         var objectName = _fixture.GenerateName();
@@ -36,15 +37,25 @@ public class ListFileArchivedGenerationTest
         // Uploaded for the first time
         uploadFileSample.UploadFile(_fixture.BucketNameVersioned, _fixture.FilePath, objectName);
 
+        // Get generation of first version of the file
+        var obj = getMetadataSample.GetMetadata(_fixture.BucketNameVersioned, objectName);
+        var fileArchivedGeneration = obj.Generation;
+
+        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, fileArchivedGeneration);
+
         // Upload again to archive previous generation.
         uploadFileSample.UploadFile(_fixture.BucketNameVersioned, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
+
+        // Get generation of second version of the file
+        obj = getMetadataSample.GetMetadata(_fixture.BucketNameVersioned, objectName);
+        var fileCurrentGeneration = obj.Generation;
+
+        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, fileCurrentGeneration);
 
         var objects = listFileArchivedGenerationSample.ListFileArchivedGeneration(_fixture.BucketNameVersioned);
 
         var testFiles = objects.Where(a => a.Name == objectName).ToList();
 
         Assert.Equal(2, testFiles.Count);
-        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, testFiles[0].Generation);
-        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, testFiles[1].Generation);
     }
 }

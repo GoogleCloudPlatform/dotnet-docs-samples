@@ -44,6 +44,7 @@ public class CopyFileArchivedGenerationTest
         var obj = getMetadataSample.GetMetadata(_fixture.BucketNameVersioned, objectName);
         var fileArchivedGeneration = obj.Generation;
 
+        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, fileArchivedGeneration);
         // Upload again to archive previous generation.
         uploadFileSample.UploadFile(_fixture.BucketNameVersioned, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
 
@@ -51,7 +52,6 @@ public class CopyFileArchivedGenerationTest
         obj = getMetadataSample.GetMetadata(_fixture.BucketNameVersioned, objectName);
         var fileCurrentGeneration = obj.Generation;
 
-        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, fileArchivedGeneration);
         _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, fileCurrentGeneration);
 
         try

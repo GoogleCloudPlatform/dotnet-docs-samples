@@ -29,6 +29,7 @@ public class DeleteFileArchivedGenerationTest
     public void DeleteFileArchivedGeneration()
     {
         UploadFileSample uploadFileSample = new UploadFileSample();
+        GetMetadataSample getMetadataSample = new GetMetadataSample();
         ListFileArchivedGenerationSample listFileArchivedGenerationSample = new ListFileArchivedGenerationSample();
         DeleteFileArchivedGenerationSample deleteFileArchivedGenerationSample = new DeleteFileArchivedGenerationSample();
 
@@ -36,17 +37,22 @@ public class DeleteFileArchivedGenerationTest
 
         uploadFileSample.UploadFile(_fixture.BucketNameVersioned, _fixture.FilePath, objectName);
 
+        // Get generation of first version of the file
+        var obj = getMetadataSample.GetMetadata(_fixture.BucketNameVersioned, objectName);
+        var fileArchivedGeneration = obj.Generation;
+
+        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, fileArchivedGeneration);
         // Upload again to archive previous generation.
         uploadFileSample.UploadFile(_fixture.BucketNameVersioned, "Resources/HelloDownloadCompleteByteRange.txt", objectName);
 
+        // Get generation of second version of the file
+        obj = getMetadataSample.GetMetadata(_fixture.BucketNameVersioned, objectName);
+        var fileCurrentGeneration = obj.Generation;
+
+        _fixture.CollectArchivedFiles(_fixture.BucketNameVersioned, objectName, fileCurrentGeneration);
         var objects = listFileArchivedGenerationSample.ListFileArchivedGeneration(_fixture.BucketNameVersioned);
 
         Assert.Equal(2, objects.Count(a => a.Name == objectName));
-
-        // Get Generations
-        var testFiles = objects.Where(a => a.Name == objectName).ToList();
-        long? fileArchivedGeneration = testFiles[0].Generation;
-        long? fileCurrentGeneration = testFiles[1].Generation;
 
         // Delete first generation of the file
         deleteFileArchivedGenerationSample.DeleteFileArchivedGeneration(_fixture.BucketNameVersioned, objectName, fileArchivedGeneration);
