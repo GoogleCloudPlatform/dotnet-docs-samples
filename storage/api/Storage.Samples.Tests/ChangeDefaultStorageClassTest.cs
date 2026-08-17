@@ -36,8 +36,5 @@ public class ChangeDefaultStorageClassTest
         // Change storage class to Coldline
         var bucket = changeDefaultStorageClassSample.ChangeDefaultStorageClass(bucketName, StorageClasses.Coldline);
         Assert.Equal(StorageClasses.Coldline, bucket.StorageClass);
-
-        // Change it back to standard
-        changeDefaultStorageClassSample.ChangeDefaultStorageClass(bucketName, StorageClasses.Standard);
     }
 }

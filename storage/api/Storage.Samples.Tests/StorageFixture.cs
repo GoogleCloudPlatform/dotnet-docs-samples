@@ -20,6 +20,7 @@ using Google.Cloud.PubSub.V1;
 using Google.Cloud.Storage.V1;
 using GoogleCloudSamples;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Net;
 using System.Threading;
@@ -31,7 +32,7 @@ using static Google.Apis.Storage.v1.Data.Bucket;
 public class StorageFixture : IDisposable, ICollectionFixture<StorageFixture>
 {
     public string ProjectId { get; }
-    public IList<string> TempBucketNames { get; } = new List<string>();
+    public ConcurrentBag<string> TempBucketNames { get; } = new ConcurrentBag<string>();
     public Dictionary<string, List<string>> TempBucketFiles { get; } = new Dictionary<string, List<string>>();
     public Dictionary<string, Dictionary<string, List<long>>> TempBucketArchivedFiles { get; }
         = new Dictionary<string, Dictionary<string, List<long>>>();
