@@ -21,7 +21,11 @@ public class StorageControlRenameFolderSample
     public Folder StorageControlRenameFolder(string bucketName = "your-unique-bucket-name",
         string sourceFolderName = "your_folder_name", string targetFolderName = "target_folder_name")
     {
-        StorageControlClient storageControl = StorageControlClient.Create();
+        StorageControlClientBuilder builder = new StorageControlClientBuilder
+        {
+            QuotaProject = ""
+        };
+        StorageControlClient storageControl = builder.Build();
 
         string folderResourceName =
             // Set project to "_" to signify globally scoped bucket

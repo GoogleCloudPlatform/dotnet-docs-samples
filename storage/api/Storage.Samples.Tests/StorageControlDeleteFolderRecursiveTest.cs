@@ -42,7 +42,7 @@ public class StorageControlDeleteFolderRecursiveTest
         StorageControlListFoldersSample listFoldersSample = new StorageControlListFoldersSample();
         var folders = listFoldersSample.StorageControlListFolders(_fixture.BucketNameHns);
 
-        Assert.False(folders.Any(f => f.Name == parentFolder.Name));
-        Assert.False(folders.Any(f => f.Name == subfolder.Name));
+        Assert.DoesNotContain(folders, f => f.Name == parentFolder.Name);
+        Assert.DoesNotContain(folders, f => f.Name == subfolder.Name);
     }
 }
