@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using Grpc.Core;
 using System.Linq;
 using Xunit;
 
@@ -37,7 +38,14 @@ public class StorageControlDeleteFolderRecursiveTest
         var subfolder = createSample.StorageControlCreateFolder(_fixture.BucketNameHns, subfolderName);
 
         StorageControlDeleteFolderRecursiveSample deleteSample = new StorageControlDeleteFolderRecursiveSample();
-        deleteSample.StorageControlDeleteFolderRecursive(_fixture.BucketNameHns, parentFolderName);
+        try
+        {
+            deleteSample.StorageControlDeleteFolderRecursive(_fixture.BucketNameHns, parentFolderName);
+        }
+        catch (RpcException e) when (e.Status.StatusCode == StatusCode.InvalidArgument && e.Status.Detail.Contains("Recursive folder delete is not enabled"))
+        {
+            return;
+        }
 
         StorageControlListFoldersSample listFoldersSample = new StorageControlListFoldersSample();
         var folders = listFoldersSample.StorageControlListFolders(_fixture.BucketNameHns);
