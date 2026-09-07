@@ -20,11 +20,7 @@ public class StorageControlDeleteFolderRecursiveSample
 {
     public void StorageControlDeleteFolderRecursive(string bucketName = "your-unique-bucket-name", string folderName = "your_folder_name")
     {
-        StorageControlClientBuilder builder = new StorageControlClientBuilder
-        {
-            QuotaProject = ""
-        };
-        StorageControlClient storageControl = builder.Build();
+        StorageControlClient storageControl = StorageControlClient.Create();
 
         // Set project to "_" to signify globally scoped bucket
         string folderResourceName = FolderName.FormatProjectBucketFolder("_", bucketName, folderName);
