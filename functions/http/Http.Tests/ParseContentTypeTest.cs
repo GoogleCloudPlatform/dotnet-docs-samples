@@ -35,7 +35,19 @@ public class ParseContentTypeTest : FunctionTestBase<ParseContentType.Function>
             { new FormUrlEncodedContent(new[] { KeyValuePair.Create("name", "Ginger") }), "Ginger" },
             { new FormUrlEncodedContent(new[] { KeyValuePair.Create("not-name", "foo") }), null} ,
             { new StringContent("other-text", Encoding.UTF8, "application/other-content"), null },
+            // ByteArrayContent doesn't set a Content-Type of its own, so this
+            // one arrives with no header at all.
+            { new ByteArrayContent(Encoding.UTF8.GetBytes("{\"name\":\"John\"}")), null },
+            { BodyWithContentType("text", "{\"name\":\"John\"}"), null },
         };
+
+    // A media type with no subtype, which the framework can't parse.
+    private static HttpContent BodyWithContentType(string contentType, string body)
+    {
+        var content = new ByteArrayContent(Encoding.UTF8.GetBytes(body));
+        content.Headers.TryAddWithoutValidation("Content-Type", contentType);
+        return content;
+    }
 
     [Theory]
     [MemberData(nameof(TestData))]
