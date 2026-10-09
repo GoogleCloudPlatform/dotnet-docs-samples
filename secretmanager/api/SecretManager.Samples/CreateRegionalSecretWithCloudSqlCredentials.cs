@@ -23,10 +23,7 @@ using System;
 public class CreateRegionalSecretWithCloudSqlCredentialsSample
 {
     /// <summary>
-    /// Creates a secret with the Cloud SQL DB credentials secret type. This type is
-    /// required to enable Secret Manager's managed rotation of Cloud SQL passwords.
-    /// It can only be set when the secret is created, and the secret's location must
-    /// match the region of the target Cloud SQL instance.
+    /// Creates a new regional secret with type CLOUD_SQL_DB_CREDENTIALS.
     /// </summary>
     public Secret CreateRegionalSecretWithCloudSqlCredentials(
       string projectId = "my-project",
@@ -53,10 +50,8 @@ public class CreateRegionalSecretWithCloudSqlCredentialsSample
         Secret createdSecret = client.CreateSecret(location, secretId, secret);
         Console.WriteLine($"Created secret: {createdSecret.Name}");
 
-        // This built-in identity is what you grant Cloud SQL IAM permissions to,
-        // so that Secret Manager can rotate the database password on its behalf.
         Console.WriteLine(
-          "Grant this identity Cloud SQL IAM permissions to enable rotation: " +
+          "Grant the Cloud SQL User rotate IAM permissions to enable managed rotation to: " +
           createdSecret.PolicyMember.IamPolicyUidPrincipal);
 
         return createdSecret;

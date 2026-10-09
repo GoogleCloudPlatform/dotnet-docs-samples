@@ -22,15 +22,12 @@ using System;
 public class EnableRegionalSecretManagedRotationSample
 {
     /// <summary>
-    /// Enables managed rotation for a Cloud SQL DB credentials secret. This links the
-    /// secret to a Cloud SQL instance and database user, and can only be called once
-    /// per secret. It adds the secret's first version and sets the matching password
-    /// on the Cloud SQL user, taking the place of a manually added secret version.
-    /// Afterwards, use RotateRegionalSecret to trigger further rotations.
-    ///
-    /// instanceId is the bare Cloud SQL instance ID (e.g. "my-instance"), not a
-    /// connection name. Neither the project nor the region should be included: the
-    /// service already knows the project from the secret's own path.
+    /// Enables managed rotation of a CLOUD_SQL_DB_CREDENTIALS typed secret.
+    /// It validates and enables the rotation, adding a version and sets the
+    /// passed password (optional).
+    /// Note: AddSecretVersion is disabled on the CLOUD_SQL_DB_CREDENTIALS
+    /// currently and for any necessary manual rotations please trigger
+    /// rotate_secret.
     /// </summary>
     public SecretVersion EnableRegionalSecretManagedRotation(
       string projectId = "my-project",
@@ -46,9 +43,7 @@ public class EnableRegionalSecretManagedRotationSample
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
         }.Build();
 
-        // Build the request. Parent holds the full secret resource name, not a
-        // collection parent. Leaving Password unset lets Secret Manager generate a
-        // secure password itself.
+        // Build the request.
         EnableManagedRotationRequest request = new EnableManagedRotationRequest
         {
             ParentAsSecretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId),
@@ -59,7 +54,7 @@ public class EnableRegionalSecretManagedRotationSample
             },
         };
 
-        // Call the API.
+        // Enable managed rotation.
         SecretVersion version = client.EnableManagedRotation(request);
         Console.WriteLine($"Enabled managed rotation, created secret version: {version.Name}");
         return version;

@@ -23,14 +23,7 @@ using System;
 public class UpdateRegionalSecretWithManagedRotationScheduleSample
 {
     /// <summary>
-    /// Reconfigures the recurring rotation schedule on a secret that already has
-    /// Cloud SQL managed rotation enabled (see EnableRegionalSecretManagedRotation).
-    /// This only applies to regional secrets of the CLOUD_SQL_DB_CREDENTIALS type.
-    ///
-    /// rotationPeriodSeconds is the interval between rotations, in whole seconds. The
-    /// service requires it to be at least 3600 (1 hour), and the derived next rotation
-    /// time (now + rotationPeriodSeconds) must be at least 300 seconds in the future.
-    /// Both are enforced by the API, not checked client-side here.
+    /// Updates the rotation schedule of a CLOUD_SQL_DB_CREDENTIALS typed secret.
     /// </summary>
     public Secret UpdateRegionalSecretWithManagedRotationSchedule(
       string projectId = "my-project",
@@ -45,6 +38,11 @@ public class UpdateRegionalSecretWithManagedRotationScheduleSample
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
         }.Build();
 
+        // The rotation schedule of a CLOUD_SQL_DB_CREDENTIALS secret can be set
+        // before or after enabling managed rotation; EnableManagedRotation does not
+        // need to be called first. Other secret types also support a rotation
+        // schedule, but only when Pub/Sub topics are configured. Pub/Sub topics are
+        // not required for CLOUD_SQL_DB_CREDENTIALS.
         // NextRotationTime and RotationPeriod must be set together.
         Timestamp nextRotationTime = Timestamp.FromDateTimeOffset(
           DateTimeOffset.UtcNow.AddSeconds(rotationPeriodSeconds));
@@ -60,9 +58,8 @@ public class UpdateRegionalSecretWithManagedRotationScheduleSample
             },
         };
 
-        // Build the field mask. Mask only the two subfields being set, not the whole
-        // "rotation" submessage: that would also include the output-only
-        // managed_rotation_status, and the API rejects it as immutable.
+        // Build the field mask. Mask only the rotation subfields being set, not the
+        // whole "rotation" submessage.
         FieldMask fieldMask = new FieldMask
         {
             Paths = { "rotation.next_rotation_time", "rotation.rotation_period" }

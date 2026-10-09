@@ -22,9 +22,7 @@ using System;
 public class GetRegionalSecretTypeSample
 {
     /// <summary>
-    /// Gets and prints the secret type (e.g. CloudSqlDbCredentials, AccessKey,
-    /// Certificate, OtherDbCredentials, Other, or Unspecified for a secret with no
-    /// type restriction) of the given regional secret.
+    /// Gets the secret type of the given regional secret.
     /// </summary>
     public Secret GetRegionalSecretType(
       string projectId = "my-project",

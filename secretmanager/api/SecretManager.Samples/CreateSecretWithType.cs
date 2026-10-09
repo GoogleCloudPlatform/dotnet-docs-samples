@@ -23,11 +23,8 @@ using System;
 public class CreateSecretWithTypeSample
 {
     /// <summary>
-    /// Creates a secret with the given secret type restriction (e.g. AccessKey,
-    /// Certificate, OtherDbCredentials, or Other). CloudSqlDbCredentials is only for
-    /// regional secrets that go through EnableRegionalSecretManagedRotation. These
-    /// other secret types are plain metadata tags: they don't require any additional
-    /// credentials payload at creation time.
+    /// Creates a new secret with the given secret type.
+    /// Note: CLOUD_SQL_DB_CREDENTIALS is only supported in the regional secret.
     /// </summary>
     public Secret CreateSecretWithType(
       string projectId = "my-project",

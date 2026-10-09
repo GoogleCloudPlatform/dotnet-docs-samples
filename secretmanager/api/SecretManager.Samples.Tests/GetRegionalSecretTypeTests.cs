@@ -32,7 +32,6 @@ public class GetRegionalSecretTypeTests
     [Fact]
     public void GetsRegionalSecretType()
     {
-        // No Cloud SQL instance or IAM grant is needed just to read the type.
         SecretName secretName = SecretName.FromProjectLocationSecret(_fixture.ProjectId, _fixture.LocationId, _fixture.RandomId());
         _fixture.Client.CreateSecret(
           new Google.Api.Gax.ResourceNames.LocationName(_fixture.ProjectId, _fixture.LocationId),

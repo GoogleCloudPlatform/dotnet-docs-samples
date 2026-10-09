@@ -22,10 +22,8 @@ using System;
 public class RotateRegionalSecretSample
 {
     /// <summary>
-    /// Triggers a managed rotation for a Cloud SQL DB credentials secret. Managed
-    /// rotation must already be enabled on the secret (see
-    /// EnableRegionalSecretManagedRotation). Each call generates a new password,
-    /// updates the Cloud SQL user, and adds the result as a new secret version.
+    /// Triggers an adhoc rotation for the managed CLOUD_SQL_DB_CREDENTIALS typed
+    /// secret.
     /// </summary>
     public SecretVersion RotateRegionalSecret(
       string projectId = "my-project",
@@ -39,8 +37,7 @@ public class RotateRegionalSecretSample
             Endpoint = $"secretmanager.{locationId}.rep.googleapis.com"
         }.Build();
 
-        // Build the request. Parent holds the full secret resource name, not a
-        // collection parent.
+        // Build the request.
         RotateSecretRequest request = new RotateSecretRequest
         {
             ParentAsSecretName = SecretName.FromProjectLocationSecret(projectId, locationId, secretId),

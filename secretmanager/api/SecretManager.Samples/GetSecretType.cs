@@ -22,9 +22,7 @@ using System;
 public class GetSecretTypeSample
 {
     /// <summary>
-    /// Gets and prints the secret type (e.g. CloudSqlDbCredentials, AccessKey,
-    /// Certificate, OtherDbCredentials, Other, or Unspecified for a secret with no
-    /// type restriction) of the given secret.
+    /// Gets the secret type of the given secret.
     /// </summary>
     public Secret GetSecretType(string projectId = "my-project", string secretId = "my-secret")
     {
