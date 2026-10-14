@@ -16,6 +16,7 @@ using Google.Api.Gax.ResourceNames;
 using Google.Cloud.Iam.V1;
 using Google.Cloud.Kms.V1;
 using Google.Cloud.ParameterManager.V1;
+using Google.Cloud.ResourceManager.V3;
 using Google.Cloud.SecretManager.V1;
 using Google.Protobuf;
 using System.Text;
@@ -34,6 +35,9 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
     internal List<ParameterName> ParametersToDelete { get; } = new List<ParameterName>();
     internal List<SecretName> SecretsToDelete { get; } = new List<SecretName>();
     internal List<ParameterVersionName> ParameterVersionsToDelete { get; } = new List<ParameterVersionName>();
+    public TagBindingsClient TagBindingsClient { get; }
+    internal List<TemplateName> TemplatesToDelete { get; } = new List<TemplateName>();
+    internal List<TemplateVersionName> TemplateVersionsToDelete { get; } = new List<TemplateVersionName>();
 
     public ParameterManagerRegionalFixture()
     {
@@ -55,6 +59,10 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         {
             Endpoint = regionalSecretEndpoint
         }.Build();
+        TagBindingsClient = new TagBindingsClientBuilder
+        {
+            Endpoint = $"{LocationId}-cloudresourcemanager.googleapis.com"
+        }.Build();
     }
 
     public void Dispose()
@@ -62,6 +70,14 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         foreach (var cryptoKeyVersion in CryptoKeyVersionsToDelete)
         {
             DeleteKeyVersion(cryptoKeyVersion);
+        }
+        foreach (var templateVersion in TemplateVersionsToDelete)
+        {
+            DeleteTemplateVersion(templateVersion);
+        }
+        foreach (var template in TemplatesToDelete)
+        {
+            DeleteTemplate(template);
         }
         foreach (var parameterVersion in ParameterVersionsToDelete)
         {
@@ -208,6 +224,71 @@ public class ParameterManagerRegionalFixture : IDisposable, ICollectionFixture<P
         catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
         {
             // Ignore error - Parameter version was already deleted
+        }
+    }
+
+    public Template CreateTemplate(string templateId, TemplateFormat format)
+    {
+        LocationName parent = new LocationName(ProjectId, LocationId);
+
+        Template template = new Template
+        {
+            Format = format
+        };
+
+        Template createdTemplate = Client.CreateTemplate(parent, template, templateId);
+        TemplatesToDelete.Add(createdTemplate.TemplateName);
+        return createdTemplate;
+    }
+
+    public TemplateVersion CreateTemplateVersion(string templateId, string versionId, string payload)
+    {
+        TemplateName templateName = new TemplateName(ProjectId, LocationId, templateId);
+        TemplateVersion templateVersion = new TemplateVersion
+        {
+            Payload = new TemplateVersionPayload
+            {
+                Data = ByteString.CopyFrom(payload, Encoding.UTF8)
+            }
+        };
+
+        TemplateVersion createdTemplateVersion = Client.CreateTemplateVersion(templateName, templateVersion, versionId);
+        TemplateVersionsToDelete.Add(createdTemplateVersion.TemplateVersionName);
+        return createdTemplateVersion;
+    }
+
+    public (string tagKey, string tagValue) GetTagKeyValue()
+    {
+        string? tagKey = Environment.GetEnvironmentVariable("PARAMETER_MANAGER_TAG_KEY");
+        string? tagValue = Environment.GetEnvironmentVariable("PARAMETER_MANAGER_TAG_VALUE");
+        if (String.IsNullOrEmpty(tagKey) || String.IsNullOrEmpty(tagValue))
+        {
+            throw new Exception("missing PARAMETER_MANAGER_TAG_KEY or PARAMETER_MANAGER_TAG_VALUE");
+        }
+        return (tagKey, tagValue);
+    }
+
+    private void DeleteTemplate(TemplateName name)
+    {
+        try
+        {
+            Client.DeleteTemplate(name);
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            // Ignore error - Template was already deleted
+        }
+    }
+
+    private void DeleteTemplateVersion(TemplateVersionName name)
+    {
+        try
+        {
+            Client.DeleteTemplateVersion(name);
+        }
+        catch (Grpc.Core.RpcException e) when (e.StatusCode == Grpc.Core.StatusCode.NotFound)
+        {
+            // Ignore error - Template version was already deleted
         }
     }
 
