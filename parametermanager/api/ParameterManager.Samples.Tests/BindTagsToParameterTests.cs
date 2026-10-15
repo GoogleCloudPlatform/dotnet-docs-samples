@@ -35,18 +35,23 @@ public class BindTagsToParameterTests
         var (_, tagValue) = _fixture.GetTagKeyValue();
         ParameterName parameterName = new ParameterName(_fixture.ProjectId, ParameterManagerFixture.LocationId, _fixture.RandomId());
 
-        TagBinding result = _sample.BindTagsToParameter(projectId: _fixture.ProjectId, parameterId: parameterName.ParameterId, tagValue: tagValue);
         _fixture.ParametersToDelete.Add(parameterName);
 
+        TagBinding result = null;
         try
         {
+            result = _sample.BindTagsToParameter(projectId: _fixture.ProjectId, parameterId: parameterName.ParameterId, tagValue: tagValue);
+
             Assert.NotNull(result);
             Assert.Equal(tagValue, result.TagValue);
             Assert.Contains(parameterName.ParameterId, result.Parent);
         }
         finally
         {
-            _fixture.TagBindingsClient.DeleteTagBinding(result.Name).PollUntilCompleted();
+            if (result != null)
+            {
+                _fixture.TagBindingsClient.DeleteTagBinding(result.Name).PollUntilCompleted();
+            }
         }
     }
 }

@@ -38,11 +38,12 @@ public class TemplateQuickstartTests
         TemplateVersionName templateVersionName = new TemplateVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, templateId, versionId);
         ParameterVersionName parameterVersionName = new ParameterVersionName(_fixture.ProjectId, ParameterManagerFixture.LocationId, parameterId, versionId);
 
-        _sample.TemplateQuickstart(projectId: _fixture.ProjectId, templateId: templateId, parameterId: parameterId, versionId: versionId);
         _fixture.TemplatesToDelete.Add(new TemplateName(_fixture.ProjectId, ParameterManagerFixture.LocationId, templateId));
         _fixture.TemplateVersionsToDelete.Add(templateVersionName);
         _fixture.ParametersToDelete.Add(new ParameterName(_fixture.ProjectId, ParameterManagerFixture.LocationId, parameterId));
         _fixture.ParameterVersionsToDelete.Add(parameterVersionName);
+
+        _sample.TemplateQuickstart(projectId: _fixture.ProjectId, templateId: templateId, parameterId: parameterId, versionId: versionId);
 
         RenderTemplateVersionResponse result = _fixture.Client.RenderTemplateVersion(new RenderTemplateVersionRequest
         {
