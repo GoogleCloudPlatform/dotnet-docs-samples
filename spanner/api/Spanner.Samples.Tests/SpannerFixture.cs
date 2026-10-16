@@ -139,8 +139,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         SkipCmekBackupSampleTests = !runCmekBackupSampleTests;
 
         await MaybeInitializeTestInstanceAsync();
-        await CreateInstanceWithMultiRegionAsync();
-        await InitializeInstanceAsync(InstanceIdWithInstancePartition);
+        await CreateInstanceWithMultiRegionAsync(InstanceIdWithMultiRegion);
+        // Instance partitions can only be created in multi-region instances.
+        await CreateInstanceWithMultiRegionAsync(InstanceIdWithInstancePartition);
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
         await InitializePostgreSqlDatabaseAsync();
@@ -236,21 +237,21 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await SafeAdminAsync(() => createInstanceSample.CreateInstanceAsync(ProjectId, instanceId, Instance.Types.Edition.EnterprisePlus));
     }
 
-    private async Task CreateInstanceWithMultiRegionAsync()
+    private async Task CreateInstanceWithMultiRegionAsync(string instanceId)
     {
         var projectName = ProjectName.FromProject(ProjectId);
         Instance instance = new Instance
         {
             DisplayName = "Multi-region samples test",
             ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
-            InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
+            InstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
             NodeCount = 1,
             Edition = Instance.Types.Edition.EnterprisePlus,
         };
 
         await SafeAdminAsync(async () =>
         {
-            var response = await InstanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
+            var response = await InstanceAdminClient.CreateInstanceAsync(projectName, instanceId, instance);
             // Poll until the returned long-running operation is complete
             response = await response.PollUntilCompletedAsync();
             return response.Result;
