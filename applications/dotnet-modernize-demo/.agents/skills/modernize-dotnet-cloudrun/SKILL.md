@@ -160,6 +160,12 @@ Create a modernization report in the `MODERNIZATION.md` file with:
 - **Endpoints:** A table containing all the HTTP endpoints that the application
   supports, and a test report table listing each tested endpoint, HTTP method,
   test command, and command output.
+- **Browser test report:** The result of step 8. This section is mandatory,
+  even when you skip the browser test. List the pages you visited, the CRUD
+  operations you performed and their results, the resources that returned
+  `404 Not Found`, and the JavaScript errors you found. If you skipped the
+  browser test, write `Status: skipped` followed by the reason and the exact
+  error message, if any.
 
 ### 5. Build the container image
 
@@ -229,7 +235,15 @@ Show the output of the commands you run.
 ### 8. Test the .NET application in a browser
 
 Perform an automated UI smoke test using the Chrome DevTools MCP tools, such as
-`new_page`, `click`, and `take_screenshot`, to validate the frontend:
+`new_page`, `click`, and `take_screenshot`, to validate the frontend. Start by
+calling the `new_page` tool of the `chrome-devtools` MCP server with the
+application root URL, such as `http://localhost:8080`. If the `chrome-devtools`
+tools aren't available in your session, or the call fails, don't work around
+it with HTTP requests: record `Status: skipped` and the error in the
+`Browser test report` section of `MODERNIZATION.md`, then continue with the
+cleanup.
+
+The smoke test validates the following:
 
 - Follow all links to views.
 - Run create, read, update, and delete (CRUD) tests in views.
@@ -263,3 +277,11 @@ Perform an automated UI smoke test using the Chrome DevTools MCP tools, such as
 6.  **Cleanup:** When you finish testing, do the following:
     1.  Stop Docker Compose: `docker compose stop`
     2.  Remove containers: `docker compose rm --force`
+
+### 9. Completion checklist
+
+End your final response with a checklist of steps 1 to 8 of these
+instructions. For each step, write `done` or `skipped`, and the reason when
+skipped. Don't mark step 8 as `done` unless you called the Chrome DevTools MCP
+tools. The checklist and the `Browser test report` section of
+`MODERNIZATION.md` MUST agree.
