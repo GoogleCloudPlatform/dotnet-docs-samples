@@ -42,6 +42,12 @@ Act as a Senior Cloud Architect and .NET Developer. Your goal is to:
 - The Chrome DevTools Model Context Protocol (MCP) server (`chrome-devtools`)
   configured for automated browser verification. If any prerequisite is missing
   or unavailable, stop and report the missing prerequisite to the user.
+  Exception: if the `chrome-devtools` MCP tools are unavailable, or the browser
+  fails to start when you reach step 8, don't stop. Complete the other steps,
+  skip step 8, and report the skipped step and the exact error message in the
+  `Browser test report` section of `MODERNIZATION.md`. You MUST NOT substitute
+  HTTP requests for the browser test, and you MUST NOT report the browser test
+  as performed if you didn't run the Chrome DevTools MCP tools.
 
 ## Instructions
 
@@ -249,6 +255,11 @@ Perform an automated UI smoke test using the Chrome DevTools MCP tools, such as
         Students or Courses, to verify the PostgreSQL data layer.
 4.  **Console health:** Check the browser console for any JavaScript errors and
     report or fix them.
-5.  **Cleanup:** When you finish testing, do the following:
+5.  **Browser test report:** Add a `Browser test report` section to
+    `MODERNIZATION.md` that lists the pages you visited, the CRUD operations you
+    performed and their results, the resources that returned `404 Not Found`,
+    and the JavaScript errors you found. If you couldn't run the browser test,
+    state that you skipped it and include the exact error message.
+6.  **Cleanup:** When you finish testing, do the following:
     1.  Stop Docker Compose: `docker compose stop`
     2.  Remove containers: `docker compose rm --force`
