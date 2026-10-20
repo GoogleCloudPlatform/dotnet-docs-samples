@@ -1,0 +1,6 @@
+**/.git
+**/.gitignore
+**/.vs
+**/bin
+**/obj
+**/scratch

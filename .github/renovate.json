@@ -5,7 +5,8 @@
     ],
     "ignorePresets": [":ignoreModulesAndTests"],
     "ignorePaths": [
-        "endpoints/getting-started/**"
+        "endpoints/getting-started/**",
+        "applications/dotnet-modernize-demo/dotnet-migration-sample/**"
     ],
     "packageRules": [
         {
