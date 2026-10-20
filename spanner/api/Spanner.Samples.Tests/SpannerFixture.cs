@@ -45,6 +45,13 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         AlbumTitle STRING(MAX)
         ) PRIMARY KEY (SingerId, AlbumId)";
 
+    public const string CreateQueueStatement =
+    @"CREATE QUEUE MyQueue (
+        Id INT64 NOT NULL,
+        Payload STRING(MAX) NOT NULL
+        ) PRIMARY KEY (Id),
+        OPTIONS (receive_mode = 'PULL')";
+
     public const string BackupInstancePrefix = "default-schedule-test-";
     public const string InstanceWithProcessingUnitsPrefix = "my-ins-pu-";
     public const string InstanceWithMultiRegionPrefix = "my-ins-mr-";
@@ -132,8 +139,9 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         SkipCmekBackupSampleTests = !runCmekBackupSampleTests;
 
         await MaybeInitializeTestInstanceAsync();
-        await CreateInstanceWithMultiRegionAsync();
-        await InitializeInstanceAsync(InstanceIdWithInstancePartition);
+        await CreateInstanceWithMultiRegionAsync(InstanceIdWithMultiRegion);
+        // Instance partitions can only be created in multi-region instances.
+        await CreateInstanceWithMultiRegionAsync(InstanceIdWithInstancePartition);
         await InitializeDatabaseAsync();
         await InitializeBackupAsync();
         await InitializePostgreSqlDatabaseAsync();
@@ -229,21 +237,21 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
         await SafeAdminAsync(() => createInstanceSample.CreateInstanceAsync(ProjectId, instanceId, Instance.Types.Edition.EnterprisePlus));
     }
 
-    private async Task CreateInstanceWithMultiRegionAsync()
+    private async Task CreateInstanceWithMultiRegionAsync(string instanceId)
     {
         var projectName = ProjectName.FromProject(ProjectId);
         Instance instance = new Instance
         {
             DisplayName = "Multi-region samples test",
             ConfigAsInstanceConfigName = InstanceConfigName.FromProjectInstanceConfig(ProjectId, InstanceConfigId),
-            InstanceName = InstanceName.FromProjectInstance(ProjectId, InstanceIdWithMultiRegion),
+            InstanceName = InstanceName.FromProjectInstance(ProjectId, instanceId),
             NodeCount = 1,
             Edition = Instance.Types.Edition.EnterprisePlus,
         };
 
         await SafeAdminAsync(async () =>
         {
-            var response = await InstanceAdminClient.CreateInstanceAsync(projectName, InstanceIdWithMultiRegion, instance);
+            var response = await InstanceAdminClient.CreateInstanceAsync(projectName, instanceId, instance);
             // Poll until the returned long-running operation is complete
             response = await response.PollUntilCompletedAsync();
             return response.Result;
@@ -471,6 +479,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 database.DatabaseName.DatabaseId.StartsWith("my-enc-db-") ||
                 database.DatabaseName.DatabaseId.StartsWith("my-mr-db-") ||
                 database.DatabaseName.DatabaseId.StartsWith("my-restore-db-") ||
+                database.DatabaseName.DatabaseId.StartsWith("my-queue-db-") ||
                 database.DatabaseName.DatabaseId.StartsWith("temp-db-")) &&
                 now - database.CreateTime.ToDateTimeOffset() > oneDay)
             {
@@ -500,11 +509,11 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
                 {
                     backupNames.Add(backup.BackupName);
                 }
-                
+
                 Console.WriteLine($"Found {backupNames.Count} backups in {instanceId} to delete.");
-                
+
                 // Delete backups in parallel to speed up cleanup
-                var deleteTasks = backupNames.Select(async backupName => 
+                var deleteTasks = backupNames.Select(async backupName =>
                 {
                     try
                     {
@@ -769,7 +778,7 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
 
     private async Task CreateVenueTablesAndInsertDataAsyncPostgres()
     {
-        // We create VenueInformation table so that update and query jsonb data sample can run out of order. 
+        // We create VenueInformation table so that update and query jsonb data sample can run out of order.
 
         // Define create table statement for VenueInformation.
         const string createVenueInformationTableStatement =
@@ -800,4 +809,22 @@ public class SpannerFixture : IAsyncLifetime, ICollectionFixture<SpannerFixture>
     }
 
     internal void MarkInstanceForDeletion(string instanceId) => TempInstanceIds.Add(instanceId);
+
+    /// <summary>
+    /// Reads the payload of a message directly from the test queue, or returns null if the message does not exist.
+    /// </summary>
+    /// <remarks>
+    /// Helper test method to verify Payload of a message.
+    /// </remarks>
+    public async Task<string> GetQueueMessagePayloadAsync(string databaseId, long messageId)
+    {
+        using var connection = new SpannerConnection($"Data Source=projects/{ProjectId}/instances/{InstanceId}/databases/{databaseId}");
+        using var cmd = connection.CreateSelectCommand(
+            "SELECT Payload FROM MyQueue WHERE Id = @Id",
+            new SpannerParameterCollection
+            {
+                { "Id", SpannerDbType.Int64, messageId }
+            });
+        return await cmd.ExecuteScalarAsync<string>();
+    }
 }
