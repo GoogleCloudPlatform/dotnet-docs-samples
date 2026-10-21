@@ -45,7 +45,7 @@ namespace ContosoUniversity.DAL
                 new Student{FirstMidName="Nino",LastName="Olivetto",EnrollmentDate=DateTime.Parse("2005-09-01")}
             };
 
-            students.ForEach(s => context.Students.Add(s));
+            context.Students.AddRange(students);
             context.SaveChanges();
         }
     }

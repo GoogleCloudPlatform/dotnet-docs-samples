@@ -22,16 +22,19 @@ using ContosoUniversity.DAL;
 using ContosoUniversity.Models;
 using ContosoUniversity.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace ContosoUniversity.Controllers
 {
     public class StudentController : Controller
     {
-        private SchoolContext db = null;
+        private readonly SchoolContext db;
+        private readonly ILogger<StudentController> _logger;
 
-        public StudentController(SchoolContext db)
+        public StudentController(SchoolContext db, ILogger<StudentController> logger)
         {
             this.db = db;
+            _logger = logger;
         }
 
         // GET: Student
@@ -56,9 +59,9 @@ namespace ContosoUniversity.Controllers
                     return RedirectToAction("Index");
                 }
             }
-            catch (DbUpdateException /* dex */)
+            catch (DbUpdateException dex)
             {
-                //Log the error (uncomment dex variable name and add a line here to write a log.
+                _logger.LogError(dex, "Unable to save student changes.");
                 ModelState.AddModelError("", "Unable to save changes. Try again, and if the problem persists see your system administrator.");
             }
             return View("Index", BuildIndexData(student));
@@ -92,15 +95,6 @@ namespace ContosoUniversity.Controllers
             IEnumerable<EnrollmentDateGroup> data = db.Database.SqlQueryRaw<EnrollmentDateGroup>(query);
 
             return data.ToList();
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

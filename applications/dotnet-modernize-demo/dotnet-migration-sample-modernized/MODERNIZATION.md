@@ -62,7 +62,10 @@
       timestamp columns.
 - **Exception Handling:**
     - In `StudentController.Create`, replaced EF6 `RetryLimitExceededException`
-      with EF Core's `DbUpdateException`.
+      with EF Core's `DbUpdateException` and injected `ILogger<StudentController>`
+      for structured error logging.
+    - Removed manual `Dispose` override in `StudentController` so the scoped
+      `SchoolContext` lifetime is managed by ASP.NET Core dependency injection.
 
 ### 3. Google Cloud Run Container Contract Compliance
 
@@ -77,9 +80,8 @@
       structured JSON logs to stdout/console for native Google Cloud Logging
       ingestion.
 - **Graceful Shutdown & Signal Handling:**
-    - Registered POSIX signal handler for `SIGTERM` using
-      `PosixSignalRegistration.Create(PosixSignal.SIGTERM, ...)`.
-    - Registered lifecycle listener on
+    - Relies on the .NET Generic Host (`Host.CreateDefaultBuilder`) native
+      `SIGTERM` handling and registered a structured logging lifecycle listener on
       `IHostApplicationLifetime.ApplicationStopping` for clean shutdown.
 - **Concurrency & In-Memory State Warning:**
     - Registered `IMemoryCache` in `Startup.cs` with architectural documentation

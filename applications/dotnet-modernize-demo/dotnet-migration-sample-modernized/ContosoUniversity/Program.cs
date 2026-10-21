@@ -23,7 +23,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -43,20 +42,13 @@ namespace ContosoUniversity
 
             var host = CreateHostBuilder(args).Build();
 
-            // Set up signal handler for SIGTERM to ensure graceful shutdown in container environments
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-            {
-                PosixSignalRegistration.Create(PosixSignal.SIGTERM, context =>
-                {
-                    Console.WriteLine("SIGTERM signal received. Initiating graceful shutdown.");
-                });
-            }
-
+            // The .NET Generic Host (Host.CreateDefaultBuilder) automatically traps SIGTERM on Linux
+            // and triggers IHostApplicationLifetime.ApplicationStopping for graceful container shutdown.
             var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+            var hostLogger = host.Services.GetRequiredService<ILogger<Program>>();
             lifetime.ApplicationStopping.Register(() =>
             {
-                var logger = host.Services.GetRequiredService<ILogger<Program>>();
-                logger.LogInformation("Application is stopping. Performing graceful cleanup.");
+                hostLogger.LogInformation("SIGTERM / stop signal received. Application is stopping and performing graceful cleanup.");
             });
 
             // Ensure database is created and seeded at startup
@@ -114,7 +106,7 @@ namespace ContosoUniversity
             {
                 foreach (var secret in secretFileProvider)
                 {
-                    if (!secret.IsDirectory && secret.Name.ToUpper().EndsWith(".JSON"))
+                    if (!secret.IsDirectory && secret.Name.EndsWith(".json", StringComparison.OrdinalIgnoreCase))
                         config.AddJsonFile(secret.PhysicalPath, false, true);
                 }
             }
