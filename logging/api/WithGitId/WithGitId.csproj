@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.DevTools.Common" Version="3.3.0" />
-    <PackageReference Include="Google.Cloud.Logging.V2" Version="4.4.0" />
+    <PackageReference Include="Google.Cloud.Logging.V2" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
