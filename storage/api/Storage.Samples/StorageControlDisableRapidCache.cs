@@ -14,6 +14,7 @@
 
 // [START storage_control_disable_rapid_cache]
 
+using Google.Api.Gax;
 using Google.Cloud.Storage.Control.V2;
 using Google.LongRunning;
 using System;
@@ -23,9 +24,12 @@ public class StorageControlDisableRapidCacheSample
     /// <summary>Disables a Rapid Cache instance for the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the Rapid Cache instance.</param>
     /// <param name="rapidCacheId">The unique identifier of the Rapid Cache instance.</param>
-    public Operation<RapidCache, DisableRapidCacheMetadata> StorageControlDisableRapidCache(
+    /// <param name="timeout">Optional maximum time to wait for the operation to complete.
+    /// If null, the client's default polling settings are used.</param>
+    public RapidCache StorageControlDisableRapidCache(
         string bucketName = "your-unique-bucket-name",
-        string rapidCacheId = "your-rapid-cache-id")
+        string rapidCacheId = "your-rapid-cache-id",
+        TimeSpan? timeout = null)
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
@@ -37,16 +41,20 @@ public class StorageControlDisableRapidCacheSample
             Name = rapidCacheName
         };
 
-        // Disabling a Rapid Cache starts a long-running operation (LRO). The cache moves to the
-        // "disabled" state within seconds, but the operation only completes once the cache has
-        // been fully removed, which can take more than 30 minutes. This sample does not wait for
-        // the operation to complete; use StorageControlGetRapidCache to check the cache state.
+        // Disabling a Rapid Cache is a long-running operation (LRO).
         Operation<RapidCache, DisableRapidCacheMetadata> operation = storageControlClient.DisableRapidCache(request);
 
-        Console.WriteLine($"Disabling Rapid Cache: {rapidCacheName}");
-        Console.WriteLine($"Operation: {operation.Name}");
+        // Wait for the long-running operation to complete. A TimeoutException is thrown if
+        // the operation doesn't complete within the optional timeout.
+        PollSettings pollSettings = timeout.HasValue
+            ? new PollSettings(Expiration.FromTimeout(timeout.Value), TimeSpan.FromSeconds(10))
+            : null;
+        RapidCache disabledCache = operation.PollUntilCompleted(pollSettings).Result;
 
-        return operation;
+        Console.WriteLine($"Disabled Rapid Cache: {disabledCache.Name}");
+        Console.WriteLine($"State: {disabledCache.State}");
+
+        return disabledCache;
     }
 }
 // [END storage_control_disable_rapid_cache]

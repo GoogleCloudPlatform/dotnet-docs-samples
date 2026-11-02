@@ -16,6 +16,7 @@
 
 using Google.Cloud.Storage.Control.V2;
 using Google.LongRunning;
+using Google.Protobuf.WellKnownTypes;
 using System;
 
 public class StorageControlCreateRapidCacheSample
@@ -31,12 +32,18 @@ public class StorageControlCreateRapidCacheSample
         // Set project to "_" to signify globally scoped bucket.
         string parent = $"projects/_/buckets/{bucketName}";
 
+        // The Rapid Cache ID must be the same as the zone.
+        string rapidCacheName = RapidCacheName.FormatProjectBucketRapidCache("_", bucketName, zone);
+
         // Rapid Cache Ultra requires a regional bucket with hierarchical namespace enabled,
         // in the same region as the cache zone.
         RapidCache rapidCache = new RapidCache
         {
+            Name = rapidCacheName,
             Zone = zone,
-            CacheType = "rapid-cache-ultra"
+            CacheType = "rapid-cache-ultra",
+            // The time to live (TTL) for cache entries: 86400 seconds (24 hours).
+            Ttl = new Duration { Seconds = 86400 }
         };
 
         CreateRapidCacheRequest request = new CreateRapidCacheRequest
@@ -52,6 +59,7 @@ public class StorageControlCreateRapidCacheSample
         RapidCache createdCache = operation.PollUntilCompleted().Result;
 
         Console.WriteLine($"Created Rapid Cache: {createdCache.Name}");
+        Console.WriteLine($"State: {createdCache.State}");
 
         return createdCache;
     }

@@ -39,6 +39,7 @@ public class StorageControlGetRapidCacheSample
 
         Console.WriteLine($"Got Rapid Cache: {rapidCache.Name}");
         Console.WriteLine($"Zone: {rapidCache.Zone}");
+        Console.WriteLine($"Cache type: {rapidCache.CacheType}");
         Console.WriteLine($"State: {rapidCache.State}");
 
         return rapidCache;

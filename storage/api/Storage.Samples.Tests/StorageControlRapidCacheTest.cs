@@ -15,7 +15,7 @@
 using Google;
 using Google.Cloud.Storage.Control.V2;
 using Google.Cloud.Storage.V1;
-using Google.LongRunning;
+using Grpc.Core;
 using System;
 using System.Linq;
 using System.Net;
@@ -28,9 +28,17 @@ namespace Storage.Samples.Tests;
 [Collection(nameof(StorageFixture))]
 public class StorageControlRapidCacheTest
 {
-    // Poll for up to 2 minutes for the cache to reach the "disabled" state.
-    private const int DisablePollAttempts = 12;
-    private static readonly TimeSpan s_disablePollInterval = TimeSpan.FromSeconds(10);
+    private const string RapidCacheType = "rapid-cache-ultra";
+
+    // Wait for the new bucket's metadata to propagate before creating the cache.
+    private static readonly TimeSpan s_bucketPropagationDelay = TimeSpan.FromSeconds(20);
+
+    // The disable operation only completes once the cache has been fully removed, which can
+    // take more than an hour, so the test bounds the wait.
+    private static readonly TimeSpan s_disableTimeout = TimeSpan.FromMinutes(10);
+
+    // Short wait used for the best-effort disable on failure, so that cleanup never hangs.
+    private static readonly TimeSpan s_cleanupDisableTimeout = TimeSpan.FromSeconds(1);
 
     // Retry bucket deletion for up to 2 minutes while the disabled cache is being removed.
     private static readonly TimeSpan s_bucketDeleteTimeout = TimeSpan.FromSeconds(120);
@@ -64,32 +72,36 @@ public class StorageControlRapidCacheTest
 
     private void RunRapidCacheLifecycle(string bucketName)
     {
+        // The Rapid Cache ID must be the same as the zone.
+        string rapidCacheId = _zone;
+        string rapidCacheName = RapidCacheName.FormatProjectBucketRapidCache("_", bucketName, rapidCacheId);
+
         // Create
         var createSample = new StorageControlCreateRapidCacheSample();
         RapidCache created = createSample.StorageControlCreateRapidCache(bucketName, _zone);
-        Assert.Contains($"buckets/{bucketName}/rapidCaches/", created.Name);
-        // The cache ID is assigned by the server; parse it from the created name.
-        string rapidCacheId = RapidCacheName.Parse(created.Name).RapidCacheId;
-        Assert.False(string.IsNullOrEmpty(rapidCacheId));
+        Assert.Equal(rapidCacheName, created.Name);
+        Assert.Equal(RapidCacheType, created.CacheType);
 
         var disableSample = new StorageControlDisableRapidCacheSample();
+        var getSample = new StorageControlGetRapidCacheSample();
         try
         {
             // Get
-            var getSample = new StorageControlGetRapidCacheSample();
             RapidCache fetched = getSample.StorageControlGetRapidCache(bucketName, rapidCacheId);
-            Assert.Equal(created.Name, fetched.Name);
+            Assert.Equal(rapidCacheName, fetched.Name);
             Assert.Equal(_zone, fetched.Zone);
+            Assert.Equal("running", fetched.State);
+            Assert.Equal(RapidCacheType, fetched.CacheType);
 
             // List
             var listSample = new StorageControlListRapidCachesSample();
             var caches = listSample.StorageControlListRapidCaches(bucketName).ToList();
-            Assert.Contains(caches, cache => cache.Name == created.Name);
+            Assert.Contains(caches, cache => cache.Name == rapidCacheName);
 
             // Update
             var updateSample = new StorageControlUpdateRapidCacheSample();
             RapidCache updated = updateSample.StorageControlUpdateRapidCache(bucketName, rapidCacheId, 172800);
-            Assert.Equal(created.Name, updated.Name);
+            Assert.Equal(rapidCacheName, updated.Name);
             Assert.Equal(172800L, updated.Ttl.Seconds);
         }
         catch
@@ -97,34 +109,30 @@ public class StorageControlRapidCacheTest
             // Best-effort disable so the cache is cleaned up, without hiding the original failure.
             try
             {
-                disableSample.StorageControlDisableRapidCache(bucketName, rapidCacheId);
+                disableSample.StorageControlDisableRapidCache(bucketName, rapidCacheId, s_cleanupDisableTimeout);
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Could not disable Rapid Cache {created.Name}: {e.Message}");
+                Console.WriteLine($"Best-effort disable of Rapid Cache {rapidCacheName}: {e.Message}");
             }
             throw;
         }
 
         // Disable. This also cleans up the cache so that the bucket can be deleted once the
         // cache has been fully removed.
-        Operation<RapidCache, DisableRapidCacheMetadata> disableOperation =
-            disableSample.StorageControlDisableRapidCache(bucketName, rapidCacheId);
-        Assert.False(string.IsNullOrEmpty(disableOperation.Name));
-
-        // The cache moves to the "disabled" state shortly after the request.
-        var getAfterDisableSample = new StorageControlGetRapidCacheSample();
-        string state = null;
-        for (int attempt = 0; attempt < DisablePollAttempts; attempt++)
+        try
         {
-            state = getAfterDisableSample.StorageControlGetRapidCache(bucketName, rapidCacheId).State;
-            if (state == "disabled")
-            {
-                break;
-            }
-            Thread.Sleep(s_disablePollInterval);
+            RapidCache disabled = disableSample.StorageControlDisableRapidCache(bucketName, rapidCacheId, s_disableTimeout);
+            Assert.Equal(rapidCacheName, disabled.Name);
         }
-        Assert.Equal("disabled", state);
+        catch (Exception e) when (e is TimeoutException
+            || (e is RpcException rpcException && rpcException.StatusCode == StatusCode.DeadlineExceeded))
+        {
+            // The operation can take longer than the bounded wait, but the cache moves to the
+            // "disabled" state within seconds.
+            Console.WriteLine($"Disable operation for {rapidCacheName} did not complete within {s_disableTimeout}.");
+            Assert.Equal("disabled", getSample.StorageControlGetRapidCache(bucketName, rapidCacheId).State);
+        }
     }
 
     // Rapid Cache Ultra requires a regional, hierarchical namespace enabled bucket in the
@@ -142,7 +150,7 @@ public class StorageControlRapidCacheTest
             },
             HierarchicalNamespace = new Bucket.HierarchicalNamespaceData { Enabled = true }
         });
-        _fixture.SleepAfterBucketCreateUpdateDelete();
+        Thread.Sleep(s_bucketPropagationDelay);
     }
 
     // A bucket can't be deleted (409 Conflict) until its disabled Rapid Cache has been fully
@@ -164,7 +172,7 @@ public class StorageControlRapidCacheTest
             }
             catch (Exception e)
             {
-                Console.WriteLine($"Could not delete bucket {bucketName}: {e.Message}");
+                Console.WriteLine($"Could not delete bucket {bucketName}, leaving it for stale bucket cleanup: {e.Message}");
                 // Give the fixture one more best-effort attempt when it is disposed.
                 _fixture.TempBucketNames.Add(bucketName);
                 return;
