@@ -64,13 +64,19 @@ public class UpdateRegionalSecretWithManagedRotationScheduleTests
         }
         finally
         {
-            if (secret != null)
+            try
             {
-                _fixture.DeleteSecret(secret.SecretName);
+                if (member != null)
+                {
+                    _fixture.RevokeCloudSqlRole(member);
+                }
             }
-            if (member != null)
+            finally
             {
-                _fixture.RevokeCloudSqlRole(member);
+                if (secret != null)
+                {
+                    _fixture.DeleteSecret(secret.SecretName);
+                }
             }
         }
     }

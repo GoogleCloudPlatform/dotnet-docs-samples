@@ -29,7 +29,7 @@ public class CreateSecretWithTypeSample
     public Secret CreateSecretWithType(
       string projectId = "my-project",
       string secretId = "my-secret",
-      Secret.Types.SecretType secretType = Secret.Types.SecretType.Other
+      Secret.Types.SecretType secretType = Secret.Types.SecretType.AccessKey
     )
     {
         // Create the client.

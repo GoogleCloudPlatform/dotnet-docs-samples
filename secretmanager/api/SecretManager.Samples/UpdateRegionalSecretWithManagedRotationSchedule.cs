@@ -60,10 +60,7 @@ public class UpdateRegionalSecretWithManagedRotationScheduleSample
 
         // Build the field mask. Mask only the rotation subfields being set, not the
         // whole "rotation" submessage.
-        FieldMask fieldMask = new FieldMask
-        {
-            Paths = { "rotation.next_rotation_time", "rotation.rotation_period" }
-        };
+        FieldMask fieldMask = FieldMask.FromString("rotation.next_rotation_time,rotation.rotation_period");
 
         // Call the API.
         Secret updatedSecret = client.UpdateSecret(secret, fieldMask);
