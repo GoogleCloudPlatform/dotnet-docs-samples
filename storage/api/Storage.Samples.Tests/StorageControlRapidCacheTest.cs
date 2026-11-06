@@ -139,7 +139,8 @@ public class StorageControlRapidCacheTest
     // region of the cache zone.
     private void CreateRegionalHnsBucket(string bucketName)
     {
-        string region = _zone.Substring(0, _zone.LastIndexOf('-'));
+        int lastHyphen = _zone.LastIndexOf('-');
+        string region = lastHyphen > 0 ? _zone.Substring(0, lastHyphen) : _zone;
         _fixture.Client.CreateBucket(_fixture.ProjectId, new Bucket
         {
             Name = bucketName,
@@ -150,6 +151,8 @@ public class StorageControlRapidCacheTest
             },
             HierarchicalNamespace = new Bucket.HierarchicalNamespaceData { Enabled = true }
         });
+        // Register the bucket right away so the fixture cleans it up even if the test aborts.
+        _fixture.TempBucketNames.Add(bucketName);
         Thread.Sleep(s_bucketPropagationDelay);
     }
 
@@ -172,9 +175,9 @@ public class StorageControlRapidCacheTest
             }
             catch (Exception e)
             {
+                // The bucket is registered in the fixture, which makes one more best-effort
+                // attempt to delete it when it is disposed.
                 Console.WriteLine($"Could not delete bucket {bucketName}, leaving it for stale bucket cleanup: {e.Message}");
-                // Give the fixture one more best-effort attempt when it is disposed.
-                _fixture.TempBucketNames.Add(bucketName);
                 return;
             }
         }
