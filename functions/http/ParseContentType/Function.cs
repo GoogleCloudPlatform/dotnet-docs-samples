@@ -34,7 +34,19 @@ public class Function : IHttpFunction
         HttpResponse response = context.Response;
 
         string name = null;
-        ContentType contentType = new ContentType(request.ContentType);
+
+        ContentType contentType;
+        try
+        {
+            contentType = new ContentType(request.ContentType);
+        }
+        catch (Exception e) when (e is ArgumentException or FormatException)
+        {
+            // Missing Content-Type header, or one that isn't a valid media type
+            // (e.g. "text"). Same handling as the unrecognized types below.
+            response.StatusCode = (int) HttpStatusCode.BadRequest;
+            return;
+        }
 
         switch (contentType.MediaType)
         {
