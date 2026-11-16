@@ -1,0 +1,169 @@
+/*
+ * Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+using Google.Cloud.ResourceManager.V3;
+using Google.Cloud.SecretManager.V1;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using Xunit;
+
+[Collection(nameof(SecretManagerFixture))]
+public class DetachTagTests
+{
+    private readonly SecretManagerFixture _fixture;
+    private readonly DetachTagSample _detachSample;
+    private readonly BindTagsToSecretSample _bindSample;
+    private readonly TagKeysClient _tagKeysClient;
+    private readonly TagValuesClient _tagValuesClient;
+    private readonly TagBindingsClient _tagBindingsClient;
+    private readonly ListTagBindingsSample _listSample;
+    private string _tagKeyName;
+    private string _tagValueName;
+
+    public DetachTagTests(SecretManagerFixture fixture)
+    {
+        _fixture = fixture;
+        _detachSample = new DetachTagSample();
+        _bindSample = new BindTagsToSecretSample();
+        _tagKeysClient = TagKeysClient.Create();
+        _tagValuesClient = TagValuesClient.Create();
+        _tagBindingsClient = TagBindingsClient.Create();
+    }
+
+    private void CreateTagKeyAndValue(string projectId)
+    {
+        // Generate unique names for tag key and value
+        string tagKeyShortName = $"test-key-{_fixture.RandomId()}";
+        string tagValueShortName = $"test-value-{_fixture.RandomId()}";
+
+        var createKeyRequest = new CreateTagKeyRequest
+        {
+            TagKey = new TagKey
+            {
+                Parent = $"projects/{projectId}",
+                ShortName = tagKeyShortName,
+            }
+        };
+
+        try
+        {
+            var createKeyOperation = _tagKeysClient.CreateTagKey(createKeyRequest);
+            TagKey tagKey = createKeyOperation.PollUntilCompleted().Result;
+            _tagKeyName = tagKey.Name;
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Error creating tag key: " + e.Message, e);
+        }
+
+        var createValueRequest = new CreateTagValueRequest
+        {
+            TagValue = new TagValue
+            {
+                Parent = _tagKeyName,
+                ShortName = tagValueShortName,
+            }
+        };
+
+        try
+        {
+            var createValueOperation = _tagValuesClient.CreateTagValue(createValueRequest);
+            TagValue tagValue = createValueOperation.PollUntilCompleted().Result;
+            _tagValueName = tagValue.Name;
+        }
+        catch (Exception e)
+        {
+            throw new Exception("Error creating tag value: " + e.Message, e);
+        }
+    }
+
+    private void CleanupResources()
+    {
+        // Delete the tag value if it exists
+        if (!string.IsNullOrEmpty(_tagValueName))
+        {
+            try
+            {
+                var deleteValueRequest = new DeleteTagValueRequest { Name = _tagValueName };
+                _tagValuesClient.DeleteTagValue(deleteValueRequest).PollUntilCompleted();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error deleting tag value: {e.GetType().Name}: {e.Message}");
+            }
+        }
+
+        // Delete the tag key if it exists
+        if (!string.IsNullOrEmpty(_tagKeyName))
+        {
+            try
+            {
+                var deleteKeyRequest = new DeleteTagKeyRequest { Name = _tagKeyName };
+                _tagKeysClient.DeleteTagKey(deleteKeyRequest).PollUntilCompleted();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error deleting tag key: {e.GetType().Name}: {e.Message}");
+            }
+        }
+    }
+
+    [Fact]
+    public async Task DetachesTagFromSecret()
+    {
+
+        // Create a tag key and value for testing
+        CreateTagKeyAndValue(_fixture.ProjectId);
+
+        SecretName secretName = new SecretName(_fixture.ProjectId, _fixture.RandomId());
+
+        // Use the BindTagsToSecret sample to create a secret and bind a tag to it
+        await _bindSample.BindTagsToSecretAsync(
+            projectId: secretName.ProjectId,
+            secretId: secretName.SecretId,
+            tagValue: _tagValueName);
+
+        // Verify the binding exists
+        SecretManagerServiceClient secretClient = SecretManagerServiceClient.Create();
+        string resource = $"//secretmanager.googleapis.com/{secretName}";
+
+        // Capture console output for the detach operation
+        StringWriter sw = new StringWriter();
+        Console.SetOut(sw);
+
+        // Call the method being tested
+        string bindingName = await _detachSample.DetachTagAsync(
+            projectId: secretName.ProjectId,
+            secretId: secretName.SecretId,
+            tagValue: _tagValueName);
+
+        Assert.NotEmpty(bindingName);
+
+        bindingName = await _detachSample.DetachTagAsync(
+            projectId: secretName.ProjectId,
+            secretId: secretName.SecretId,
+            tagValue: _tagValueName);
+
+        Assert.Empty(bindingName);
+        // Clean up all resources
+        _fixture.DeleteSecret(secretName);
+        CleanupResources();
+
+    }
+};
