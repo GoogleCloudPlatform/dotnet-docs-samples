@@ -34,6 +34,7 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
     public string AnnotationValue { get; }
     public string LabelKey { get; }
     public string LabelValue { get; }
+    public string KmsKeyName { get; }
 
     public SecretManagerFixture()
     {
@@ -42,6 +43,12 @@ public class SecretManagerFixture : IDisposable, ICollectionFixture<SecretManage
         if (String.IsNullOrEmpty(ProjectId))
         {
             throw new Exception("missing GOOGLE_PROJECT_ID");
+        }
+
+        KmsKeyName = Environment.GetEnvironmentVariable("GOOGLE_CLOUD_KMS_KEY_NAME");
+        if (String.IsNullOrEmpty(KmsKeyName))
+        {
+            throw new Exception("missing GOOGLE_CLOUD_KMS_KEY_NAME");
         }
 
         // Get the ProjectName from ProjectId,
