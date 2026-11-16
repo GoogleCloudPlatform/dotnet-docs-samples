@@ -23,7 +23,9 @@ public class StorageControlListRapidCachesSample
 {
     /// <summary>Lists all Rapid Cache instances for the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the Rapid Cache instances.</param>
-    public IEnumerable<RapidCache> StorageControlListRapidCaches(string bucketName = "your-unique-bucket-name")
+    /// <param name="pageSize">The maximum number of Rapid Cache instances to return in a single response.</param>
+    public IEnumerable<RapidCache> StorageControlListRapidCaches(string bucketName = "your-unique-bucket-name",
+        int pageSize = 10)
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
@@ -32,22 +34,29 @@ public class StorageControlListRapidCachesSample
 
         ListRapidCachesRequest request = new ListRapidCachesRequest
         {
-            Parent = parent
+            Parent = parent,
+            PageSize = pageSize
         };
 
         // The returned sequence fetches additional pages automatically as it is iterated.
         PagedEnumerable<ListRapidCachesResponse, RapidCache> rapidCaches = storageControlClient.ListRapidCaches(request);
 
-        List<RapidCache> results = new List<RapidCache>();
         foreach (RapidCache rapidCache in rapidCaches)
         {
-            Console.WriteLine(rapidCache.Name);
-            results.Add(rapidCache);
+            Console.WriteLine($"Rapid Cache: {rapidCache.Name}");
         }
 
-        Console.WriteLine($"Listed Rapid Caches in bucket {bucketName}");
+        // Alternatively, iterate over the results one page at a time.
+        foreach (ListRapidCachesResponse page in rapidCaches.AsRawResponses())
+        {
+            Console.WriteLine($"Page with {page.RapidCaches.Count} Rapid Caches:");
+            foreach (RapidCache rapidCache in page)
+            {
+                Console.WriteLine($"Rapid Cache: {rapidCache.Name}");
+            }
+        }
 
-        return results;
+        return rapidCaches;
     }
 }
 // [END storage_control_list_rapid_caches]

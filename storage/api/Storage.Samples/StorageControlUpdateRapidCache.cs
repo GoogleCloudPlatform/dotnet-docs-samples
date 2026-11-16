@@ -23,10 +23,11 @@ public class StorageControlUpdateRapidCacheSample
 {
     /// <summary>Updates the time to live (TTL) of a Rapid Cache instance.</summary>
     /// <param name="bucketName">The name of the bucket that owns the Rapid Cache instance.</param>
-    /// <param name="rapidCacheId">The unique identifier of the Rapid Cache instance.</param>
+    /// <param name="rapidCacheId">The unique identifier of the Rapid Cache instance, which is the
+    /// zone of the cache (for example, "us-central1-a").</param>
     /// <param name="ttlSeconds">The new TTL for cache entries, in seconds. The TTL must be between 1 hour and 7 days.</param>
     public RapidCache StorageControlUpdateRapidCache(string bucketName = "your-unique-bucket-name",
-        string rapidCacheId = "your-rapid-cache-id",
+        string rapidCacheId = "us-central1-a",
         long ttlSeconds = 172800)
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();

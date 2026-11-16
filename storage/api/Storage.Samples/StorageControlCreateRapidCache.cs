@@ -35,15 +35,11 @@ public class StorageControlCreateRapidCacheSample
         // Set project to "_" to signify globally scoped bucket.
         string parent = $"projects/_/buckets/{bucketName}";
 
-        // The Rapid Cache ID must be the same as the zone.
-        string rapidCacheId = zone;
-        string rapidCacheName = RapidCacheName.FormatProjectBucketRapidCache("_", bucketName, rapidCacheId);
-
         // Rapid Cache Ultra requires a regional bucket with hierarchical namespace enabled,
-        // in the same region as the cache zone.
+        // in the same region as the cache zone. The server derives the cache name from the
+        // bucket and the zone, so the name doesn't need to be set.
         RapidCache rapidCache = new RapidCache
         {
-            Name = rapidCacheName,
             Zone = zone,
             CacheType = "rapid-cache-ultra"
         };

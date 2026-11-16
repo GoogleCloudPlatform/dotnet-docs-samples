@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using Google;
 using Google.Cloud.Storage.Control.V2;
-using Google.Cloud.Storage.V1;
-using Grpc.Core;
+using Google.LongRunning;
 using System;
 using System.Linq;
-using System.Net;
 using System.Threading;
 using Xunit;
 using Bucket = Google.Apis.Storage.v1.Data.Bucket;
@@ -30,24 +27,15 @@ public class StorageControlRapidCacheTest : IDisposable
 {
     private const string RapidCacheType = "rapid-cache-ultra";
 
-    // Wait for the new bucket's metadata to propagate before creating the cache.
-    private static readonly TimeSpan s_bucketPropagationDelay = TimeSpan.FromSeconds(20);
-
-    // The disable operation only completes once the cache has been fully removed, which can
-    // take more than an hour, so the test bounds the wait with the LRO poll settings.
-    private static readonly TimeSpan s_disableTimeout = TimeSpan.FromMinutes(10);
-
-    // Short wait used for the best-effort disable during teardown, so that cleanup never hangs.
-    private static readonly TimeSpan s_cleanupDisableTimeout = TimeSpan.FromSeconds(1);
-
-    // Retry bucket deletion for up to 2 minutes while the disabled cache is being removed.
-    private static readonly TimeSpan s_bucketDeleteTimeout = TimeSpan.FromSeconds(120);
-    private static readonly TimeSpan s_bucketDeleteInterval = TimeSpan.FromSeconds(15);
+    // The cache moves to the "disabled" state within seconds of the disable request, so the
+    // test polls for that state for up to 2 minutes.
+    private const int StatePollAttempts = 12;
+    private static readonly TimeSpan s_statePollInterval = TimeSpan.FromSeconds(10);
 
     private readonly StorageFixture _fixture;
     private readonly string _zone;
 
-    // The Rapid Cache ID must be the same as the zone.
+    // The Rapid Cache ID is the same as the zone.
     private readonly string _rapidCacheId;
 
     // Set by the test so that Dispose can clean up whatever was created.
@@ -62,7 +50,7 @@ public class StorageControlRapidCacheTest : IDisposable
     }
 
     // Rapid Cache requires an allowlisted project and the bucket can't be deleted until the
-    // disabled cache has been fully removed (which can take more than 30 minutes), so this
+    // disabled cache has been fully removed (which can take more than an hour), so this
     // test is excluded from CI, following the Anywhere Cache samples which have no CI tests.
     [Fact(Skip = "b/482946642: Rapid Cache requires an allowlisted project; run manually.")]
     public void TestStorageControlRapidCacheLifecycle()
@@ -98,52 +86,52 @@ public class StorageControlRapidCacheTest : IDisposable
         Assert.Equal(rapidCacheName, updated.Name);
         Assert.Equal(172800L, updated.Ttl.Seconds);
 
-        // Disable. The operation usually takes longer than the bounded wait, so a timeout is
-        // expected; the cache itself moves to the "disabled" state within seconds.
+        // Disable. The operation only completes once the cache has been fully removed, so the
+        // test checks for the "disabled" state instead of waiting for the operation.
         var disableSample = new StorageControlDisableRapidCacheSample();
-        RapidCache disabled = null;
-        Exception disableException = Record.Exception(
-            () => disabled = disableSample.StorageControlDisableRapidCache(_bucketName, _rapidCacheId, s_disableTimeout));
-        Assert.True(disableException is null || IsTimeout(disableException), disableException?.ToString());
+        Operation<RapidCache, DisableRapidCacheMetadata> operation =
+            disableSample.StorageControlDisableRapidCache(_bucketName, _rapidCacheId);
         _cacheActive = false;
-        if (disableException is null)
-        {
-            Assert.Equal(rapidCacheName, disabled.Name);
-        }
-        else
-        {
-            Assert.Equal("disabled", getSample.StorageControlGetRapidCache(_bucketName, _rapidCacheId).State);
-        }
+        Assert.False(string.IsNullOrEmpty(operation.Name));
+        Assert.Equal("disabled", WaitForState(getSample, "disabled"));
     }
 
-    // Disables the cache if the test left it active, then deletes the bucket. Both steps are
-    // best-effort so that teardown never hides the original test failure.
+    // Disables the cache if the test left it active. This is best-effort so that teardown
+    // never hides the original test failure. The bucket is registered in the fixture, which
+    // makes a best-effort attempt to delete it when it is disposed. That attempt usually fails
+    // because the bucket can't be deleted until the disabled cache has been fully removed, so
+    // the bucket may need to be deleted manually later.
     public void Dispose()
     {
-        if (_bucketName is null)
+        if (_bucketName is null || !_cacheActive)
         {
             return;
         }
-        if (_cacheActive)
-        {
-            DisableRapidCacheBestEffort(_bucketName, _rapidCacheId);
-        }
-        DeleteBucketBestEffort(_bucketName);
-    }
-
-    private static bool IsTimeout(Exception e) =>
-        e is TimeoutException || (e is RpcException rpcException && rpcException.StatusCode == StatusCode.DeadlineExceeded);
-
-    private static void DisableRapidCacheBestEffort(string bucketName, string rapidCacheId)
-    {
         try
         {
-            new StorageControlDisableRapidCacheSample().StorageControlDisableRapidCache(bucketName, rapidCacheId, s_cleanupDisableTimeout);
+            new StorageControlDisableRapidCacheSample().StorageControlDisableRapidCache(_bucketName, _rapidCacheId);
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Best-effort disable of Rapid Cache {rapidCacheId} in bucket {bucketName}: {e.Message}");
+            Console.WriteLine($"Best-effort disable of Rapid Cache {_rapidCacheId} in bucket {_bucketName}: {e.Message}");
         }
+    }
+
+    // Polls the cache until it reaches the expected state or the attempts run out, and
+    // returns the last observed state.
+    private string WaitForState(StorageControlGetRapidCacheSample getSample, string expectedState)
+    {
+        string state = null;
+        for (int attempt = 1; attempt <= StatePollAttempts; attempt++)
+        {
+            state = getSample.StorageControlGetRapidCache(_bucketName, _rapidCacheId).State;
+            if (state == expectedState || attempt == StatePollAttempts)
+            {
+                break;
+            }
+            Thread.Sleep(s_statePollInterval);
+        }
+        return state;
     }
 
     // Rapid Cache Ultra requires a regional, hierarchical namespace enabled bucket in the
@@ -164,33 +152,6 @@ public class StorageControlRapidCacheTest : IDisposable
         });
         // Register the bucket right away so the fixture cleans it up even if the test aborts.
         _fixture.TempBucketNames.Add(bucketName);
-        Thread.Sleep(s_bucketPropagationDelay);
-    }
-
-    // A bucket can't be deleted (409 Conflict) until its disabled Rapid Cache has been fully
-    // removed, which can take more than 30 minutes. Cleanup is best-effort: retry briefly,
-    // then leave the bucket behind for the stale bucket cleanup.
-    private void DeleteBucketBestEffort(string bucketName)
-    {
-        DateTime deadline = DateTime.UtcNow + s_bucketDeleteTimeout;
-        while (true)
-        {
-            try
-            {
-                _fixture.Client.DeleteBucket(bucketName, new DeleteBucketOptions { DeleteObjects = true });
-                return;
-            }
-            catch (GoogleApiException e) when (e.HttpStatusCode == HttpStatusCode.Conflict && DateTime.UtcNow < deadline)
-            {
-                Thread.Sleep(s_bucketDeleteInterval);
-            }
-            catch (Exception e)
-            {
-                // The bucket is registered in the fixture, which makes one more best-effort
-                // attempt to delete it when it is disposed.
-                Console.WriteLine($"Could not delete bucket {bucketName}, leaving it for stale bucket cleanup: {e.Message}");
-                return;
-            }
-        }
+        _fixture.SleepAfterBucketCreateUpdateDelete();
     }
 }

@@ -21,9 +21,10 @@ public class StorageControlGetRapidCacheSample
 {
     /// <summary>Gets a Rapid Cache instance for the specified bucket.</summary>
     /// <param name="bucketName">The name of the bucket that owns the Rapid Cache instance.</param>
-    /// <param name="rapidCacheId">The unique identifier of the Rapid Cache instance.</param>
+    /// <param name="rapidCacheId">The unique identifier of the Rapid Cache instance, which is the
+    /// zone of the cache (for example, "us-central1-a").</param>
     public RapidCache StorageControlGetRapidCache(string bucketName = "your-unique-bucket-name",
-        string rapidCacheId = "your-rapid-cache-id")
+        string rapidCacheId = "us-central1-a")
     {
         StorageControlClient storageControlClient = StorageControlClient.Create();
 
