@@ -9,7 +9,9 @@
 
   <ItemGroup>
     <PackageReference Include="Google.Cloud.Common" Version="2.3.0" />
-    <PackageReference Include="Google.Cloud.ParameterManager.V1" Version="1.0.0-beta04" />
+    <PackageReference Include="Crc32.NET" Version="1.2.0" />
+    <PackageReference Include="Google.Cloud.ParameterManager.V1" Version="1.1.0" />
+    <PackageReference Include="Google.Cloud.ResourceManager.V3" Version="2.5.0" />
   </ItemGroup>
 
 </Project>
