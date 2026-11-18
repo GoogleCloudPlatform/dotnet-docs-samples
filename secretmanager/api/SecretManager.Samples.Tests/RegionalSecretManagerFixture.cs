@@ -40,11 +40,18 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
 
     private const string CloudSqlRole = "roles/cloudsql.admin";
 
-    // Bare ID of a pre-provisioned Cloud SQL instance in LocationId.
-    public string CloudSqlInstanceId => RequiredEnvironmentVariable("CLOUD_SQL_INSTANCE");
+    // Bare ID of a pre-provisioned Cloud SQL instance in LocationId. Null when
+    // CLOUD_SQL_INSTANCE is not set, in which case managed-rotation tests are skipped.
+    public string CloudSqlInstanceId => Environment.GetEnvironmentVariable("CLOUD_SQL_INSTANCE");
 
-    // Username of an existing database user on that instance.
-    public string CloudSqlUsername => RequiredEnvironmentVariable("CLOUD_SQL_USER");
+    // Username of an existing database user on that instance. Null when
+    // CLOUD_SQL_USER is not set, in which case managed-rotation tests are skipped.
+    public string CloudSqlUsername => Environment.GetEnvironmentVariable("CLOUD_SQL_USER");
+
+    // True when both Cloud SQL environment variables are set.
+    public bool HasCloudSqlConfig =>
+        !string.IsNullOrEmpty(CloudSqlInstanceId) && !string.IsNullOrEmpty(CloudSqlUsername);
+
     public RegionalSecretManagerFixture()
     {
         // Get the Google Cloud ProjectId
@@ -119,16 +126,6 @@ public class RegionalSecretManagerFixture : IDisposable, ICollectionFixture<Regi
             }
         };
         return Client.CreateSecret(locationName, RandomId(), secret);
-    }
-
-    private static string RequiredEnvironmentVariable(string name)
-    {
-        string value = Environment.GetEnvironmentVariable(name);
-        if (String.IsNullOrEmpty(value))
-        {
-            throw new Exception($"missing {name}");
-        }
-        return value;
     }
 
     /// <summary>

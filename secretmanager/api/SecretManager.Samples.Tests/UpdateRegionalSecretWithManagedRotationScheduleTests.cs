@@ -36,6 +36,12 @@ public class UpdateRegionalSecretWithManagedRotationScheduleTests
     [Fact]
     public void UpdatesRegionalSecretWithManagedRotationSchedule()
     {
+        // Skip when no Cloud SQL instance/user is configured (e.g. in CI).
+        if (!_fixture.HasCloudSqlConfig)
+        {
+            return;
+        }
+
         Secret secret = null;
         string member = null;
         try
